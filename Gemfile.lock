@@ -82,11 +82,11 @@ GEM
     diff-lcs (1.4.4)
     erubi (1.10.0)
     execjs (2.8.1)
-    factory_girl (4.9.0)
-      activesupport (>= 3.0.0)
-    factory_girl_rails (4.9.0)
-      factory_girl (~> 4.9.0)
-      railties (>= 3.0.0)
+    factory_bot (6.2.0)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.2.0)
+      factory_bot (~> 6.2.0)
+      railties (>= 5.0.0)
     faker (2.19.0)
       i18n (>= 1.6, < 2)
     faraday (1.8.0)
@@ -275,7 +275,7 @@ DEPENDENCIES
   coffee-rails
   database_cleaner
   execjs
-  factory_girl_rails
+  factory_bot_rails
   faker
   faraday
   font-awesome-rails
