@@ -71,7 +71,7 @@ class Tournament < ApplicationRecord
   private
 
   def default_date
-    self.date = Date.today
+    self.date = Date.current
   end
 
   def create_stage
