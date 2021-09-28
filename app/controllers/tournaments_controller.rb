@@ -38,7 +38,7 @@ class TournamentsController < ApplicationController
     authorize Tournament
 
     @new_tournament = current_user.tournaments.new
-    @new_tournament.date = Date.today
+    @new_tournament.date = Date.current
   end
 
   def create

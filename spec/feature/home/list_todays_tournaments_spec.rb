@@ -1,12 +1,12 @@
 RSpec.describe "list today's tournaments" do
   let!(:today) do
-    create(:tournament, date: Date.today, name: 'TodayGNK', slug: 'TEST')
+    create(:tournament, date: Date.current.beginning_of_day, name: 'TodayGNK', slug: 'TEST')
   end
 
   before do
-    create(:tournament, date: Date.yesterday, name: 'YesterdayGNK', slug: '1234')
-    create(:tournament, date: Date.tomorrow, name: 'TomorrowGNK', slug: '5678')
-    create(:tournament, date: Date.today, name: 'PrivateGNK', private: true)
+    create(:tournament, date: Date.yesterday.beginning_of_day, name: 'YesterdayGNK', slug: '1234')
+    create(:tournament, date: Date.tomorrow.beginning_of_day, name: 'TomorrowGNK', slug: '5678')
+    create(:tournament, date: Date.current.beginning_of_day, name: 'PrivateGNK', private: true)
 
     visit root_path
   end

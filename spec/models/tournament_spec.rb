@@ -15,7 +15,7 @@ RSpec.describe Tournament do
   end
 
   it 'automatically populates date' do
-    expect(tournament.date).to eq(Date.today)
+    expect(tournament.date).to eq(Date.current)
   end
 
   it 'automatically creates stage' do
