@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'bootstrap'
+gem 'bootstrap', '~> 4.3'
 gem 'bootstrap-datepicker-rails'
 gem 'coffee-rails'
 gem 'execjs'
