@@ -3,7 +3,7 @@ class Stage < ApplicationRecord
   has_many :rounds, dependent: :destroy
   has_many :registrations, dependent: :destroy
   has_many :players, through: :registrations
-  has_many :standing_rows
+  has_many :standing_rows, dependent: :destroy
 
   delegate :top, to: :standings
 
