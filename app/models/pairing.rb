@@ -1,5 +1,5 @@
 class Pairing < ApplicationRecord
-  belongs_to :round
+  belongs_to :round, touch: true
   belongs_to :player1, class_name: 'Player', optional: true
   belongs_to :player2, class_name: 'Player', optional: true
   has_one :tournament, through: :round
