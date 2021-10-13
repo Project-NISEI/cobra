@@ -1,5 +1,5 @@
 class Stage < ApplicationRecord
-  belongs_to :tournament
+  belongs_to :tournament, touch: true
   has_many :rounds, dependent: :destroy
   has_many :registrations, dependent: :destroy
   has_many :players, through: :registrations

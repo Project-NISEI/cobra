@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_03_030446) do
+ActiveRecord::Schema.define(version: 2021_10_13_035935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,8 @@ ActiveRecord::Schema.define(version: 2021_10_03_030446) do
     t.integer "tournament_id"
     t.integer "number", default: 1
     t.integer "format", default: 0, null: false
+    t.datetime "created_at", default: -> { "now()" }, null: false
+    t.datetime "updated_at", default: -> { "now()" }, null: false
     t.index ["tournament_id"], name: "index_stages_on_tournament_id"
   end
 
@@ -108,6 +110,7 @@ ActiveRecord::Schema.define(version: 2021_10_03_030446) do
     t.boolean "private", default: false
     t.string "stream_url"
     t.boolean "manual_seed"
+    t.datetime "updated_at"
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 

@@ -1,5 +1,5 @@
-- if round.stage.players.count < 100 || round == @tournament.stages.last.rounds.last
-  - cache_unless user_signed_in?, round do
+- if round.stage.players.count < 100 || round.id == @tournament.stages.last.rounds.last.id
+  - cache_unless user_signed_in?, [round, @tournament.stages.last] do
     .card
       .card-header role="tab"
         .row
