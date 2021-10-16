@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_24_135125) do
+ActiveRecord::Schema.define(version: 2021_10_13_035935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,15 +22,6 @@ ActiveRecord::Schema.define(version: 2020_06_24_135125) do
     t.string "nrdb_code"
     t.string "autocomplete"
     t.index ["side"], name: "index_identities_on_side"
-  end
-
-  create_table "notifications", id: :serial, force: :cascade do |t|
-    t.string "message"
-    t.integer "notification_type"
-    t.integer "tournament_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["tournament_id"], name: "index_notifications_on_tournament_id"
   end
 
   create_table "pairings", id: :serial, force: :cascade do |t|
@@ -45,6 +36,8 @@ ActiveRecord::Schema.define(version: 2020_06_24_135125) do
     t.integer "score1_corp"
     t.integer "score2_corp"
     t.integer "score2_runner"
+    t.datetime "created_at", default: -> { "now()" }, null: false
+    t.datetime "updated_at", default: -> { "now()" }, null: false
     t.index ["player1_id"], name: "index_pairings_on_player1_id"
     t.index ["player2_id"], name: "index_pairings_on_player2_id"
     t.index ["round_id"], name: "index_pairings_on_round_id"
@@ -59,7 +52,6 @@ ActiveRecord::Schema.define(version: 2020_06_24_135125) do
     t.integer "seed"
     t.boolean "first_round_bye", default: false
     t.integer "previous_id"
-    t.boolean "deck_checked"
     t.integer "manual_seed"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
   end
@@ -78,6 +70,8 @@ ActiveRecord::Schema.define(version: 2020_06_24_135125) do
     t.boolean "completed", default: false
     t.decimal "weight", default: "1.0"
     t.integer "stage_id"
+    t.datetime "created_at", default: -> { "now()" }, null: false
+    t.datetime "updated_at", default: -> { "now()" }, null: false
     t.index ["stage_id"], name: "index_rounds_on_stage_id"
     t.index ["tournament_id"], name: "index_rounds_on_tournament_id"
   end
@@ -86,6 +80,8 @@ ActiveRecord::Schema.define(version: 2020_06_24_135125) do
     t.integer "tournament_id"
     t.integer "number", default: 1
     t.integer "format", default: 0, null: false
+    t.datetime "created_at", default: -> { "now()" }, null: false
+    t.datetime "updated_at", default: -> { "now()" }, null: false
     t.index ["tournament_id"], name: "index_stages_on_tournament_id"
   end
 
@@ -114,6 +110,7 @@ ActiveRecord::Schema.define(version: 2020_06_24_135125) do
     t.boolean "private", default: false
     t.string "stream_url"
     t.boolean "manual_seed"
+    t.datetime "updated_at", default: -> { "now()" }, null: false
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 
