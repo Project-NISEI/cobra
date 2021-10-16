@@ -110,7 +110,7 @@ ActiveRecord::Schema.define(version: 2021_10_13_035935) do
     t.boolean "private", default: false
     t.string "stream_url"
     t.boolean "manual_seed"
-    t.datetime "updated_at"
+    t.datetime "updated_at", default: -> { "now()" }, null: false
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 
