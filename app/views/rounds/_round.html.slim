@@ -9,7 +9,7 @@
           .col-sm-3
             | #{round.pairings.reported.count} / #{round.pairings.count} pairings reported
   
-      .collapse id="round#{round.id}" class=("show" if round.id == @tournament.stages.last.rounds.last.id)
+      .collapse id="round#{round.id}" class=("show" if (@tournament.stages.last.rounds.last && round.id == @tournament.stages.last.rounds.last.id))
         .col-12.my-3
           - if policy(round.tournament).edit?
             = link_to tournament_round_path(round.tournament, round), class: 'btn btn-warning' do
