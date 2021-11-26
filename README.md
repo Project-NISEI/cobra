@@ -1,5 +1,17 @@
 # Cobra
 
+## For local dev with docker
+
+```
+echo "RAILS_ENV=development" > .env
+docker-compose up -d db
+# wait for the db to be ready
+docker-compose exec db psql --username=postgres -c "create user cobra with password '' CREATEDB;"
+docker-compose run app rake db:create db:migrate 
+docker-compose run app rake ids:update 
+docker-compose up -d
+```
+
 ## Requirements
 To deploy Cobra, you only need Docker Compose and a way of getting the repository onto your server (such as git).
 
