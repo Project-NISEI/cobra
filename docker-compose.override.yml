@@ -1,0 +1,4 @@
+# service configuration for our dockerized Rails app
+app:
+  ports:
+    - "3000:3000"
