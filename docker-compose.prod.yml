@@ -1,5 +1,11 @@
 version: "3.2"
 
+# This is the file for a deployed server.
+# Domain names can be customized in the .env file.
+# This assumes you have already set up certificates via Let's Encrypt for the domain.
+# Since that is a manual step, we don't have it checked in here.
+# https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
+# is the guide we used to set that up initially.
 services:
   # service configuration for our dockerized Rails app
   app:
@@ -12,11 +18,15 @@ services:
 
   # service configuration for our web server
   web:
+    env_file:
+      - .env
     # set the build context to the root of the Rails app
     build:
       context: .
       # build with a different Dockerfile
       dockerfile: config/containers/Dockerfile-nginx
+      args:
+        cobra_domain: $COBRA_DOMAIN
 
     # makes the web container aware of the app container
     links:
@@ -25,11 +35,19 @@ services:
     # expose the port we configured Nginx to bind to
     ports:
       - "80:80"
+      - "443:443"
 
     volumes:
       - cobra-logs:/var/www/cobra/log
-        #    volumes_from:
-        #      - app
-        #
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
+  certbot:
+    image: certbot/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
 volumes:
     cobra-logs:
