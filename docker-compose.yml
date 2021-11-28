@@ -1,30 +1,36 @@
-# service configuration for our dockerized Rails app
-app:
+version: "3.3"
 
-  # use the Dockerfile next to this file
-  build: .
+services:
+  # service configuration for our dockerized Rails app
+  app:
 
-  # sources environment variable configuration for our app
-  env_file: .env
+    # use the Dockerfile next to this file
+    build: .
 
-  # rely on the RAILS_ENV value of the host machine
-  environment:
-    RAILS_ENV: $RAILS_ENV
+    # sources environment variable configuration for our app
+    env_file: .env
 
-  # makes the app container aware of the DB container
-  links:
-    - db
+    # rely on the RAILS_ENV value of the host machine
+    environment:
+      RAILS_ENV: $RAILS_ENV
 
-  volumes:
-    - cobra-logs:/var/www/cobra/log
+    # makes the app container aware of the DB container
+    links:
+      - db
 
-# service configuration for our database
-db:
+    volumes:
+      - cobra-logs:/var/www/cobra/log
 
-  # use the preferred version of the official Postgres image
-  # see https://hub.docker.com/_/postgres/
-  image: postgres:9.4.5
+  # service configuration for our database
+  db:
+    # use the preferred version of the official Postgres image
+    # see https://hub.docker.com/_/postgres/
+    image: postgres:9.4.5
 
-  # persist the database between containers by storing it in a volume
-  volumes:
-    - cobra-postgres:/var/lib/postgresql/data
+    # persist the database between containers by storing it in a volume
+    volumes:
+      - cobra-postgres:/var/lib/postgresql/data
+
+volumes:
+  cobra-logs:
+  cobra-postgres:
