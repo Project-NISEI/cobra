@@ -1,28 +1,35 @@
-# service configuration for our dockerized Rails app
-app:
-  # expose the port we configured Unicorn to bind to
-  expose:
-    - "3000"
+version: "3.3"
 
-  volumes:
-    - cobra-logs:/var/www/cobra/log
+services:
+  # service configuration for our dockerized Rails app
+  app:
+    # expose the port we configured Unicorn to bind to
+    expose:
+      - "3000"
 
-# service configuration for our web server
-web:
+    volumes:
+      - cobra-logs:/var/www/cobra/log
 
-  # set the build context to the root of the Rails app
-  build: .
+  # service configuration for our web server
+  web:
+    # set the build context to the root of the Rails app
+    build:
+      context: .
+      # build with a different Dockerfile
+      dockerfile: config/containers/Dockerfile-nginx
 
-  # build with a different Dockerfile
-  dockerfile: config/containers/Dockerfile-nginx
+    # makes the web container aware of the app container
+    links:
+      - app
 
-  # makes the web container aware of the app container
-  links:
-    - app
+    # expose the port we configured Nginx to bind to
+    ports:
+      - "80:80"
 
-  # expose the port we configured Nginx to bind to
-  ports:
-    - "80:80"
-
-  volumes_from:
-    - app
+    volumes:
+      - cobra-logs:/var/www/cobra/log
+        #    volumes_from:
+        #      - app
+        #
+volumes:
+    cobra-logs:
