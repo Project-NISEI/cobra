@@ -56,14 +56,6 @@ class Tournament < ApplicationRecord
     generate_slug if Tournament.exists?(slug: slug)
   end
 
-  def qr
-    @qr ||= RQRCode::QRCode.new(
-      "http://cobr.ai/#{slug.downcase}",
-      size: 4,
-      level: :h
-    ) if slug
-  end
-
   def current_stage
     stages.last
   end
