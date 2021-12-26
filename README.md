@@ -9,6 +9,7 @@ docker-compose up -d db
 docker-compose exec db psql --username=postgres -c "create user cobra with password '' CREATEDB;"
 docker-compose run app rake db:create db:migrate 
 docker-compose run app rake ids:update 
+docker-compose run app bundle exec rake assets:precompile
 docker-compose up -d
 ```
 
