@@ -1,5 +1,5 @@
 .col-12.text-center
-  h1.mb-5 cobr.ai/#{@tournament.slug}
-  p= raw @tournament.qr.as_svg(offset: 0, color: '000',
-                  shape_rendering: 'crispEdges',
-                  module_size: 25)
+  h1.mb-5 #{qr_code_url(@tournament.slug, request)}
+  p= raw qr_code(@tournament.slug, request).as_svg(offset: 0, color: '000',
+                 shape_rendering: 'crispEdges',
+                 module_size: 25)
