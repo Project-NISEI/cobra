@@ -19,6 +19,7 @@ services:
       - db
 
     volumes:
+      - .:/var/www/cobra/
       - cobra-logs:/var/www/cobra/log
 
   # service configuration for our database
