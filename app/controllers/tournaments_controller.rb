@@ -29,7 +29,7 @@ class TournamentsController < ApplicationController
       end
       format.json do
         headers['Access-Control-Allow-Origin'] = '*'
-        render json: NrtmJson.new(@tournament).data
+        render json: NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
       end
     end
   end
@@ -88,7 +88,7 @@ class TournamentsController < ApplicationController
   def save_json
     authorize @tournament
 
-    data = NrtmJson.new(@tournament).data
+    data = NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
 
     send_data data.to_json,
       type: :json,
