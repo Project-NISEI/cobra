@@ -13,6 +13,11 @@ docker-compose run app bundle exec rake assets:precompile
 docker-compose up -d
 ```
 
+To run tests in your docker container, you will need to override the environment, like so:
+```
+docker-compose exec -e RAILS_ENV=test app rspec
+```
+
 ## Requirements
 To deploy Cobra, you only need Docker Compose and a way of getting the repository onto your server (such as git).
 

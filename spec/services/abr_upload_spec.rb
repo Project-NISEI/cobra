@@ -1,5 +1,5 @@
 RSpec.describe AbrUpload do
-  let(:upload) { described_class.new(tournament) }
+  let(:upload) { described_class.new(tournament, 'https://server/SLUG') }
   let(:tournament) { create(:tournament, name: 'Some Tournament') }
   let(:jack) { create(:player, corp_identity: 'ETF', runner_identity: 'Noise') }
   let(:jill) { create(:player, corp_identity: 'PE', runner_identity: 'Gabe') }
@@ -11,12 +11,12 @@ RSpec.describe AbrUpload do
 
   describe '.upload!' do
     before do
-      allow(described_class).to receive(:new).with(tournament).and_return(upload)
+      allow(described_class).to receive(:new).with(tournament, 'https://server/SLUG').and_return(upload)
       allow(upload).to receive(:upload!)
     end
 
     it 'calls new instance' do
-      described_class.upload!(tournament)
+      described_class.upload!(tournament, 'https://server/SLUG')
 
       expect(upload).to have_received(:upload!)
     end
