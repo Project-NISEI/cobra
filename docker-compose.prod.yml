@@ -14,7 +14,7 @@ services:
       - "3000"
 
     volumes:
-      - cobra-logs:/var/www/cobra/log
+      - cobra:/var/www/cobra/log
 
   # service configuration for our web server
   web:
@@ -27,6 +27,7 @@ services:
       dockerfile: config/containers/Dockerfile-nginx
       args:
         cobra_domain: $COBRA_DOMAIN
+        nisei_domain: $NISEI_DOMAIN
 
     # makes the web container aware of the app container
     links:
@@ -38,7 +39,8 @@ services:
       - "443:443"
 
     volumes:
-      - cobra-logs:/var/www/cobra/log
+      - cobra:/var/www/cobra/log
+      - cobra:/var/www/cobra/public/assets
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
 
@@ -50,4 +52,4 @@ services:
       - ./data/certbot/www:/var/www/certbot
 
 volumes:
-    cobra-logs:
+    cobra:

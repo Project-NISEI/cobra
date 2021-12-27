@@ -20,7 +20,9 @@ services:
 
     volumes:
       - .:/var/www/cobra/
-      - cobra-logs:/var/www/cobra/log
+      - cobra:/var/www/cobra/log
+      - cobra:/var/www/cobra/public/assets
+      - cobra:/var/www/cobra/tmp
 
   # service configuration for our database
   db:
@@ -33,5 +35,5 @@ services:
       - cobra-postgres:/var/lib/postgresql/data
 
 volumes:
-  cobra-logs:
+  cobra:
   cobra-postgres:
