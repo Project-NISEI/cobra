@@ -1,5 +1,5 @@
 .col-12.text-center
-  h1.mb-5 #{qr_code_url(@tournament.slug, request)}
+  h1.mb-5 #{tournament_url(@tournament.slug, request)}
   p= raw qr_code(@tournament.slug, request).as_svg(offset: 0, color: '000',
                  shape_rendering: 'crispEdges',
                  module_size: 25)
