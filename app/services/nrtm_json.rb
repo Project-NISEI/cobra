@@ -5,7 +5,7 @@ class NrtmJson
     @tournament = tournament
   end
 
-  def data
+  def data(tournament_url)
     {
       name: tournament.name,
       date: tournament.date.to_s(:db),
@@ -39,7 +39,7 @@ class NrtmJson
       uploadedFrom: "Cobra",
       links: [
         { rel: "schemaderivedfrom", href: "http://steffens.org/nrtm/nrtm-schema.json" },
-        { rel: "uploadedfrom", href: "http://cobr.ai/#{tournament.slug}" }
+        { rel: "uploadedfrom", href: tournament_url }
       ]
     }
   end

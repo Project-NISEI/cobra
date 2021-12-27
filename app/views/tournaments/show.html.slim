@@ -5,7 +5,8 @@
       b #{@tournament.slug}
     p
       ' URL:
-      = link_to "cobr.ai/#{@tournament.slug.downcase}", "http://cobr.ai/#{@tournament.slug}"
+      = link_to tournament_url(@tournament.slug, request), tournament_url(@tournament.slug, request)
+
   p Organiser: #{@tournament.user.nrdb_username}
   p
     => pluralize(@players.count, 'active player')
