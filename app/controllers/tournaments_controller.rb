@@ -76,7 +76,7 @@ class TournamentsController < ApplicationController
   def upload_to_abr
     authorize @tournament
 
-    response = AbrUpload.upload!(@tournament)
+    response = AbrUpload.upload!(@tournament, tournament_url(@tournament.slug, @request))
 
     if(response[:code])
       @tournament.update(abr_code: response[:code])

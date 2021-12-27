@@ -44,7 +44,7 @@ RSpec.describe NrtmJson do
     end
 
     it 'returns hash of data' do
-      expect(json.data.with_indifferent_access).to eq(
+      expect(json.data('https://server/SLUG').with_indifferent_access).to eq(
         JSON.parse(file_fixture('nrtm_json_swiss.json').read)
       )
     end
@@ -68,7 +68,7 @@ RSpec.describe NrtmJson do
       end
 
       it 'returns hash of data' do
-        expect(JSON.parse(json.data.to_json)).to eq(
+        expect(JSON.parse(json.data('https://server/SLUG').to_json)).to eq(
           JSON.parse(file_fixture('nrtm_json_cut.json').read)
         )
       end
