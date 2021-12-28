@@ -2,7 +2,7 @@ class OauthController < ApplicationController
   before_action :skip_authorization
 
   def auth
-    redirect_to Nrdb::Oauth.auth_uri
+    redirect_to Nrdb::Oauth.auth_uri(request.host)
   end
 
   def logout
@@ -13,7 +13,7 @@ class OauthController < ApplicationController
 
   def callback
     if callback_code
-      token_data = Nrdb::Oauth.get_access_token(callback_code)
+      token_data = Nrdb::Oauth.get_access_token(callback_code, request.host)
 
       user_data = Nrdb::Connection.new(nil, token_data[:access_token]).player_info.first
 

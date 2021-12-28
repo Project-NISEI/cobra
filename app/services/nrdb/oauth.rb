@@ -1,29 +1,29 @@
 module Nrdb
   class Oauth
-    def self.auth_uri
+    def self.auth_uri(host)
       URI("https://netrunnerdb.com/oauth/v2/auth").tap do |uri|
         uri.query = {
-          client_id: Rails.application.secrets[:nrdb][:client_id],
-          redirect_uri: "#{Rails.application.secrets[:domain]}/oauth/callback",
+          client_id: Rails.application.secrets[host][:nrdb][:client_id],
+          redirect_uri: Rails.application.secrets[host][:nrdb][:redirect_uri],
           response_type: :code
         }.to_query
       end.to_s
     end
 
-    def self.get_access_token(grant_code)
+    def self.get_access_token(grant_code, host)
       JSON.parse(
-        Faraday.get(grant_token_uri(grant_code)).body
+        Faraday.get(grant_token_uri(grant_code, host)).body
       ).with_indifferent_access
     end
 
     private
 
-    def self.grant_token_uri(code)
+    def self.grant_token_uri(code, host)
       URI("https://netrunnerdb.com/oauth/v2/token").tap do |uri|
         uri.query = {
-          client_id: Rails.application.secrets[:nrdb][:client_id],
-          client_secret: Rails.application.secrets[:nrdb][:client_secret],
-          redirect_uri: "#{Rails.application.secrets[:domain]}/oauth/callback",
+          client_id: Rails.application.secrets[host][:nrdb][:client_id],
+          client_secret: Rails.application.secrets[host][:nrdb][:client_secret],
+          redirect_uri: Rails.application.secrets[host][:nrdb][:redirect_uri],
           grant_type: :authorization_code,
           code: code
         }.to_query
