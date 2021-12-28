@@ -1,6 +1,8 @@
 RSpec.describe OauthController do
   describe '#auth' do
     it 'redirects to NRDB' do
+      expect_any_instance_of(ActionDispatch::Request).to receive(:host).at_least(1).times.and_return('localhost')
+
       get login_path
 
       expect(response).to be_redirect
@@ -16,8 +18,9 @@ RSpec.describe OauthController do
     end
 
     before do
+      expect_any_instance_of(ActionDispatch::Request).to receive(:host).at_least(1).times.and_return('localhost')
       allow(Nrdb::Oauth).to receive(:get_access_token)
-        .with('some_code')
+        .with('some_code', 'localhost')
         .and_return(token_data)
       allow(Nrdb::Connection).to receive(:new)
         .with(nil, 'ABC123')

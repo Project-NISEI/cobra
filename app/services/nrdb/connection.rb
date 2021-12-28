@@ -24,6 +24,7 @@ module Nrdb
     attr_reader :access_token
 
     def connection
+      # TODO: allow the NRDB url to be configurable for local testing.
       @connection ||= Faraday.new(url: "https://netrunnerdb.com") do |conn|
         conn.adapter :net_http
         conn.headers[:Authorization] = "Bearer #{access_token}"
