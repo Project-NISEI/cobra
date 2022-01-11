@@ -7,8 +7,13 @@ version: "3.2"
 # https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
 # is the guide we used to set that up initially.
 services:
+  db:
+    restart: unless-stopped
+
   # service configuration for our dockerized Rails app
   app:
+    restart: unless-stopped
+
     # expose the port we configured Unicorn to bind to
     expose:
       - "3000"
@@ -18,6 +23,8 @@ services:
 
   # service configuration for our web server
   web:
+    restart: unless-stopped
+
     env_file:
       - .env
     # set the build context to the root of the Rails app
@@ -45,6 +52,7 @@ services:
       - ./data/certbot/www:/var/www/certbot
 
   certbot:
+    restart: unless-stopped
     image: certbot/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
