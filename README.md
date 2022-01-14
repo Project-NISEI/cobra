@@ -4,7 +4,7 @@
 
 - Set up config files
 ```
-cp config/database.example.yml config/database.yml
+cat config/database.example.yml | sed s/localhost/db/ > config/database.yml
 cp config/secrets.example.yml config/secrets.yml
 echo "RAILS_ENV=development" > .env
 ```
