@@ -11,10 +11,15 @@
   p
     => pluralize(@players.count, 'active player')
     = "(#{@dropped.count} dropped)"
+  p
+    = link_to new_tournament_player_path(@tournament), class: 'btn btn-primary' do
+      => fa_icon 'user-plus'
+      | Register as a Player
+
 
   - if policy(@tournament).edit?
     p
-      = link_to qr_tournament_path(@tournament), class: 'btn btn-primary' do
+      = link_to qr_tournament_path(@tournament), class: 'btn btn-secondary' do
         => fa_icon 'qrcode'
         | Printable QR code
 

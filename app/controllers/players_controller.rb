@@ -18,6 +18,12 @@ class PlayersController < ApplicationController
     redirect_to tournament_players_path(@tournament)
   end
 
+  def new
+    authorize @tournament, :show?
+
+    @new_player = @tournament.players.new
+  end
+
   def update
     authorize @tournament, :update?
 
