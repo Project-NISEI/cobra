@@ -8,10 +8,10 @@ gem 'faraday'
 gem 'font-awesome-rails'
 gem 'jbuilder'
 gem 'jquery-rails'
-gem 'pg', '~> 0.18'
+gem 'pg', '~> 1.1'
 gem 'puma', '< 6'
 gem 'pundit'
-gem 'rails', '~> 5.2'
+gem 'rails', '~> 6'
 gem 'rqrcode'
 gem 'sassc-rails'
 gem 'simple_form'
@@ -24,6 +24,7 @@ gem 'unicorn'
 group :development, :test do
   gem 'pry'
   gem "brakeman", "~> 5.2"
+  gem 'rspec-rails', '~> 5'
 end
 
 group :test do
@@ -32,7 +33,6 @@ group :test do
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'launchy'
-  gem 'rspec-rails'
   gem 'vcr', '~> 3'
   gem "bundler-audit", "~> 0.9.0"
 end
