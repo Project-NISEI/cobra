@@ -1,8 +1,6 @@
   h3.mt-4 Register player
-  = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline identities_form' } do |f|
-    => f.text_field :name, placeholder: 'Name', class: 'form-control mr-2'
-    => f.text_field :corp_identity, placeholder: 'Corporation', class: 'corp_identities form-control mr-2'
-    => f.text_field :runner_identity, placeholder: 'Runner', class: 'runner_identities form-control mr-2'
+  = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline' } do |f|
+    = render 'form', f: f
     - if @tournament.manual_seed
       => f.text_field :manual_seed, placeholder: 'Seed', class: 'manual_seed form-control mr-2'
     = button_tag type: :submit, class: 'btn btn-success' do

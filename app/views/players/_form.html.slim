@@ -1,0 +1,17 @@
+.identities_form
+	.form-group
+		label.thing for="player_name" Name
+		= f.input_field :name, disabled: (not current_user),
+			placeholder: 'Enter your name',
+			class: 'form-control',
+			value: current_user ? current_user.nrdb_username : ''
+	.form-group
+		label.thing for="player_corp_identity" Corp ID
+		= f.input_field :corp_identity, disabled: (not current_user),
+			placeholder: 'Search for your corp ID',
+			class: 'form-control runner_identities'
+	.form-group
+		label.thing for="player_runner_identity" Runner ID
+		= f.input_field :runner_identity, disabled: (not current_user),
+			placeholder: 'Search for your runner ID',
+			class: 'form-control runner_identities'

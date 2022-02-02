@@ -5,10 +5,8 @@
       | Player meeting
 
   h3.mt-4 Register player
-  = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline identities_form' } do |f|
-    => f.text_field :name, placeholder: 'Name', class: 'form-control mr-2'
-    => f.text_field :corp_identity, placeholder: 'Corporation', class: 'corp_identities form-control mr-2'
-    => f.text_field :runner_identity, placeholder: 'Runner', class: 'runner_identities form-control mr-2'
+  = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline' } do |f|
+    = render 'form', f: f
     .form-check.mr-2
       => f.input_field :first_round_bye, as: :boolean, inline_label: 'First round bye?', class: 'form-check-input'
     - if @tournament.manual_seed
@@ -19,10 +17,8 @@
 
   h3.mt-4 Players
   - @players.each do |player|
-    = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mb-2 identities_form' } do |f|
-      => f.text_field :name, class: 'form-control mr-2'
-      => f.text_field :corp_identity, placeholder: 'Corporation', class: 'corp_identities form-control mr-2'
-      => f.text_field :runner_identity, placeholder: 'Runner', class: 'runner_identities form-control mr-2'
+    = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mb-2' } do |f|
+      = render 'form', f: f
       .form-check.mr-2
         => f.input_field :first_round_bye, as: :boolean, inline_label: 'First round bye?', class: 'form-check-input'
       - if @tournament.manual_seed
