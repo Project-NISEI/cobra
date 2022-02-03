@@ -1,17 +1,24 @@
+
+
 .identities_form
 	.form-group
-		label.thing for="player_name" Name
+		label.d-block for="player_name" Name
 		= f.input_field :name, disabled: (not current_user),
-			placeholder: 'Enter your name',
+			placeholder: 'Enter player name',
 			class: 'form-control',
-			value: current_user ? current_user.nrdb_username : ''
+			value: defined?(default_name) ? default_name : ''
 	.form-group
-		label.thing for="player_corp_identity" Corp ID
+		label.d-block for="player_corp_identity" Corp ID
 		= f.input_field :corp_identity, disabled: (not current_user),
-			placeholder: 'Search for your corp ID',
+			placeholder: 'Search for corp ID',
 			class: 'form-control runner_identities'
 	.form-group
-		label.thing for="player_runner_identity" Runner ID
+		label.d-block for="player_runner_identity" Runner ID
 		= f.input_field :runner_identity, disabled: (not current_user),
-			placeholder: 'Search for your runner ID',
+			placeholder: 'Search for runner ID',
 			class: 'form-control runner_identities'
+	    - if @tournament.manual_seed
+	- if defined?(show_manual_seed) and @tournament.manual_seed
+		.form-group
+			label.d-block for="player_manual_seed" Manual Seed
+			=> f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'

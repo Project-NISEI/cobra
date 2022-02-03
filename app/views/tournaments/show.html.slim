@@ -50,7 +50,7 @@
               | &nbsp;Create NRDB account
         - else
           = simple_form_for :player do |f|
-            = render 'players/form', f: f
+            = render 'players/form', f: f, default_name: current_user ? current_user.nrdb_username : ''
             .text-right
               = button_tag type: :submit, class: 'btn btn-primary', disabled: (not current_user) do
                 => fa_icon 'user-plus'
