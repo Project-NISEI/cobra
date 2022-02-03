@@ -1,6 +1,8 @@
 
 
 .identities_form
+	- if not defined?(anon_player)
+		= f.input_field :user_id, value: current_user.id, hidden: true
 	.form-group
 		label.d-block for="player_name" Name
 		= f.input_field :name, disabled: (not current_user),
@@ -11,7 +13,7 @@
 		label.d-block for="player_corp_identity" Corp ID
 		= f.input_field :corp_identity, disabled: (not current_user),
 			placeholder: 'Search for corp ID',
-			class: 'form-control runner_identities'
+			class: 'form-control corp_identities'
 	.form-group
 		label.d-block for="player_runner_identity" Runner ID
 		= f.input_field :runner_identity, disabled: (not current_user),
