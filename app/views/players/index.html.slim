@@ -4,35 +4,34 @@
       => fa_icon 'list'
       | Player meeting
 
-  h3.mt-4 Register player
-  = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline' } do |f|
-    = render 'form', f: f, anon_player: true, show_manual_seed: true
-    .form-check.mr-2
-      => f.input_field :first_round_bye, as: :boolean, inline_label: 'First round bye?', class: 'form-check-input'
-    = button_tag type: :submit, class: 'btn btn-success' do
-      => fa_icon 'plus'
-      | Create
+  .alert.alert-secondary.mt-4
+    h5.mb-3 Register New Player
+    = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline d-block' } do |f|
+      = render 'form', f: f, anon_player: true
+      .mt-2.text-right
+        = button_tag type: :submit, class: 'btn btn-success' do
+          => fa_icon 'plus'
+          | Create
 
   h3.mt-4 Players
+  ul.list-group.list-group-flush
   - @players.each do |player|
-    = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mb-2' } do |f|
-      = render 'form', f: f
-      .form-check.mr-2
-        => f.input_field :first_round_bye, as: :boolean, inline_label: 'First round bye?', class: 'form-check-input'
-      - if @tournament.manual_seed
-        => f.text_field :manual_seed, placeholder: 'Seed', class: 'manual_seed form-control mr-2'
-      = button_tag type: :submit, class: 'btn btn-primary mr-2' do
-        => fa_icon 'floppy-o'
-        | Save
-      =< link_to drop_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-warning mr-2' do
-        => fa_icon 'arrow-down'
-        | Drop
-      =< link_to tournament_player_path(@tournament, player), method: :delete, class: 'btn btn-danger mr-2' do
-        => fa_icon 'trash'
-        | Delete
+    li.list-group-item
+      = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mt-2 d-block' } do |f|
+        = render 'form', f: f
+        .text-right
+          = button_tag type: :submit, class: 'btn btn-link text-success mr-2' do
+            => fa_icon 'floppy-o'
+            | Save
+          =< link_to drop_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-warning mr-2' do
+            => fa_icon 'arrow-down'
+            | Drop
+          =< link_to tournament_player_path(@tournament, player), method: :delete, class: 'btn btn-link text-danger mr-2' do
+            => fa_icon 'trash'
+            | Delete
 
   - if @dropped.any?
-    h3.mt-4 Dropped
+    h3.mt-4 Dropped Players
     - @dropped.each do |player|
       p
         | #{player.name} (#{player.corp_identity}, #{player.runner_identity})
