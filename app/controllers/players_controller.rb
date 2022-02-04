@@ -11,7 +11,7 @@ class PlayersController < ApplicationController
 
   def create
     if @tournament.self_registration?
-      skip_authorization
+      authorize @tournament, :show?
     else
       authorize @tournament, :update?
     end
