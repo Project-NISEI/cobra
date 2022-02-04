@@ -6,11 +6,9 @@
 
   h3.mt-4 Register player
   = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline' } do |f|
-    = render 'form', f: f
+    = render 'form', f: f, anon_player: true, show_manual_seed: true
     .form-check.mr-2
       => f.input_field :first_round_bye, as: :boolean, inline_label: 'First round bye?', class: 'form-check-input'
-    - if @tournament.manual_seed
-      => f.text_field :manual_seed, placeholder: 'Seed', class: 'manual_seed form-control mr-2'
     = button_tag type: :submit, class: 'btn btn-success' do
       => fa_icon 'plus'
       | Create

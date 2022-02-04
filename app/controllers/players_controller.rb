@@ -10,18 +10,20 @@ class PlayersController < ApplicationController
   end
 
   def create
-    authorize @tournament, :update?
+    if @tournament.self_registration?
+      skip_authorization
+    else
+      authorize @tournament, :update?
+    end
 
     player = @tournament.players.create(player_params)
     @tournament.current_stage.players << player
 
-    redirect_to tournament_players_path(@tournament)
-  end
-
-  def new
-    authorize @tournament, :show?
-
-    @new_player = @tournament.players.new
+    if player.user_id
+      redirect_to tournament_path(@tournament)
+    else
+      redirect_to tournament_players_path(@tournament)
+    end
   end
 
   def update
@@ -68,7 +70,7 @@ class PlayersController < ApplicationController
 
   def player_params
     params.require(:player)
-      .permit(:name, :corp_identity, :runner_identity, :first_round_bye, :manual_seed)
+      .permit(:name, :corp_identity, :runner_identity, :first_round_bye, :manual_seed, :user_id)
   end
 
   def set_player

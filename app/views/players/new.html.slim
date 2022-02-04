@@ -1,6 +1,0 @@
-  h3.mt-4 Register player
-  = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline' } do |f|
-    = render 'form', f: f, show_manual_seed: true
-    = button_tag type: :submit, class: 'btn btn-success' do
-      => fa_icon 'plus'
-      | Create
