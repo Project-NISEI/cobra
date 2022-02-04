@@ -23,11 +23,7 @@
             .col-sm-6
               = link_to qr_tournament_path(@tournament), :target => '_blank' do
                 => fa_icon 'qrcode'
-                | View QR Code
-            .col-sm-6
-              = link_to qr_tournament_path(@tournament), :target => '_blank' do
-                => fa_icon 'print'
-                | Print QR Code
+                | Open Printable QR Code
 
 .col-md-6
   - if @current_user_player
