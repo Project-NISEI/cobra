@@ -4,55 +4,72 @@
 #
 # This workflow will install a prebuilt Ruby version, install dependencies, and
 # run tests and linters.
-name: "Ruby on Rails CI"
+name: "CI"
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [main]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [main]
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:11-alpine
         ports:
           - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
         env:
           POSTGRES_DB: rails_test
           POSTGRES_USER: rails
           POSTGRES_PASSWORD: password
     env:
+      POSTGRES_DB: rails_test
+      POSTGRES_USER: rails
+      POSTGRES_PASSWORD: password
       RAILS_ENV: test
       DATABASE_URL: "postgres://rails:password@localhost:5432/rails_test"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      # Add or replace dependency steps here
+
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1.97.0
         with:
           bundler-cache: true
-      # Add or replace database setup steps here
+
+      - name: Set up Rails
+        run: |
+          cp config/secrets.example.yml config/secrets.yml
+          cp config/database.ci.yml config/database.yml
+
       - name: Set up database schema
-        run: bin/rails db:schema:load
-      # Add or replace test runners here
+        run: |
+          bin/rails db:create db:schema:load --trace
+
       - name: Run tests
         run: bundle exec rspec
 
-  # lint:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Install Ruby and gems
-  #       uses: ruby/setup-ruby@v1.97.0
-  #       with:
-  #         bundler-cache: true
-  #     # Add or replace any other lints here
-  #     - name: Security audit dependencies
-  #       run: bin/bundler-audit --update
-  #     - name: Security audit application code
-  #       run: bin/brakeman -q -w2
-  #     - name: Lint Ruby files
-  #       run: bin/rubocop --parallel
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1.97.0
+        with:
+          bundler-cache: true
+      - name: Security audit dependencies
+        run: bundle exec bundler-audit --update
+      - name: Security audit application code
+        run: bundle exec brakeman -q -w2
+      # - name: Lint Ruby files
+      #   run: bin/rubocop --parallel

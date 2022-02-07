@@ -9,7 +9,7 @@ gem 'font-awesome-rails'
 gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 0.18'
-gem 'puma', '~> 3.0'
+gem 'puma', '< 6'
 gem 'pundit'
 gem 'rails', '~> 5.2'
 gem 'rqrcode'
@@ -23,6 +23,7 @@ gem 'unicorn'
 
 group :development, :test do
   gem 'pry'
+  gem "brakeman", "~> 5.2"
 end
 
 group :test do
@@ -33,6 +34,7 @@ group :test do
   gem 'launchy'
   gem 'rspec-rails'
   gem 'vcr', '~> 3'
+  gem "bundler-audit", "~> 0.9.0"
 end
 
 group :development do
