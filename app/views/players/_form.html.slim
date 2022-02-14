@@ -1,5 +1,3 @@
-
-
 .identities_form.d-block
 	- if not defined?(anon_player)
 		= f.input_field :user_id, value: current_user.id, hidden: true
