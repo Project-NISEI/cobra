@@ -25,6 +25,12 @@ class TournamentsController < ApplicationController
       format.html do
         @players = @tournament.players.active.sort_by { |p| p.name || '' }
         @dropped = @tournament.players.dropped.sort_by { |p| p.name || '' }
+
+        if current_user
+          @current_user_is_running_tournament = @tournament.user_id == current_user.id
+          @current_user_player = @players.find { |p| p.user_id == current_user.id }
+          @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
+        end
       end
       format.json do
         headers['Access-Control-Allow-Origin'] = '*'
@@ -135,6 +141,6 @@ class TournamentsController < ApplicationController
   end
 
   def tournament_params
-    params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed)
+    params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed, :self_registration)
   end
 end

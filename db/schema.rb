@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_13_035935) do
+ActiveRecord::Schema.define(version: 2022_02_03_180512) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,7 +53,9 @@ ActiveRecord::Schema.define(version: 2021_10_13_035935) do
     t.boolean "first_round_bye", default: false
     t.integer "previous_id"
     t.integer "manual_seed"
+    t.bigint "user_id"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
+    t.index ["user_id"], name: "index_players_on_user_id"
   end
 
   create_table "registrations", id: :serial, force: :cascade do |t|
@@ -111,6 +113,7 @@ ActiveRecord::Schema.define(version: 2021_10_13_035935) do
     t.string "stream_url"
     t.boolean "manual_seed"
     t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.boolean "self_registration"
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 
@@ -128,6 +131,7 @@ ActiveRecord::Schema.define(version: 2021_10_13_035935) do
   add_foreign_key "pairings", "players", column: "player2_id"
   add_foreign_key "pairings", "rounds"
   add_foreign_key "players", "tournaments"
+  add_foreign_key "players", "users"
   add_foreign_key "registrations", "players"
   add_foreign_key "registrations", "stages"
   add_foreign_key "rounds", "stages"

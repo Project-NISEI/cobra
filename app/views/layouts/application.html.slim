@@ -15,23 +15,29 @@ html
           span.navbar-toggler-icon
         #navbarNav.collapse.navbar-collapse
           ul.navbar-nav.ml-auto
+            li.nav-item= link_to help_path, class: 'nav-link text-light' do
+              => fa_icon 'life-ring'
+              | How to
             - if user_signed_in?
-              li.nav-item= link_to new_tournament_path, class: 'nav-link' do
-                => fa_icon 'plus'
-                | Create tournament
-              li.nav-item= link_to my_tournaments_path, class: 'nav-link' do
-                => fa_icon 'trophy'
-                | My tournaments
-              li.nav-item= link_to logout_path, class: 'nav-link' do
-                => fa_icon 'sign-out'
-                | Sign out
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle.text-light href="#" id="signedInDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  => fa_icon 'user'
+                  = current_user.nrdb_username
+                div.dropdown-menu.dropdown-menu-right aria-labelledby="signedInDropdown"
+                  = link_to new_tournament_path, class: 'dropdown-item' do
+                    => fa_icon 'plus'
+                    | Create tournament
+                  = link_to my_tournaments_path, class: 'dropdown-item' do
+                    => fa_icon 'trophy'
+                    | My tournaments
+                  div.dropdown-divider
+                  = link_to logout_path, class: 'dropdown-item' do
+                    => fa_icon 'sign-out'
+                    | Sign out
             - else
               li.nav-item= link_to login_path, class: 'nav-link' do
                 => fa_icon 'sign-in'
-                | Sign in as TO
-            li.nav-item= link_to help_path, class: 'nav-link' do
-              => fa_icon 'life-ring'
-              | How to
+                | Sign in
     .container
       - if @tournament
         .row.dontprint
@@ -74,6 +80,6 @@ html
           .col-4.nav-item
             => link_to 'Support NISEI on Patreon', 'https://www.patreon.com/join/NISEI'
           .col-4.nav-item.text-center
-           | 🐍 Maintained by NISEI. Created by Johno. 🐍 
+           | 🐍 Maintained by NISEI. Created by Johno. 🐍
           .col-4.nav-item.text-right
             = link_to "v#{Rails.configuration.version}", 'https://github.com/project-nisei/cobra/releases', class: 'text-muted'
