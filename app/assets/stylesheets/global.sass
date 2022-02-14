@@ -22,8 +22,22 @@ a
     text-decoration: none
 
 nav.navbar, .footer
+  $color__dark-bg: rgb(37, 42, 58)
+  background: $color__dark-bg
+  color: #f8f9fa
+
+  .dropdown-menu
+    background: lighten($color__dark-bg, 20%)
+
   .navbar-brand
     color: #ffc94c
+
+  .nav-item
+    a, .nav-link
+      color: #fff
+
+      &:hover
+        background: rgb(55, 60, 90)
 
 .massive
   font-size: 120px
