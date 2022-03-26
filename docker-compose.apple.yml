@@ -1,8 +1,6 @@
 version: "3.2"
 
 # Add platform overrides to allow these images to run natively on Apple silicon.
-# To use this, replace docker-compose command with
-# docker-compose -f docker-compose.yml -f docker-compose.apple.yml 
 services:
   # service configuration for our dockerized Rails app
   app:

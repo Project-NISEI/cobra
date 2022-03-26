@@ -12,6 +12,9 @@ echo "RAILS_ENV=development" >> .env
 
 Then initialize everything and bring up the server.
 
+Note: If you are running on Apple silicon, replace `docker-compose` below with
+`docker-compose -f docker-compose.yml -f docker-compose.apple.yml`
+
 ```
 docker-compose up -d db
 # wait for the db to be ready. (docker-compose logs db) will end with "database system is ready to accept connections"
