@@ -1,20 +1,21 @@
-.row.dontprint.d-flex.justify-content-between
-	h1= @tournament.name
-	.d-flex
-		.tournament-header-block
-			.small.text-secondary Shortcode:
-			= link_to tournament_url(@tournament.slug, request) do
-					| #{@tournament.slug}
-		- if policy(@tournament).edit?
+.row.dontprint
+	.col-12.d-flex.justify-content-between
+		h1= @tournament.name
+		.d-flex
 			.tournament-header-block
-				.small.text-secondary QR Code:
-				= link_to qr_tournament_path(@tournament), :target => '_blank', class: 'tournament-header-icon' do
-					=> fa_icon 'qrcode'
-		- if @tournament.stream_url.present?
-			.tournament-header-block
-				.small.text-secondary Stream URL:
-				= link_to @tournament.stream_url, class: 'tournament-header-icon', target: '_blank' do
-					=> fa_icon 'video-camera'
+				.small.text-secondary Shortcode:
+				= link_to tournament_url(@tournament.slug, request) do
+						| #{@tournament.slug}
+			- if policy(@tournament).edit?
+				.tournament-header-block
+					.small.text-secondary QR Code:
+					= link_to qr_tournament_path(@tournament), :target => '_blank', class: 'tournament-header-icon' do
+						=> fa_icon 'qrcode'
+			- if @tournament.stream_url.present?
+				.tournament-header-block
+					.small.text-secondary Stream URL:
+					= link_to @tournament.stream_url, class: 'tournament-header-icon', target: '_blank' do
+						=> fa_icon 'video-camera'
 ul.nav.nav-tabs.dontprint
 	- if policy(@tournament).show?
 		li.nav-item= link_to tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name == 'show'}" do
