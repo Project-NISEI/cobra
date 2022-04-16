@@ -57,6 +57,37 @@
               span.icon.icon-link
               | &nbsp;Create NRDB account
 
+.col-md-6
+	.card
+		.card-header
+			h5.card-title.mb-0 My Games
+		ul.list-group.list-group-flush
+			- @current_user_pairings.each do |p|
+				li.list-group-item
+					.row
+						.col-9
+							| Game #{p.round.number} vs.
+							- if p.player1.id == @current_user_player.id
+								b<> #{p.player1.name}
+							- else
+								b<> #{p.player2.name}
+						.col-3.text-right
+							.text-secondary Table #{p.table_number}
+						.col-12.pt-2
+							- if p.score1 && p.score2
+								div
+									| #{p.score1} - #{p.score2}
+							- else
+								.input-group
+									select.custom-select
+										option How did you do?
+										option They won (0 - 6)
+										option I won (6 - 0)
+										option Corp Split (3 - 3)
+										option Runner Split (3 - 3)
+									.input-group-append
+										button.btn.btn-outline-primary
+											| Report Score
 
 - if @tournament.rounds.any? || policy(@tournament).edit?
 	.col-12.mt-5

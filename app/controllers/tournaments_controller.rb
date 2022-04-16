@@ -30,6 +30,10 @@ class TournamentsController < ApplicationController
           @current_user_is_running_tournament = @tournament.user_id == current_user.id
           @current_user_player = @players.find { |p| p.user_id == current_user.id }
           @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
+
+          @current_user_pairings = Pairing
+            .where(player1_id: @current_user_player.id)
+            .or(Pairing.where(player2_id: @current_user_player.id))
         end
       end
       format.json do
