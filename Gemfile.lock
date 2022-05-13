@@ -278,7 +278,8 @@ GEM
       nokogiri (~> 1.8)
 
 PLATFORMS
-  ruby
+  aarch64-linux
+  x86_64-linux
 
 DEPENDENCIES
   bootstrap (~> 4.3)
