@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_03_180512) do
+ActiveRecord::Schema.define(version: 2022_04_17_165222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,8 +38,12 @@ ActiveRecord::Schema.define(version: 2022_02_03_180512) do
     t.integer "score2_runner"
     t.datetime "created_at", default: -> { "now()" }, null: false
     t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.bigint "reporter_id"
+    t.bigint "confirmer_id"
+    t.index ["confirmer_id"], name: "index_pairings_on_confirmer_id"
     t.index ["player1_id"], name: "index_pairings_on_player1_id"
     t.index ["player2_id"], name: "index_pairings_on_player2_id"
+    t.index ["reporter_id"], name: "index_pairings_on_reporter_id"
     t.index ["round_id"], name: "index_pairings_on_round_id"
   end
 
@@ -127,8 +131,10 @@ ActiveRecord::Schema.define(version: 2022_02_03_180512) do
     t.index ["nrdb_id"], name: "index_users_on_nrdb_id"
   end
 
+  add_foreign_key "pairings", "players", column: "confirmer_id"
   add_foreign_key "pairings", "players", column: "player1_id"
   add_foreign_key "pairings", "players", column: "player2_id"
+  add_foreign_key "pairings", "players", column: "reporter_id"
   add_foreign_key "pairings", "rounds"
   add_foreign_key "players", "tournaments"
   add_foreign_key "players", "users"

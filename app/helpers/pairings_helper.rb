@@ -47,10 +47,26 @@ module PairingsHelper
 
   def presets(pairing)
     return [
-      { score1_corp: 3, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '6-0' },
-      { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '3-3 (C)' },
-      { score1_corp: 0, score2_runner: 3, score1_runner: 3, score2_corp: 0, label: '3-3 (R)' },
-      { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 3, label: '0-6' }
+      {
+        score1_corp: 3, score2_runner: 0,
+        score1_runner: 3, score2_corp: 0,
+        label: '6-0', labelLong: 'I won (6-0)'
+      },
+      {
+        score1_corp: 3, score2_runner: 0,
+        score1_runner: 0, score2_corp: 3,
+        label: '3-3 (C)', labelLong: 'Corp split (3-3)'
+      },
+      {
+        score1_corp: 0, score2_runner: 3,
+        score1_runner: 3, score2_corp: 0,
+        label: '3-3 (R)', labelLong: 'Runner split (3-3)'
+      },
+      {
+        score1_corp: 0, score2_runner: 3,
+        score1_runner: 0, score2_corp: 3,
+        label: '0-6', labelLong: 'They won (0-6)'
+      }
     ] unless pairing.stage.single_sided?
 
     return [
