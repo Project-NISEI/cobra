@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
-  include Pundit
+  include Pundit::Authorization
   after_action :verify_authorized
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorised
   rescue_from ActiveRecord::RecordNotFound, with: :error
