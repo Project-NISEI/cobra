@@ -1,14 +1,20 @@
 RSpec.describe 'creating a player' do
   let(:tournament) { create(:tournament) }
+  def fill_in_player_form
+    visit tournament_players_path(tournament)
+    fill_in :player_name, with: 'Jack'
+    fill_in :player_corp_identity, with: 'Haas-Bioroid: Engineering the Future'
+    fill_in :player_runner_identity, with: 'Noise'
+    check :player_first_round_bye
+  end
 
-  context 'signed in' do
+  before do
+    sign_in tournament.user
+  end
+
+  context 'new player form filled in' do
     before do
-      sign_in tournament.user
-      visit tournament_players_path(tournament)
-      fill_in :player_name, with: 'Jack'
-      fill_in :player_corp_identity, with: 'Haas-Bioroid: Engineering the Future'
-      fill_in :player_runner_identity, with: 'Noise'
-      check :player_first_round_bye
+      fill_in_player_form
     end
 
     context 'with manual_seed tournament' do
@@ -58,5 +64,18 @@ RSpec.describe 'creating a player' do
         click_button 'Create'
       end.to change(Registration, :count).by(1)
     end
+  end
+
+  it 'creates player when tournament has no stages' do
+    delete_tournament_stage
+    fill_in_player_form
+    expect do
+      click_button 'Create'
+    end.to change(Player, :count).by(1)
+  end
+
+  def delete_tournament_stage
+    visit tournament_rounds_path(Tournament.last)
+    click_on class: ['btn-danger']
   end
 end
