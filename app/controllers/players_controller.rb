@@ -17,7 +17,9 @@ class PlayersController < ApplicationController
     end
 
     player = @tournament.players.create(player_params)
-    @tournament.current_stage.players << player
+    unless @tournament.current_stage.nil?
+      @tournament.current_stage.players << player
+    end
 
     if player.user_id
       redirect_to tournament_path(@tournament)
