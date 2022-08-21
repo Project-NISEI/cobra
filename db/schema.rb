@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_08_203619) do
-
+ActiveRecord::Schema[7.0].define(version: 2022_08_08_203619) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,7 +19,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_203619) do
     t.string "record_type", null: false
     t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
@@ -32,8 +31,8 @@ ActiveRecord::Schema.define(version: 2022_08_08_203619) do
     t.text "metadata"
     t.string "service_name", null: false
     t.bigint "byte_size", null: false
-    t.string "checksum", null: false
-    t.datetime "created_at", null: false
+    t.string "checksum"
+    t.datetime "created_at", precision: nil, null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -102,8 +101,8 @@ ActiveRecord::Schema.define(version: 2022_08_08_203619) do
     t.boolean "completed", default: false
     t.decimal "weight", default: "1.0"
     t.integer "stage_id"
-    t.datetime "created_at", default: -> { "now()" }, null: false
-    t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.datetime "created_at", precision: nil, default: -> { "now()" }, null: false
+    t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
     t.index ["stage_id"], name: "index_rounds_on_stage_id"
     t.index ["tournament_id"], name: "index_rounds_on_tournament_id"
   end
@@ -112,8 +111,8 @@ ActiveRecord::Schema.define(version: 2022_08_08_203619) do
     t.integer "tournament_id"
     t.integer "number", default: 1
     t.integer "format", default: 0, null: false
-    t.datetime "created_at", default: -> { "now()" }, null: false
-    t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.datetime "created_at", precision: nil, default: -> { "now()" }, null: false
+    t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
     t.index ["tournament_id"], name: "index_stages_on_tournament_id"
   end
 
@@ -132,7 +131,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_203619) do
 
   create_table "tournaments", id: :serial, force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
+    t.datetime "created_at", precision: nil
     t.string "abr_code"
     t.integer "stage", default: 0
     t.integer "previous_id"
@@ -142,14 +141,14 @@ ActiveRecord::Schema.define(version: 2022_08_08_203619) do
     t.boolean "private", default: false
     t.string "stream_url"
     t.boolean "manual_seed"
-    t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
     t.boolean "self_registration"
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "nrdb_id"
     t.string "nrdb_username"
     t.string "nrdb_access_token"
