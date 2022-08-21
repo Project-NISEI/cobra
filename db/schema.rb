@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_13_134425) do
+ActiveRecord::Schema.define(version: 2022_08_08_203619) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -66,6 +66,8 @@ ActiveRecord::Schema.define(version: 2022_05_13_134425) do
     t.integer "score2_runner"
     t.datetime "created_at", default: -> { "now()" }, null: false
     t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.boolean "intentional_draw"
+    t.boolean "two_for_one"
     t.index ["player1_id"], name: "index_pairings_on_player1_id"
     t.index ["player2_id"], name: "index_pairings_on_player2_id"
     t.index ["round_id"], name: "index_pairings_on_round_id"
