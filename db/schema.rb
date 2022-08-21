@@ -63,8 +63,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_08_203619) do
     t.integer "score1_corp"
     t.integer "score2_corp"
     t.integer "score2_runner"
-    t.datetime "created_at", default: -> { "now()" }, null: false
-    t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.datetime "created_at", precision: nil, default: -> { "now()" }, null: false
+    t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
     t.boolean "intentional_draw"
     t.boolean "two_for_one"
     t.index ["player1_id"], name: "index_pairings_on_player1_id"
