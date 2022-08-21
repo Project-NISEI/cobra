@@ -56,7 +56,7 @@
         "table": 1,
         "player1": { "id": 1001, "runnerScore": 3, "corpScore": 3, "combinedScore": 6 },
         "player2": { "id": 1002, "runnerScore": 0, "corpScore": 0, "combinedScore": 0 },
-        "intentionalDraw": false,
+        "intentionalDraw": true,
         "twoForOne": false,
         "eliminationGame": false
       },
@@ -65,7 +65,7 @@
         "player1": { "id": 1003, "runnerScore": 2, "corpScore": 3, "combinedScore": 5 },
         "player2": { "id": 1004, "runnerScore": 0, "corpScore": 1, "combinedScore": 1 },
         "intentionalDraw": false,
-        "twoForOne": false,
+        "twoForOne": true,
         "eliminationGame": false
       },
       {
