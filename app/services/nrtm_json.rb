@@ -67,8 +67,8 @@ class NrtmJson
             corpScore: pairing.score2_corp,
             combinedScore: pairing.score2
           },
-          intentionalDraw: pairing.intentional_draw ? true : false,
-          twoForOne: pairing.two_for_one ? true : false,
+          intentionalDraw: pairing.intentional_draw.present?,
+          twoForOne: pairing.two_for_one.present?,
           eliminationGame: false
         }
       end
@@ -96,8 +96,8 @@ class NrtmJson
             role: pairing.player2_side,
             winner: (pairing.score2 > pairing.score1 if pairing.score1 && pairing.score2)
           },
-          intentionalDraw: pairing.intentional_draw ? true : false,
-          twoForOne: pairing.two_for_one ? true : false,
+          intentionalDraw: pairing.intentional_draw.present?,
+          twoForOne: pairing.two_for_one.present?,
           eliminationGame: true
         }
       end

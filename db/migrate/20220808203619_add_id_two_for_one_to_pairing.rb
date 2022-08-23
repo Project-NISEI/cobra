@@ -1,6 +1,6 @@
 class AddIdTwoForOneToPairing < ActiveRecord::Migration[6.1]
   def change
-    add_column :pairings, :intentional_draw, :boolean
-    add_column :pairings, :two_for_one, :boolean
+    add_column :pairings, :intentional_draw, :boolean, default: false, null: false
+    add_column :pairings, :two_for_one, :boolean, default: false, null: false
   end
 end
