@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_20_025715) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_26_214640) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -93,6 +93,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_20_025715) do
     t.index ["stage_id"], name: "index_registrations_on_stage_id"
   end
 
+  create_table "round_timer_activations", force: :cascade do |t|
+    t.bigint "tournament_id", null: false
+    t.bigint "round_id", null: false
+    t.datetime "start_time", default: -> { "now()" }, null: false
+    t.datetime "stop_time"
+    t.index ["round_id"], name: "index_round_timer_activations_on_round_id"
+    t.index ["tournament_id"], name: "index_round_timer_activations_on_tournament_id"
+  end
+
   create_table "rounds", id: :serial, force: :cascade do |t|
     t.integer "tournament_id"
     t.integer "number"
@@ -101,6 +110,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_20_025715) do
     t.integer "stage_id"
     t.datetime "created_at", precision: nil, default: -> { "now()" }, null: false
     t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
+    t.integer "length_minutes"
     t.index ["stage_id"], name: "index_rounds_on_stage_id"
     t.index ["tournament_id"], name: "index_rounds_on_tournament_id"
   end
@@ -163,6 +173,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_20_025715) do
   add_foreign_key "players", "users"
   add_foreign_key "registrations", "players"
   add_foreign_key "registrations", "stages"
+  add_foreign_key "round_timer_activations", "rounds"
+  add_foreign_key "round_timer_activations", "tournaments"
   add_foreign_key "rounds", "stages"
   add_foreign_key "rounds", "tournaments"
   add_foreign_key "stages", "tournaments"
