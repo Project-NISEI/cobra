@@ -4,10 +4,10 @@ RSpec.describe 'round timer' do
 
   before do
     sign_in round.tournament.user
-    visit tournament_round_path(round.tournament, round)
+    visit tournament_rounds_path(round.tournament)
   end
 
   it 'starts the round timer' do
-    # TODO
+    click_link 'Start round timer'
   end
 end

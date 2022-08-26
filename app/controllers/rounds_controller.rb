@@ -1,6 +1,6 @@
 class RoundsController < ApplicationController
   before_action :set_tournament
-  before_action :set_round, only: [:show, :edit, :update, :destroy, :repair, :complete]
+  before_action :set_round, only: [:show, :edit, :update, :destroy, :repair, :complete, :start_timer]
 
   def index
     authorize @tournament, :show?
@@ -52,6 +52,12 @@ class RoundsController < ApplicationController
     authorize @tournament, :update?
 
     @round.update!(completed: params[:completed])
+
+    redirect_to tournament_rounds_path(@tournament)
+  end
+
+  def start_timer
+    authorize @tournament, :update?
 
     redirect_to tournament_rounds_path(@tournament)
   end

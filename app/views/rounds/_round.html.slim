@@ -16,6 +16,10 @@
               => fa_icon 'pencil'
               | Edit
             - unless round.completed?
+              =< link_to start_timer_tournament_round_path(round.tournament, round), method: :patch, class: 'btn btn-warning' do
+                => fa_icon 'clock-o'
+                | Start round timer
+            - unless round.completed?
               =< link_to complete_tournament_round_path(round.tournament, round, completed: true), method: :patch, class: 'btn btn-warning' do
                 => fa_icon 'check'
                 | Complete
