@@ -8,6 +8,7 @@ RSpec.describe 'round timer' do
   end
 
   it 'starts the round timer' do
-    click_link 'Start round timer'
+    click_on 'Start round timer'
+    expect(page).to have_content('Remaining in round 1')
   end
 end
