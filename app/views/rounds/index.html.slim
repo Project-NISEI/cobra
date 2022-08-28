@@ -20,6 +20,12 @@
       p
       .reported_hidden_message.alert.alert-info Reported scores are currently hidden on this page. This will not affect other users viewing this page.
       p
+      - unless @tournament.rounds.last.completed?
+        =< link_to start_timer_tournament_round_path(@tournament, @tournament.rounds.last), method: :patch, \
+            class: 'btn btn-success mr-2' do
+          => fa_icon 'clock-o'
+          | Start round timer
+      p
 
     = render @tournament.stages
 
