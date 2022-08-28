@@ -26,14 +26,13 @@
             => fa_icon 'list-ul'
             | Pairings by name
           - if policy(round.tournament).edit?
-            form.my-2
+            = form_tag start_timer_tournament_round_path(round.tournament, round), method: :patch, class: 'my-2' do
               .form-row
-                label.col-form-label for='round_length' Length (minutes)
+                = label_tag :length_minutes, 'Length (minutes)', class: 'col-form-label'
                 .col-sm-1
-                  input#round_length.form-control type='text' value='#{round.length_minutes}'
+                  = text_field_tag :length_minutes, round.length_minutes, class: 'form-control'
                 .col-auto
-                  =< link_to start_timer_tournament_round_path(round.tournament, round), method: :patch, \
-                                  class: 'btn btn-success' do
+                  button.btn.btn-success type='submit'
                     => fa_icon 'clock-o'
                     | Start round timer
           = render 'pairings', round: round
