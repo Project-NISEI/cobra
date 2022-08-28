@@ -110,7 +110,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_26_214640) do
     t.integer "stage_id"
     t.datetime "created_at", precision: nil, default: -> { "now()" }, null: false
     t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
-    t.integer "length_minutes"
+    t.integer "length_minutes", default: 65
     t.index ["stage_id"], name: "index_rounds_on_stage_id"
     t.index ["tournament_id"], name: "index_rounds_on_tournament_id"
   end
