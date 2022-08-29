@@ -12,6 +12,10 @@ RSpec.describe 'round timer' do
       click_on 'Start round timer'
       expect(page).to have_content('Remaining in round 1')
     end
+
+    it 'does not show the round timer if not started' do
+      expect(page).to_not have_content('Remaining in round 1')
+    end
   end
 
   it 'has a default round length' do

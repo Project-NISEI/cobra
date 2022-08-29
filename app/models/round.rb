@@ -2,6 +2,7 @@ class Round < ApplicationRecord
   belongs_to :stage, touch: true
   has_one :tournament, through: :stage
   has_many :pairings, -> { order(:table_number) }, dependent: :destroy
+  has_many :round_timer_activations, dependent: :destroy
 
   default_scope { order(number: :asc) }
   scope :complete, -> { where(completed: true) }
@@ -30,5 +31,9 @@ class Round < ApplicationRecord
       .in_groups_of((pairings.count/4.0).ceil)
       .transpose
       .flatten
+  end
+
+  def start_timer!
+    round_timer_activations.create!
   end
 end

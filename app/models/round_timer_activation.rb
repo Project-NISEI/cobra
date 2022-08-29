@@ -1,4 +1,4 @@
 class RoundTimerActivation < ApplicationRecord
-  belongs_to :tournament
-  belongs_to :round
+  belongs_to :round, touch: true
+  has_one :tournament, through: :round
 end

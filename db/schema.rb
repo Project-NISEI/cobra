@@ -94,8 +94,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_26_214640) do
   end
 
   create_table "round_timer_activations", force: :cascade do |t|
-    t.bigint "tournament_id", null: false
-    t.bigint "round_id", null: false
+    t.bigint "tournament_id"
+    t.bigint "round_id"
     t.datetime "start_time", default: -> { "now()" }, null: false
     t.datetime "stop_time"
     t.index ["round_id"], name: "index_round_timer_activations_on_round_id"
