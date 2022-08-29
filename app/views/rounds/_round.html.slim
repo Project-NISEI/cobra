@@ -25,14 +25,5 @@
           =< link_to tournament_round_pairings_path(round.tournament, round), class: 'btn btn-primary' do
             => fa_icon 'list-ul'
             | Pairings by name
-          - if policy(round.tournament).edit?
-            = form_tag start_timer_tournament_round_path(round.tournament, round), method: :patch, class: 'my-2' do
-              .form-row
-                = label_tag :length_minutes, 'Length (minutes)', class: 'col-form-label'
-                .col-sm-1
-                  = text_field_tag :length_minutes, round.length_minutes, class: 'form-control'
-                .col-auto
-                  button.btn.btn-success type='submit'
-                    => fa_icon 'clock-o'
-                    | Start round timer
+          = render 'round_timer_form', round: round
           = render 'pairings', round: round

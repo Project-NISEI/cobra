@@ -1,6 +1,6 @@
 class RoundsController < ApplicationController
   before_action :set_tournament
-  before_action :set_round, only: [:show, :edit, :update, :destroy, :repair, :complete, :start_timer]
+  before_action :set_round, only: [:show, :edit, :update, :destroy, :repair, :complete, :update_timer]
 
   def index
     authorize @tournament, :show?
@@ -56,11 +56,15 @@ class RoundsController < ApplicationController
     redirect_to tournament_rounds_path(@tournament)
   end
 
-  def start_timer
+  def update_timer
     authorize @tournament, :update?
 
     @round.update!(length_minutes: params[:length_minutes])
-    @round.timer.start!
+    if params[:operation] == "start"
+      @round.timer.start!
+    elsif params[:operation] == "reset"
+      @round.timer.reset!
+    end
 
     redirect_to tournament_rounds_path(@tournament)
   end

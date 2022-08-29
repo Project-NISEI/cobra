@@ -16,6 +16,10 @@ class RoundTimer
     round_timer_activations.last.update(stop_time: Time.current)
   end
 
+  def reset!
+    round_timer_activations.destroy_all
+  end
+
   def show?
     round_timer_activations.count > 0 && !completed?
   end
