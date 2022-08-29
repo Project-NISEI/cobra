@@ -33,7 +33,7 @@ class Round < ApplicationRecord
       .flatten
   end
 
-  def start_timer!
-    round_timer_activations.create!
+  def timer
+    RoundTimer.new(self)
   end
 end

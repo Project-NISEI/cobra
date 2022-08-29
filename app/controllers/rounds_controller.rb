@@ -60,7 +60,7 @@ class RoundsController < ApplicationController
     authorize @tournament, :update?
 
     @round.update!(length_minutes: params[:length_minutes])
-    @round.start_timer!
+    @round.timer.start!
 
     redirect_to tournament_rounds_path(@tournament)
   end

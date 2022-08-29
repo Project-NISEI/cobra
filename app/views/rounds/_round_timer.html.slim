@@ -1,4 +1,4 @@
-- unless round.round_timer_activations.count < 1 || round.completed?
+- if round.timer.show?
   .alert.alert-primary
     => fa_icon 'clock-o'
     | Remaining in round #{round.number}:&nbsp;
