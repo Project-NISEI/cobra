@@ -1,6 +1,9 @@
 - if round.timer.show?
   .alert.alert-primary
     => fa_icon 'clock-o'
-    | Remaining in round #{round.number}:&nbsp;
+    - if round.timer.paused?
+      | Round #{round.number} paused, remaining:&nbsp;
+    - else
+      | Remaining in round #{round.number}:&nbsp;
     span#round_time_remaining
       | 0.00s

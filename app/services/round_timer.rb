@@ -24,6 +24,11 @@ class RoundTimer
     round_timer_activations.count > 0 && !completed?
   end
 
+  def paused?
+    last = round_timer_activations.last
+    !last.nil? && !last.stop_time.nil? && last.stop_time < expected_end
+  end
+
   def finish_time
     last = round_timer_activations.last
     if !last.nil? && (last.stop_time.nil? || last.stop_time >= expected_end)

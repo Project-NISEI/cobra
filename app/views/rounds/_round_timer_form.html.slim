@@ -6,9 +6,14 @@
       .col-sm-1
         = text_field_tag :length_minutes, round.length_minutes, class: 'form-control'
       .col-auto
-        button.btn.btn-success type='submit' name='operation' value='start'
-          => fa_icon 'clock-o'
-          | Start
+        - if round.timer.running?
+          button.btn.btn-danger type='submit' name='operation' value='stop'
+            => fa_icon 'clock-o'
+            | Pause
+        - else
+          button.btn.btn-success type='submit' name='operation' value='start'
+            => fa_icon 'clock-o'
+            | Start
         button.btn.btn-info.ml-1 type='submit' name='operation' value='reset'
           => fa_icon 'undo'
           | Reset

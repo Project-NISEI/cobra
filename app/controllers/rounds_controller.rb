@@ -60,9 +60,13 @@ class RoundsController < ApplicationController
     authorize @tournament, :update?
 
     @round.update!(length_minutes: params[:length_minutes])
-    if params[:operation] == "start"
+
+    operation = params[:operation]
+    if operation == "start"
       @round.timer.start!
-    elsif params[:operation] == "reset"
+    elsif operation == "stop"
+      @round.timer.stop!
+    elsif operation == "reset"
       @round.timer.reset!
     end
 
