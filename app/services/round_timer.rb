@@ -26,15 +26,27 @@ class RoundTimer
 
   def finish_time
     last = round_timer_activations.last
-    expected_end = last.start_time + length_minutes*60 - committed_seconds
-    if last.stop_time.nil? || last.stop_time >= expected_end
+    if !last.nil? && (last.stop_time.nil? || last.stop_time >= expected_end)
       expected_end
     else
       nil
     end
   end
 
+  def running?
+    last = round_timer_activations.last
+    if last.nil? || !last.stop_time.nil?
+      false
+    else
+      Time.zone.now < expected_end
+    end
+  end
+
   private
+
+  def expected_end
+    round_timer_activations.last.start_time + length_minutes*60 - committed_seconds
+  end
 
   def committed_seconds
     time = 0
