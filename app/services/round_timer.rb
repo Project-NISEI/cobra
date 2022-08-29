@@ -12,12 +12,32 @@ class RoundTimer
     round_timer_activations.create! start_time: Time.current
   end
 
+  def stop!
+    round_timer_activations.last.update(stop_time: Time.current)
+  end
+
   def show?
     round_timer_activations.count > 0 && !completed?
   end
 
   def finish_time
-    round_timer_activations.last.start_time + length_minutes.minutes
+    last = round_timer_activations.last
+    expected_end = last.start_time + length_minutes*60 - committed_seconds
+    if last.stop_time.nil? || last.stop_time >= expected_end
+      expected_end
+    else
+      nil
+    end
+  end
+
+  private
+
+  def committed_seconds
+    time = 0
+    (0...round_timer_activations.size - 1).each do |index|
+      time += round_timer_activations[index].committed_seconds
+    end
+    time
   end
 
 end
