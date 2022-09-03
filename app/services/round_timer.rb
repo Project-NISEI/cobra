@@ -25,15 +25,6 @@ class RoundTimer
     !last.nil? && !last.stop_time.nil? && last.stop_time < expected_end
   end
 
-  def finish_time
-    last = round_timer_activations.last
-    if !last.nil? && (last.stop_time.nil? || last.stop_time >= expected_end)
-      expected_end
-    else
-      nil
-    end
-  end
-
   def running?
     last = round_timer_activations.last
     if last.nil? || !last.stop_time.nil?
@@ -56,35 +47,42 @@ class RoundTimer
   RunningState = Struct.new(:paused, :finish_time)
   PausedState = Struct.new(:paused, :remaining_seconds)
   attr_reader :round
-  delegate :round_timer_activations, to: :round
-  delegate :completed?, to: :round
-  delegate :length_minutes, to: :round
+  delegate :round_timer_activations, :completed?, :length_minutes, to: :round
 
-  def expected_end
-    last = round_timer_activations.last
-    unless last.nil?
-      last.start_time + length_minutes*60 - committed_seconds
+  def finish_time
+    last = last_activation
+    if !last.nil? && (last.stop_time.nil? || last.stop_time >= expected_end)
+      expected_end
+    else
+      nil
     end
   end
 
-  def committed_seconds
-    time = 0
-    (0...round_timer_activations.size - 1).each do |index|
-      time += round_timer_activations[index].committed_seconds
+  def expected_end
+    unless last_activation.nil?
+      last_activation.start_time + length_seconds - prev_activations_seconds
     end
-    time
   end
 
   def remaining_seconds_after_unpause
-    time = length_minutes * 60
-    round_timer_activations.each do |a|
-      time -= a.committed_seconds
-    end
-    if time > 0
-      time
-    else
-      0
-    end
+    seconds = length_seconds - all_activation_seconds
+    [0, seconds].max
+  end
+
+  def length_seconds
+    length_minutes * 60
+  end
+
+  def prev_activations_seconds
+    round_timer_activations[0..-2].map{|a| a.committed_seconds}.sum
+  end
+
+  def all_activation_seconds
+    round_timer_activations.map{|a| a.committed_seconds}.sum
+  end
+
+  def last_activation
+    round_timer_activations.last
   end
 
 end
