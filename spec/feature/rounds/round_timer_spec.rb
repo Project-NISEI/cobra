@@ -15,7 +15,6 @@ RSpec.describe 'round timer' do
 
     it 'does not show the round timer if not started' do
       expect(page).to_not have_content(timer_display_message)
-      expect(page).to_not have_content(timer_paused_message)
     end
 
     it 'hides the round timer when reset' do
@@ -24,7 +23,6 @@ RSpec.describe 'round timer' do
         click_on 'Reset'
       end
       expect(page).to_not have_content(timer_display_message)
-      expect(page).to_not have_content(timer_paused_message)
     end
 
     it 'shows the round timer when paused' do
@@ -32,7 +30,7 @@ RSpec.describe 'round timer' do
         click_on 'Start'
         click_on 'Pause'
       end
-      expect(page).to have_content(timer_paused_message)
+      expect(find('.alert', text: timer_display_message)).to have_content("(paused)")
     end
   end
 
@@ -44,7 +42,4 @@ RSpec.describe 'round timer' do
     "Remaining in round 1:"
   end
 
-  def timer_paused_message
-    "Round 1 paused, remaining:"
-  end
 end
