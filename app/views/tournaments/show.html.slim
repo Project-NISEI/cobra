@@ -63,3 +63,36 @@
               | &nbsp;Create NRDB account
 
 = render 'player_counts'
+
+.col-md-6
+  h3
+    = @current_user_player.id
+    = @rounds
+  - if @current_users_pairings && !@current_user_pairings.empty?
+    .card
+      .card-header
+        h5.card-title.mb-0 My Games
+      ul.list-group.list-group-flush
+        - @current_user_pairings.each do |p|
+          li.list-group-item
+            .row
+              .col-9
+                | Game #{p.round.number} vs.
+                - if p.player1.id == @current_user_player.id
+                  b<> #{p.player1.name}
+                - else
+                  b<> #{p.player2.name}
+              .col-3.text-right
+                .text-secondary Table #{p.table_number}
+              .col-12.pt-2
+                = render 'pairings/score', pairing: p
+                .input-group
+                  select.custom-select
+                    option How did you do?
+                    option They won (0 - 6)
+                    option I won (6 - 0)
+                    option Corp Split (3 - 3)
+                    option Runner Split (3 - 3)
+                  .input-group-append
+                    button.btn.btn-outline-primary
+                      | Report Score
