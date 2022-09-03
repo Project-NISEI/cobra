@@ -28,7 +28,6 @@ Rails.application.routes.draw do
     get :save_json, on: :member
     post :cut, on: :member
     get :qr, on: :member
-    get :registration, on: :member
     get :shortlink, on: :collection
     get :not_found, on: :collection
     get :my, on: :collection

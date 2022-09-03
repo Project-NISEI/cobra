@@ -5,7 +5,7 @@ class Pairing < ApplicationRecord
   has_one :tournament, through: :round
   has_one :stage, through: :round
 
-  scope :non_bye, -> { where('player1_id IS NOT NULL AND player2_id IS NOT NULL') }
+  scope :non_bye, -> { where.not(player1_id: nil, player2_id: nil) }
   scope :bye, -> { where('player1_id IS NULL OR player2_id IS NULL') }
   scope :reported, -> { where.not(score1: nil, score2: nil) }
   scope :completed, -> { joins(:round).where('rounds.completed = ?', true) }

@@ -6,19 +6,15 @@
 ```
 cat config/database.example.yml | sed s/localhost/db/ > config/database.yml
 cp config/secrets.example.yml config/secrets.yml
-echo "POSTGRES_PASSWORD=cobra" > .env
-echo "RAILS_ENV=development" >> .env
+echo "RAILS_ENV=development" > .env
 ```
 
 Then initialize everything and bring up the server.
 
-Note: If you are running on Apple silicon, replace `docker-compose` below with
-`docker-compose -f docker-compose.yml -f docker-compose.apple.yml`
-
 ```
 docker-compose up -d db
 # wait for the db to be ready. (docker-compose logs db) will end with "database system is ready to accept connections"
-docker-compose exec db psql --username=postgres -c "create user cobra with password 'cobra' CREATEDB;"
+docker-compose exec db psql --username=postgres -c "create user cobra with password '' CREATEDB;"
 docker-compose run app rake db:create db:migrate
 docker-compose run app rake ids:update
 docker-compose run app bundle exec rake assets:precompile

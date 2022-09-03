@@ -12,8 +12,7 @@ services:
 
     # rely on the RAILS_ENV value of the host machine
     environment:
-      - POSTGRES_PASSWORD
-      - RAILS_ENV
+      RAILS_ENV: $RAILS_ENV
 
     # makes the app container aware of the DB container
     links:
@@ -29,12 +28,7 @@ services:
   db:
     # use the preferred version of the official Postgres image
     # see https://hub.docker.com/_/postgres/
-    image: postgres:9
-
-    env_file: .env
-
-    environment:
-      - POSTGRES_PASSWORD
+    image: postgres:9.4.5
 
     # persist the database between containers by storing it in a volume
     volumes:
