@@ -10,7 +10,7 @@ RSpec.describe 'round timer service' do
   specify 'when timer is started, it is running' do
     travel_to Time.zone.local(2022, 8, 29, 15, 0)
     timer.start!
-    expect(timer.state).to have_attributes(finish_time: Time.zone.local(2022, 8, 29, 16, 5), paused: false)
+    expect(timer.state).to have_attributes(paused: false, finish_time: Time.zone.local(2022, 8, 29, 16, 5))
     expect(timer.running?).to be(true)
   end
 
@@ -18,7 +18,7 @@ RSpec.describe 'round timer service' do
     travel_to Time.zone.local(2022, 8, 29, 15, 0)
     timer.start!
     travel_to Time.zone.local(2022, 8, 29, 16, 10)
-    expect(timer.state).to have_attributes(finish_time: Time.zone.local(2022, 8, 29, 16, 5), paused: false)
+    expect(timer.state).to have_attributes(paused: false, finish_time: Time.zone.local(2022, 8, 29, 16, 5))
     expect(timer.running?).to be(false)
   end
 
@@ -27,7 +27,7 @@ RSpec.describe 'round timer service' do
     timer.start!
     travel_to Time.zone.local(2022, 8, 29, 16, 10)
     timer.stop!
-    expect(timer.state).to have_attributes(finish_time: Time.zone.local(2022, 8, 29, 16, 5), paused: false)
+    expect(timer.state).to have_attributes(paused: false, finish_time: Time.zone.local(2022, 8, 29, 16, 5))
     expect(timer.running?).to be(false)
   end
 
@@ -36,7 +36,7 @@ RSpec.describe 'round timer service' do
     timer.start!
     travel_to Time.zone.local(2022, 8, 29, 15, 30)
     timer.stop!
-    expect(timer.state).to have_attributes(finish_time: nil, paused: true)
+    expect(timer.state).to have_attributes(paused: true, remaining_seconds: 35 * 60)
     expect(timer.running?).to be(false)
   end
 
@@ -47,12 +47,12 @@ RSpec.describe 'round timer service' do
     timer.stop!
     travel_to Time.zone.local(2022, 8, 29, 16, 0)
     timer.start!
-    expect(timer.state).to have_attributes(finish_time: Time.zone.local(2022, 8, 29, 16, 35), paused: false)
+    expect(timer.state).to have_attributes(paused: false, finish_time: Time.zone.local(2022, 8, 29, 16, 35))
     expect(timer.running?).to be(true)
   end
 
   specify 'when no timer started yet, it is not running' do
-    expect(timer.state).to have_attributes(finish_time: nil, paused: false)
+    expect(timer.state).to have_attributes(paused: false)
     expect(timer.running?).to be(false)
   end
 end

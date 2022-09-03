@@ -44,12 +44,17 @@ class RoundTimer
   end
 
   def state
-    State.new(finish_time, paused?)
+    if paused?
+      PausedState.new(true, remaining_seconds_after_unpause)
+    else
+      RunningState.new(false, finish_time)
+    end
   end
 
   private
 
-  State = Struct.new(:finish_time, :paused)
+  RunningState = Struct.new(:paused, :finish_time)
+  PausedState = Struct.new(:paused, :remaining_seconds)
   attr_reader :round
   delegate :round_timer_activations, to: :round
   delegate :completed?, to: :round
@@ -68,6 +73,18 @@ class RoundTimer
       time += round_timer_activations[index].committed_seconds
     end
     time
+  end
+
+  def remaining_seconds_after_unpause
+    time = length_minutes * 60
+    round_timer_activations.each do |a|
+      time -= a.committed_seconds
+    end
+    if time > 0
+      time
+    else
+      0
+    end
   end
 
 end
