@@ -9,7 +9,7 @@ class RoundTimer
   end
 
   def stop!
-    round_timer_activations.last.update(stop_time: Time.current)
+    round_timer_activations.last&.update(stop_time: Time.current)
   end
 
   def reset!

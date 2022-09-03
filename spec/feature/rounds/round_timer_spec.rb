@@ -43,6 +43,11 @@ RSpec.describe 'round timer' do
       expect(page).to_not have_content(timer_display_message)
       expect(round.timer.state).to have_attributes(paused: true, remaining_seconds: 35 * 60)
     end
+
+    it 'does not show the timer form when the round is completed' do
+      click_on 'Complete'
+      expect(page).to_not have_selector(round_timer_form)
+    end
   end
 
   def round_timer_form

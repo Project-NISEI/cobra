@@ -55,4 +55,10 @@ RSpec.describe 'round timer service' do
     expect(timer.state).to have_attributes(paused: false)
     expect(timer.running?).to be(false)
   end
+
+  specify 'when no timer started yet, stopping it does nothing' do
+    timer.stop!
+    expect(timer.state).to have_attributes(paused: false)
+    expect(timer.running?).to be(false)
+  end
 end
