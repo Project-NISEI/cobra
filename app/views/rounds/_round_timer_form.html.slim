@@ -10,6 +10,10 @@
           button.btn.btn-danger type='submit' name='operation' value='stop'
             => fa_icon 'clock-o'
             | Pause
+        - elsif round.timer.paused?
+          button.btn.btn-success type='submit' name='operation' value='start'
+            => fa_icon 'clock-o'
+            | Resume
         - else
           button.btn.btn-success type='submit' name='operation' value='start'
             => fa_icon 'clock-o'
