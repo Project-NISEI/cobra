@@ -2,7 +2,7 @@ class OauthController < ApplicationController
   before_action :skip_authorization
 
   def auth
-    redirect_to Nrdb::Oauth.auth_uri(request.host), allow_other_host: true
+    redirect_to Nrdb::Oauth.auth_uri(request.host)
   end
 
   def logout

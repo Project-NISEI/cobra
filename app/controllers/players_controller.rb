@@ -17,9 +17,7 @@ class PlayersController < ApplicationController
     end
 
     player = @tournament.players.create(player_params)
-    unless @tournament.current_stage.nil?
-      @tournament.current_stage.players << player
-    end
+    @tournament.current_stage.players << player
 
     if player.user_id
       redirect_to tournament_path(@tournament)
@@ -29,15 +27,11 @@ class PlayersController < ApplicationController
   end
 
   def update
-    authorize @tournament, :register?
+    authorize @tournament, :update?
 
     @player.update(player_params)
 
-    if current_user.id == @tournament.user_id
-      redirect_to tournament_players_path(@tournament)
-    else
-      redirect_to tournament_path(@tournament)
-    end
+    redirect_to tournament_players_path(@tournament)
   end
 
   def destroy
