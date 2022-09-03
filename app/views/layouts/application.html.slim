@@ -41,12 +41,14 @@ html
     .container
       - if @tournament
         .row.dontprint
-          .col-10
+          .col-sm
             h1= @tournament.name
-          .col-2.text-right
-            - if @tournament.stream_url.present?
+          - if @tournament.stream_url.present?
+            .col-sm-auto
               = link_to @tournament.stream_url, class: 'stream-link', target: '_blank' do
                 => fa_icon 'video-camera'
+          .col-sm-auto
+            = render 'rounds/round_timer', round: @tournament.rounds.last
         ul.nav.nav-tabs.dontprint
           - if policy(@tournament).show?
             li.nav-item= link_to tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name == 'show'}" do
