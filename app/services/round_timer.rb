@@ -1,8 +1,4 @@
 class RoundTimer
-  attr_reader :round
-  delegate :round_timer_activations, to: :round
-  delegate :completed?, to: :round
-  delegate :length_minutes, to: :round
 
   def initialize(round)
     @round = round
@@ -47,10 +43,23 @@ class RoundTimer
     end
   end
 
+  def state
+    State.new(finish_time, paused?)
+  end
+
   private
 
+  State = Struct.new(:finish_time, :paused)
+  attr_reader :round
+  delegate :round_timer_activations, to: :round
+  delegate :completed?, to: :round
+  delegate :length_minutes, to: :round
+
   def expected_end
-    round_timer_activations.last.start_time + length_minutes*60 - committed_seconds
+    last = round_timer_activations.last
+    unless last.nil?
+      last.start_time + length_minutes*60 - committed_seconds
+    end
   end
 
   def committed_seconds

@@ -10,7 +10,7 @@ RSpec.describe 'round timer service' do
   it 'computes finish time' do
     travel_to Time.zone.local(2022, 8, 29, 15, 0)
     timer.start!
-    expect(timer.finish_time).to eq Time.zone.local(2022, 8, 29, 16, 5)
+    expect(timer.state).to have_attributes(finish_time: Time.zone.local(2022, 8, 29, 16, 5), paused: false)
     expect(timer.running?).to be(true)
   end
 
@@ -19,7 +19,7 @@ RSpec.describe 'round timer service' do
     timer.start!
     travel_to Time.zone.local(2022, 8, 29, 15, 30)
     timer.stop!
-    expect(timer.finish_time).to be_nil
+    expect(timer.state).to have_attributes(finish_time: nil, paused: true)
     expect(timer.running?).to be(false)
   end
 
@@ -28,7 +28,7 @@ RSpec.describe 'round timer service' do
     timer.start!
     travel_to Time.zone.local(2022, 8, 29, 16, 10)
     timer.stop!
-    expect(timer.finish_time).to eq Time.zone.local(2022, 8, 29, 16, 5)
+    expect(timer.state).to have_attributes(finish_time: Time.zone.local(2022, 8, 29, 16, 5), paused: false)
     expect(timer.running?).to be(false)
   end
 
@@ -39,7 +39,7 @@ RSpec.describe 'round timer service' do
     timer.stop!
     travel_to Time.zone.local(2022, 8, 29, 16, 0)
     timer.start!
-    expect(timer.finish_time).to eq Time.zone.local(2022, 8, 29, 16, 35)
+    expect(timer.state).to have_attributes(finish_time: Time.zone.local(2022, 8, 29, 16, 35), paused: false)
     expect(timer.running?).to be(true)
   end
 
@@ -47,12 +47,12 @@ RSpec.describe 'round timer service' do
     travel_to Time.zone.local(2022, 8, 29, 15, 0)
     timer.start!
     travel_to Time.zone.local(2022, 8, 29, 16, 10)
-    expect(timer.finish_time).to eq Time.zone.local(2022, 8, 29, 16, 5)
+    expect(timer.state).to have_attributes(finish_time: Time.zone.local(2022, 8, 29, 16, 5), paused: false)
     expect(timer.running?).to be(false)
   end
 
   it 'reports when no timer started yet' do
-    expect(timer.finish_time).to be_nil
+    expect(timer.state).to have_attributes(finish_time: nil, paused: false)
     expect(timer.running?).to be(false)
   end
 end
