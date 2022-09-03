@@ -41,13 +41,13 @@ html
     .container
       - if @tournament
         .row.dontprint
-          .col-sm
+          .col-md
             h1= @tournament.name
           - if @tournament.stream_url.present?
-            .col-sm-auto
+            .col-auto
               = link_to @tournament.stream_url, class: 'stream-link', target: '_blank' do
                 => fa_icon 'video-camera'
-          .col-sm-auto
+          .col.col-md-auto.mb-md-0.mb-2
             = render 'rounds/round_timer', round: @tournament.rounds.last
         ul.nav.nav-tabs.dontprint
           - if policy(@tournament).show?
