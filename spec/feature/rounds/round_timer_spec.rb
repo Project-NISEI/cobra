@@ -32,6 +32,17 @@ RSpec.describe 'round timer' do
       end
       expect(find('.alert', text: timer_display_message)).to have_content("(paused)")
     end
+
+    it 'pauses the round timer automatically when the round is completed' do
+      within(round_timer_form) do
+        travel_to Time.zone.local(2022, 8, 29, 15, 0)
+        click_on 'Start'
+      end
+      travel_to Time.zone.local(2022, 8, 29, 15, 30)
+      click_on 'Complete'
+      expect(page).to_not have_content(timer_display_message)
+      expect(round.timer.state).to have_attributes(paused: true, remaining_seconds: 35 * 60)
+    end
   end
 
   def round_timer_form
