@@ -8,7 +8,7 @@ class NrtmJson
   def data(tournament_url)
     {
       name: tournament.name,
-      date: tournament.date.to_s(:db),
+      date: tournament.date.to_fs(:db),
       cutToTop: cut_stage.players.count,
       preliminaryRounds: swiss_stage.rounds.count,
       tournamentOrganiser: {

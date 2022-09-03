@@ -12,7 +12,7 @@ RSpec.describe TournamentsController do
       get save_json_tournament_path(tournament)
 
       expect(response.headers['Content-Disposition']).to eq(
-        'attachment; filename="my tournament.json"'
+        'attachment; filename="my tournament.json"; filename*=UTF-8\'\'my%20tournament.json'
       )
       expect(response.body).to eq("{\"some\":\"data\"}")
     end
