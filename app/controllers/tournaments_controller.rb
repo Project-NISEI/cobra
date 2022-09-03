@@ -1,7 +1,7 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [
       :show, :edit, :update, :destroy,
-      :upload_to_abr, :save_json, :cut, :qr, :registration
+      :upload_to_abr, :save_json, :cut, :qr
     ]
 
   def index
@@ -23,31 +23,25 @@ class TournamentsController < ApplicationController
 
     respond_to do |format|
       format.html do
-        set_tournament_view_data
+        @players = @tournament.players.active.sort_by { |p| p.name || '' }
+        @dropped = @tournament.players.dropped.sort_by { |p| p.name || '' }
+
+        if current_user
+          @current_user_is_running_tournament = @tournament.user_id == current_user.id
+          @current_user_player = @players.find { |p| p.user_id == current_user.id }
+          @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
+
+          if @current_user_player
+            @rounds = Rounds.where('tournament_id = ?', tournament.id).id
+            @current_user_pairings = Pairing.where(tournament)
+
+          end
+        end
       end
       format.json do
         headers['Access-Control-Allow-Origin'] = '*'
         render json: NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
       end
-    end
-  end
-
-  def registration
-    authorize @tournament, :register?
-
-    set_tournament_view_data
-  end
-
-  def set_tournament_view_data
-    @players = @tournament.players.active.sort_by { |p| p.name || '' }
-    @dropped = @tournament.players.dropped.sort_by { |p| p.name || '' }
-
-    if current_user
-      @current_user_is_running_tournament = @tournament.user_id == current_user.id
-      @current_user_player = @players.find { |p| p.user_id == current_user.id }
-      @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
-      @rounds = Rounds.where('tournament_id = ?', tournament.id).id
-      @current_user_pairings = Pairing.where(tournament)
     end
   end
 
