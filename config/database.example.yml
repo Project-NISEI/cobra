@@ -3,7 +3,7 @@ default: &default
   encoding: unicode
   pool: 5
   username: cobra
-  password:
+  password: cobra
   host: localhost
   min_messages: warning
 

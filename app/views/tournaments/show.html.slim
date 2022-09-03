@@ -1,8 +1,15 @@
+= render 'overview_card'
+
 .col-md-6
   - if @current_user_player
     .card
       .card-header
-        h5.card-title.mb-0 My Registration Information
+				.d-flex.justify-content-between
+					h5.mb-0 My Registration Information
+					- if policy(@tournament).register?
+						= link_to registration_tournament_path(@tournament), title: 'Edit', class: 'float-right' do
+							=> fa_icon 'pencil'
+							span.d-none Edit my registration information
       ul.list-group.list-group-flush
         li.list-group-item
           .small.text-secondary Name:
@@ -22,27 +29,25 @@
   - else
     - if @tournament.self_registration?
       - if current_user
-        - unless @current_user_player
-          .card.alert.alert-secondary
-            .card-body
-              - unless @current_user_dropped
-                h5.card-title Register for this Event
-                = simple_form_for :player, url: tournament_players_path(@tournament) do |f|
-                  = render 'players/form', f: f, default_name: current_user ? current_user.nrdb_username : ''
-                  .text-right
-                    = button_tag type: :submit, class: 'btn btn-primary', disabled: (not current_user) do
-                      => fa_icon 'user-plus'
-                      | Register
-              - else
-                h5.card-title Rejoin this Event
-                - if @current_user_is_running_tournament
-                  p
-                    | You can re-instate yourself on the
-                    =<> link_to tournament_players_path(@tournament) do
-                      | Players
-                    | tab.
-                - else
-                  p Talk to a Tournmanet Organiser to rejoin the event
+				.card.alert.alert-secondary
+					- unless @current_user_dropped
+						h5.card-title Register for this Event
+						= simple_form_for :player, url: tournament_players_path(@tournament) do |f|
+							= render 'players/form', f: f, default_name: current_user ? current_user.nrdb_username : ''
+							.text-right
+								= button_tag type: :submit, class: 'btn btn-primary', disabled: (not current_user) do
+									=> fa_icon 'user-plus'
+									| Register
+					- else
+						h5.card-title Rejoin this Event
+						- if @current_user_is_running_tournament
+							p
+								| You can re-instate yourself on the
+								=<> link_to tournament_players_path(@tournament) do
+									| Players
+								| tab.
+						- else
+							p Talk to a Tournmanet Organiser to rejoin the event
       - else
         .card.alert.alert-warning
           .card-body
@@ -56,6 +61,8 @@
             = link_to 'https://netrunnerdb.com/register/', class: 'alert-link'
               span.icon.icon-link
               | &nbsp;Create NRDB account
+
+= render 'player_counts'
 
 .col-md-6
   h3
@@ -89,32 +96,3 @@
                   .input-group-append
                     button.btn.btn-outline-primary
                       | Report Score
-
-- if @tournament.rounds.any? || policy(@tournament).edit?
-	.col-12.mt-5
-		h5
-			=> pluralize(@players.count, 'active player')
-			span.small.text-secondary
-				| (#{@dropped.count} dropped)
-	.col-md-6
-		table.table
-			thead
-				tr
-					th Corp
-					th Players
-			tbody
-				- @tournament.corp_counts.each do |id, count|
-					tr
-						td= render id
-						td= count
-	.col-md-6
-		table.table
-			thead
-				tr
-					th Runner
-					th Players
-			tbody
-				- @tournament.runner_counts.each do |id, count|
-					tr
-						td= render id
-						td= count
