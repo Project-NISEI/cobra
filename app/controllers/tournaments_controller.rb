@@ -46,8 +46,6 @@ class TournamentsController < ApplicationController
       @current_user_is_running_tournament = @tournament.user_id == current_user.id
       @current_user_player = @players.find { |p| p.user_id == current_user.id }
       @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
-      @rounds = Rounds.where('tournament_id = ?', tournament.id).id
-      @current_user_pairings = Pairing.where(tournament)
     end
   end
 
