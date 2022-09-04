@@ -20,10 +20,10 @@ $(document).on 'turbolinks:load', ->
     alertClassesForTimeRemaining = (millis) ->
       if roundTimer.paused
         "alert-secondary"
-      else if millis < 5 * 60 * 1000
-        "alert-warning"
       else if millis < 1 * 60 * 1000
         "alert-danger"
+      else if millis < 5 * 60 * 1000
+        "alert-warning"
       else
         "alert-primary"
 
