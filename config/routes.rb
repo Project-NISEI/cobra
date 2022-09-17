@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       end
       patch :repair, on: :member
       patch :complete, on: :member
+      patch :update_timer, on: :member
     end
     resources :stages, only: [:create, :destroy]
     post :upload_to_abr, on: :member

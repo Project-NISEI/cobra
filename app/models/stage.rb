@@ -14,7 +14,7 @@ class Stage < ApplicationRecord
 
   def pair_new_round!
     number = (rounds.pluck(:number).max || 0) + 1
-    rounds.create(number: number).tap do |round|
+    rounds.create(number: number, length_minutes: default_round_minutes).tap do |round|
       round.pair!
     end
   end
@@ -33,6 +33,14 @@ class Stage < ApplicationRecord
 
   def single_sided?
     double_elim?
+  end
+
+  def default_round_minutes
+    if double_elim?
+      40
+    else
+      65
+    end
   end
 
   def cache_standings!
