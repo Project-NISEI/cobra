@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:11-alpine
+        image: postgres:14.5-alpine3.16
         ports:
           - "5432:5432"
         options: >-
