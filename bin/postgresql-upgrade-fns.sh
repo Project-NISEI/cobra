@@ -1,3 +1,4 @@
+set -e
 SCRIPTS_DIR="$(dirname "$0")"
 
 compose_db_upgrade() {
