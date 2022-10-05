@@ -15,6 +15,11 @@ postgresql_upgrade() {
   compose_db_upgrade exec -T db bash < ${SCRIPTS_DIR}/postgresql-container-restore-dump.sh
 }
 
+postgresql_upgrade_restore_backup() {
+  compose_db_upgrade rm -s -f db db-old
+  compose_db_upgrade run -T db-old bash < ${SCRIPTS_DIR}/postgresql-container-restore-backup.sh
+}
+
 postgresql_upgrade_do() {
   compose_db_upgrade $@
 }

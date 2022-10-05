@@ -13,4 +13,6 @@ until psql -c "select 1" > /dev/null 2>&1 || [ $RETRIES -eq 0 ]; do
 done
 echo "Found postgres server"
 
+echo "Restoring dump"
 psql -d postgres -f /var/backups/postgres/dump
+echo "Restored"
