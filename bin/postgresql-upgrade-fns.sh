@@ -35,6 +35,6 @@ postgresql_upgrade() {
 }
 
 postgresql_upgrade_restore_backup() {
-  compose_db_upgrade_do rm -s -f db db-old
-  compose_db_upgrade_run db-old postgresql-container-restore-backup.sh
+  compose_db_upgrade_do rm -s -f db db-old app
+  compose_db_upgrade_run db-old postgresql-container-restore-data.sh
 }
