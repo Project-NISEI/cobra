@@ -1,11 +1,8 @@
 #!/bin/sh
+set -e
 
 DATA_DIR=/var/lib/postgresql/data
 BACKUP_DIR=/var/backups/postgres/data
-
-# Run as postgres user to ensure restored data files get correct permissions
-chown postgres /var/backups/postgres
-su - postgres
 
 echo "Clearing data directory"
 rm -rf $DATA_DIR/*

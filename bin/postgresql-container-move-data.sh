@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 DATA_DIR=/var/lib/postgresql/data
 BACKUP_DIR=/var/backups/postgres/data

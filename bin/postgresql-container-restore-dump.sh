@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # Run as postgres user since it has permissions in the DB
 chown postgres /var/backups/postgres
