@@ -34,7 +34,20 @@ postgresql_upgrade() {
   compose_db_upgrade_exec_with_wait db postgresql-container-restore-dump.sh
 }
 
+app_upgrade() {
+  docker-compose build app
+  docker-compose run app rake db:migrate
+  docker-compose run app rake ids:update
+  docker-compose run app bundle exec rake assets:precompile
+  docker-compose up -d
+}
+
 postgresql_upgrade_restore_backup() {
   compose_db_upgrade_do rm -s -f db db-old app
   compose_db_upgrade_run db-old postgresql-container-restore-data.sh
+}
+
+app_and_postgresql_upgrade() {
+  postgresql_upgrade
+  app_upgrade
 }
