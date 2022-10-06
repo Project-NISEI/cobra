@@ -19,11 +19,11 @@ compose_db_upgrade_run() {
 
 compose_db_upgrade_exec_with_wait() {
   DB_SERVICE=$1
-  SCRIPT_NAME=$2
+  DB_SCRIPT_NAME=$2
   compose_db_upgrade_do up -d ${DB_SERVICE}
   # Need to wait because docker-compose up returns before the database finishes starting
   compose_db_upgrade_exec ${DB_SERVICE} postgresql-container-wait-for-postgres.sh
-  compose_db_upgrade_exec ${DB_SERVICE} ${SCRIPT_NAME}
+  compose_db_upgrade_exec ${DB_SERVICE} ${DB_SCRIPT_NAME}
   compose_db_upgrade_do rm -s -f ${DB_SERVICE}
 }
 
