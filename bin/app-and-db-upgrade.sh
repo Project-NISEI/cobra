@@ -1,4 +1,4 @@
 #!/bin/sh
 
 source "$(dirname "$0")/postgresql-upgrade-fns.sh"
-postgresql_upgrade
+app_and_postgresql_upgrade
