@@ -32,13 +32,14 @@ postgresql_upgrade() {
   compose_db_upgrade_exec_with_wait db-old postgresql-container-make-dump.sh
   compose_db_upgrade_run db-old postgresql-container-move-data.sh
   compose_db_upgrade_exec_with_wait db postgresql-container-restore-dump.sh
+  docker-compose exec db psql --username=postgres -c "alter role cobra with password '${POSTGRES_PASSWORD}';"
 }
 
 app_upgrade() {
   docker-compose build app
-  docker-compose run app rake db:migrate
-  docker-compose run app rake ids:update
-  docker-compose run app bundle exec rake assets:precompile
+  docker-compose run --rm app rake db:migrate
+  docker-compose run --rm app rake ids:update
+  docker-compose run --rm app bundle exec rake assets:precompile
   docker-compose up -d
 }
 
