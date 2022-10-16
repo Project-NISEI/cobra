@@ -1,6 +1,7 @@
 set -e
 SCRIPTS_DIR="$(dirname "$0")"
 
+
 compose_db_upgrade_do() {
   docker-compose -f docker-compose.yml -f docker-compose.db-upgrade.yml $@
 }
