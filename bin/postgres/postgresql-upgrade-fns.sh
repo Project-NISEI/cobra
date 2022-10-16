@@ -1,6 +1,7 @@
 set -e
-SCRIPTS_DIR="$(dirname "$0")"
-
+SCRIPTS_DIR=$(cd $(dirname $0) && pwd)
+BASE_DIR=$(cd $(dirname $0) && cd "../../" && pwd)
+pushd ${BASE_DIR}
 
 compose_db_upgrade_do() {
   docker-compose -f docker-compose.yml -f docker-compose.db-upgrade.yml $@
