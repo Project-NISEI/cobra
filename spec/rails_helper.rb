@@ -7,6 +7,7 @@ require 'rspec/rails'
 require 'capybara/rails'
 require 'database_cleaner'
 require 'vcr'
+require 'active_support/testing/time_helpers'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
@@ -21,6 +22,7 @@ RSpec.configure do |config|
 
   config.include Capybara::DSL
   config.include FactoryBot::Syntax::Methods
+  config.include ActiveSupport::Testing::TimeHelpers
 
   config.include SignIn
   config.include Report

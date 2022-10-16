@@ -54,11 +54,11 @@ RSpec.describe NrtmJson do
       let(:json) { described_class.new(tournament) }
 
       before do
-        r1 = create(:round, stage: cut, completed: true)
+        r1 = create(:round, number: 2, stage: cut, completed: true)
         report r1, 1, jack, 3, pop, 0, :player1_is_corp
         report r1, 2, hansel, 3, snap, 0, :player1_is_corp
 
-        r2 = create(:round, stage: cut, completed: true)
+        r2 = create(:round, number: 3, stage: cut, completed: true)
         report r2, 3, jack, 3, hansel, 0, :player1_is_corp
         report r2, 4, pop, 0, snap, 3, :player1_is_runner
 

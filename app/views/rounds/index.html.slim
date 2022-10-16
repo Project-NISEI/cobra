@@ -5,21 +5,21 @@
         => fa_icon 'plus'
         | Add Swiss stage
   - else
-    - if policy(@tournament).update?
-      p
-        #toggle_reported.btn.btn-primary
-          => fa_icon 'eye-slash'
-          | Show/hide reported pairings
-      .reported_hidden_message.alert.alert-info Reported scores are currently hidden on this page. This will not affect other users viewing this page.
     - if @tournament.rounds.empty?
       p= link_to meeting_tournament_players_path(@tournament), class: 'btn btn-primary' do
         => fa_icon 'list-ul'
         | Player meeting
     - else
-      p
-        #toggle_identities.btn.btn-primary
+      - if policy(@tournament).update?
+        #toggle_reported.btn.btn-primary.mr-2
           => fa_icon 'eye-slash'
-          | Show/hide identities
+          | Show/hide reported pairings
+      #toggle_identities.btn.btn-primary
+        => fa_icon 'eye-slash'
+        | Show/hide identities
+      p
+      .reported_hidden_message.alert.alert-info Reported scores are currently hidden on this page. This will not affect other users viewing this page.
+      p
 
     = render @tournament.stages
 
