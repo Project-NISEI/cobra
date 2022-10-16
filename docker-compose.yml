@@ -29,7 +29,7 @@ services:
   db:
     # use the preferred version of the official Postgres image
     # see https://hub.docker.com/_/postgres/
-    image: postgres:14.5-alpine
+    image: postgres:9
 
     env_file: .env
 
