@@ -28,9 +28,22 @@
                 | Save
               = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               =< link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
+              div class='form-group'
+                div class='form-check form-check-inline'
+                  = f.check_box :intentional_draw, class: 'form-check-input'
+                  = f.label :intentional_draw, 'ID', class: 'form-check-label'
+                div class='form-check form-check-inline'
+                  = f.check_box :two_for_one, class: 'form-check-input' 
+                  = f.label :two_for_one, '2 for 1', class: 'form-check-label'
     - else
       .col-sm-2.centre_score
         = readable_score(pairing)
+        - if pairing.intentional_draw
+          span class='badge badge-pill badge-secondary score-badge' 
+            | ID
+        - if pairing.two_for_one
+          span class='badge badge-pill badge-secondary score-badge' 
+            | 2 for 1
     .col-sm.right_player_name
       = @players[pairing.player2_id].name
       =< render 'player_side', pairing: pairing, player: @players[pairing.player2_id], single_sided: single_sided

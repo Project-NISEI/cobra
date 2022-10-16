@@ -69,6 +69,6 @@ class PairingsController < ApplicationController
 
   def score_params
     params.require(:pairing)
-      .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp, :score1, :score2, :side)
+      .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp, :score1, :score2, :side, :intentional_draw, :two_for_one)
   end
 end
