@@ -1,5 +1,6 @@
 set -e
-CONTAINER_SCRIPTS_DIR=$(cd $(dirname $0) && cd "in-container" && pwd)
+BASE_DIR_IN_CONTAINER="/var/www/cobra"
+CONTAINER_SCRIPTS_DIR="$BASE_DIR_IN_CONTAINER/bin/postgres/in-container"
 BASE_DIR=$(cd $(dirname $0) && cd "../../" && pwd)
 pushd ${BASE_DIR}
 
@@ -10,13 +11,13 @@ compose_for_upgrade() {
 compose_for_upgrade_exec() {
   SERVICE=$1
   SCRIPT_NAME=$2
-  compose_for_upgrade exec -T ${SERVICE} bash < ${CONTAINER_SCRIPTS_DIR}/${SCRIPT_NAME}
+  compose_for_upgrade exec ${SERVICE} "bash ${CONTAINER_SCRIPTS_DIR}/${SCRIPT_NAME}"
 }
 
 compose_for_upgrade_run() {
   SERVICE=$1
   SCRIPT_NAME=$2
-  compose_for_upgrade run --rm -T ${SERVICE} bash < ${CONTAINER_SCRIPTS_DIR}/${SCRIPT_NAME}
+  compose_for_upgrade run --rm ${SERVICE} "bash ${CONTAINER_SCRIPTS_DIR}/${SCRIPT_NAME}"
 }
 
 compose_for_upgrade_exec_with_wait_for_db() {

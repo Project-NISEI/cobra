@@ -6,6 +6,7 @@ services:
     volumes:
       - cobra-postgres:/var/lib/postgresql/data
       - cobra-postgres-backup:/var/backups/postgres
+      - .:/var/www/cobra
 
   # old database version for upgrade purposes, should match the main db service except for the version
   db-old:
@@ -21,6 +22,7 @@ services:
     volumes:
       - cobra-postgres:/var/lib/postgresql/data
       - cobra-postgres-backup:/var/backups/postgres
+      - .:/var/www/cobra
 
 volumes:
   cobra-postgres:
