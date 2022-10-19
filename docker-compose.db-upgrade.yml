@@ -3,6 +3,7 @@ version: "3.2"
 services:
   # mount backup volume to main database
   db:
+    image: postgres:14.5
     volumes:
       - cobra-postgres:/var/lib/postgresql/data
       - cobra-postgres-backup:/var/backups/postgres
@@ -12,7 +13,7 @@ services:
   db-old:
     # use the old version of the official Postgres image
     # see https://hub.docker.com/_/postgres/
-    image: postgres:9.4.5
+    image: postgres:9
 
     env_file: .env
 

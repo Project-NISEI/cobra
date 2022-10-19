@@ -11,7 +11,7 @@ compose_for_upgrade() {
 compose_for_upgrade_exec() {
   SERVICE=$1
   SCRIPT_NAME=$2
-  compose_for_upgrade exec ${SERVICE} "bash ${CONTAINER_SCRIPTS_DIR}/${SCRIPT_NAME}"
+  compose_for_upgrade exec -it ${SERVICE} "bash ${CONTAINER_SCRIPTS_DIR}/${SCRIPT_NAME}"
 }
 
 compose_for_upgrade_run() {
