@@ -1,0 +1,5 @@
+
+Pulumi.*.yaml
+
+/id_cobra_rsa_*
+/ssh-cobra-*.sh

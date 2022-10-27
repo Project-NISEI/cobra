@@ -14,7 +14,7 @@ with open('user_data', 'r') as f:
 private_key = tls.PrivateKey("cobra-key", algorithm="RSA")
 ssh_key = do.SshKey("cobra-ssh-key", public_key=private_key.public_key_openssh)
 
-do.Droplet(
+droplet = do.Droplet(
     resource_name="cobra",
     image="ubuntu-22-04-x64",
     region=config.get("region", "lon1"),
@@ -23,9 +23,19 @@ do.Droplet(
     ssh_keys=[ssh_key.fingerprint])
 
 
+private_key_filename = "id_cobra_rsa_{}".format(pulumi.get_stack())
+connect_script_filename = "ssh-cobra-{}.sh".format(pulumi.get_stack())
+
+
 def write_private_key(key):
-    with os.fdopen(os.open("id_cobra_rsa", os.O_WRONLY | os.O_CREAT, 0o600), "w") as file:
+    with os.fdopen(os.open(private_key_filename, os.O_WRONLY | os.O_CREAT, 0o600), "w") as file:
         file.write(key)
 
 
+def write_connect_script(ip):
+    with os.fdopen(os.open(connect_script_filename, os.O_WRONLY | os.O_CREAT, 0o700), "w") as file:
+        file.write("ssh -i {} root@{}".format(private_key_filename, ip))
+
+
 private_key.private_key_openssh.apply(write_private_key)
+droplet.ipv4_address.apply(write_connect_script)
