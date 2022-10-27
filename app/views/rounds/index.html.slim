@@ -36,6 +36,9 @@
           | All rounds must be flagged complete before you can add a new round
       - unless @tournament.stages.last.double_elim?
         p
+          => link_to cut_tournament_path(@tournament, number: 3), method: :post, class: 'btn btn-success' do
+            => fa_icon 'scissors'
+            | Cut to Top 3
           => link_to cut_tournament_path(@tournament, number: 4), method: :post, class: 'btn btn-success' do
             => fa_icon 'scissors'
             | Cut to Top 4

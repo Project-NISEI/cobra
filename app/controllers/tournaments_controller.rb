@@ -115,7 +115,7 @@ class TournamentsController < ApplicationController
     authorize @tournament
 
     number = params[:number].to_i
-    return redirect_to standings_tournament_players_path(@tournament) unless [4,8,16].include? number
+    return redirect_to standings_tournament_players_path(@tournament) unless [3,4,8,16].include? number
 
     @tournament.cut_to!(:double_elim, number)
 
