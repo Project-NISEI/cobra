@@ -21,3 +21,7 @@ public/scoop.png
 /public/assets/*
 
 /.idea
+*.iml
+
+Pulumi.*.yaml
+id_cobra_rsa

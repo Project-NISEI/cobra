@@ -1,0 +1,66 @@
+Content-Type: multipart/mixed; boundary="//"
+MIME-Version: 1.0
+
+--//
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+cloud_final_modules:
+- [scripts-user, always]
+
+--//
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="userdata.txt"
+
+#!/bin/bash
+set -e # Exit on error
+set -u # Treat unset variable as error
+set -x # Trace commands
+set -o pipefail
+
+# Get Updates
+export DEBIAN_FRONTEND=noninteractive
+apt update
+
+# Install Docker & Docker Compose
+apt install -y docker.io
+if [ ! -f ~/.docker/cli-plugins/docker-compose ]; then
+  mkdir -p ~/.docker/cli-plugins/
+  curl -SL https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+  chmod +x ~/.docker/cli-plugins/docker-compose
+fi
+
+# Check out code
+if [ ! -d ${repository} ]; then
+  git clone -b ${branch} https://github.com/${fork}/${repository}.git
+  pushd ${repository}
+  cat config/database.example.yml | sed s/localhost/db/ > config/database.yml
+  cp config/secrets.example.yml config/secrets.yml
+  echo "POSTGRES_PASSWORD=cobra" > .env
+  echo "RAILS_ENV=development" >> .env
+  CONTAINER_SCRIPTS_DIR="bin/postgres/in-container"
+  docker compose up -d db
+  docker compose exec -T db bash < ${CONTAINER_SCRIPTS_DIR}/wait-for-postgres.sh
+  docker compose exec db psql --username=postgres -c "create user cobra with password 'cobra' CREATEDB;"
+  docker compose build app
+  docker compose run --rm app rake db:create db:migrate
+  docker compose run --rm app rake ids:update
+  echo "Updated IDs"
+  docker compose run --rm app bundle exec rake assets:precompile
+  echo "Precompiled assets"
+  popd
+fi
+
+pushd ${repository}
+docker compose up -d
+popd
+
+# Restart if needed
+if [ -f /var/run/reboot-required ]; then
+  /sbin/shutdown -r now && exit
+fi

@@ -1,0 +1,2 @@
+pulumi-digitalocean==4.16.0
+pulumi-tls==4.6.1
