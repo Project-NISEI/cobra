@@ -5,11 +5,8 @@ import os
 
 config = pulumi.Config()
 
-with open('user_data', 'r') as f:
-    user_data = f.read() \
-        .replace("${branch}", config.get("branch", "main")) \
-        .replace("${fork}", config.get("fork", "Project-NISEI")) \
-        .replace("${repository}", config.get("repository", "cobra"))
+with open('user_data', 'r') as user_data_file:
+    user_data = user_data_file.read()
 
 private_key = tls.PrivateKey("cobra-key", algorithm="RSA")
 ssh_key = do.SshKey("cobra-ssh-key", public_key=private_key.public_key_openssh)
@@ -24,17 +21,24 @@ droplet = do.Droplet(
 
 
 private_key_filename = "id_cobra_rsa_{}".format(pulumi.get_stack())
-connect_script_filename = "ssh-cobra-{}.sh".format(pulumi.get_stack())
+ssh_script_filename = "ssh-cobra-{}".format(pulumi.get_stack())
+
+
+def write_with_permissions(filename, permissions, body):
+    with os.fdopen(os.open(filename, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, permissions), "w") as file:
+        file.write(body)
 
 
 def write_private_key(key):
-    with os.fdopen(os.open(private_key_filename, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as file:
-        file.write(key)
+    write_with_permissions(private_key_filename, 0o600, key)
 
 
 def write_connect_script(ip):
-    with os.fdopen(os.open(connect_script_filename, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o700), "w") as file:
-        file.write("ssh -i {} root@{}".format(private_key_filename, ip))
+    with open('ssh-template', 'r') as f:
+        ssh_script = f.read() \
+            .replace("%private_key_filename%", private_key_filename) \
+            .replace("%instance_ip%", ip)
+    write_with_permissions(ssh_script_filename, 0o700, ssh_script)
 
 
 private_key.private_key_openssh.apply(write_private_key)
