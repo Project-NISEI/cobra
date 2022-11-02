@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# For example, to wait for cloud init to finish:
+# ./with-retry ./ssh-cobra-pulumistack cloud-init status --wait
+
 RETRY_NUM=30
 RETRY_EVERY=10
 
