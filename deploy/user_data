@@ -31,7 +31,7 @@ apt-get -y install git
 
 # Uninstall any old versions of Docker
 for package in docker docker-engine docker.io containerd runc; do
-  apt-get -y purge $package
+  apt-get -y purge $package || true
 done
 
 # Install latest Docker
