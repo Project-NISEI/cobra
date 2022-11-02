@@ -29,20 +29,27 @@ apt-get -y update && apt-get -y dist-upgrade && apt-get -y autoremove
 # Ensure git is installed
 apt-get -y install git
 
-# Uninstall any old versions of Docker
-for package in docker docker-engine docker.io containerd runc; do
-  apt-get -y purge $package || true
-done
+# Check if Docker needs installing
+DOCKER_INSTALLED=$(dpkg-query -W --showformat='${Status}\n' docker-ce-cli | grep "install ok installed")
+COMPOSE_INSTALLED=$(dpkg-query -W --showformat='${Status}\n' docker-compose | grep "install ok installed")
+if [ "" = "$DOCKER_INSTALLED" ] || [ "" = "$COMPOSE_INSTALLED" ]; then
 
-# Install latest Docker
-apt-get -y install ca-certificates curl gnupg lsb-release
-mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-apt-get -y update
-apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  # Uninstall any old versions of Docker
+  for package in docker docker-engine docker.io containerd runc; do
+    apt-get -y purge $package || true
+  done
+
+  # Install latest Docker
+  apt-get -y install ca-certificates curl gnupg lsb-release
+  mkdir -p /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  apt-get -y update
+  apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+fi
 
 # Restart if needed
 if [ -f /var/run/reboot-required ]; then
