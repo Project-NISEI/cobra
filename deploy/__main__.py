@@ -28,12 +28,12 @@ connect_script_filename = "ssh-cobra-{}.sh".format(pulumi.get_stack())
 
 
 def write_private_key(key):
-    with os.fdopen(os.open(private_key_filename, os.O_WRONLY | os.O_CREAT, 0o600), "w") as file:
+    with os.fdopen(os.open(private_key_filename, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as file:
         file.write(key)
 
 
 def write_connect_script(ip):
-    with os.fdopen(os.open(connect_script_filename, os.O_WRONLY | os.O_CREAT, 0o700), "w") as file:
+    with os.fdopen(os.open(connect_script_filename, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o700), "w") as file:
         file.write("ssh -i {} root@{}".format(private_key_filename, ip))
 
 
