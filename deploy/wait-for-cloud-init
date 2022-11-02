@@ -1,0 +1,5 @@
+#!/bin/bash
+
+SSH_COMMAND=$1
+
+./with-retry "$SSH_COMMAND" cloud-init status --wait
