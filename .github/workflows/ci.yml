@@ -102,7 +102,7 @@ jobs:
           command: up --refresh
           stack-name: ${{ needs.test.outputs.deploy-stack }}
           config-map:
-            digitalocean:token:
+            "digitalocean:token":
               secret: true
               value: ${{ secrets.DIGITALOCEAN_TOKEN }}
         env:
