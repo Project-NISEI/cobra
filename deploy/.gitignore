@@ -2,3 +2,4 @@
 Pulumi.*.yaml
 
 /id_cobra_*
+/known_hosts_cobra_*

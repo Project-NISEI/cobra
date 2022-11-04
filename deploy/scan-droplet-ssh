@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DIR=$(dirname "${BASH_SOURCE[0]}")
+STACK=$(pulumi stack --show-name)
+DROPLET_IP=$(pulumi stack output droplet_public_ip)
+KNOWN_HOSTS_FILE="$DIR/known_hosts_cobra_$STACK"
+
+touch "$KNOWN_HOSTS_FILE"
+chmod u=rw,g=,o= "$KNOWN_HOSTS_FILE"
+ssh-keyscan -H "$DROPLET_IP" > "$KNOWN_HOSTS_FILE"
