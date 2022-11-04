@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "Found GitHub ref name '$GITHUB_REF_NAME', repository '$GITHUB_REPOSITORY'"
+
+STACK=""
+case $GITHUB_REF_NAME in
+deploy-with-pulumi)
+  if [ "$GITHUB_REPOSITORY" == "haradan/cobra" ]; then
+    STACK=haradan
+  fi
+esac
+
+echo "Chose stack to deploy '$STACK'"
+echo "deploy-stack=$STACK" >> "$GITHUB_OUTPUT"
