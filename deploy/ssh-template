@@ -1,2 +1,0 @@
-#!/bin/bash
-ssh -i %private_key_filename% root@%instance_ip% "$@"

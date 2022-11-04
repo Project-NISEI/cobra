@@ -1,5 +1,3 @@
 #!/bin/bash
 
-# Pass SSH command/script as argument
-
-./with-retry "$@" cloud-init status --wait
+./with-retry ./ssh-to-droplet cloud-init status --wait

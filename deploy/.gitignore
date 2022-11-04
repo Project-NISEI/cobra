@@ -1,5 +1,4 @@
 
 Pulumi.*.yaml
 
-/id_cobra_rsa_*
-/ssh-cobra-*
+/id_cobra_*
