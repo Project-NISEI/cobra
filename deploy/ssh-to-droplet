@@ -5,7 +5,7 @@ STACK=$(pulumi stack --show-name)
 DROPLET_IP=$(pulumi stack output droplet_public_ip)
 PRIVATE_KEY_FILE="$DIR/id_cobra_$STACK"
 touch "$PRIVATE_KEY_FILE"
-chmod 600 "$PRIVATE_KEY_FILE"
+chmod u=rw,g=,o= "$PRIVATE_KEY_FILE"
 pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
 
 echo "Retrieved connection details, connecting..."
