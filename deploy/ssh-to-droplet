@@ -3,7 +3,7 @@
 DIR=$(dirname "${BASH_SOURCE[0]}")
 STACK=$(pulumi stack --show-name)
 DROPLET_IP=$(pulumi stack output droplet_public_ip)
-PRIVATE_KEY_FILE="$DIR/id_cobra_rsa_$STACK"
+PRIVATE_KEY_FILE="$DIR/id_cobra_$STACK"
 pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
 
 echo "Retrieved connection details, connecting..."
