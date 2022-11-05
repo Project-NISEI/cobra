@@ -3,7 +3,7 @@
 set -e
 
 if [ "$#" -ne 2 ]; then
-    echo "Usage: clone-cobra owner/repository branch"
+    echo "Usage: $(basename "${BASH_SOURCE[0]}") owner/repository branch"
     exit
 fi
 
