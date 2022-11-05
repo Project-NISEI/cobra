@@ -99,10 +99,11 @@ jobs:
         id: pulumi
         uses: pulumi/actions@v3
         with:
-          command: up --refresh
+          command: up
           stack-name: ${{ needs.test.outputs.deploy-stack }}
           work-dir: deploy
           upsert: true
+          refresh: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
