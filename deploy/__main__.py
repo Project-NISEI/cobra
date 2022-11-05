@@ -12,7 +12,7 @@ with open('user_data', 'r') as user_data_file:
     user_data = user_data_file.read() \
         .replace("%cloud-init-script%", cloud_init_script)
 
-postgres_password = random.RandomPassword("cobra-postgres-password", length=16)
+postgres_password = random.RandomPassword("cobra-postgres-password", length=16, special=False)
 
 private_key = tls.PrivateKey("cobra-key", algorithm="RSA")
 ssh_key = do.SshKey("cobra-ssh-key", public_key=private_key.public_key_openssh)
