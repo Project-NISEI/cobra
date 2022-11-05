@@ -21,7 +21,7 @@ pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
 } > "$ENV_FILE"
 
 echo "Retrieved deployment details, uploading .env file..."
-scp -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" "$ENV_FILE"
+scp -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "$ENV_FILE" "root@$DROPLET_IP"
 
 echo "Connecting for deployment..."
 ssh -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" < "$DIR/in-droplet/deploy"
