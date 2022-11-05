@@ -7,4 +7,4 @@ KNOWN_HOSTS_FILE="$DIR/known_hosts_cobra_$STACK"
 
 touch "$KNOWN_HOSTS_FILE"
 chmod u=rw,g=,o= "$KNOWN_HOSTS_FILE"
-./with-retry ssh-keyscan -H "$DROPLET_IP" > "$KNOWN_HOSTS_FILE"
+"$DIR/with-retry" ssh-keyscan -H "$DROPLET_IP" > "$KNOWN_HOSTS_FILE"
