@@ -59,7 +59,7 @@ jobs:
 
       - name: Plan deployment
         id: plan-deployment
-        run: deploy/plan-github-actions-deployment
+        run: deploy/bin/plan-github-actions-deployment
 
     outputs:
       deploy-stack: ${{ steps.plan-deployment.outputs.deploy-stack }}
