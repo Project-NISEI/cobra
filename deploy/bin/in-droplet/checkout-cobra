@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ "$#" -ne 2 ]; then
     echo "Usage: clone-cobra owner/repository branch"
     exit
@@ -12,3 +14,11 @@ GIT_URL="https://github.com/$REPOSITORY.git"
 if [[ ! -d cobra ]]; then
   git clone -b "$BRANCH" "$GIT_URL" cobra
 fi
+
+pushd cobra
+
+git remote set-url origin "$GIT_URL"
+git fetch
+git checkout -B "$BRANCH" --track "origin/$BRANCH"
+
+popd
