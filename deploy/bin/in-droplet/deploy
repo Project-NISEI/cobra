@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+# Required environment variables in droplet:
+# GIT_REPOSITORY: owner/repository
+# GIT_BRANCH: branchname
+# See also /bin/deploy from the project root
+source .env
+REPOSITORY=$GIT_REPOSITORY
+BRANCH=$GIT_BRANCH
+GIT_URL="https://github.com/$REPOSITORY.git"
+
+if [[ ! -d cobra ]]; then
+  git clone -b "$BRANCH" "$GIT_URL" cobra
+fi
+
+pushd cobra
+
+git remote set-url origin "$GIT_URL"
+git fetch
+git checkout -B "$BRANCH" --track "origin/$BRANCH"
+
+{
+  echo "RAILS_ENV=$RAILS_ENV"
+  echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
+} > ".env"
+
+bin/deploy
+
+popd

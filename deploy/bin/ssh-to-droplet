@@ -1,10 +1,10 @@
 #!/bin/bash
 
-DIR=$(dirname "${BASH_SOURCE[0]}")
+DEPLOY_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)
 STACK=$(pulumi stack --show-name)
 DROPLET_IP=$(pulumi stack output droplet_public_ip)
-PRIVATE_KEY_FILE="$DIR/id_cobra_$STACK"
-KNOWN_HOSTS_FILE="$DIR/known_hosts_cobra_$STACK"
+PRIVATE_KEY_FILE="$DEPLOY_DIR/id_cobra_$STACK"
+KNOWN_HOSTS_FILE="$DEPLOY_DIR/known_hosts_cobra_$STACK"
 
 touch "$PRIVATE_KEY_FILE"
 chmod u=rw,g=,o= "$PRIVATE_KEY_FILE"

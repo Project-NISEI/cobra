@@ -59,7 +59,7 @@ jobs:
 
       - name: Plan deployment
         id: plan-deployment
-        run: deploy/bin/plan-github-actions-deployment
+        run: deploy/bin/github-actions-plan-deployment
 
     outputs:
       deploy-stack: ${{ steps.plan-deployment.outputs.deploy-stack }}
@@ -112,3 +112,5 @@ jobs:
         run: |
           ./scan-droplet-ssh
           ./wait-for-cloud-init
+      - name: Deploy
+        run: deploy/bin/github-actions-deploy-in-droplet

@@ -11,8 +11,8 @@ apt-get -y update && apt-get -y dist-upgrade && apt-get -y autoremove
 apt-get -y install git
 
 # Check if Docker needs installing
-DOCKER_PKGS_INSTALLED=$(dpkg-query -W --showformat='${Status}\n' docker-ce docker-ce-cli containerd.io docker-compose-plugin | grep "install ok installed" | wc -l || true)
-if [ $DOCKER_PKGS_INSTALLED -ne 4 ]; then
+DOCKER_PKGS_INSTALLED=$(dpkg-query -W --showformat='${Status}\n' docker-ce docker-ce-cli containerd.io docker-compose-plugin | grep -c "install ok installed" || true)
+if [ "$DOCKER_PKGS_INSTALLED" -ne 4 ]; then
 
   # Uninstall any old versions of Docker
   for package in docker docker-engine docker.io containerd runc; do

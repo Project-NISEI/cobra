@@ -1,6 +1,7 @@
 import pulumi
 import pulumi_digitalocean as do
 import pulumi_tls as tls
+import pulumi_random as random
 
 config = pulumi.Config()
 
@@ -10,6 +11,8 @@ with open('bin/in-droplet/cloud-init', 'r') as cloud_init_file:
 with open('user_data', 'r') as user_data_file:
     user_data = user_data_file.read() \
         .replace("%cloud-init-script%", cloud_init_script)
+
+postgres_password = random.RandomPassword("cobra-postgres-password", length=16)
 
 private_key = tls.PrivateKey("cobra-key", algorithm="RSA")
 ssh_key = do.SshKey("cobra-ssh-key", public_key=private_key.public_key_openssh)
@@ -24,3 +27,4 @@ droplet = do.Droplet(
 
 pulumi.export("droplet_public_ip", droplet.ipv4_address)
 pulumi.export("private_key_openssh", private_key.private_key_openssh)
+pulumi.export("postgres_password", postgres_password.result)
