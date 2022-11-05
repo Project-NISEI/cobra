@@ -6,33 +6,40 @@ PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "../" && pwd)
 pushd "${PROJECT_DIR}"
 
 # Required environment variables in .env:
-# RAILS_ENV: production
+# RAILS_ENV: develop or production
 # POSTGRES_PASSWORD: should be randomly generated per instance
+# Optional:
+# COMPOSE_FILE: prod, staging, override (for local dev - this is the default)
 source .env
 DB_USER_NAME=cobra
 DB_NAME=cobra
+COMPOSE_FILE=${COMPOSE_FILE-override}
 
-docker compose up -d db
-docker compose build app
-docker compose exec -T db bash < "${DB_SCRIPTS_DIR}/wait-for-postgres.sh"
+compose_for_deploy() {
+  docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
+}
 
-COBRA_USER_FOUND=$(docker compose exec db psql --username=postgres \
+compose_for_deploy up -d db
+compose_for_deploy build app
+compose_for_deploy exec -T db bash < "${DB_SCRIPTS_DIR}/wait-for-postgres.sh"
+
+COBRA_USER_FOUND=$(compose_for_deploy exec db psql --username=postgres \
   -c "SELECT rolname FROM pg_catalog.pg_roles WHERE lower(rolname) = lower('$DB_USER_NAME');" --csv \
   | grep -c "$DB_USER_NAME" || true)
 if [ "$COBRA_USER_FOUND" -ne 1 ]; then
-  docker compose exec db psql --username=postgres -c "create user cobra with password '$POSTGRES_PASSWORD' CREATEDB;"
+  compose_for_deploy exec db psql --username=postgres -c "create user cobra with password '$POSTGRES_PASSWORD' CREATEDB;"
 fi
 
-COBRA_DB_FOUND=$(docker compose exec db psql --username=postgres \
+COBRA_DB_FOUND=$(compose_for_deploy exec db psql --username=postgres \
   -c "SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('$DB_NAME');" --csv \
   | grep -c "$DB_NAME" || true)
 if [ "$COBRA_DB_FOUND" -ne 1 ]; then
-  docker compose run --rm app rake db:create db:schema:load --trace
+  compose_for_deploy run --rm app rake db:create db:schema:load --trace
 else
-  docker compose run --rm app rake db:migrate --trace
+  compose_for_deploy run --rm app rake db:migrate --trace
 fi
 
-docker compose run --rm app rake ids:update assets:precompile --trace
-docker compose up -d
+compose_for_deploy run --rm app rake ids:update assets:precompile --trace
+compose_for_deploy up -d
 
 popd

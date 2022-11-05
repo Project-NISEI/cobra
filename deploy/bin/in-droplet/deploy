@@ -24,6 +24,7 @@ git checkout -B "$BRANCH" --track "origin/$BRANCH"
   echo "RAILS_ENV=$RAILS_ENV"
   echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
   echo "SECRET_KEY_BASE=$SECRET_KEY_BASE"
+  echo "COMPOSE_FILE=$COMPOSE_FILE"
 } > ".env"
 
 cp config/database.example.yml config/database.yml
