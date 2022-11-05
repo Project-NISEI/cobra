@@ -13,6 +13,8 @@ touch "$PRIVATE_KEY_FILE"
 chmod u=rw,g=,o= "$PRIVATE_KEY_FILE"
 pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
 
+touch "$ENV_FILE"
+chmod u=rw,g=,o= "$ENV_FILE"
 {
   echo "RAILS_ENV=production"
   echo "COMPOSE_FILE=prod"
@@ -24,6 +26,7 @@ pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
 
 echo "Retrieved deployment details, uploading .env file..."
 scp -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "$ENV_FILE" "root@$DROPLET_IP:~/.env"
+rm "$ENV_FILE"
 
 echo "Connecting for deployment..."
 ssh -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" < "$DIR/in-droplet/deploy"
