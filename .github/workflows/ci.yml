@@ -108,7 +108,7 @@ jobs:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
       - name: Cloud Init
-        working-directory: ./deploy
+        working-directory: ./deploy/bin
         run: |
           ./scan-droplet-ssh
           ./wait-for-cloud-init
