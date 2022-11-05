@@ -101,9 +101,8 @@ jobs:
         with:
           command: up --refresh
           stack-name: ${{ needs.test.outputs.deploy-stack }}
-          config-map:
-            "digitalocean:token":
-              secret: true
-              value: ${{ secrets.DIGITALOCEAN_TOKEN }}
+          work-dir: deploy
+          upsert: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
