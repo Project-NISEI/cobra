@@ -16,6 +16,7 @@ pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
 {
   echo "RAILS_ENV=production"
   echo "POSTGRES_PASSWORD=$(pulumi stack output postgres_password --show-secrets)"
+  echo "SECRET_KEY_BASE=$(pulumi stack output rails_secret_key_base --show-secrets)"
   echo "GIT_REPOSITORY=$GITHUB_REPOSITORY"
   echo "GIT_BRANCH=$GITHUB_REF_NAME"
 } > "$ENV_FILE"
