@@ -98,15 +98,19 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Pulumi up
+      - name: Pulumi refresh
         id: pulumi
         uses: pulumi/actions@v3
         with:
-          command: up
+          command: refresh
           stack-name: ${{ needs.test.outputs.deploy-stack }}
           work-dir: deploy
           upsert: true
-          refresh: true
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
+      - name: Pulumi up
+        run: pulumi up --yes
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
