@@ -98,11 +98,11 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Pulumi refresh
+      - name: Pulumi install / preview
         id: pulumi
         uses: pulumi/actions@v3
         with:
-          command: refresh
+          command: preview
           stack-name: ${{ needs.test.outputs.deploy-stack }}
           work-dir: deploy
         env:
