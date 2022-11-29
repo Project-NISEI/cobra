@@ -9,6 +9,11 @@ pushd "${PROJECT_DIR}"
 # NISEI_DOMAIN
 source .env
 
+if [ "$COBRA_DOMAIN" == "" ] || [ "$NISEI_DOMAIN" == "" ]; then
+  echo "Not setting up certbot as domains not configured"
+  exit
+fi
+
 domains=("$COBRA_DOMAIN" "$NISEI_DOMAIN")
 rsa_key_size=4096
 data_path="./data/certbot"
