@@ -10,10 +10,17 @@ pushd "${PROJECT_DIR}"
 # POSTGRES_PASSWORD: should be randomly generated per instance
 # Optional:
 # COMPOSE_FILE: prod, staging, override (for local dev - this is the default)
+# Required if using prod compose file:
+# COBRA_DOMAIN
+# NISEI_DOMAIN
 source .env
 DB_USER_NAME=cobra
 DB_NAME=cobra
 COMPOSE_FILE=${COMPOSE_FILE-override}
+
+if [ "$COMPOSE_FILE" == "prod" ]; then
+  bin/init-certbot
+fi
 
 compose_for_deploy() {
   docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
