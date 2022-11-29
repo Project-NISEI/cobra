@@ -98,18 +98,17 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Pulumi refresh
+      - name: Pulumi up
         id: pulumi
         uses: pulumi/actions@v3
         with:
-          command: refresh
+          command: up
           stack-name: ${{ needs.test.outputs.deploy-stack }}
           work-dir: deploy
+          refresh: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
-      - name: Pulumi up
-        run: pulumi up --yes
       - name: Wait for cloud-init
         run: |
           bin/scan-droplet-ssh
