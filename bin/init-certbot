@@ -15,8 +15,8 @@ data_path="./data/certbot"
 email="" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-if [ -d "$data_path" ]; then
-  echo "Not setting up certbot as directory is already present at $data_path"
+if [ -e "$data_path/conf/options-ssl-nginx.conf" ]; then
+  echo "Not setting up certbot as options-ssl-nginx.conf is already present at $data_path/conf"
   exit
 fi
 
