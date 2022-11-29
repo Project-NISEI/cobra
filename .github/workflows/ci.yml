@@ -108,6 +108,8 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
+      - name: Pulumi config refresh
+        run: pulumi config refresh
       - name: Pulumi up
         run: pulumi up --yes
       - name: Wait for cloud-init
