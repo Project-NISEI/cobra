@@ -20,8 +20,16 @@ data_path="./data/certbot"
 email="" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-if [ -e "$data_path/conf/options-ssl-nginx.conf" ]; then
-  echo "Not setting up certbot as options-ssl-nginx.conf is already present at $data_path/conf"
+skip_init() {
+  for domain in "${domains[@]}"; do
+    if [ ! -d "$data_path/conf/live/$domain" ]; then
+      return 1
+    fi
+  done
+}
+
+if skip_init; then
+  echo "Not setting up certbot as directory is already present for cobra domain"
   exit
 fi
 
@@ -37,7 +45,7 @@ compose_prod() {
   docker compose -f docker-compose.yml -f docker-compose.prod.yml "$@"
 }
 
-echo "### Creating dummy certificate for $domains ..."
+echo "### Creating dummy certificate..."
 path="/etc/letsencrypt/live/$domains"
 mkdir -p "$data_path/conf/live/$domains"
 compose_prod run --rm --entrypoint "\
@@ -52,7 +60,7 @@ echo "### Starting nginx ..."
 compose_prod up --force-recreate -d web
 echo
 
-echo "### Deleting dummy certificate for $domains ..."
+echo "### Deleting dummy certificate..."
 compose_prod run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
@@ -60,7 +68,7 @@ compose_prod run --rm --entrypoint "\
 echo
 
 
-echo "### Requesting Let's Encrypt certificate for $domains ..."
+echo "### Requesting Let's Encrypt certificates ..."
 #Join $domains to -d args
 domain_args=""
 for domain in "${domains[@]}"; do
