@@ -27,7 +27,9 @@ droplet = do.Droplet(
     user_data=user_data,
     ssh_keys=[ssh_key.fingerprint])
 
-pulumi.export("droplet_public_ip", droplet.ipv4_address)
+public_ip = do.ReservedIp("cobra-public-ip", droplet_id=droplet.id, region=droplet.region)
+
+pulumi.export("droplet_public_ip", public_ip.ip_address)
 pulumi.export("private_key_openssh", private_key.private_key_openssh)
 pulumi.export("postgres_password", postgres_password.result)
 pulumi.export("rails_secret_key_base", rails_secret_key_base.result)
