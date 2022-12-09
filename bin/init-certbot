@@ -65,7 +65,7 @@ echo "### Starting nginx..."
 compose_prod up --force-recreate -d web
 echo
 
-echo "### Deleting dummy certificate..."
+echo "### Deleting dummy certificates..."
 for domain in "${domains[@]}"; do
   compose_prod run --rm --entrypoint "\
     rm -Rf /etc/letsencrypt/live/$domain && \
