@@ -99,4 +99,3 @@ done
 echo
 echo "### Reloading nginx ..."
 compose_prod exec web nginx -s reload
-Footer
