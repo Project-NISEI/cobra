@@ -57,7 +57,11 @@ for domain in "${domains[@]}"; do
   echo
 done
 
-echo "### Starting nginx ..."
+echo "### Building nginx image..."
+compose_prod build web
+echo
+
+echo "### Starting nginx..."
 compose_prod up --force-recreate -d web
 echo
 
