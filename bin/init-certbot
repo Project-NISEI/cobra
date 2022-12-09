@@ -20,16 +20,15 @@ data_path="./data/certbot"
 email="" # Adding a valid address is strongly recommended
 staging=1 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-skip_init() {
-  for domain in "${domains[@]}"; do
-    if [ ! -d "$data_path/conf/live/$domain" ]; then
-      return 1
-    fi
-  done
-}
+init_domains=()
+for domain in "${domains[@]}"; do
+  if [ ! -d "$data_path/conf/live/$domain" ]; then
+    init_domains+=("$domain")
+  fi
+done
 
-if skip_init; then
-  echo "Not setting up certbot as directory is already present for cobra domain"
+if [ ${#init_domains[@]} -eq 0 ]; then
+  echo "Not setting up certbot as directory is already present for all domains"
   exit
 fi
 
@@ -46,7 +45,7 @@ compose_prod() {
 }
 
 echo "### Creating dummy certificates..."
-for domain in "${domains[@]}"; do
+for domain in "${init_domains[@]}"; do
   path="/etc/letsencrypt/live/$domain"
   mkdir -p "$data_path/conf/live/$domain"
   compose_prod run --rm --entrypoint "\
@@ -66,7 +65,7 @@ compose_prod up --force-recreate -d web
 echo
 
 echo "### Deleting dummy certificates..."
-for domain in "${domains[@]}"; do
+for domain in "${init_domains[@]}"; do
   compose_prod run --rm --entrypoint "\
     rm -Rf /etc/letsencrypt/live/$domain && \
     rm -Rf /etc/letsencrypt/archive/$domain && \
@@ -86,7 +85,7 @@ esac
 # Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-for domain in "${domains[@]}"; do
+for domain in "${init_domains[@]}"; do
   compose_prod run --rm --entrypoint "\
     certbot certonly --webroot -w /var/www/certbot \
       $staging_arg \
