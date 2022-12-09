@@ -76,11 +76,6 @@ echo
 
 
 echo "### Requesting Let's Encrypt certificates ..."
-#Join $domains to -d args
-domain_args=""
-for domain in "${domains[@]}"; do
-  domain_args="$domain_args -d $domain"
-done
 
 # Select appropriate email arg
 case "$email" in
@@ -91,14 +86,17 @@ esac
 # Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-compose_prod run --rm --entrypoint "\
-  certbot certonly --webroot -w /var/www/certbot \
-    $staging_arg \
-    $email_arg \
-    $domain_args \
-    --rsa-key-size $rsa_key_size \
-    --agree-tos \
-    --force-renewal" certbot
+for domain in "${domains[@]}"; do
+  compose_prod run --rm --entrypoint "\
+    certbot certonly --webroot -w /var/www/certbot \
+      $staging_arg \
+      $email_arg \
+      -d $domain \
+      --rsa-key-size $rsa_key_size \
+      --agree-tos \
+      --force-renewal" certbot
+done
+
 echo
 echo "### Reloading nginx ..."
 compose_prod exec web nginx -s reload
