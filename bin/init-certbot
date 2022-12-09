@@ -45,26 +45,29 @@ compose_prod() {
   docker compose -f docker-compose.yml -f docker-compose.prod.yml "$@"
 }
 
-echo "### Creating dummy certificate..."
-path="/etc/letsencrypt/live/$domains"
-mkdir -p "$data_path/conf/live/$domains"
-compose_prod run --rm --entrypoint "\
-  openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
-    -keyout '$path/privkey.pem' \
-    -out '$path/fullchain.pem' \
-    -subj '/CN=localhost'" certbot
-echo
-
+echo "### Creating dummy certificates..."
+for domain in "${domains[@]}"; do
+  path="/etc/letsencrypt/live/$domain"
+  mkdir -p "$data_path/conf/live/$domain"
+  compose_prod run --rm --entrypoint "\
+    openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
+      -keyout '$path/privkey.pem' \
+      -out '$path/fullchain.pem' \
+      -subj '/CN=localhost'" certbot
+  echo
+done
 
 echo "### Starting nginx ..."
 compose_prod up --force-recreate -d web
 echo
 
 echo "### Deleting dummy certificate..."
-compose_prod run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/$domains && \
-  rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+for domain in "${domains[@]}"; do
+  compose_prod run --rm --entrypoint "\
+    rm -Rf /etc/letsencrypt/live/$domain && \
+    rm -Rf /etc/letsencrypt/archive/$domain && \
+    rm -Rf /etc/letsencrypt/renewal/$domain.conf" certbot
+done
 echo
 
 
