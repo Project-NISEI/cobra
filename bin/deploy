@@ -18,10 +18,6 @@ DB_USER_NAME=cobra
 DB_NAME=cobra
 COMPOSE_FILE=${COMPOSE_FILE-override}
 
-if [ "$COMPOSE_FILE" == "prod" ]; then
-  bin/init-certbot
-fi
-
 compose_for_deploy() {
   docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
 }
@@ -47,6 +43,12 @@ else
 fi
 
 compose_for_deploy run --rm app rake ids:update assets:precompile --trace
+compose_for_deploy up -d app
+
+if [ "$COMPOSE_FILE" == "prod" ]; then
+  bin/init-certbot
+fi
+
 compose_for_deploy up -d
 
 popd
