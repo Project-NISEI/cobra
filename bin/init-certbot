@@ -57,7 +57,7 @@ for domain in "${domains[@]}"; do
   echo
 done
 
-echo "### Building nginx image..."
+echo "### Building nginx image in case domain names have changed..."
 compose_prod build web
 echo
 
