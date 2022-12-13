@@ -21,9 +21,10 @@ compose_for_deploy() {
 
 compose_for_deploy up -d db
 compose_for_deploy build app
+
 bin/init-db
 
-compose_for_deploy run --rm app rake ids:update assets:precompile --trace
+compose_for_deploy run --rm app rake assets:precompile --trace
 compose_for_deploy up -d app
 
 if [ "$COMPOSE_FILE" == "prod" ]; then

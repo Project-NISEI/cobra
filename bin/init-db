@@ -39,3 +39,5 @@ if [ "$COBRA_DB_FOUND" -ne 1 ]; then
 else
   run_as_app rake db:migrate --trace
 fi
+
+run_as_app rake ids:update --trace
