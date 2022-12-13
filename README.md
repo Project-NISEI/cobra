@@ -10,7 +10,7 @@ echo "POSTGRES_PASSWORD=cobra" > .env
 echo "RAILS_ENV=development" >> .env
 ```
 
-Then initialize everything and bring up the server.
+- Deploy the app
 
 ```shell
 bin/deploy
