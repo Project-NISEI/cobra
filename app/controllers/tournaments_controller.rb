@@ -1,7 +1,7 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [
       :show, :edit, :update, :destroy,
-      :upload_to_abr, :save_json, :cut, :qr, :registration
+      :upload_to_abr, :save_json, :cut, :qr, :registration, :timer
     ]
 
   def index
@@ -30,6 +30,13 @@ class TournamentsController < ApplicationController
         render json: NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
       end
     end
+  end
+
+  def timer
+    authorize @tournament, :show?
+    @round = @tournament.rounds.last
+    @timer = @round.timer
+    render layout:'fullscreen'
   end
 
   def registration
