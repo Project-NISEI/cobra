@@ -23,7 +23,7 @@ compose_for_deploy() {
 compose_for_deploy up -d db
 compose_for_deploy build app
 
-bin/init-db
+bin/init-db app-in-docker
 
 compose_for_deploy run --rm app rake assets:precompile --trace
 compose_for_deploy up -d app

@@ -9,16 +9,17 @@ source .env
 DB_USER_NAME=cobra
 DB_NAME=cobra
 COMPOSE_FILE=${COMPOSE_FILE-override}
+APP_RUN_TYPE=$1
 
 compose_for_deploy() {
   docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
 }
 
 run_as_app() {
-  if [ "$COMPOSE_FILE" == "override" ]; then
-    $@
+  if [ "$APP_RUN_TYPE" == "app-in-docker" ]; then
+    compose_for_deploy run --rm app "$@"
   else
-    compose_for_deploy run --rm app $@
+    "$@"
   fi
 }
 
