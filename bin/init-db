@@ -22,6 +22,7 @@ run_as_app() {
   fi
 }
 
+compose_for_deploy up -d db
 compose_for_deploy exec -T db bash < "${DB_SCRIPTS_DIR}/wait-for-postgres.sh"
 
 COBRA_USER_FOUND=$(compose_for_deploy exec db psql --username=postgres \
