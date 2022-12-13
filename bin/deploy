@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-DB_SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "postgres/in-container" && pwd)
 PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "../" && pwd)
 pushd "${PROJECT_DIR}"
 
@@ -14,8 +13,6 @@ pushd "${PROJECT_DIR}"
 # COBRA_DOMAIN
 # NISEI_DOMAIN
 source .env
-DB_USER_NAME=cobra
-DB_NAME=cobra
 COMPOSE_FILE=${COMPOSE_FILE-override}
 
 compose_for_deploy() {
