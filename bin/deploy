@@ -10,6 +10,7 @@ pushd "${PROJECT_DIR}"
 # Optional:
 # COMPOSE_FILE: prod, staging, override (for local dev - this is the default)
 # Required if using prod compose file:
+# SECRET_KEY_BASE: A 64 bit hex key for rails, should be randomly generated
 # COBRA_DOMAIN
 # NISEI_DOMAIN
 source .env
