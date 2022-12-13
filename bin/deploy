@@ -24,23 +24,7 @@ compose_for_deploy() {
 
 compose_for_deploy up -d db
 compose_for_deploy build app
-compose_for_deploy exec -T db bash < "${DB_SCRIPTS_DIR}/wait-for-postgres.sh"
-
-COBRA_USER_FOUND=$(compose_for_deploy exec db psql --username=postgres \
-  -c "SELECT rolname FROM pg_catalog.pg_roles WHERE lower(rolname) = lower('$DB_USER_NAME');" --csv \
-  | grep -c "$DB_USER_NAME" || true)
-if [ "$COBRA_USER_FOUND" -ne 1 ]; then
-  compose_for_deploy exec db psql --username=postgres -c "create user cobra with password '$POSTGRES_PASSWORD' CREATEDB;"
-fi
-
-COBRA_DB_FOUND=$(compose_for_deploy exec db psql --username=postgres \
-  -c "SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('$DB_NAME');" --csv \
-  | grep -c "$DB_NAME" || true)
-if [ "$COBRA_DB_FOUND" -ne 1 ]; then
-  compose_for_deploy run --rm app rake db:create db:schema:load --trace
-else
-  compose_for_deploy run --rm app rake db:migrate --trace
-fi
+bin/init-db
 
 compose_for_deploy run --rm app rake ids:update assets:precompile --trace
 compose_for_deploy up -d app
