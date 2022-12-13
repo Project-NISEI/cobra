@@ -30,6 +30,7 @@ Rails.application.routes.draw do
     post :cut, on: :member
     get :qr, on: :member
     get :registration, on: :member
+    get :timer, on: :member
     get :shortlink, on: :collection
     get :not_found, on: :collection
     get :my, on: :collection
