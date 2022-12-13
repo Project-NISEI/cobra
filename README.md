@@ -3,7 +3,7 @@
 ## For local dev with docker
 
 - Set up config files
-```
+```shell
 cat config/database.example.yml | sed s/localhost/db/ > config/database.yml
 cp config/secrets.example.yml config/secrets.yml
 echo "POSTGRES_PASSWORD=cobra" > .env
@@ -12,22 +12,13 @@ echo "RAILS_ENV=development" >> .env
 
 Then initialize everything and bring up the server.
 
-Note: If you are running on Apple silicon, replace `docker-compose` below with
-`docker-compose -f docker-compose.yml -f docker-compose.apple.yml`
-
-```
-docker-compose up -d db
-# wait for the db to be ready. (docker-compose logs db) will end with "database system is ready to accept connections"
-docker-compose exec db psql --username=postgres -c "create user cobra with password 'cobra' CREATEDB;"
-docker-compose run app rake db:create db:migrate
-docker-compose run app rake ids:update
-docker-compose run app bundle exec rake assets:precompile
-docker-compose up -d
+```shell
+bin/deploy
 ```
 
 To run tests in your docker container, you will need to override the environment, like so:
-```
-docker-compose exec -e RAILS_ENV=test app rspec
+```shell
+docker compose exec -e RAILS_ENV=test app rspec
 ```
 
 ## Requirements
@@ -41,17 +32,6 @@ $ gem install bundler
 ```
 - Postgres
 - Git
-
-## Deploy as a web server
-- Get the project
-```
-$ git clone https://github.com/muyjohno/cobra.git
-$ cd cobra
-```
-- Deploy
-```
-$ docker-compose up
-```
 
 ## Set up for local development
 - Get the project
@@ -71,10 +51,20 @@ $ cp config/secrets.example.yml config/secrets.yml
 - Set up database
 ```
 $ psql postgres
-    # create user cobra with password '' CREATEDB;
+    # create user cobra with password 'cobra' CREATEDB;
     # \q
 $ rake db:create db:migrate
 ```
+
+If you prefer to use PostgreSQL in Docker instead of a local installation,
+you can set that up like this:
+
+```
+$ echo "POSTGRES_PASSWORD=cobra" > .env
+$ echo "RAILS_ENV=development" >> .env
+$ bin/init-db
+```
+
 - Start local server
 ```
 $ rails server
@@ -93,10 +83,32 @@ $ rake ids:update
 This rake task queries the NRDB API and creates/updates identities as appropriate.
 Identities not in the database are stripped out of ABR uploads to avoid errors.
 
+## Deploy as a web server
+- Get the project
+```shell
+git clone https://github.com/muyjohno/cobra.git
+cd cobra
+```
+- Set up config files
+```shell
+cp config/database.example.yml config/database.yml
+cp config/secrets.example.yml config/secrets.yml
+echo "RAILS_ENV=production" > .env
+echo "COMPOSE_FILE=prod" >> .env
+echo "POSTGRES_PASSWORD=some-good-password" >> .env
+echo "SECRET_KEY_BASE=random-64-bit-hex-key" >> .env
+echo "COBRA_DOMAIN=cobr.ai" >> .env
+echo "NISEI_DOMAIN=tournaments.nisei.net" >> .env
+```
+- Deploy
+```shell
+bin/deploy
+```
+
 ## :bug: Troubleshooting
 
 ### Rails doesn't start
-The rails app may not start after running `docker-compose up`. You might see logs like:
+The rails app may not start after running `docker compose up`. You might see logs like:
 
 ```
 Starting cobra_db_1 ... done
@@ -119,4 +131,4 @@ To remedy this you'll need to delete the unicorn `pid` file. Simply run this com
 docker run -v cobra_cobra-tmp:/cobra/tmp ubuntu rm /cobra/tmp/pids/unicorn.pid
 ```
 
-Then you should be able to start up the app again with `docker-compose up` as normal.
+Then you should be able to start up the app again with `docker compose up` as normal.
