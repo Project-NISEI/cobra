@@ -42,6 +42,10 @@ class RoundTimer
     end
   end
 
+  def header
+    "Remaining in #{@round.stage.format.humanize(capitalize: false)} round #{@round.number}#{paused? ? ' (paused)' : ''}:"
+  end
+
   private
 
   RunningState = Struct.new(:paused, :finish_time)
