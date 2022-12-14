@@ -36,7 +36,7 @@ $ gem install bundler
 ## Set up for local development
 - Get the project
 ```
-$ git clone https://github.com/muyjohno/cobra.git
+$ git clone https://github.com/Project-NISEI/cobra.git
 $ cd cobra
 ```
 - Install dependencies
@@ -86,7 +86,7 @@ Identities not in the database are stripped out of ABR uploads to avoid errors.
 ## Deploy as a web server
 - Get the project
 ```shell
-git clone https://github.com/muyjohno/cobra.git
+git clone https://github.com/Project-NISEI/cobra.git
 cd cobra
 ```
 - Set up config files
