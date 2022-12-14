@@ -55,7 +55,7 @@ RSpec.describe 'round timer' do
   end
 
   def timer_display_message
-    "Remaining in round 1:"
+    "Remaining in swiss round 1"
   end
 
 end
