@@ -118,10 +118,7 @@ some steps for setting that up.
    Ensure you own the domain you want to use.
 5. Do the same for cobra:nisei_domain. If you don't like the defaults for cobra:region and cobra:size, you can set them
    to slug values shown here: https://slugs.do-api.dev/.
-6. Check in the resulting Pulumi.stackname.yaml file to Git. If you prefer not to put the domain names in that file,
-   they can be encrypted by adding `--secret` to the `pulumi config set` command. If you do that, note that the domain
-   names will be displayed in GitHub Actions output when the HTTPS certificate is created. You may want to delete the
-   workflow runs where that happens.
+6. Check in the resulting Pulumi.stackname.yaml file to Git.
 7. Add an entry to trigger deploying your stack in `deploy/bin/github-actions-plan-deployment`. There's an example there
    that deploys on all pushes to a certain branch. You can make a branch for your deployed environment so you can deploy
    by pushing to that branch.
