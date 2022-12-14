@@ -1,8 +1,13 @@
 
 .container-fluid
-  .row.vh-100.align-items-center.justify-content-center
-    .col.col-auto
-      .alert.alert-primary.mb-0 style='font-size: 22vw; padding: 0 3vw; border-radius: 2vw; line-height: 1.2'
+  .row.vh-100.align-items-center.justify-content-center.text-center
+    .col.col-auto style='line-height: 1.1'
+      p.text-dark style='font-size: 5vw'
+        | Remaining in round #{@round.number}
+        - if @timer.paused?
+          |  (paused)
+        | :
+      .alert.alert-primary.mb-0 style='font-size: 22vw; border-radius: 2vw; width: 90vw'
         => fa_icon 'clock-o'
         - if @timer.show?
           span#round_time_remaining
@@ -10,4 +15,4 @@
           javascript:
             roundTimer = #{raw @timer.state.to_json};
         - else
-          | #{ @round.length_minutes }:00
+          | #{@round.length_minutes}:00
