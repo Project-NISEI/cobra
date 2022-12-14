@@ -6,10 +6,7 @@
         | #{@timer.header}
       .alert.alert-primary.mb-0 style='font-size: 22vw; border-radius: 2vw; width: 90vw'
         => fa_icon 'clock-o'
-        - if @timer.show?
-          span#round_time_remaining
-            | 00:00
-          javascript:
-            roundTimer = #{raw @timer.state.to_json};
-        - else
-          | #{@round.length_minutes}:00
+        span#round_time_remaining
+          | 00:00
+        javascript:
+          roundTimer = #{raw @timer.state.to_json};
