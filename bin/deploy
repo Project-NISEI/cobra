@@ -26,7 +26,7 @@ compose_for_deploy build app
 bin/init-db app-in-docker
 
 compose_for_deploy run --rm app rake assets:precompile --trace
-compose_for_deploy up -d app
+compose_for_deploy up -d app --force-recreate
 
 if [ "$COMPOSE_FILE" == "prod" ]; then
   bin/init-certbot
