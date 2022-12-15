@@ -18,7 +18,7 @@ pushd cobra
 
 git remote set-url origin "$GIT_URL"
 git fetch
-git checkout -B "$BRANCH" --track "origin/$BRANCH"
+git checkout -B "$BRANCH" --track "origin/$BRANCH" --force
 
 {
   echo "RAILS_ENV=$RAILS_ENV"
