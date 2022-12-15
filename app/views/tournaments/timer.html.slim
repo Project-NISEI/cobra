@@ -10,7 +10,7 @@
         | #{@timer.header}
       .alert.alert-primary.mb-0 style='font-size: 22vw; border-radius: 2vw; padding: 0.5vw 4vw'
         => fa_icon 'clock-o'
-        span#round_time_remaining style='width: 55vw; display: inline-block'
+        span#round_time_remaining.text-left style='width: 55vw; display: inline-block'
           | 00:00
         javascript:
           roundTimer = #{raw @timer.state.to_json};
