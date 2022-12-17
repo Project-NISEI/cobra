@@ -34,18 +34,29 @@ class RoundTimer
     end
   end
 
+  def started?
+    !round_timer_activations.last.nil?
+  end
+
   def state
     if paused?
-      PausedState.new(true, remaining_seconds_after_unpause)
+      PausedState.new(true, true, remaining_seconds_after_unpause)
+    elsif started?
+      RunningState.new(true, false, finish_time)
     else
-      RunningState.new(false, finish_time)
+      NotStartedState.new(false, false, length_minutes)
     end
+  end
+
+  def header
+    "Remaining in #{@round.stage.format.humanize(capitalize: false)} round #{@round.number}#{paused? ? ' (paused)' : ''}:"
   end
 
   private
 
-  RunningState = Struct.new(:paused, :finish_time)
-  PausedState = Struct.new(:paused, :remaining_seconds)
+  RunningState = Struct.new(:started, :paused, :finish_time)
+  PausedState = Struct.new(:started, :paused, :remaining_seconds)
+  NotStartedState = Struct.new(:started, :paused, :length_minutes)
   attr_reader :round
   delegate :round_timer_activations, :completed?, :length_minutes, to: :round
 

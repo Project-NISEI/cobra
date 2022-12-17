@@ -33,9 +33,11 @@ $(document).on 'turbolinks:load', ->
 
     if roundTimer.paused
       setTimeRemaining(roundTimer.remaining_seconds * 1000)
-    else
+    else if roundTimer.started
       finishTime = new Date(roundTimer.finish_time)
       renderTimeRemaining = () ->
         setTimeRemaining(finishTime.getTime() - new Date().getTime())
       renderTimeRemaining()
       setInterval(renderTimeRemaining, 100)
+    else
+      $("#round_time_remaining").html(timeRemainingString(roundTimer.length_minutes * 60000))
