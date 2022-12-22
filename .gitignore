@@ -21,3 +21,4 @@ public/scoop.png
 /public/assets/*
 
 /.idea
+*.iml

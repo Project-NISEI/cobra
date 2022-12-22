@@ -1,0 +1,101 @@
+#!/bin/bash
+set -e
+
+PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "../" && pwd)
+pushd "${PROJECT_DIR}"
+
+# Required environment variables in .env:
+# COBRA_DOMAIN
+# NISEI_DOMAIN
+source .env
+
+if [ "$COBRA_DOMAIN" == "" ] || [ "$NISEI_DOMAIN" == "" ]; then
+  echo "Not setting up certbot as domains not configured"
+  exit
+fi
+
+domains=("$COBRA_DOMAIN" "$NISEI_DOMAIN")
+rsa_key_size=4096
+data_path="./data/certbot"
+email="" # Adding a valid address is strongly recommended
+staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
+
+init_domains=()
+for domain in "${domains[@]}"; do
+  if [ ! -d "$data_path/conf/live/$domain" ]; then
+    init_domains+=("$domain")
+  fi
+done
+
+if [ ${#init_domains[@]} -eq 0 ]; then
+  echo "Not setting up certbot as directory is already present for all domains"
+  exit
+fi
+
+if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
+  echo "### Downloading recommended TLS parameters ..."
+  mkdir -p "$data_path/conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
+  echo
+fi
+
+compose_prod() {
+  docker compose -f docker-compose.yml -f docker-compose.prod.yml "$@"
+}
+
+echo "### Creating dummy certificates..."
+for domain in "${init_domains[@]}"; do
+  path="/etc/letsencrypt/live/$domain"
+  mkdir -p "$data_path/conf/live/$domain"
+  compose_prod run --rm --entrypoint "\
+    openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
+      -keyout '$path/privkey.pem' \
+      -out '$path/fullchain.pem' \
+      -subj '/CN=localhost'" certbot
+  echo
+done
+
+echo "### Building nginx image in case domain names have changed..."
+compose_prod build web
+echo
+
+echo "### Starting nginx..."
+compose_prod up --force-recreate -d web
+echo
+
+echo "### Deleting dummy certificates..."
+for domain in "${init_domains[@]}"; do
+  compose_prod run --rm --entrypoint "\
+    rm -Rf /etc/letsencrypt/live/$domain && \
+    rm -Rf /etc/letsencrypt/archive/$domain && \
+    rm -Rf /etc/letsencrypt/renewal/$domain.conf" certbot
+done
+echo
+
+
+echo "### Requesting Let's Encrypt certificates ..."
+
+# Select appropriate email arg
+case "$email" in
+  "") email_arg="--register-unsafely-without-email" ;;
+  *) email_arg="--email $email" ;;
+esac
+
+# Enable staging mode if needed
+if [ $staging != "0" ]; then staging_arg="--staging"; fi
+
+for domain in "${init_domains[@]}"; do
+  compose_prod run --rm --entrypoint "\
+    certbot certonly --webroot -w /var/www/certbot \
+      $staging_arg \
+      $email_arg \
+      -d $domain \
+      --rsa-key-size $rsa_key_size \
+      --agree-tos \
+      --force-renewal" certbot
+done
+
+echo
+echo "### Reloading nginx ..."
+compose_prod exec web nginx -s reload

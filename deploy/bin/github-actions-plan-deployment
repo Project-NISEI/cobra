@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Found GitHub ref name '$GITHUB_REF_NAME', repository '$GITHUB_REPOSITORY'"
+
+STACK=""
+if [[ $GITHUB_REF_NAME == deploy/* ]]; then
+  STACK=${GITHUB_REF_NAME##deploy/}
+fi
+
+echo "Chose stack to deploy '$STACK'"
+echo "deploy-stack=$STACK" >> "$GITHUB_OUTPUT"

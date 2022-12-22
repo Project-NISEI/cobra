@@ -1,0 +1,17 @@
+#!/bin/bash
+
+DEPLOY_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)
+STACK=$(pulumi stack --show-name)
+DROPLET_IP=$(pulumi stack output droplet_public_ip)
+PRIVATE_KEY_FILE="$DEPLOY_DIR/id_cobra_$STACK"
+KNOWN_HOSTS_FILE="$DEPLOY_DIR/known_hosts_cobra_$STACK"
+
+touch "$PRIVATE_KEY_FILE"
+chmod u=rw,g=,o= "$PRIVATE_KEY_FILE"
+pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
+
+echo "Retrieved connection details, connecting..."
+ssh -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" "$@"
+SSH_EXIT_CODE=$?
+rm "$PRIVATE_KEY_FILE"
+exit $SSH_EXIT_CODE

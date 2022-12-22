@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e
+
+DB_SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "postgres/in-container" && pwd)
+PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "../" && pwd)
+pushd "${PROJECT_DIR}"
+
+source .env
+DB_USER_NAME=cobra
+DB_NAME=cobra
+COMPOSE_FILE=${COMPOSE_FILE-override}
+APP_RUN_TYPE=$1
+
+compose_for_deploy() {
+  docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
+}
+
+run_as_app() {
+  if [ "$APP_RUN_TYPE" == "app-in-docker" ]; then
+    compose_for_deploy run --rm app "$@"
+  else
+    "$@"
+  fi
+}
+
+compose_for_deploy up -d db
+compose_for_deploy exec -T db bash < "${DB_SCRIPTS_DIR}/wait-for-postgres.sh"
+
+COBRA_USER_FOUND=$(compose_for_deploy exec db psql --username=postgres \
+  -c "SELECT rolname FROM pg_catalog.pg_roles WHERE lower(rolname) = lower('$DB_USER_NAME');" --csv \
+  | grep -c "$DB_USER_NAME" || true)
+if [ "$COBRA_USER_FOUND" -ne 1 ]; then
+  compose_for_deploy exec db psql --username=postgres -c "create user cobra with password '$POSTGRES_PASSWORD' CREATEDB;"
+fi
+
+COBRA_DB_FOUND=$(compose_for_deploy exec db psql --username=postgres \
+  -c "SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('$DB_NAME');" --csv \
+  | grep -c "$DB_NAME" || true)
+if [ "$COBRA_DB_FOUND" -ne 1 ]; then
+  run_as_app rake db:create db:schema:load --trace
+else
+  run_as_app rake db:migrate --trace
+fi
+
+run_as_app rake ids:update --trace
