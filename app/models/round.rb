@@ -36,4 +36,8 @@ class Round < ApplicationRecord
   def timer
     RoundTimer.new(self)
   end
+
+  def name
+    "#{stage.format.humanize(capitalize: false)} round #{number}"
+  end
 end

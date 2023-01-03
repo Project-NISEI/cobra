@@ -1,7 +1,9 @@
 - if round&.timer&.show?
   .alert.alert-primary.mb-0
     => fa_icon 'clock-o'
-    | #{round.timer.header}&nbsp;
+    span#time_remaining_header
+      | Remaining
+    | &nbsp;#{round.timer.header}&nbsp;
     / Width is fixed to avoid numbers popping around on Mac as the font has numbers of different widths
     span#round_time_remaining.text-left style='width: 2.6rem; display: inline-block'
       | 00:00
