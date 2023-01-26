@@ -99,7 +99,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.1.10)
+    concurrent-ruby (1.2.0)
     crass (1.0.6)
     database_cleaner (2.0.1)
       database_cleaner-active_record (~> 2.0.0)
@@ -145,7 +145,7 @@ GEM
     font-awesome-rails (4.7.0.8)
       railties (>= 3.2, < 8.0)
     generator (0.0.1)
-    globalid (1.0.0)
+    globalid (1.1.0)
       activesupport (>= 5.0)
     graph_matching (0.2.1)
       rgl (~> 0.5.0)
@@ -174,7 +174,7 @@ GEM
     matrix (0.4.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
-    minitest (5.16.2)
+    minitest (5.17.0)
     multipart-post (2.1.1)
     net-http (0.2.2)
       uri
