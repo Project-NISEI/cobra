@@ -14,7 +14,7 @@
           button.btn.btn-success type='submit' name='operation' value='start'
             => fa_icon 'clock-o'
             | Resume
-        - else
+        - elsif !round.timer.started?
           button.btn.btn-success type='submit' name='operation' value='start'
             => fa_icon 'clock-o'
             | Start

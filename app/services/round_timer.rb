@@ -49,7 +49,7 @@ class RoundTimer
   end
 
   def header
-    "Remaining in #{@round.stage.format.humanize(capitalize: false)} round #{@round.number}#{paused? ? ' (paused)' : ''}:"
+    "in #{@round.name}#{paused? ? ' (paused)' : ''}:"
   end
 
   private

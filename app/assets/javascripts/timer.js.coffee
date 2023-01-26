@@ -8,13 +8,13 @@ $(document).on 'turbolinks:load', ->
         "" + number
 
     timeRemainingString = (millis) ->
-      if millis <= 0
-        "00:00"
-      else
-        totalSeconds = Math.trunc(millis / 1000);
-        minutes = Math.trunc(totalSeconds / 60);
-        seconds = totalSeconds % 60;
-        addLeadingZero(minutes) + ":" + addLeadingZero(seconds)
+      totalSeconds = Math.abs(Math.ceil(millis / 1000));
+      minutes = Math.trunc(totalSeconds / 60);
+      seconds = totalSeconds % 60;
+      if minutes > 99
+        minutes = 99
+        seconds = 99
+      addLeadingZero(minutes) + ":" + addLeadingZero(seconds)
 
     allAlertClasses = "alert-primary alert-secondary alert-warning alert-danger"
     alertClassesForTimeRemaining = (millis) ->
@@ -28,6 +28,7 @@ $(document).on 'turbolinks:load', ->
         "alert-primary"
 
     setTimeRemaining = (millis) ->
+      $('#time_remaining_header').html(if millis > 0 then 'Remaining' else 'Overtime')
       $("#round_time_remaining").html(timeRemainingString(millis))
       $("#round_time_remaining").parent().removeClass(allAlertClasses).addClass(alertClassesForTimeRemaining(millis))
 
@@ -40,4 +41,4 @@ $(document).on 'turbolinks:load', ->
       renderTimeRemaining()
       setInterval(renderTimeRemaining, 100)
     else
-      $("#round_time_remaining").html(timeRemainingString(roundTimer.length_minutes * 60000))
+      setTimeRemaining(roundTimer.length_minutes * 60000)
