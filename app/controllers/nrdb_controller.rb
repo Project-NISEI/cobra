@@ -1,7 +1,7 @@
-class DecksController < ApplicationController
+class NrdbController < ApplicationController
   before_action :skip_authorization
 
-  def index
+  def decks
     render json: Nrdb::Connection.new(current_user).decks
   end
 end

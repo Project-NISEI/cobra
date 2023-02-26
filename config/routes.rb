@@ -36,7 +36,9 @@ Rails.application.routes.draw do
     get :my, on: :collection
   end
   resources :identities, only: [:index]
-  resources :decks, only: [:index]
+  namespace :nrdb do
+    get :decks
+  end
 
   get '/error', to: 'errors#show'
 
