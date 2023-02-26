@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     get :my, on: :collection
   end
   resources :identities, only: [:index]
+  resources :decks, only: [:index]
 
   get '/error', to: 'errors#show'
 
