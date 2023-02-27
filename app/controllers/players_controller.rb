@@ -22,7 +22,11 @@ class PlayersController < ApplicationController
     end
 
     if @tournament.nrdb_deck_registration?
-      redirect_to deck_registration_tournament_player_path(@tournament, player)
+      if player.user_id
+        redirect_to registration_tournament_path(@tournament)
+      else
+        redirect_to deck_registration_tournament_player_path(@tournament, player)
+      end
     elsif player.user_id
       redirect_to tournament_path(@tournament)
     else
