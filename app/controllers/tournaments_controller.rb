@@ -158,6 +158,6 @@ class TournamentsController < ApplicationController
   end
 
   def tournament_params
-    params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed, :self_registration)
+    params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed, :self_registration, :nrdb_deck_registration)
   end
 end
