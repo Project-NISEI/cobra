@@ -1,6 +1,6 @@
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :deck_registration]
+  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :registration]
 
   def index
     authorize @tournament, :update?
@@ -25,7 +25,7 @@ class PlayersController < ApplicationController
       if player.user_id
         redirect_to registration_tournament_path(@tournament)
       else
-        redirect_to deck_registration_tournament_player_path(@tournament, player)
+        redirect_to registration_tournament_player_path(@tournament, player)
       end
     elsif player.user_id
       redirect_to tournament_path(@tournament)
@@ -78,7 +78,7 @@ class PlayersController < ApplicationController
     authorize @tournament, :show?
   end
 
-  def deck_registration
+  def registration
     if @player.user_id == current_user.id
       authorize @tournament, :show?
     else
