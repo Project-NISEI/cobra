@@ -29,30 +29,30 @@
   - else
     - if @tournament.self_registration?
       - if current_user
-				.card.alert.alert-secondary
-					- unless @current_user_dropped
-						h5.card-title Register for this Event
-						= simple_form_for :player, url: tournament_players_path(@tournament) do |f|
-							= render 'players/form', f: f, default_name: current_user ? current_user.nrdb_username : ''
-							.text-right
-								= button_tag type: :submit, class: 'btn btn-primary', disabled: (not current_user) do
-									=> fa_icon 'user-plus'
-									| Register
-					- else
-						h5.card-title Rejoin this Event
-						- if @current_user_is_running_tournament
-							p
-								| You can re-instate yourself on the
-								=<> link_to tournament_players_path(@tournament) do
-									| Players
-								| tab.
-						- else
-							p Talk to a Tournmanet Organiser to rejoin the event
+        .card.alert.alert-secondary
+          - unless @current_user_dropped
+            h5.card-title Register for this Event
+            = simple_form_for :player, url: tournament_players_path(@tournament) do |f|
+              = render 'players/form', f: f, default_name: current_user ? current_user.nrdb_username : ''
+              .text-right
+                = button_tag type: :submit, class: 'btn btn-primary', disabled: (not current_user) do
+                  => fa_icon 'user-plus'
+                  | Register
+          - else
+            h5.card-title Rejoin this Event
+            - if @current_user_is_running_tournament
+              p
+                | You can re-instate yourself on the
+                =<> link_to tournament_players_path(@tournament) do
+                  | Players
+                | tab.
+            - else
+              p Talk to a Tournament Organiser to rejoin the event
       - else
         .card.alert.alert-warning
           .card-body
             h5.card-title Register for this Event
-            p.mb-1 You must be logged in to register for this tournamet:
+            p.mb-1 You must be logged in to register for this tournament:
             = link_to login_path, class: 'alert-link' do
               => fa_icon 'sign-in'
               | Sign in
