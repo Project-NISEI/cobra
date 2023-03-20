@@ -2,6 +2,7 @@ class OauthController < ApplicationController
   before_action :skip_authorization
 
   def auth
+    session[:return_to] = params[:return_to]
     redirect_to Nrdb::Oauth.auth_uri(request.host), allow_other_host: true
   end
 
@@ -26,7 +27,11 @@ class OauthController < ApplicationController
 
       session[:user_id] = user.id
 
-      redirect_to root_path
+      if session[:return_to]
+        redirect_to session[:return_to]
+      else
+        redirect_to root_path
+      end
     else
       render json: { message: :failed }, status: 500
     end
