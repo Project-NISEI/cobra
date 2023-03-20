@@ -79,11 +79,7 @@ class PlayersController < ApplicationController
   end
 
   def registration
-    if @player.user_id == current_user.id
-      authorize @tournament, :show?
-    else
-      authorize @tournament, :update?
-    end
+    authorize @tournament, :update?
   end
 
   private
