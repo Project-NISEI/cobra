@@ -10,18 +10,25 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     click_button 'Create'
   end
 
-  it 'registers a player' do
+  it 'registers as a player' do
     expect do
       register_as_player
     end.to change(Player, :count).by(1)
     expect(page.current_path).to eq(registration_tournament_path(Tournament.last))
   end
 
-  it 'registers a player as the TO' do
+  it 'registers TO as a player' do
     expect do
       register_as_organizer
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(registration_tournament_player_path(Tournament.last, Player.last))
+    expect(page.current_path).to eq(registration_tournament_path(Tournament.last))
+  end
+
+  it 'creates a player as the TO' do
+    expect do
+      create_player_as_organizer
+    end.to change(Player, :count).by(1)
+    expect(page.current_path).to eq(tournament_players_path(Tournament.last))
   end
 
   def register_as_player
@@ -34,6 +41,12 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     visit tournament_path(Tournament.last)
     fill_in 'Name', with: 'Test Player'
     click_button 'Register'
+  end
+
+  def create_player_as_organizer
+    visit tournament_players_path(Tournament.last)
+    fill_in 'Name', with: 'Test Player'
+    click_button 'Create'
   end
 
 end

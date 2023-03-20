@@ -25,7 +25,7 @@ class PlayersController < ApplicationController
       if player.user_id
         redirect_to registration_tournament_path(@tournament)
       else
-        redirect_to registration_tournament_player_path(@tournament, player)
+        redirect_to tournament_players_path(@tournament)
       end
     elsif player.user_id
       redirect_to tournament_path(@tournament)
