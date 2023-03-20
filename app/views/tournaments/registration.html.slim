@@ -16,5 +16,11 @@
             => fa_icon 'check'
             | Update
 
+- if @tournament.nrdb_deck_registration?
+  .col-12.mt-3.row
+    .col-md-6
+      ul.list-group
+        - @decks.each do |deck|
+          li.list-group-item= deck[:name]
 
 = render 'player_counts'

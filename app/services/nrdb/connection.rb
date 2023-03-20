@@ -14,7 +14,9 @@ module Nrdb
 
     def decks
       resp = connection.get('/api/2.0/private/decks')
-      JSON.parse(resp.body)
+      raise 'NRDB API connection failed' unless resp.success?
+
+      JSON.parse(resp.body).with_indifferent_access[:data]
     end
 
     def cards
