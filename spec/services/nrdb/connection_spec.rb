@@ -27,15 +27,10 @@ RSpec.describe Nrdb::Connection do
 
     it 'fetches decks' do
       VCR.use_cassette :nrdb_decks do
-        expect(connection.decks).to eq({
-          "version_number" => "2.0",
-          "data" => [
+        expect(connection.decks).to eq([
             "id" => 123,
             "name" => "My Best Deck"
-          ],
-          "total" => 1,
-          "success" => true,
-        })
+          ])
       end
     end
   end
