@@ -21,14 +21,12 @@ class PlayersController < ApplicationController
       @tournament.current_stage.players << player
     end
 
-    if @tournament.nrdb_deck_registration?
-      if player.user_id
+    if player.user_id
+      if @tournament.nrdb_deck_registration?
         redirect_to registration_tournament_path(@tournament)
       else
-        redirect_to tournament_players_path(@tournament)
+        redirect_to tournament_path(@tournament)
       end
-    elsif player.user_id
-      redirect_to tournament_path(@tournament)
     else
       redirect_to tournament_players_path(@tournament)
     end
