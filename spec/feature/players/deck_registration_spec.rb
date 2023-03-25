@@ -1,6 +1,6 @@
 RSpec.describe 'registering a deck from NetrunnerDB' do
-  let(:organiser) { create(:user) }
-  let(:player) { create(:user) }
+  let(:organiser) { create(:user, nrdb_access_token: 'a_token') }
+  let(:player) { create(:user, nrdb_access_token: 'a_token') }
   before do
     sign_in organiser
     visit new_tournament_path
@@ -34,13 +34,17 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   def register_as_player
     sign_in player
     visit tournament_path(Tournament.last)
-    click_button 'Register'
+    VCR.use_cassette :nrdb_decks do
+      click_button 'Register'
+    end
   end
 
   def register_as_organizer
     visit tournament_path(Tournament.last)
     fill_in 'Name', with: 'Test Player'
-    click_button 'Register'
+    VCR.use_cassette :nrdb_decks do
+      click_button 'Register'
+    end
   end
 
   def create_player_as_organizer
