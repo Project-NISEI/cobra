@@ -47,11 +47,11 @@ $(document).on 'turbolinks:load', ->
     if popOutButton && window.history.length > 1
       popOutButton.style.display = ""
 
-    window.popOutTimer = () ->
+    window.popOutRoundTimer = () ->
       window.open(window.location.href,"_blank","width=,height=")
       window.history.back()
 
-    window.closeTimer = () ->
+    window.closeRoundTimer = () ->
       if window.history.length > 1
         window.history.back()
       else
