@@ -26,7 +26,7 @@ RSpec.describe Nrdb::Connection do
     end
 
     it 'fetches decks' do
-      VCR.use_cassette :nrdb_decks do
+      VCR.use_cassette 'nrdb_decks/simplified_deck' do
         expect(connection.decks).to eq([
             "id" => 123,
             "name" => "My Best Deck"

@@ -1,0 +1,27 @@
+---
+http_interactions:
+  - request:
+      method: get
+      uri: https://netrunnerdb.com/api/2.0/private/decks
+      body:
+        string: ''
+      headers:
+        Authorization:
+          - Bearer a_token
+    response:
+      status:
+        code: 200
+      headers:
+        content-type:
+          - application/json; charset=UTF-8
+      body:
+        encoding: UTF-8
+        string: |
+          {"version_number":"2.0","data":[
+            {
+              "id": 123,
+              "name": "My Best Deck"
+            }
+          ],"total":1,"success":true}
+    recorded_at: Sat, 25 Feb 2023 16:00:35 GMT
+recorded_with: VCR 2.9.3

@@ -34,7 +34,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   def register_as_player
     sign_in player
     visit tournament_path(Tournament.last)
-    VCR.use_cassette :nrdb_decks do
+    VCR.use_cassette 'nrdb_decks/simplified_deck' do
       click_button 'Register'
     end
   end
@@ -42,7 +42,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   def register_as_organizer
     visit tournament_path(Tournament.last)
     fill_in 'Name', with: 'Test Player'
-    VCR.use_cassette :nrdb_decks do
+    VCR.use_cassette 'nrdb_decks/simplified_deck' do
       click_button 'Register'
     end
   end
