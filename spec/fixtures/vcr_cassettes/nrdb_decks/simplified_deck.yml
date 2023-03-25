@@ -13,7 +13,7 @@ http_interactions:
         code: 200
       headers:
         content-type:
-          - application/json; charset=UTF-8
+          - application/json
       body:
         encoding: UTF-8
         string: |

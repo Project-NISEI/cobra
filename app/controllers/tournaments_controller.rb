@@ -50,6 +50,7 @@ class TournamentsController < ApplicationController
       rescue
         redirect_to login_path(:return_to => request.path)
       end
+      @decks = @decks.sort_by { |d| -(d[:date_update] || '').to_datetime.to_i }
     end
   end
 
