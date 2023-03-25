@@ -24,6 +24,9 @@
         .card
           ul.list-group.list-group-flush.overflow-auto#nrdb_decks style='height: 20em'
             - @decks.each do |deck|
-              li.list-group-item= deck[:name]
+              li.list-group-item
+                p.mb-1= deck[:name]
+                - unless deck[:identity].nil?
+                  small= deck[:identity].name
 
 = render 'player_counts'

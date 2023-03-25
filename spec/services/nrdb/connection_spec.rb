@@ -25,12 +25,26 @@ RSpec.describe Nrdb::Connection do
       end
     end
 
-    it 'fetches decks' do
+    it 'fetches a deck' do
       VCR.use_cassette 'nrdb_decks/simplified_deck' do
         expect(connection.decks).to eq([
             "id" => 123,
             "name" => "My Best Deck"
           ])
+      end
+    end
+
+    it 'reads the identity from the NRDB codes of the cards' do
+      identity = create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy')
+      VCR.use_cassette 'nrdb_decks/az_palantir_full_deck' do
+        expect(connection.decks.first[:identity]).to eq(identity)
+      end
+    end
+
+    it 'orders decks most recent first' do
+      VCR.use_cassette 'nrdb_decks/unordered_decks' do
+        expect(connection.decks.map { |deck| deck[:name] })
+          .to eq(["Some Deck", "A Perfect Deck", "My Best Deck"])
       end
     end
   end

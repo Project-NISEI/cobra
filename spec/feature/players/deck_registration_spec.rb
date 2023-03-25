@@ -31,13 +31,16 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     expect(page.current_path).to eq(tournament_players_path(Tournament.last))
   end
 
-  it 'orders decks by most recent first' do
+  it 'displays a deck in the list' do
     register_as_player
-    VCR.use_cassette 'nrdb_decks/unordered_decks' do
+    create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy')
+    VCR.use_cassette 'nrdb_decks/az_palantir_full_deck' do
       visit registration_tournament_path(Tournament.last)
     end
-    expect(nrdb_decks_display)
-      .to eq(['Some Deck', 'A Perfect Deck', 'My Best Deck'])
+    expect(displayed_decks_names)
+      .to eq(['The Palantir - 1st/Undefeated @ Silver Goblin Store Champs'])
+    expect(displayed_decks_identities)
+      .to eq(['Az McCaffrey: Mechanical Prodigy'])
   end
 
   def register_as_player
@@ -62,8 +65,12 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     click_button 'Create'
   end
 
-  def nrdb_decks_display
-    find('#nrdb_decks').all('li').map {|deck| deck.text}
+  def displayed_decks_names
+    find('#nrdb_decks').all('li').map {|deck| deck.find('p').text}
+  end
+
+  def displayed_decks_identities
+    find('#nrdb_decks').all('li').map {|deck| deck.find('small').text}
   end
 
 end

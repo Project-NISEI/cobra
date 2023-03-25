@@ -16,7 +16,8 @@ module Nrdb
       resp = connection.get('/api/2.0/private/decks')
       raise 'NRDB API connection failed' unless resp.success?
 
-      JSON.parse(resp.body).with_indifferent_access[:data]
+      data = JSON.parse(resp.body).with_indifferent_access[:data]
+      lookup_identities(data).sort_by { |d| -(d[:date_update] || '').to_datetime.to_i }
     end
 
     def cards
@@ -42,6 +43,21 @@ module Nrdb
       @connection ||= Faraday.new(url: "https://netrunnerdb.com") do |conn|
         conn.adapter :net_http
       end
+    end
+
+    def lookup_identities(decks)
+      card_codes = decks.flat_map { |deck| (deck[:cards] || {}).keys }
+      code_to_identity = Identity.where(nrdb_code: card_codes)
+                                 .to_h { |identity| [identity.nrdb_code, identity] }
+      decks.map do |deck|
+        deck.merge({ :identity => lookup_identity(deck, code_to_identity) }.compact)
+      end
+    end
+
+    def lookup_identity(deck, code_to_identity)
+      (deck[:cards] || {}).keys
+                          .flat_map { |code| code_to_identity[code] || [] }
+                          .first
     end
   end
 end

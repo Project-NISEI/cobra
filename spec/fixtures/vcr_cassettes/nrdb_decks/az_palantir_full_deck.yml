@@ -1,0 +1,62 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://netrunnerdb.com/api/2.0/private/decks
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer a_token
+  response:
+    status:
+      code: 200
+      message: 
+    headers:
+      content-type:
+      - application/json
+    body:
+      encoding: UTF-8
+      string: |
+        {"version_number":"2.0","data":[
+          {
+            "id": 1455189,
+            "uuid": "a277dce2-fb3f-476f-b8b2-56a4fb409166",
+            "date_creation": "2022-05-22T11:13:17+00:00",
+            "date_update": "2022-05-22T11:13:17+00:00",
+            "name": "The Palantir - 1st/Undefeated @ Silver Goblin Store Champs",
+            "description": "",
+            "mwl_code": "standard-ban-list-21-10",
+            "cards": {
+                "10023": 3,
+                "10042": 3,
+                "10043": 1,
+                "10064": 3,
+                "11008": 1,
+                "11024": 1,
+                "21105": 3,
+                "22014": 2,
+                "26004": 1,
+                "26010": 1,
+                "26012": 2,
+                "26013": 2,
+                "26015": 3,
+                "26074": 3,
+                "26075": 3,
+                "26077": 2,
+                "26082": 1,
+                "26085": 1,
+                "30007": 2,
+                "30011": 1,
+                "30030": 3,
+                "31005": 1,
+                "31021": 1,
+                "32002": 2
+            },
+            "tags": ""
+          }
+        ],"total":1,"success":true}
+    http_version: 
+  recorded_at: Sat, 25 Mar 2023 22:12:03 GMT
+recorded_with: VCR 3.0.3
