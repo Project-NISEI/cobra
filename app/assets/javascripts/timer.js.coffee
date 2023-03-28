@@ -8,9 +8,9 @@ $(document).on 'turbolinks:load', ->
         "" + number
 
     timeRemainingString = (millis) ->
-      totalSeconds = Math.abs(Math.ceil(millis / 1000));
-      minutes = Math.trunc(totalSeconds / 60);
-      seconds = totalSeconds % 60;
+      totalSeconds = Math.abs(Math.ceil(millis / 1000))
+      minutes = Math.trunc(totalSeconds / 60)
+      seconds = totalSeconds % 60
       if minutes > 99
         minutes = 99
         seconds = 99
@@ -42,3 +42,17 @@ $(document).on 'turbolinks:load', ->
       setInterval(renderTimeRemaining, 100)
     else
       setTimeRemaining(roundTimer.length_minutes * 60000)
+
+    popOutButton = document.getElementById("pop_out_button")
+    if popOutButton && window.history.length > 1
+      popOutButton.style.display = ""
+
+    window.popOutRoundTimer = () ->
+      window.open(window.location.href,"_blank","width=,height=")
+      window.history.back()
+
+    window.closeRoundTimer = () ->
+      if window.history.length > 1
+        window.history.back()
+      else
+        window.close()
