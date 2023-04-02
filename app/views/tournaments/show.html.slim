@@ -6,12 +6,12 @@
       - if @current_user_player
         .card
           .card-header
-                    .d-flex.justify-content-between
-                        h5.mb-0 My Registration Information
-                        - if policy(@tournament).register?
-                            = link_to registration_tournament_path(@tournament), title: 'Edit', class: 'float-right' do
-                                => fa_icon 'pencil'
-                                span.d-none Edit my registration information
+            .d-flex.justify-content-between
+              h5.mb-0 My Registration Information
+              - if policy(@tournament).register?
+                = link_to registration_tournament_path(@tournament), title: 'Edit', class: 'float-right' do
+                  => fa_icon 'pencil'
+                  span.d-none Edit my registration information
           ul.list-group.list-group-flush
             li.list-group-item
               .small.text-secondary Name:
