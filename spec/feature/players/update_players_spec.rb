@@ -36,6 +36,10 @@ RSpec.describe 'updating players' do
     expect(tournament.players.first.manual_seed).to eq(3)
   end
 
+  it 'does not update user id' do
+    expect(tournament.players.first.user_id).to be(nil)
+  end
+
   it 'redirects to tournament player page' do
     expect(current_path).to eq tournament_players_path(tournament)
   end
