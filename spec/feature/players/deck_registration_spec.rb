@@ -17,7 +17,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     expect(page.current_path).to eq(registration_tournament_path(Tournament.last))
   end
 
-  it 'registers TO as a player' do
+  it 'TO registers themselves as a player' do
     expect do
       register_as_organizer
     end.to change(Player, :count).by(1)
@@ -46,7 +46,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   def register_as_player
     sign_in player
     visit tournament_path(Tournament.last)
-    VCR.use_cassette 'nrdb_decks/simplified_deck' do
+    with_nrdb_decks do
       click_button 'Register'
     end
   end
@@ -54,7 +54,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   def register_as_organizer
     visit tournament_path(Tournament.last)
     fill_in 'Name', with: 'Test Player'
-    VCR.use_cassette 'nrdb_decks/simplified_deck' do
+    with_nrdb_decks do
       click_button 'Register'
     end
   end
@@ -71,6 +71,12 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
 
   def displayed_decks_identities
     find('#nrdb_decks').all('li').map {|deck| deck.find('small').text}
+  end
+
+  def with_nrdb_decks(&block)
+    VCR.use_cassette 'nrdb_decks/simplified_deck' do
+      block.call
+    end
   end
 
 end
