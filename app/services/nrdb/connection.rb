@@ -50,7 +50,8 @@ module Nrdb
       code_to_identity = Identity.where(nrdb_code: card_codes)
                                  .to_h { |identity| [identity.nrdb_code, identity] }
       decks.map do |deck|
-        deck.merge({ :identity => lookup_identity(deck, code_to_identity) }.compact)
+        identity = lookup_identity(deck, code_to_identity)
+        deck.merge({ :identity => identity, :side => identity ? identity.side : nil }.compact)
       end
     end
 

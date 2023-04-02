@@ -41,6 +41,13 @@ RSpec.describe Nrdb::Connection do
       end
     end
 
+    it 'reads the side from the identity' do
+      create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future', side: :corp)
+      VCR.use_cassette 'nrdb_decks/jammy_hb_full_deck' do
+        expect(connection.decks.first[:side]).to eq("corp")
+      end
+    end
+
     it 'orders decks most recent first' do
       VCR.use_cassette 'nrdb_decks/unordered_decks' do
         expect(connection.decks.map { |deck| deck[:name] })
