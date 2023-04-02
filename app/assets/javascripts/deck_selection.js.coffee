@@ -1,4 +1,5 @@
 $(document).on 'turbolinks:load', ->
-  if document.getElementById("nrdb_decks")
+  if document.getElementById('nrdb_decks')
     window.selectDeck = (id) =>
-      alert(id)
+      $('#nrdb_decks li').removeClass('active')
+      $('#deck-'+id).addClass('active')
