@@ -1,6 +1,9 @@
 .container
   .row
-    = render 'overview_card'
+    - if @tournament.nrdb_deck_registration?
+      = render 'deck_selection'
+    - else
+      = render 'overview_card'
 
     .col-md-6
       .card
@@ -18,16 +21,4 @@
                 => fa_icon 'check'
                 | Update
 
-  - if @tournament.nrdb_deck_registration?
-    .row.mt-3
-      .col-md-6
-        .card
-          .card-header Please select a corp and runner from your decks below
-          ul.list-group.list-group-flush.overflow-auto#nrdb_decks style='height: 20em'
-            - @decks.each do |deck|
-              li.list-group-item
-                p.mb-1= deck[:name]
-                - unless deck[:identity].nil?
-                  small= deck[:identity].name
-
-= render 'player_counts'
+  = render 'player_counts'
