@@ -41,10 +41,17 @@ RSpec.describe Nrdb::Connection do
       end
     end
 
-    it 'reads the side from the identity' do
+    it 'reads the side from a corp identity' do
       create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future', side: :corp)
       VCR.use_cassette 'nrdb_decks/jammy_hb_full_deck' do
         expect(connection.decks.first[:side]).to eq("corp")
+      end
+    end
+
+    it 'reads the side from a runner identity' do
+      create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy', side: :runner)
+      VCR.use_cassette 'nrdb_decks/az_palantir_full_deck' do
+        expect(connection.decks.first[:side]).to eq("runner")
       end
     end
 
