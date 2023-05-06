@@ -3,7 +3,12 @@
     .card-header Please select a corp and runner from your decks below
     ul.list-group.list-group-flush.overflow-auto#nrdb_decks style='height: 23em'
       - @decks.each do |deck|
-        li.list-group-item id='nrdb_deck_#{deck[:id]}' data-side='#{deck[:side]}' onclick='selectDeck(#{deck[:id]}, "#{deck[:side]}")'
+        li.list-group-item [
+          id='nrdb_deck_#{deck[:id]}'
+          data-side='#{deck[:side]}'
+          data-deck-id='#{deck[:id]}'
+          onclick='selectDeck(#{deck[:id]}, "#{deck[:side]}")'
+          ]
           - unless deck[:identity].nil?
             .float-right.deck-list-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{deck[:identity].nrdb_code}.jpg)"
           p.mb-1= deck[:name]
