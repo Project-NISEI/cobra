@@ -142,6 +142,11 @@ GEM
     faraday-rack (1.0.0)
     faraday-retry (1.0.3)
     ffi (1.15.5)
+    flipper (0.28.0)
+      concurrent-ruby (< 2)
+    flipper-active_record (0.28.0)
+      activerecord (>= 4.2, < 8)
+      flipper (~> 0.28.0)
     font-awesome-rails (4.7.0.8)
       railties (>= 3.2, < 8.0)
     globalid (1.1.0)
@@ -335,6 +340,8 @@ DEPENDENCIES
   factory_bot_rails
   faker
   faraday (~> 1.0)
+  flipper
+  flipper-active_record
   font-awesome-rails
   jbuilder
   jquery-rails
