@@ -1,30 +1,30 @@
-  .col-md-6
-    = simple_form_for @tournament do |f|
-      = render 'form', f: f
-      .form-group
-        = button_tag type: :submit, class: 'btn btn-primary' do |f|
-          => fa_icon 'floppy-o'
-          | Save
+.col-md-6
+  = simple_form_for @tournament do |f|
+    = render 'form', f: f
+    .form-group
+      = button_tag type: :submit, class: 'btn btn-primary' do |f|
+        => fa_icon 'floppy-o'
+        | Save
 
-  .col-md-3
-  .col-md-3
-    p=> link_to upload_to_abr_tournament_path(@tournament), class: 'btn btn-success', method: :post do |f|
-      => fa_icon 'arrow-circle-up'
-      | Upload to Always Be Running
-    - if @tournament.abr_code
-      | Uploaded to ABR with code #{@tournament.abr_code}
-    p= link_to save_json_tournament_path(@tournament), class: 'btn btn-success', target: '_blank' do |f|
-      => fa_icon 'arrow-circle-down'
-      | Download as JSON
-    p= button_to cut_tournament_path(@tournament, number: 3), method: :post, class: 'btn btn-success' do
-      => fa_icon 'scissors'
-      | Cut to Top 3
-    p= button_to cut_tournament_path(@tournament, number: 4), method: :post, class: 'btn btn-success' do
-      => fa_icon 'scissors'
-      | Cut to Top 4
-    p= button_to cut_tournament_path(@tournament, number: 8), method: :post, class: 'btn btn-success' do
-      => fa_icon 'scissors'
-      | Cut to Top 8
-    p= button_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do
-      => fa_icon 'scissors'
-      | Cut to Top 16
+.col-md-3
+.col-md-3
+  p=> link_to upload_to_abr_tournament_path(@tournament), class: 'btn btn-success', method: :post do |f|
+    => fa_icon 'arrow-circle-up'
+    | Upload to Always Be Running
+  - if @tournament.abr_code
+    | Uploaded to ABR with code #{@tournament.abr_code}
+  p= link_to save_json_tournament_path(@tournament), class: 'btn btn-success', target: '_blank' do |f|
+    => fa_icon 'arrow-circle-down'
+    | Download as JSON
+  p= button_to cut_tournament_path(@tournament, number: 3), method: :post, class: 'btn btn-success' do
+    => fa_icon 'scissors'
+    | Cut to Top 3
+  p= button_to cut_tournament_path(@tournament, number: 4), method: :post, class: 'btn btn-success' do
+    => fa_icon 'scissors'
+    | Cut to Top 4
+  p= button_to cut_tournament_path(@tournament, number: 8), method: :post, class: 'btn btn-success' do
+    => fa_icon 'scissors'
+    | Cut to Top 8
+  p= button_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do
+    => fa_icon 'scissors'
+    | Cut to Top 16
