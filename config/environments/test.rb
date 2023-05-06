@@ -59,4 +59,8 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   config.abr_host = 'http://localhost:8000'
+
+  config.after_initialize do
+    Flipper.enable :nrdb_deck_registration
+  end
 end
