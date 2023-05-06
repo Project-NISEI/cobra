@@ -2,6 +2,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   let(:organiser) { create(:user, nrdb_access_token: 'a_token') }
   let(:player) { create(:user, nrdb_access_token: 'a_token') }
   before do
+    Flipper.enable :nrdb_deck_registration
     sign_in organiser
     visit new_tournament_path
     fill_in 'Tournament name', with: 'Test Tournament'

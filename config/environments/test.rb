@@ -60,9 +60,4 @@ Rails.application.configure do
 
   config.abr_host = 'http://localhost:8000'
 
-  if defined?(Rails::Server)
-    config.after_initialize do
-      Flipper.enable :nrdb_deck_registration
-    end
-  end
 end
