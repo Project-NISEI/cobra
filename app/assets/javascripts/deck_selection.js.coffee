@@ -15,8 +15,9 @@ $(document).on 'turbolinks:load', ->
         $(ifNotPresent).appendTo('#nrdb_decks_selected')
 
     window.selectDeck = (id, side) =>
+      activeBefore = $('#nrdb_deck_'+id).hasClass('active')
       $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
+      $('#nrdb_deck_'+id).toggleClass('active', !activeBefore)
       $('#nrdb_decks_selected').empty()
-      $('#nrdb_deck_'+id).addClass('active')
       cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
       cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
