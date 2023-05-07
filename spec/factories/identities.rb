@@ -3,7 +3,7 @@ FactoryBot.define do
     name { 'Mr Runner' }
     side { :runner }
     faction { :shaper }
-    nrdb_code { '00001' }
+    sequence(:nrdb_code) { |n| n.to_s.rjust(5, '0') }
     autocomplete { 'Mr Runner' }
   end
 end
