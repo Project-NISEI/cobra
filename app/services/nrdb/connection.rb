@@ -46,7 +46,7 @@ module Nrdb
     end
 
     def lookup_identities(decks)
-      card_codes = decks.flat_map { |deck| (deck[:cards] || {}).keys }
+      card_codes = decks.flat_map { |deck| (deck[:cards] || {}).keys }.uniq
       code_to_identity = Identity.where(nrdb_code: card_codes)
                                  .to_h { |identity| [identity.nrdb_code, identity] }
       decks.map do |deck|
