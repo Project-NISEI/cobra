@@ -21,3 +21,4 @@ $(document).on 'turbolinks:load', ->
       $('#nrdb_decks_selected').empty()
       cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
       cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
+      $('#player_'+side+'_deck').val($('#nrdb_deck_'+id).attr('data-deck'))

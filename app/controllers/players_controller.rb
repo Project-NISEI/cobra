@@ -35,9 +35,21 @@ class PlayersController < ApplicationController
   def update
     authorize @tournament, :register?
 
-    @player.update(player_params)
+    params=player_params
+    if params[:corp_deck]
+      corp_deck = JSON.parse(params[:corp_deck])
+      corp_id = Identity.where(nrdb_code: corp_deck['cards'].keys).first
+      params[:corp_identity] = corp_id&.name
+    end
+    if params[:runner_deck]
+      runner_deck = JSON.parse(params[:runner_deck])
+      runner_id = Identity.where(nrdb_code: runner_deck['cards'].keys).first
+      params[:runner_identity] = runner_id&.name
+    end
 
-    if current_user.id == @tournament.user_id
+    @player.update(params)
+
+    if current_user.id == @tournament.user_id && @player.user_id != current_user.id
       redirect_to tournament_players_path(@tournament)
     else
       redirect_to tournament_path(@tournament)
@@ -84,7 +96,8 @@ class PlayersController < ApplicationController
 
   def player_params
     params.require(:player)
-      .permit(:name, :corp_identity, :runner_identity, :first_round_bye, :manual_seed, :user_id)
+      .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
+              :first_round_bye, :manual_seed, :user_id)
   end
 
   def set_player

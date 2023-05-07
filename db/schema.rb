@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_06_225650) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_07_190019) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -99,6 +99,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_06_225650) do
     t.integer "previous_id"
     t.integer "manual_seed"
     t.bigint "user_id"
+    t.jsonb "corp_deck"
+    t.jsonb "runner_deck"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end

@@ -15,7 +15,7 @@
         li.list-group-item [
           id='nrdb_deck_#{deck[:id]}'
           data-side='#{deck[:side]}'
-          data-deck-id='#{deck[:id]}'
+          data-deck='#{deck.to_json}'
           onclick='selectDeck(#{deck[:id]}, "#{deck[:side]}")'
           ]
           - unless deck[:identity].nil?

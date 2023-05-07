@@ -44,6 +44,25 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       .to eq(['Az McCaffrey: Mechanical Prodigy'])
   end
 
+  it 'registers a runner and corp' do
+    register_as_player
+    create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy')
+    create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future')
+    VCR.use_cassette 'nrdb_decks/az_palantir_and_jammy_hb' do
+      visit registration_tournament_path(Tournament.last)
+      az_deck = first('#nrdb_deck_1455189')['data-deck']
+      hb_deck = first('#nrdb_deck_763461')['data-deck']
+      first('#player_runner_deck', visible: false).set(az_deck)
+      first('#player_corp_deck', visible: false).set(hb_deck)
+      click_button 'Update'
+      updated = Player.last
+      expect(updated.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
+      expect(updated.runner_identity).to eq('Az McCaffrey: Mechanical Prodigy')
+      expect(updated.corp_deck).to eq(hb_deck)
+      expect(updated.runner_deck).to eq(az_deck)
+    end
+  end
+
   def register_as_player
     sign_in player
     visit tournament_path(Tournament.last)
