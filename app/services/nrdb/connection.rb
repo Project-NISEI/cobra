@@ -30,6 +30,7 @@ module Nrdb
     def update_cards
       all_cards = cards
       Card.upsert_all all_cards.map { |card| {
+        nrdb_code: card[:nrdb_code],
         title: card[:title],
         side_code: card[:side_code],
         faction_code: card[:faction_code],
@@ -38,6 +39,7 @@ module Nrdb
 
       identities = all_cards.select { |card| card[:type_code] == "identity" }
       Identity.upsert_all identities.map { |id| {
+        nrdb_code: id[:nrdb_code],
         name: id[:title],
         side: id[:side_code],
         faction: id[:faction_code],
