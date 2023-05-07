@@ -30,21 +30,21 @@ module Nrdb
     def update_cards
       all_cards = cards
       Card.upsert_all all_cards.map { |card| {
-        nrdb_code: card[:nrdb_code],
+        nrdb_code: card[:code],
         title: card[:title],
         side_code: card[:side_code],
         faction_code: card[:faction_code],
         type_code: card[:type_code]
-      } }
+      } }, unique_by: :nrdb_code
 
       identities = all_cards.select { |card| card[:type_code] == "identity" }
       Identity.upsert_all identities.map { |id| {
-        nrdb_code: id[:nrdb_code],
+        nrdb_code: id[:code],
         name: id[:title],
         side: id[:side_code],
         faction: id[:faction_code],
         autocomplete: id[:title]
-      } }
+      } }, unique_by: :nrdb_code
 
       Identity.where(nrdb_code: '10030').update(
         autocomplete: 'Palana Foods: Sustainable Growth'

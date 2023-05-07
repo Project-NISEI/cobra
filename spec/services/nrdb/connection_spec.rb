@@ -15,6 +15,17 @@ RSpec.describe Nrdb::Connection do
         expect(Identity.count).to eq(91)
       end
     end
+
+    it 'overwrites cards when updating twice' do
+      VCR.use_cassette :nrdb_cards do
+        connection.update_cards
+      end
+      VCR.use_cassette :nrdb_cards do
+        connection.update_cards
+      end
+      expect(Card.count).to eq(1381)
+      expect(Identity.count).to eq(91)
+    end
   end
 
   context 'with user' do
