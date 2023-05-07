@@ -28,11 +28,21 @@ module Nrdb
     end
 
     def update_cards
-      upsert_cards = []
-      upsert_identities = []
-      cards.each { |card| add_card_update card, upsert_cards, upsert_identities }
-      Card.upsert_all upsert_cards, unique_by: :nrdb_code
-      Identity.upsert_all upsert_identities, unique_by: :nrdb_code
+      all_cards = cards
+      Card.upsert_all all_cards.map { |card| {
+        title: card[:title],
+        side_code: card[:side_code],
+        faction_code: card[:faction_code],
+        type_code: card[:type_code]
+      } }, unique_by: :nrdb_code
+
+      identities = all_cards.select { |card| card[:type_code] == "identity" }
+      Identity.upsert_all identities.map { |id| {
+        name: id[:title],
+        side: id[:side_code],
+        faction: id[:faction_code],
+        autocomplete: id[:title]
+      } }, unique_by: :nrdb_code
 
       Identity.where(nrdb_code: '10030').update(
         autocomplete: 'Palana Foods: Sustainable Growth'
@@ -40,23 +50,6 @@ module Nrdb
       Identity.where(nrdb_code: ['02046', '20037']).update(
         autocomplete: 'Chaos Theory: Wunderkind'
       )
-    end
-
-    def add_card_update(card, upsert_cards, upsert_identities)
-      upsert_cards.push({
-        title: card[:title],
-        side_code: card[:side_code],
-        faction_code: card[:faction_code],
-        type_code: card[:type_code]
-      })
-      if card[:type_code] == "identity"
-        upsert_identities.push({
-          name: card[:title],
-          side: card[:side_code],
-          faction: card[:faction_code],
-          autocomplete: card[:title]
-        })
-      end
     end
 
     private
