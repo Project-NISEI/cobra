@@ -48,8 +48,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_07_124500) do
     t.string "side_code"
     t.string "faction_code"
     t.string "type_code"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.index ["nrdb_code"], name: "index_cards_on_nrdb_code", unique: true
   end
 

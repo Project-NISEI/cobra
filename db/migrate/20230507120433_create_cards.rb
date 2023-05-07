@@ -6,8 +6,6 @@ class CreateCards < ActiveRecord::Migration[7.0]
       t.string :side_code
       t.string :faction_code
       t.string :type_code
-      t.timestamps
     end
-    add_index :cards, :nrdb_code
   end
 end
