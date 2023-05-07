@@ -75,12 +75,12 @@ $ rails server
 $ rspec
 ```
 
-## Identities
-Identities are stored in the database and can be seeded/updated by running a rake task:
+## Cards
+Cards are stored in the database and can be seeded/updated by running a rake task:
 ```
-$ rake ids:update
+$ rake cards:update
 ```
-This rake task queries the NRDB API and creates/updates identities as appropriate.
+This rake task queries the NRDB API and creates/updates cards and identities as appropriate.
 Identities not in the database are stripped out of ABR uploads to avoid errors.
 
 ## Deploy as a web server

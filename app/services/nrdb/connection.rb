@@ -27,6 +27,34 @@ module Nrdb
       JSON.parse(resp.body).with_indifferent_access[:data]
     end
 
+    def update_cards
+      cards.each do |card|
+        Card.find_or_create_by(nrdb_code: card[:code])
+            .update(
+              title: card[:title],
+              side_code: card[:side_code],
+              faction_code: card[:faction_code],
+              type_code: card[:type_code]
+            )
+        if card[:type_code] == "identity"
+          Identity.find_or_create_by(nrdb_code: card[:code])
+                  .update(
+                    name: card[:title],
+                    side: card[:side_code],
+                    faction: card[:faction_code],
+                    autocomplete: card[:title]
+                  )
+        end
+      end
+
+      Identity.where(nrdb_code: '10030').update(
+        autocomplete: 'Palana Foods: Sustainable Growth'
+      )
+      Identity.where(nrdb_code: ['02046', '20037']).update(
+        autocomplete: 'Chaos Theory: Wunderkind'
+      )
+    end
+
     private
 
     attr_reader :access_token

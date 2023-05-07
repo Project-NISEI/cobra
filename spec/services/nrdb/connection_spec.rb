@@ -7,6 +7,14 @@ RSpec.describe Nrdb::Connection do
         expect(connection.cards.count).to eq(1381)
       end
     end
+
+    it 'stores cards' do
+      VCR.use_cassette :nrdb_cards do
+        connection.update_cards
+        expect(Card.count).to eq(1381)
+        expect(Identity.count).to eq(91)
+      end
+    end
   end
 
   context 'with user' do

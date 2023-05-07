@@ -42,4 +42,4 @@ else
   run_as_app rake db:migrate --trace
 fi
 
-run_as_app rake ids:update --trace
+run_as_app rake cards:update --trace
