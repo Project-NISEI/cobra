@@ -34,7 +34,7 @@ module Nrdb
         side_code: card[:side_code],
         faction_code: card[:faction_code],
         type_code: card[:type_code]
-      } }, unique_by: :nrdb_code
+      } }
 
       identities = all_cards.select { |card| card[:type_code] == "identity" }
       Identity.upsert_all identities.map { |id| {
@@ -42,7 +42,7 @@ module Nrdb
         side: id[:side_code],
         faction: id[:faction_code],
         autocomplete: id[:title]
-      } }, unique_by: :nrdb_code
+      } }
 
       Identity.where(nrdb_code: '10030').update(
         autocomplete: 'Palana Foods: Sustainable Growth'
