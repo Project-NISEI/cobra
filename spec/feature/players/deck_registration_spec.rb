@@ -50,10 +50,8 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future')
     VCR.use_cassette 'nrdb_decks/az_palantir_and_jammy_hb' do
       visit registration_tournament_path(Tournament.last)
-      az_deck = first('#nrdb_deck_1455189')['data-deck']
-      hb_deck = first('#nrdb_deck_763461')['data-deck']
-      first('#player_runner_deck', visible: false).set(az_deck)
-      first('#player_corp_deck', visible: false).set(hb_deck)
+      az_deck = select_runner_deck_by_id('1455189')
+      hb_deck = select_corp_deck_by_id('763461')
       click_button 'Update'
       updated = Player.last
       expect(updated.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
@@ -91,6 +89,18 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
 
   def displayed_decks_identities
     find('#nrdb_decks').all('li').map {|deck| deck.find('small').text}
+  end
+
+  def select_corp_deck_by_id(id)
+    deck = first('#nrdb_deck_'+id)['data-deck']
+    first('#player_corp_deck', visible: false).set(deck)
+    deck
+  end
+
+  def select_runner_deck_by_id(id)
+    deck = first('#nrdb_deck_'+id)['data-deck']
+    first('#player_runner_deck', visible: false).set(deck)
+    deck
   end
 
   def with_nrdb_decks(&block)
