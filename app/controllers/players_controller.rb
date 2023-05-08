@@ -12,11 +12,20 @@ class PlayersController < ApplicationController
   def create
     if @tournament.self_registration?
       authorize @tournament, :show?
+      unless current_user
+        head :forbidden
+        return
+      end
     else
       authorize @tournament, :update?
     end
 
-    player = @tournament.players.create(player_params)
+    params = player_params
+    if @tournament.user_id != current_user.id
+      params[:user_id] = current_user.id
+    end
+
+    player = @tournament.players.create(params)
     unless @tournament.current_stage.nil?
       @tournament.current_stage.players << player
     end
