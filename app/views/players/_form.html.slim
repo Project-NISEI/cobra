@@ -1,5 +1,5 @@
 .identities_form.d-block
-	- if not defined?(anon_player)
+	- if defined?(set_user_id)
 		= f.input_field :user_id, value: current_user.id, hidden: true
 	- if @tournament.nrdb_deck_registration?
 		= f.input_field :corp_deck, hidden: true
@@ -8,21 +8,25 @@
 		label.d-block for="player_name" Name
 		- if defined?(default_name)
 			= f.input_field :name, disabled: (not current_user),
+				readonly: @tournament.nrdb_deck_registration?,
 				placeholder: 'Enter your name',
 				class: 'form-control',
 				value: default_name
 		- else
 			= f.input_field :name, disabled: (not current_user),
+				readonly: @tournament.nrdb_deck_registration? && !policy(@tournament).edit?,
 				placeholder: 'Enter player name',
 				class: 'form-control'
 	.form-group
 		label.d-block for="player_corp_identity" Corp ID
-		= f.input_field :corp_identity, disabled: (not current_user), readonly: @tournament.nrdb_deck_registration?,
+		= f.input_field :corp_identity, disabled: (not current_user),
+			readonly: @tournament.nrdb_deck_registration?,
 			placeholder: ( @tournament.nrdb_deck_registration? ? 'No deck registered' : 'Search for corp ID' ),
 			class: 'form-control corp_identities'
 	.form-group
 		label.d-block for="player_runner_identity" Runner ID
-		= f.input_field :runner_identity, disabled: (not current_user), readonly: @tournament.nrdb_deck_registration?,
+		= f.input_field :runner_identity, disabled: (not current_user),
+			readonly: @tournament.nrdb_deck_registration?,
 			placeholder: ( @tournament.nrdb_deck_registration? ? 'No deck registered' : 'Search for runner ID' ),
 			class: 'form-control runner_identities'
 	- if policy(@tournament).edit?

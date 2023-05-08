@@ -7,7 +7,7 @@
   .alert.alert-secondary.mt-4
     h5.mb-3 Register New Player
     = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline d-block' } do |f|
-      = render 'form', f: f, anon_player: true, organizer_view: true
+      = render 'form', f: f, organizer_view: true
       .mt-2.text-right
         = button_tag type: :submit, class: 'btn btn-success' do
           => fa_icon 'plus'
@@ -18,7 +18,7 @@
   - @players.each do |player|
     li.list-group-item
       = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mt-2 d-block' } do |f|
-        = render 'form', f: f, anon_player: player.user_id != current_user.id, organizer_view: true
+        = render 'form', f: f, organizer_view: true
         .text-right
           = button_tag type: :submit, class: 'btn btn-link text-success mr-2' do
             => fa_icon 'floppy-o'
