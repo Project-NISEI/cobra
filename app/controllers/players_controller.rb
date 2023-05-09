@@ -10,12 +10,9 @@ class PlayersController < ApplicationController
   end
 
   def create
+    authorize Player
     if @tournament.self_registration?
       authorize @tournament, :show?
-      unless current_user
-        head :forbidden
-        return
-      end
     else
       authorize @tournament, :update?
     end
@@ -38,11 +35,16 @@ class PlayersController < ApplicationController
   end
 
   def update
-    authorize @tournament, :register?
+    authorize @player
 
-    @player.update(player_params)
+    params=player_params
+    if @tournament.user_id != current_user.id
+      params[:user_id] = current_user.id
+    end
 
-    if current_user.id == @tournament.user_id
+    @player.update(params)
+
+    if current_user.id == @tournament.user_id && @player.user_id != current_user.id
       redirect_to tournament_players_path(@tournament)
     else
       redirect_to tournament_path(@tournament)
