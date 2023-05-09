@@ -10,12 +10,9 @@ class PlayersController < ApplicationController
   end
 
   def create
+    authorize Player
     if @tournament.self_registration?
       authorize @tournament, :show?
-      unless current_user
-        head :forbidden
-        return
-      end
     else
       authorize @tournament, :update?
     end
@@ -42,9 +39,12 @@ class PlayersController < ApplicationController
   end
 
   def update
-    authorize @tournament, :register?
+    authorize @player
 
     params=player_params
+    if @tournament.user_id != current_user.id
+      params[:user_id] = current_user.id
+    end
     validate_deck_registration(params)
 
     @player.update(params)
