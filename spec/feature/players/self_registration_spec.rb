@@ -11,22 +11,32 @@ RSpec.describe 'registering for a tournament' do
 
   it 'registers player' do
     expect do
-      register_player
+      register_player player
     end.to change(Player, :count).by(1)
     expect(page.current_path).to eq(tournament_path(Tournament.last))
+    expect(Player.last.user_id).to be(player.id)
   end
 
   it 'registers player when tournament has no stages' do
     delete_tournament_stage
 
     expect do
-      register_player
+      register_player player
     end.to change(Player, :count).by(1)
     expect(page.current_path).to eq(tournament_path(Tournament.last))
+    expect(Player.last.user_id).to be(player.id)
   end
 
-  def register_player
-    sign_in player
+  it 'TO registers themselves as a player' do
+    expect do
+      register_player organiser
+    end.to change(Player, :count).by(1)
+    expect(page.current_path).to eq(tournament_path(Tournament.last))
+    expect(Player.last.user_id).to be(organiser.id)
+  end
+
+  def register_player(user)
+    sign_in user
     visit tournament_path(Tournament.last)
     fill_in :player_corp_identity, with: 'Haas-Bioroid: Engineering the Future'
     fill_in :player_runner_identity, with: 'Noise'

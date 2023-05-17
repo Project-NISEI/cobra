@@ -1,6 +1,6 @@
 .identities_form.d-block
-	- if not defined?(anon_player)
-		= f.input_field :user_id, value: current_user.id, hidden: true
+	- if defined?(organiser_view)
+		= f.input_field :organiser_view, value: true, hidden: true
 	.form-group
 		label.d-block for="player_name" Name
 		- if defined?(default_name)

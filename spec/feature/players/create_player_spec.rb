@@ -27,6 +27,7 @@ RSpec.describe 'creating a player' do
         expect(subject.runner_identity).to eq('Noise')
         expect(subject.first_round_bye).to eq(true)
         expect(subject.tournament).to eq(tournament)
+        expect(subject.user_id).to be_nil
       end
     end
 

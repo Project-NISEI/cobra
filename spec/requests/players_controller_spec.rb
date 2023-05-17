@@ -14,18 +14,25 @@ RSpec.describe PlayersController do
         expect_unauthorized
       end
 
-      it 'stops you registering as another user' do
+      it 'infers your user ID if you register as yourself' do
         sign_in player1
-        post tournament_players_path(tournament), params: { player: { user_id: player2.id } }
+        post tournament_players_path(tournament), params: { player: { name: 'Player 1' } }
 
         expect(tournament.players.last.user_id).to be(player1.id)
       end
 
-      it 'allows TO registering another user' do
+      it 'infers user ID when TO registers themselves' do
         sign_in tournament.user
-        post tournament_players_path(tournament), params: { player: { user_id: player2.id } }
+        post tournament_players_path(tournament), params: { player: { name: 'Tournament organizer' } }
 
-        expect(tournament.players.last.user_id).to be(player2.id)
+        expect(tournament.players.last.user_id).to be(tournament.user.id)
+      end
+
+      it 'does not set user ID when TO registers another player' do
+        sign_in tournament.user
+        post tournament_players_path(tournament), params: { player: { name: 'Other player', organiser_view: true } }
+
+        expect(tournament.players.last.user_id).to be_nil
       end
     end
 
@@ -57,12 +64,22 @@ RSpec.describe PlayersController do
         expect(player2_registration.name).to eq('Changed Name')
       end
 
-      it 'stops you impersonating another user' do
-        sign_in player2
-        put tournament_player_path(tournament, player2_registration), params: { player: { user_id: player1.id } }
+      it 'allows TO updating themselves' do
+        sign_in tournament.user
+        post tournament_players_path(tournament), params: { player: { name: 'Tournament organiser' } }
+        put tournament_player_path(tournament, Player.last), params: { player: { name: 'Mr. Organiser' } }
 
-        player2_registration.reload
-        expect(player2_registration.user_id).to be(player2.id)
+        expect(Player.last.user_id).to be(tournament.user.id)
+        expect(Player.last.name).to eq('Mr. Organiser')
+      end
+
+      it 'allows TO updating themselves in the organiser view' do
+        sign_in tournament.user
+        post tournament_players_path(tournament), params: { player: { name: 'Tournament organiser' } }
+        put tournament_player_path(tournament, Player.last), params: { player: { name: 'Mr. Organiser', organiser_view: true } }
+
+        expect(Player.last.user_id).to be(tournament.user.id)
+        expect(Player.last.name).to eq('Mr. Organiser')
       end
     end
   end
