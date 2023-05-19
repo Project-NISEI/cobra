@@ -4,15 +4,25 @@ RSpec.describe Nrdb::Connection do
   describe '#cards' do
     it 'fetches card data' do
       VCR.use_cassette :nrdb_cards do
-        expect(connection.cards.count).to eq(1381)
+        expect(connection.cards.count).to eq(1776)
       end
     end
 
     it 'stores cards' do
       VCR.use_cassette :nrdb_cards do
         connection.update_cards
-        expect(Card.count).to eq(1381)
-        expect(Identity.count).to eq(91)
+        expect(Printing.count).to eq(2182)
+        expect(Identity.count).to eq(154)
+
+        palana = Identity.find_by(nrdb_code: '10030')
+        expect(palana.name).to eq('Pālanā Foods: Sustainable Growth')
+        expect(palana.side).to eq('corp')
+        expect(palana.faction).to eq('jinteki')
+        expect(palana.autocomplete).to eq('Palana Foods: Sustainable Growth')
+        expect(Printing.find_by(nrdb_id: '10030').nrdb_card_id).to eq('palana_foods_sustainable_growth')
+
+        expect(Identity.find_by(nrdb_code: '02046').autocomplete).to eq('Chaos Theory: Wunderkind')
+        expect(Identity.find_by(nrdb_code: '20037').autocomplete).to eq('Chaos Theory: Wunderkind')
       end
     end
 
@@ -23,8 +33,8 @@ RSpec.describe Nrdb::Connection do
       VCR.use_cassette :nrdb_cards do
         connection.update_cards
       end
-      expect(Card.count).to eq(1381)
-      expect(Identity.count).to eq(91)
+      expect(Printing.count).to eq(2182)
+      expect(Identity.count).to eq(154)
     end
   end
 

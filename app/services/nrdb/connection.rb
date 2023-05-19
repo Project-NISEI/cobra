@@ -21,7 +21,7 @@ module Nrdb
     end
 
     def cards
-      resp = public_connection.get('/api/2.0/public/cards')
+      resp = public_connection.get('/api/v3/public/cards?page[limit]=10000')
       raise 'NRDB API connection failed' unless resp.success?
 
       JSON.parse(resp.body).with_indifferent_access[:data]
@@ -29,29 +29,25 @@ module Nrdb
 
     def update_cards
       all_cards = cards
-      Card.upsert_all all_cards.map { |card| {
-        nrdb_code: card[:code],
-        title: card[:title],
-        side_code: card[:side_code],
-        faction_code: card[:faction_code],
-        type_code: card[:type_code]
-      } }, unique_by: :nrdb_code
+      Printing.upsert_all all_cards.flat_map { |card|
+        card[:attributes][:printing_ids].map { |printing_id| {
+          nrdb_id: printing_id,
+          nrdb_card_id: card[:id]
+        } }
+      }, unique_by: :nrdb_id
 
-      identities = all_cards.select { |card| card[:type_code] == "identity" }
-      Identity.upsert_all identities.map { |id| {
-        nrdb_code: id[:code],
-        name: id[:title],
-        side: id[:side_code],
-        faction: id[:faction_code],
-        autocomplete: id[:title]
-      } }, unique_by: :nrdb_code
-
-      Identity.where(nrdb_code: '10030').update(
-        autocomplete: 'Palana Foods: Sustainable Growth'
-      )
-      Identity.where(nrdb_code: ['02046', '20037']).update(
-        autocomplete: 'Chaos Theory: Wunderkind'
-      )
+      identities = all_cards.select { |card|
+        %w[runner_identity corp_identity].include? card[:attributes][:card_type_id] }
+      Identity.upsert_all identities.flat_map { |card|
+        attrs = card[:attributes]
+        attrs[:printing_ids].map { |printing_id| {
+          nrdb_code: printing_id,
+          name: attrs[:title],
+          side: attrs[:side_id],
+          faction: attrs[:faction_id],
+          autocomplete: attrs[:stripped_title]
+        } }
+      }, unique_by: :nrdb_code
     end
 
     private
@@ -67,7 +63,7 @@ module Nrdb
     end
 
     def public_connection
-      @connection ||= Faraday.new(url: "https://netrunnerdb.com") do |conn|
+      @connection ||= Faraday.new(url: "https://api-preview.netrunnerdb.com") do |conn|
         conn.adapter :net_http
       end
     end

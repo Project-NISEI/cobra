@@ -1,0 +1,2 @@
+class Printing < ApplicationRecord
+end
