@@ -10,13 +10,19 @@ class PlayersController < ApplicationController
   end
 
   def create
+    authorize Player
     if @tournament.self_registration?
       authorize @tournament, :show?
     else
       authorize @tournament, :update?
     end
 
-    player = @tournament.players.create(player_params)
+    params = player_params
+    unless is_organiser_view
+      params[:user_id] = current_user.id
+    end
+
+    player = @tournament.players.create(params)
     unless @tournament.current_stage.nil?
       @tournament.current_stage.players << player
     end
@@ -29,11 +35,16 @@ class PlayersController < ApplicationController
   end
 
   def update
-    authorize @tournament, :register?
+    authorize @player
 
-    @player.update(player_params)
+    params=player_params
+    unless is_organiser_view
+      params[:user_id] = current_user.id
+    end
 
-    if current_user.id == @tournament.user_id
+    @player.update(params)
+
+    if current_user.id == @tournament.user_id && @player.user_id != current_user.id
       redirect_to tournament_players_path(@tournament)
     else
       redirect_to tournament_path(@tournament)
@@ -76,7 +87,11 @@ class PlayersController < ApplicationController
 
   def player_params
     params.require(:player)
-      .permit(:name, :corp_identity, :runner_identity, :first_round_bye, :manual_seed, :user_id)
+      .permit(:name, :corp_identity, :runner_identity, :first_round_bye, :manual_seed)
+  end
+
+  def is_organiser_view
+    params.require(:player)[:organiser_view] && @tournament.user_id == current_user.id
   end
 
   def set_player
