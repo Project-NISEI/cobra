@@ -3,33 +3,33 @@
     = render 'overview_card'
 
     .col-md-6
-      - if @current_user_player
-        .card
-          .card-header
-            .d-flex.justify-content-between
-              h5.mb-0 My Registration Information
-              - if policy(@tournament).register?
-                = link_to registration_tournament_path(@tournament), title: 'Edit', class: 'float-right' do
-                  => fa_icon 'pencil'
-                  span.d-none Edit my registration information
-          ul.list-group.list-group-flush
-            li.list-group-item
-              .small.text-secondary Name:
-              | #{@current_user_player.name}
-            li.list-group-item
-              .small.text-secondary Corp ID:
-              = render @current_user_player.corp_identity_object
-            li.list-group-item
-              .small.text-secondary Runner ID:
-              = render @current_user_player.runner_identity_object
-            li.list-group-item
-              .small.text-secondary First Round Bye:
-              - if @current_user_player.first_round_bye
-                .badge.badge-success YES
-              - else
-                .badge.badge-secondary NO
-      - else
-        - if @tournament.self_registration?
+      - if @tournament.self_registration?
+        - if @current_user_player
+          .card
+            .card-header
+              .d-flex.justify-content-between
+                h5.mb-0 My Registration Information
+                - if policy(@tournament).register?
+                  = link_to registration_tournament_path(@tournament), title: 'Edit', class: 'float-right' do
+                    => fa_icon 'pencil'
+                    span.d-none Edit my registration information
+            ul.list-group.list-group-flush
+              li.list-group-item
+                .small.text-secondary Name:
+                | #{@current_user_player.name}
+              li.list-group-item
+                .small.text-secondary Corp ID:
+                = render @current_user_player.corp_identity_object
+              li.list-group-item
+                .small.text-secondary Runner ID:
+                = render @current_user_player.runner_identity_object
+              li.list-group-item
+                .small.text-secondary First Round Bye:
+                - if @current_user_player.first_round_bye
+                  .badge.badge-success YES
+                - else
+                  .badge.badge-secondary NO
+        - else
           - if current_user
             .card.alert.alert-secondary
               - unless @current_user_dropped
