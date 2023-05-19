@@ -8,13 +8,11 @@
 		label.d-block for="player_name" Name
 		- if defined?(default_name)
 			= f.input_field :name,
-				disabled: (@tournament.disable_player_name_editing? and not defined?(organiser_view)),
 				placeholder: 'Enter your name',
 				class: 'form-control',
 				value: default_name
 		- else
 			= f.input_field :name,
-				disabled: (@tournament.disable_player_name_editing? and not defined?(organiser_view)),
 				placeholder: 'Enter player name',
 				class: 'form-control'
 	.form-group

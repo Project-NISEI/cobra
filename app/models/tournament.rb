@@ -60,10 +60,6 @@ class Tournament < ApplicationRecord
     stages.last
   end
 
-  def disable_player_name_editing?
-    nrdb_deck_registration? and !rounds.empty?
-  end
-
   private
 
   def default_date
