@@ -108,7 +108,7 @@ To run tests in your docker container, you will need to override the environment
 docker compose exec -e RAILS_ENV=test app rspec
 ```
 
-## Deploy on a live server
+## Deploy in production with Docker Compose
 - Get the project
 ```shell
 git clone https://github.com/Project-NISEI/cobra.git
