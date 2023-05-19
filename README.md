@@ -1,26 +1,5 @@
 # Cobra
 
-## For local dev with docker
-
-- Set up config files
-```shell
-cat config/database.example.yml | sed s/localhost/db/ > config/database.yml
-cp config/secrets.example.yml config/secrets.yml
-echo "POSTGRES_PASSWORD=cobra" > .env
-echo "RAILS_ENV=development" >> .env
-```
-
-- Deploy the app
-
-```shell
-bin/deploy
-```
-
-To run tests in your docker container, you will need to override the environment, like so:
-```shell
-docker compose exec -e RAILS_ENV=test app rspec
-```
-
 ## Requirements
 To deploy Cobra, you only need Docker Compose and a way of getting the repository onto your server (such as git).
 
@@ -30,7 +9,7 @@ For local development, you will need:
 ```
 $ gem install bundler
 ```
-- Postgres
+- Postgres (installed or in Docker)
 - Git
 
 ## Set up for local development
@@ -83,7 +62,28 @@ $ rake ids:update
 This rake task queries the NRDB API and creates/updates identities as appropriate.
 Identities not in the database are stripped out of ABR uploads to avoid errors.
 
-## Deploy as a web server
+## For local dev with Docker
+
+- Set up config files
+```shell
+cat config/database.example.yml | sed s/localhost/db/ > config/database.yml
+cp config/secrets.example.yml config/secrets.yml
+echo "POSTGRES_PASSWORD=cobra" > .env
+echo "RAILS_ENV=development" >> .env
+```
+
+- Deploy the app
+
+```shell
+bin/deploy
+```
+
+To run tests in your docker container, you will need to override the environment, like so:
+```shell
+docker compose exec -e RAILS_ENV=test app rspec
+```
+
+## Deploy on a live server
 - Get the project
 ```shell
 git clone https://github.com/Project-NISEI/cobra.git
