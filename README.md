@@ -62,6 +62,31 @@ $ rake ids:update
 This rake task queries the NRDB API and creates/updates identities as appropriate.
 Identities not in the database are stripped out of ABR uploads to avoid errors.
 
+## Feature flags
+
+[Flipper](https://github.com/jnunemaker/flipper) is included to give the option to hide or disable features which are
+incomplete. This lets you make changes in smaller increments, while still being able to deploy to a production
+environment with your feature hidden.
+
+You can enable or disable a feature for all development environments by editing
+[development.rb](config/environments/development.rb).
+
+Code like this will update the database to enable the feature when the app starts up, but not in situations where the
+database might not be fully available (eg. when initialising the database for the first time in a rake task):
+
+```ruby
+Rails.application.configure do
+
+   # This block should already exist and contain other configuration here...
+
+   if defined?(Rails::Server)
+      config.after_initialize do
+        Flipper.enable :nrdb_deck_registration
+      end
+   end
+end
+```
+
 ## For local dev with Docker
 
 - Set up config files
