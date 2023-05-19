@@ -39,6 +39,7 @@ services:
     # persist the database between containers by storing it in a volume
     volumes:
       - cobra-postgres:/var/lib/postgresql/data
+      - ./postgres-docker-init.sql:/docker-entrypoint-initdb.d/postgres-docker-init.sql
 
 volumes:
   cobra-assets:
