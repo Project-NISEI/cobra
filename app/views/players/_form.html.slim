@@ -1,6 +1,6 @@
 .identities_form.d-block
-	- if defined?(set_user_id)
-		= f.input_field :user_id, value: current_user.id, hidden: true
+	- if defined?(organiser_view)
+		= f.input_field :organiser_view, value: true, hidden: true
 	- if @tournament.nrdb_deck_registration?
 		= f.input_field :corp_deck, hidden: true
 		= f.input_field :runner_deck, hidden: true

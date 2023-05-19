@@ -18,7 +18,7 @@ class PlayersController < ApplicationController
     end
 
     params = player_params
-    if @tournament.user_id != current_user.id
+    unless is_organiser_view
       params[:user_id] = current_user.id
     end
 
@@ -42,7 +42,7 @@ class PlayersController < ApplicationController
     authorize @player
 
     params=player_params
-    if @tournament.user_id != current_user.id
+    unless is_organiser_view
       params[:user_id] = current_user.id
     end
     validate_deck_registration(params)
@@ -97,7 +97,11 @@ class PlayersController < ApplicationController
   def player_params
     params.require(:player)
       .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-              :first_round_bye, :manual_seed, :user_id)
+              :first_round_bye, :manual_seed)
+  end
+
+  def is_organiser_view
+    params.require(:player)[:organiser_view] && @tournament.user_id == current_user.id
   end
 
   def set_player
