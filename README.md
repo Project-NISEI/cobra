@@ -71,17 +71,19 @@ environment with your feature hidden.
 You can enable or disable a feature for all development environments by editing
 [development.rb](config/environments/development.rb).
 
-Code like this will update the database to enable the feature when the app starts up, but not in situations where the
-database might not be fully available (eg. when initialising the database for the first time in a rake task):
+That file can include code similar to the following, which will enable the feature when the app starts up. The rescue
+block handles cases where the database is not fully initialized, eg. in a rake task.
 
 ```ruby
 Rails.application.configure do
 
-   # This block should already exist and contain other configuration here...
+   # There should be other configuration here...
 
-   if defined?(Rails::Server)
-      config.after_initialize do
-        Flipper.enable :nrdb_deck_registration
+   config.after_initialize do
+      begin
+         Flipper.enable :nrdb_deck_registration
+      rescue => e
+         Rails.logger.warn "Failed setting Flipper features: #{e.class}"
       end
    end
 end
