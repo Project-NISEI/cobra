@@ -15,7 +15,7 @@ $(document).on 'turbolinks:load', ->
         $clone.prop('onclick', null).off('click')
         $deselect = $('<a/>', {'class': 'float-right', 'title': 'Deselect', 'href': '#'})
         $deselect.append($('<i/>', {'class': 'fa fa-close'}))
-        $deselect.css({'position': 'absolute', 'top': '10px', 'right': '10px'})
+        $deselect.css({'position': 'absolute', 'top': '10px', 'right': '20px'})
         $deselect.on('click', (e) =>
           e.preventDefault()
           selectDeck(id, side))
