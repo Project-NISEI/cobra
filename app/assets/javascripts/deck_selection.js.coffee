@@ -15,11 +15,10 @@ $(document).on 'turbolinks:load', ->
         $clone.prop('onclick', null).off('click')
         $deselect = $('<a/>', {'class': 'float-right', 'title': 'Deselect', 'href': '#'})
         $deselect.append($('<i/>', {'class': 'fa fa-close'}))
-        $deselect.css({'position': 'absolute', 'top': '10px', 'right': '20px'})
         $deselect.on('click', (e) =>
           e.preventDefault()
           selectDeck(id, side))
-        $clone.append($deselect)
+        $clone.prepend($deselect)
         $clone.appendTo('#nrdb_decks_selected')
       else
         $(ifNotPresent).appendTo('#nrdb_decks_selected')
