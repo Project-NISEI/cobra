@@ -10,6 +10,7 @@ $(document).on 'turbolinks:load', ->
         clone = element.clone().removeClass('active').addClass('selected-deck')
         clone.find('.deck-list-identity').removeClass('deck-list-identity').addClass('selected-deck-identity')
         clone.find('small').remove()
+        clone.prop("onclick", null).off("click")
         clone.appendTo('#nrdb_decks_selected')
       else
         $(ifNotPresent).appendTo('#nrdb_decks_selected')
