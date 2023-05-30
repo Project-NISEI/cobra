@@ -1,0 +1,42 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://netrunnerdb.com/api/2.0/private/decks
+    body:
+      string: ''
+    headers:
+      Authorization:
+      - Bearer a_token
+  response:
+    status:
+      code: 200
+    headers:
+      content-type:
+      - application/json
+    body:
+      encoding: UTF-8
+      string: |
+        {"version_number":"2.0","data":[
+          {
+            "id": 123,
+            "name": "My Best Deck",
+            "date_creation": "2014-01-28T18:18:40+00:00",
+            "date_update": "2015-01-28T18:18:40+00:00"
+          },
+          {
+            "id": 456,
+            "name": "Some Deck",
+            "date_creation": "2015-01-28T18:18:40+00:00",
+            "date_update": "2017-01-28T18:18:40+00:00"
+          },
+          {
+            "id": 789,
+            "name": "A Perfect Deck",
+            "date_creation": "2016-01-28T18:18:40+00:00",
+            "date_update": "2016-01-28T18:18:40+00:00"
+          }
+        ],"total":1,"success":true}
+    http_version: 
+  recorded_at: Sat, 25 Mar 2023 21:32:59 GMT
+recorded_with: VCR 3.0.3

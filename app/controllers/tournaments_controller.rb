@@ -43,6 +43,14 @@ class TournamentsController < ApplicationController
     authorize @tournament, :register?
 
     set_tournament_view_data
+
+    if @tournament.nrdb_deck_registration?
+      begin
+        @decks = Nrdb::Connection.new(current_user).decks
+      rescue
+        redirect_to login_path(:return_to => request.path)
+      end
+    end
   end
 
   def set_tournament_view_data
@@ -158,6 +166,6 @@ class TournamentsController < ApplicationController
   end
 
   def tournament_params
-    params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed, :self_registration)
+    params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed, :self_registration, :nrdb_deck_registration)
   end
 end

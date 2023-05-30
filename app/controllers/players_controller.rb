@@ -1,6 +1,6 @@
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate]
+  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :registration]
 
   def index
     authorize @tournament, :update?
@@ -28,7 +28,11 @@ class PlayersController < ApplicationController
     end
 
     if player.user_id
-      redirect_to tournament_path(@tournament)
+      if @tournament.nrdb_deck_registration?
+        redirect_to registration_tournament_path(@tournament)
+      else
+        redirect_to tournament_path(@tournament)
+      end
     else
       redirect_to tournament_players_path(@tournament)
     end
@@ -81,6 +85,10 @@ class PlayersController < ApplicationController
 
   def meeting
     authorize @tournament, :show?
+  end
+
+  def registration
+    authorize @tournament, :update?
   end
 
   private

@@ -1,0 +1,61 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://netrunnerdb.com/api/2.0/private/decks
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer a_token
+  response:
+    status:
+      code: 200
+      message: 
+    headers:
+      content-type:
+      - application/json
+    body:
+      encoding: UTF-8
+      string: |
+        {"version_number":"2.0","data":[
+          {
+            "id": 763461,
+            "uuid": "c3755b09-1549-4f66-856a-6ea9d18cf6c9",
+            "date_creation": "2016-09-02T21:54:37+00:00",
+            "date_update": "2016-09-02T21:54:37+00:00",
+            "name": "Ben Ni Jammy HB \"Always Beta Test\" (UK Nationals '16 14th)",
+            "description": "",
+            "mwl_code": "NAPD_MWL_1.1",
+            "cards": {
+              "10027": 2,
+              "10087": 1,
+              "10103": 2,
+              "01054": 1,
+              "01055": 3,
+              "01058": 1,
+              "01059": 3,
+              "01062": 3,
+              "01090": 1,
+              "01110": 3,
+              "02013": 2,
+              "02051": 3,
+              "02110": 3,
+              "04015": 3,
+              "04040": 3,
+              "04090": 2,
+              "06026": 1,
+              "06048": 1,
+              "06049": 2,
+              "06061": 3,
+              "07027": 2,
+              "08033": 3,
+              "09026": 2
+            },
+            "tags": "haas-bioroid"
+          }
+        ],"total":1,"success":true}
+    http_version: 
+  recorded_at: Sun, 02 Apr 2023 19:21:24 GMT
+recorded_with: VCR 3.0.3

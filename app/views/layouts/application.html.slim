@@ -35,7 +35,7 @@ html
                     => fa_icon 'sign-out'
                     | Sign out
             - else
-              li.nav-item= link_to login_path, class: 'nav-link' do
+              li.nav-item= link_to login_path(:return_to => request.path), class: 'nav-link' do
                 => fa_icon 'sign-in'
                 | Sign in
     .container

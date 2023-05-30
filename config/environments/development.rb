@@ -55,4 +55,12 @@ Rails.application.configure do
   config.abr_host = 'https://alwaysberunning.net'
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+  config.after_initialize do
+    begin
+      Flipper.enable :nrdb_deck_registration
+    rescue => e
+      Rails.logger.warn "Failed setting Flipper features: #{e.class}"
+    end
+  end
 end

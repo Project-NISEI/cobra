@@ -1,5 +1,5 @@
 $(document).on 'turbolinks:load', ->
-  if roundTimer
+  if roundTimer?
 
     addLeadingZero = (number) ->
       if number < 10

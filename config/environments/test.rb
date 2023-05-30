@@ -59,4 +59,5 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   config.abr_host = 'http://localhost:8000'
+
 end
