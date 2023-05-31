@@ -23,6 +23,13 @@ $(document).on 'turbolinks:load', ->
       else
         $(ifNotPresent).appendTo('#nrdb_decks_selected')
 
+    getDeckIdentityName = (deck, cards) =>
+      cardsByCode = new Map(cards.data.map((card) => [card.code, card]))
+      for code, count of deck.cards
+        card = cardsByCode.get(code)
+        if card.type_code == 'identity'
+          return card.title
+
     window.selectDeck = (id, side) =>
       activeBefore = $('#nrdb_deck_'+id).hasClass('active')
       $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
@@ -30,4 +37,8 @@ $(document).on 'turbolinks:load', ->
       $('#nrdb_decks_selected').empty()
       cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
       cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
-      $('#player_'+side+'_deck').val($('#nrdb_deck_'+id).attr('data-deck'))
+      deckStr = $('#nrdb_deck_'+id).attr('data-deck')
+      deck = JSON.parse(deckStr)
+      $.get('https://netrunnerdb.com/api/2.0/public/cards', (cards) =>
+        $('#player_'+side+'_deck').val(deckStr)
+        $('#player_'+side+'_identity').val(getDeckIdentityName(deck, cards)))
