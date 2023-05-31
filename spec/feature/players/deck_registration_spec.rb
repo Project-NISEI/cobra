@@ -52,7 +52,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       visit registration_tournament_path(Tournament.last)
       az_deck = select_runner_deck_by_id('1455189')
       hb_deck = select_corp_deck_by_id('763461')
-      click_button 'Update'
+      click_button 'Submit'
       updated = Player.last
       expect(updated.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
       expect(updated.runner_identity).to eq('Az McCaffrey: Mechanical Prodigy')
@@ -92,15 +92,26 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   end
 
   def select_corp_deck_by_id(id)
-    deck = first('#nrdb_deck_'+id)['data-deck']
-    first('#player_corp_deck', visible: false).set(deck)
-    deck
+    select_deck_by_id('corp', id)
   end
 
   def select_runner_deck_by_id(id)
+    select_deck_by_id('runner', id)
+  end
+
+  def select_deck_by_id(side, id)
     deck = first('#nrdb_deck_'+id)['data-deck']
-    first('#player_runner_deck', visible: false).set(deck)
+    first("#player_#{side}_deck", visible: false).set(deck)
+    identity = first("#player_#{side}_identity")
+    identity.native.remove_attribute('readonly')
+    identity.set(deck_identity(deck))
     deck
+  end
+
+  def deck_identity(deck_str)
+    deck = JSON.parse(deck_str)
+    nrdb_codes = deck['cards'].keys
+    Identity.where(nrdb_code: nrdb_codes).first!.name
   end
 
   def with_nrdb_decks(&block)
