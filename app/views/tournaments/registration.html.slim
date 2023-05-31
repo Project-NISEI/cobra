@@ -17,8 +17,8 @@
           = simple_form_for @current_user_player, url: tournament_player_path(@tournament, @current_user_player) do |f|
             = render 'players/form', f: f
             .text-right
-              = button_tag type: :submit, class: 'btn btn-primary' do
+              = button_tag type: :submit, class: 'btn btn-primary', 'data-confirm': 'You will not be able to edit your deck submission unless the TO unlocks your registration. Are you sure?' do
                 => fa_icon 'check'
-                | Update
+                | Submit
 
   = render 'player_counts'
