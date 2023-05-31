@@ -45,7 +45,6 @@ class PlayersController < ApplicationController
     unless is_organiser_view
       params[:user_id] = current_user.id
     end
-    validate_deck_registration(params)
 
     @player.update(params)
 
@@ -106,18 +105,5 @@ class PlayersController < ApplicationController
 
   def set_player
     @player = Player.find(params[:id])
-  end
-
-  def validate_deck_registration(params)
-    if params[:corp_deck]
-      corp_deck = JSON.parse(params[:corp_deck])
-      corp_id = Identity.where(nrdb_code: corp_deck['cards'].keys).first
-      params[:corp_identity] = corp_id&.name
-    end
-    if params[:runner_deck]
-      runner_deck = JSON.parse(params[:runner_deck])
-      runner_id = Identity.where(nrdb_code: runner_deck['cards'].keys).first
-      params[:runner_identity] = runner_id&.name
-    end
   end
 end
