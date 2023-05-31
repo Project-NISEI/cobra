@@ -3,7 +3,9 @@
 		= f.input_field :organiser_view, value: true, hidden: true
 	- if @tournament.nrdb_deck_registration?
 		= f.input_field :corp_deck, hidden: true
+		= f.input_field :corp_deck_format, hidden: true, value: 'nrdb_v2'
 		= f.input_field :runner_deck, hidden: true
+		= f.input_field :runner_deck_format, hidden: true, value: 'nrdb_v2'
 	.form-group
 		label.d-block for="player_name" Name
 		- if defined?(default_name)

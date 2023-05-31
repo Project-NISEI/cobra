@@ -95,7 +95,8 @@ class PlayersController < ApplicationController
 
   def player_params
     params.require(:player)
-      .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
+      .permit(:name, :corp_identity, :runner_identity,
+              :corp_deck, :runner_deck, :corp_deck_format, :runner_deck_format,
               :first_round_bye, :manual_seed)
   end
 
