@@ -56,9 +56,11 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
-  if defined?(Rails::Server)
-    config.after_initialize do
+  config.after_initialize do
+    begin
       Flipper.enable :nrdb_deck_registration
+    rescue => e
+      Rails.logger.warn "Failed setting Flipper features: #{e.class}"
     end
   end
 end
