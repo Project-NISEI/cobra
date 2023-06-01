@@ -51,6 +51,8 @@ class PlayersController < ApplicationController
                                  :corp_deck_format, :runner_deck_format)
         else
           params[:decks_locked] = true
+          params[:corp_deck] = JSON.parse(params[:corp_deck])
+          params[:runner_deck] = JSON.parse(params[:runner_deck])
         end
       else
         params = params.except(:corp_deck, :runner_deck, :corp_deck_format, :runner_deck_format)

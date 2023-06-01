@@ -1,6 +1,6 @@
 .container
   .row
-    - if @tournament.nrdb_deck_registration? and not @current_user_player.decks_locked?
+    - if @tournament.nrdb_deck_registration?
       = render 'deck_selection'
     - else
       = render 'overview_card'
