@@ -18,7 +18,7 @@
             = render 'players/form', f: f
             .text-right
               - if @tournament.nrdb_deck_registration?
-                = button_tag type: :submit, class: 'btn btn-primary', 'data-confirm': 'You will not be able to edit your deck submission unless the TO unlocks your registration. Are you sure?' do
+                = button_tag type: :submit, class: 'btn btn-primary', 'data-confirm': 'You will not be able to edit your deck submission unless the Tournament Organiser unlocks your registration. Are you sure?' do
                   => fa_icon 'check'
                   | Submit
               - else

@@ -2,7 +2,7 @@
   .card
     - if @current_user_player.decks_locked?
       .card-header
-        | Your decks are locked, please ask the TO if you need them unlocked.
+        | Your decks are locked, please ask the Tournament Organiser if you need them unlocked.
       ul.list-group.list-group-flush style='border-bottom: 0'
         li.list-group-item.selected-deck
           .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@corp_identity.nrdb_code}.jpg)"
