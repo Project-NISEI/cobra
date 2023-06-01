@@ -47,10 +47,8 @@ $(document).on 'turbolinks:load', ->
       $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
       $('#nrdb_deck_'+id).toggleClass('active', !activeBefore)
       $('#nrdb_decks_selected').empty()
-      $corp = $('#nrdb_decks li.active[data-side*=corp]')
-      $runner = $('#nrdb_decks li.active[data-side*=runner]')
-      cloneToSelectedOrElse($corp, corpPlaceholder)
-      cloneToSelectedOrElse($runner, runnerPlaceholder)
+      cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
+      cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
       setDeckInputs(side, $('#nrdb_deck_'+id+'.active'))
 
     preselectDeck = (side) =>
