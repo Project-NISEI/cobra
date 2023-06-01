@@ -143,8 +143,8 @@ RSpec.describe PlayersController do
         player1.reload
         expect(player1.runner_identity).to eq('Some Runner')
         expect(player1.corp_identity).to eq('Some Corp')
-        expect(player1.runner_deck).to eq('{"name": "Runner Deck"}')
-        expect(player1.corp_deck).to eq('{"name": "Corp Deck"}')
+        expect(player1.runner_deck).to eq({'name' => 'Runner Deck'})
+        expect(player1.corp_deck).to eq({'name' => 'Corp Deck'})
         expect(player1.runner_deck_format).to eq('nrdb_v2')
         expect(player1.corp_deck_format).to eq('nrdb_v2')
       end

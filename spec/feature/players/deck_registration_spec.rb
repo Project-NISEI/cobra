@@ -61,8 +61,8 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     it 'saves the decks' do
       expect(@new_player.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
       expect(@new_player.runner_identity).to eq('Az McCaffrey: Mechanical Prodigy')
-      expect(@new_player.corp_deck).to eq(@hb_deck)
-      expect(@new_player.runner_deck).to eq(@az_deck)
+      expect(@new_player.corp_deck).to eq(JSON.parse(@hb_deck))
+      expect(@new_player.runner_deck).to eq(JSON.parse(@az_deck))
     end
 
     it 'locks the decks' do
