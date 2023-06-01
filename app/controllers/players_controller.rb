@@ -44,6 +44,7 @@ class PlayersController < ApplicationController
     params=player_params
     unless is_organiser_view
       params[:user_id] = current_user.id
+      params[:decks_locked] = true
     end
 
     @player.update(params)

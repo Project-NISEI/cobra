@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_31_213446) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_01_195442) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -103,6 +103,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_31_213446) do
     t.jsonb "runner_deck"
     t.string "corp_deck_format"
     t.string "runner_deck_format"
+    t.boolean "decks_locked"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end

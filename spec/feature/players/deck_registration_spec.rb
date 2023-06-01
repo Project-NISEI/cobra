@@ -55,14 +55,18 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
         @hb_deck = select_corp_deck_by_id('763461')
         click_button 'Submit'
       end
+      @new_player = Player.last
     end
 
-    it 'saves the deck' do
-      updated = Player.last
-      expect(updated.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
-      expect(updated.runner_identity).to eq('Az McCaffrey: Mechanical Prodigy')
-      expect(updated.corp_deck).to eq(@hb_deck)
-      expect(updated.runner_deck).to eq(@az_deck)
+    it 'saves the decks' do
+      expect(@new_player.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
+      expect(@new_player.runner_identity).to eq('Az McCaffrey: Mechanical Prodigy')
+      expect(@new_player.corp_deck).to eq(@hb_deck)
+      expect(@new_player.runner_deck).to eq(@az_deck)
+    end
+
+    it 'locks the decks' do
+      expect(@new_player.decks_locked).to be(true)
     end
 
   end
