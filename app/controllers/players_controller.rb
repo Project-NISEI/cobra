@@ -44,7 +44,17 @@ class PlayersController < ApplicationController
     params=player_params
     unless is_organiser_view
       params[:user_id] = current_user.id
-      params[:decks_locked] = true
+      if @tournament.nrdb_deck_registration?
+        if @player.decks_locked
+          params = params.except(:corp_identity, :runner_identity,
+                                 :corp_deck, :runner_deck,
+                                 :corp_deck_format, :runner_deck_format)
+        else
+          params[:decks_locked] = true
+        end
+      else
+        params = params.except(:corp_deck, :runner_deck, :corp_deck_format, :runner_deck_format)
+      end
     end
 
     @player.update(params)
