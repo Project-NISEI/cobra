@@ -5,11 +5,11 @@
         | Your decks are locked, please ask the TO if you need them unlocked.
       ul.list-group.list-group-flush style='border-bottom: 0'
         li.list-group-item.selected-deck
-          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@runner_identity.nrdb_code}.jpg)"
-          p.mb-1 #{@runner_deck['name']}
-        li.list-group-item.selected-deck
           .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@corp_identity.nrdb_code}.jpg)"
           p.mb-1 #{@corp_deck['name']}
+        li.list-group-item.selected-deck
+          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@runner_identity.nrdb_code}.jpg)"
+          p.mb-1 #{@runner_deck['name']}
     - else
       .card-header
         | Please select from your decks below.
@@ -17,11 +17,11 @@
         |< Refresh the page to reload from NetrunnerDB.
       ul.list-group.list-group-flush#nrdb_decks_selected style='border-bottom: 0'
         li.list-group-item.selected-deck
-          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/00006.jpg)"
-          p.mb-1 No runner selected
-        li.list-group-item.selected-deck
           .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/00005.jpg)"
           p.mb-1 No corp selected
+        li.list-group-item.selected-deck
+          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/00006.jpg)"
+          p.mb-1 No runner selected
       ul.list-group.list-group-flush.overflow-auto#nrdb_decks style='height: 24em'
         - @decks.each do |deck|
           li.list-group-item [

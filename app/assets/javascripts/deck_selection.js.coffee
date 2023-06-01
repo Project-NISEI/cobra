@@ -2,8 +2,8 @@ $(document).on 'turbolinks:load', ->
   if document.getElementById('nrdb_decks')?
 
     deckPlaceholders = $('#nrdb_decks_selected li').get()
-    runnerPlaceholder = deckPlaceholders[0]
-    corpPlaceholder = deckPlaceholders[1]
+    corpPlaceholder = deckPlaceholders[0]
+    runnerPlaceholder = deckPlaceholders[1]
 
     cloneToSelectedOrElse = ($element, ifNotPresent) =>
       if $element.length > 0
@@ -30,15 +30,23 @@ $(document).on 'turbolinks:load', ->
         if card.type_code == 'identity'
           return card.title
 
+    setDeckInputs = (side, $deck) =>
+      if $deck.length > 0
+        $.get('https://netrunnerdb.com/api/2.0/public/cards', (cards) =>
+          deckStr = $deck.attr('data-deck')
+          $('#player_'+side+'_deck').val(deckStr)
+          $('#player_'+side+'_identity').val(getDeckIdentityName(JSON.parse(deckStr), cards)))
+      else
+        $('#player_'+side+'_deck').val('')
+        $('#player_'+side+'_identity').val('')
+
     window.selectDeck = (id, side) =>
       activeBefore = $('#nrdb_deck_'+id).hasClass('active')
       $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
       $('#nrdb_deck_'+id).toggleClass('active', !activeBefore)
       $('#nrdb_decks_selected').empty()
-      cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
-      cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
-      deckStr = $('#nrdb_deck_'+id).attr('data-deck')
-      deck = JSON.parse(deckStr)
-      $.get('https://netrunnerdb.com/api/2.0/public/cards', (cards) =>
-        $('#player_'+side+'_deck').val(deckStr)
-        $('#player_'+side+'_identity').val(getDeckIdentityName(deck, cards)))
+      $corp = $('#nrdb_decks li.active[data-side*=corp]')
+      $runner = $('#nrdb_decks li.active[data-side*=runner]')
+      cloneToSelectedOrElse($corp, corpPlaceholder)
+      cloneToSelectedOrElse($runner, runnerPlaceholder)
+      setDeckInputs(side, $('#nrdb_deck_'+id+'.active'))
