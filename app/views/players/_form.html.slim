@@ -21,13 +21,13 @@
 		label.d-block for="player_corp_identity" Corp ID
 		= f.input_field :corp_identity,
 			readonly: (@tournament.nrdb_deck_registration? and not defined?(organiser_view)),
-			placeholder: ( @tournament.nrdb_deck_registration? ? 'Please select a deck' : 'Search for corp ID' ),
+			placeholder: ( @tournament.nrdb_deck_registration? ? '' : 'Search for corp ID' ),
 			class: 'form-control corp_identities'
 	.form-group
 		label.d-block for="player_runner_identity" Runner ID
 		= f.input_field :runner_identity,
 			readonly: (@tournament.nrdb_deck_registration? and not defined?(organiser_view)),
-			placeholder: ( @tournament.nrdb_deck_registration? ? 'Please select a deck' : 'Search for runner ID' ),
+			placeholder: ( @tournament.nrdb_deck_registration? ? '' : 'Search for runner ID' ),
 			class: 'form-control runner_identities'
 	- if policy(@tournament).edit?
 		=> f.input :first_round_bye, as: :boolean, class: 'form-check-input', input_html: { class: 'mr-1'}, inline_label: 'First Round Bye'
