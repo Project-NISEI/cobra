@@ -45,7 +45,7 @@ class PlayersController < ApplicationController
     unless is_organiser_view
       params[:user_id] = current_user.id
       if @tournament.nrdb_deck_registration?
-        if @player.decks_locked
+        if @player.decks_locked?
           params = params.except(:corp_identity, :runner_identity,
                                  :corp_deck, :runner_deck,
                                  :corp_deck_format, :runner_deck_format)
