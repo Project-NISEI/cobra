@@ -50,3 +50,11 @@ $(document).on 'turbolinks:load', ->
       cloneToSelectedOrElse($corp, corpPlaceholder)
       cloneToSelectedOrElse($runner, runnerPlaceholder)
       setDeckInputs(side, $('#nrdb_deck_'+id+'.active'))
+
+    preselectDeck = (side) =>
+      deckStr = $('#player_'+side+'_deck').val()
+      if deckStr.length > 0
+        window.selectDeck(JSON.parse(deckStr)['id'], side)
+
+    preselectDeck('corp')
+    preselectDeck('runner')
