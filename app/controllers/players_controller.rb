@@ -1,6 +1,6 @@
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :registration]
+  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :lock_decks, :unlock_decks, :registration]
 
   def index
     authorize @tournament, :update?
@@ -84,6 +84,22 @@ class PlayersController < ApplicationController
     authorize @tournament, :update?
 
     @player.update(active: false)
+
+    redirect_to tournament_players_path(@tournament)
+  end
+
+  def lock_decks
+    authorize @tournament, :update?
+
+    @player.update(decks_locked: true)
+
+    redirect_to tournament_players_path(@tournament)
+  end
+
+  def unlock_decks
+    authorize @tournament, :update?
+
+    @player.update(decks_locked: false)
 
     redirect_to tournament_players_path(@tournament)
   end

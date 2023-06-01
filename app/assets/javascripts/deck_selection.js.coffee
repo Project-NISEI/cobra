@@ -35,9 +35,11 @@ $(document).on 'turbolinks:load', ->
         $.get('https://netrunnerdb.com/api/2.0/public/cards', (cards) =>
           deckStr = $deck.attr('data-deck')
           $('#player_'+side+'_deck').val(deckStr)
+          $('#player_'+side+'_deck_format').val('nrdb_v2')
           $('#player_'+side+'_identity').val(getDeckIdentityName(JSON.parse(deckStr), cards)))
       else
         $('#player_'+side+'_deck').val('')
+        $('#player_'+side+'_deck_format').val('')
         $('#player_'+side+'_identity').val('')
 
     window.selectDeck = (id, side) =>
