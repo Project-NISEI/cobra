@@ -206,5 +206,21 @@ RSpec.describe 'reporting scores for pairings' do
         expect(pairing.score2_runner).to eq(0)
       end
     end
+
+    it 'stores a missing score as zero' do
+      fill_in :pairing_score1, with: '6'
+      click_button 'Save'
+
+      pairing.reload
+
+      aggregate_failures do
+        expect(pairing.score1).to eq(6)
+        expect(pairing.score1_corp).to eq(0)
+        expect(pairing.score1_runner).to eq(0)
+        expect(pairing.score2).to eq(0)
+        expect(pairing.score2_corp).to eq(0)
+        expect(pairing.score2_runner).to eq(0)
+      end
+    end
   end
 end

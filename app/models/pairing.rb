@@ -85,6 +85,16 @@ class Pairing < ApplicationRecord
   private
 
   def aggregate_scores
+    # Handle custom scores set directly
+    if score1.present? || score2.present?
+      unless score1.present?
+        self.score1 = 0
+      end
+      unless score2.present?
+        self.score2 = 0
+      end
+    end
+    # Handle score presets set as corp & runner separately
     return unless (score1_corp.present? && score1_corp > 0) || (score1_runner.present? && score1_runner > 0) ||
       (score2_corp.present? && score2_corp > 0) || (score2_runner.present? && score2_runner > 0)
 
