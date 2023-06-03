@@ -11,7 +11,7 @@ class Pairing < ApplicationRecord
   scope :completed, -> { joins(:round).where('rounds.completed = ?', true) }
   scope :for_stage, ->(stage) { joins(:round).where(rounds: { stage: stage }) }
 
-  before_save :aggregate_scores
+  before_save :normalise_scores_before_save
   after_update :cache_standings!, if: Proc.new { round.completed? }
   delegate :cache_standings!, to: :stage
 
@@ -84,11 +84,29 @@ class Pairing < ApplicationRecord
 
   private
 
-  def aggregate_scores
-    return unless (score1_corp.present? && score1_corp > 0) || (score1_runner.present? && score1_runner > 0) ||
-      (score2_corp.present? && score2_corp > 0) || (score2_runner.present? && score2_runner > 0)
+  def normalise_scores_before_save
+    # Handle score presets set as corp & runner scores
+    combine_separate_side_scores
+    # Handle custom scores set directly
+    ensure_custom_scores_complete
+  end
+
+  def combine_separate_side_scores
+    return unless
+      (score1_corp.present? && score1_corp > 0) ||
+      (score1_runner.present? && score1_runner > 0) ||
+      (score2_corp.present? && score2_corp > 0) ||
+      (score2_runner.present? && score2_runner > 0)
 
     self.score1 = (score1_corp || 0) + (score1_runner || 0)
     self.score2 = (score2_corp || 0) + (score2_runner || 0)
+  end
+
+  def ensure_custom_scores_complete
+    return unless
+      score1.present? || score2.present?
+
+    self.score1 = score1 || 0
+    self.score2 = score2 || 0
   end
 end
