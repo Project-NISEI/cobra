@@ -65,10 +65,6 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       expect(@new_player.runner_deck).to eq(JSON.parse(@az_deck))
     end
 
-    it 'locks the decks' do
-      expect(@new_player.decks_locked).to be(true)
-    end
-
   end
 
   def register_as_player

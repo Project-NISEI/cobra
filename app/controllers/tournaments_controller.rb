@@ -48,17 +48,10 @@ class TournamentsController < ApplicationController
     end
 
     if @tournament.nrdb_deck_registration?
-      if @current_user_player.decks_locked?
-        @corp_deck = @current_user_player.corp_deck
-        @runner_deck = @current_user_player.runner_deck
-        @corp_identity = Identity.guess(@current_user_player.corp_identity)
-        @runner_identity = Identity.guess(@current_user_player.runner_identity)
-      else
-        begin
-          @decks = Nrdb::Connection.new(current_user).decks
-        rescue
-          redirect_to login_path(:return_to => request.path)
-        end
+      begin
+        @decks = Nrdb::Connection.new(current_user).decks
+      rescue
+        redirect_to login_path(:return_to => request.path)
       end
     end
   end
