@@ -14,6 +14,8 @@ Rails.application.routes.draw do
       get :meeting, on: :collection
       patch :drop, on: :member
       patch :reinstate, on: :member
+      patch :lock_decks, on: :member
+      patch :unlock_decks, on: :member
       get :registration, on: :member
     end
     resources :rounds, only: [:index, :show, :create, :edit, :update, :destroy] do

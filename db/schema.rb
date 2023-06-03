@@ -103,6 +103,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_195442) do
     t.jsonb "runner_deck"
     t.string "corp_deck_format"
     t.string "runner_deck_format"
+    t.boolean "decks_locked"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end

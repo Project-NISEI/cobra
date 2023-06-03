@@ -1,6 +1,6 @@
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :registration]
+  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :lock_decks, :unlock_decks, :registration]
 
   def index
     authorize @tournament, :update?
@@ -45,8 +45,15 @@ class PlayersController < ApplicationController
     unless is_organiser_view
       params[:user_id] = current_user.id
       if @tournament.nrdb_deck_registration?
-        params[:corp_deck] = JSON.parse(params[:corp_deck])
-        params[:runner_deck] = JSON.parse(params[:runner_deck])
+        if @player.decks_locked?
+          params = params.except(:corp_identity, :runner_identity,
+                                 :corp_deck, :runner_deck,
+                                 :corp_deck_format, :runner_deck_format)
+        else
+          params[:decks_locked] = true
+          params[:corp_deck] = JSON.parse(params[:corp_deck])
+          params[:runner_deck] = JSON.parse(params[:runner_deck])
+        end
       else
         params = params.except(:corp_deck, :runner_deck, :corp_deck_format, :runner_deck_format)
       end
@@ -77,6 +84,22 @@ class PlayersController < ApplicationController
     authorize @tournament, :update?
 
     @player.update(active: false)
+
+    redirect_to tournament_players_path(@tournament)
+  end
+
+  def lock_decks
+    authorize @tournament, :update?
+
+    @player.update(decks_locked: true)
+
+    redirect_to tournament_players_path(@tournament)
+  end
+
+  def unlock_decks
+    authorize @tournament, :update?
+
+    @player.update(decks_locked: false)
 
     redirect_to tournament_players_path(@tournament)
   end
