@@ -11,7 +11,7 @@ class Pairing < ApplicationRecord
   scope :completed, -> { joins(:round).where('rounds.completed = ?', true) }
   scope :for_stage, ->(stage) { joins(:round).where(rounds: { stage: stage }) }
 
-  before_save :prepare_scores_before_save
+  before_save :normalise_scores_before_save
   after_update :cache_standings!, if: Proc.new { round.completed? }
   delegate :cache_standings!, to: :stage
 
@@ -84,7 +84,7 @@ class Pairing < ApplicationRecord
 
   private
 
-  def prepare_scores_before_save
+  def normalise_scores_before_save
     # Handle score presets set as corp & runner scores
     combine_separate_side_scores
     # Handle custom scores set directly
