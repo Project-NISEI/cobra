@@ -22,24 +22,24 @@ $(document).on 'turbolinks:load', ->
       readDeck = (nrdbDeck) =>
         details = { name: nrdbDeck.name, nrdb_id: nrdbDeck.id }
         for code, count of nrdbDeck.cards
-          card = nrdbCardsByCode.get(code)
-          if card.type_code == 'identity'
-            identity = card
-            details.identity = card.title
-            details.identity_nrdb_code = card.code
-            details.side = card.side_code
-            details.min_deck_size = card.minimum_deck_size
-            details.max_influence = card.influence_limit
+          nrdbCard = nrdbCardsByCode.get(code)
+          if nrdbCard.type_code == 'identity'
+            identity = nrdbCard
+            details.identity = nrdbCard.title
+            details.identity_nrdb_code = nrdbCard.code
+            details.side = nrdbCard.side_code
+            details.min_deck_size = nrdbCard.minimum_deck_size
+            details.max_influence = nrdbCard.influence_limit
         cards = []
         for code, count of nrdbDeck.cards
-          card = nrdbCardsByCode.get(code)
-          if card.type_code != 'identity'
-            if identity.faction_code == card.faction_code
+          nrdbCard = nrdbCardsByCode.get(code)
+          if nrdbCard.type_code != 'identity'
+            if identity.faction_code == nrdbCard.faction_code
               influence_spent = 0
             else
-              influence_spent = card.faction_cost
+              influence_spent = nrdbCard.faction_cost
             cards.push({
-              name: card.title,
+              name: nrdbCard.title,
               quantity: count,
               influence: influence_spent
             })
