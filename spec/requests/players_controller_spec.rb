@@ -102,6 +102,36 @@ RSpec.describe PlayersController do
     end
   end
 
+  describe 'deck submission' do
+    let(:user1) { create(:user) }
+    let(:player1) { create(:player, tournament: tournament, user_id: user1.id) }
+    let(:tournament) { create(:tournament, name: 'My Tournament', self_registration: true, nrdb_deck_registration: true) }
+
+    it 'stores decks' do
+      sign_in user1
+      put tournament_player_path(tournament, player1), params: { player: {
+        runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}',
+        corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}'
+      } }
+
+      player1.reload
+      expect(player1.runner_deck.name).to eq('Runner Deck')
+      expect(player1.corp_deck.name).to eq('Corp Deck')
+    end
+
+    it 'stores cards' do
+      sign_in user1
+      put tournament_player_path(tournament, player1), params: { player: {
+        runner_deck: '{"details": {}, "cards": [{"name": "Runner Card", "quantity": 3}]}',
+        corp_deck: '{"details": {}, "cards": [{"name": "Corp Card", "quantity": 3}]}'
+      } }
+
+      player1.reload
+      expect(player1.runner_deck.deck_cards.map {|card| [card.name, card.quantity]}).to eq([['Runner Card', 3]])
+      expect(player1.corp_deck.deck_cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
+    end
+  end
+
   def expect_unauthorized
     expect(response).to redirect_to(root_path)
     expect(flash[:alert]).to eq("🔒 Sorry, you can't do that")
