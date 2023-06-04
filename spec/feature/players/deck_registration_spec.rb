@@ -56,9 +56,12 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       @new_player = Player.last
     end
 
-    it 'saves the decks' do
+    it 'saves the identities' do
       expect(@new_player.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
       expect(@new_player.runner_identity).to eq('Az McCaffrey: Mechanical Prodigy')
+    end
+
+    it 'saves the decks' do
       expect(@new_player.corp_deck.identity).to eq('Haas-Bioroid: Engineering the Future')
       expect(@new_player.runner_deck.identity).to eq('Az McCaffrey: Mechanical Prodigy')
     end
