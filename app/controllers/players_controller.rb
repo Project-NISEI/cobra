@@ -22,7 +22,7 @@ class PlayersController < ApplicationController
       params[:user_id] = current_user.id
     end
 
-    player = @tournament.players.create(params)
+    player = @tournament.players.create(params.except(:corp_deck, :runner_deck))
     unless @tournament.current_stage.nil?
       @tournament.current_stage.players << player
     end
@@ -44,21 +44,30 @@ class PlayersController < ApplicationController
     params=player_params
     unless is_organiser_view
       params[:user_id] = current_user.id
-      if @tournament.nrdb_deck_registration?
-        params[:corp_deck] = JSON.parse(params[:corp_deck])
-        params[:runner_deck] = JSON.parse(params[:runner_deck])
-      else
-        params = params.except(:corp_deck, :runner_deck, :corp_deck_format, :runner_deck_format)
-      end
     end
 
-    @player.update(params)
+    @player.update(params.except(:corp_deck, :runner_deck))
+
+    if @tournament.nrdb_deck_registration?
+      save_deck(params, :corp_deck, 'corp')
+      save_deck(params, :runner_deck, 'runner')
+    end
 
     if current_user.id == @tournament.user_id && @player.user_id != current_user.id
       redirect_to tournament_players_path(@tournament)
     else
       redirect_to tournament_path(@tournament)
     end
+  end
+
+  def save_deck(params, param, side)
+    return unless params.has_key?(param)
+    request = JSON.parse(params[param])
+    @player.decks.destroy_by(side: side)
+    details = request['details']
+    details['side'] = side
+    deck = @player.decks.create(details)
+    deck.deck_cards.create(request['cards'])
   end
 
   def destroy
@@ -101,8 +110,7 @@ class PlayersController < ApplicationController
 
   def player_params
     params.require(:player)
-      .permit(:name, :corp_identity, :runner_identity,
-              :corp_deck, :runner_deck, :corp_deck_format, :runner_deck_format,
+      .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
               :first_round_bye, :manual_seed)
   end
 

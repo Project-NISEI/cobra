@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_01_195442) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,29 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_195442) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "deck_cards", force: :cascade do |t|
+    t.bigint "deck_id"
+    t.string "name"
+    t.integer "quantity"
+    t.integer "influence"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deck_id"], name: "index_deck_cards_on_deck_id"
+  end
+
+  create_table "decks", force: :cascade do |t|
+    t.bigint "player_id"
+    t.string "side"
+    t.string "name"
+    t.string "identity"
+    t.integer "min_deck_size"
+    t.integer "max_influence"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "nrdb_id"
+    t.index ["player_id"], name: "index_decks_on_player_id"
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -99,10 +122,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_195442) do
     t.integer "previous_id"
     t.integer "manual_seed"
     t.bigint "user_id"
-    t.jsonb "corp_deck"
-    t.jsonb "runner_deck"
-    t.string "corp_deck_format"
-    t.string "runner_deck_format"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end
@@ -189,6 +208,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_195442) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "deck_cards", "decks"
+  add_foreign_key "decks", "players"
   add_foreign_key "pairings", "players", column: "player1_id"
   add_foreign_key "pairings", "players", column: "player2_id"
   add_foreign_key "pairings", "rounds"

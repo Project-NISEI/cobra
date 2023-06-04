@@ -15,9 +15,8 @@
       - @decks.each do |deck|
         li.list-group-item [
           id='nrdb_deck_#{deck[:id]}'
-          data-side='#{deck[:side]}'
           data-deck='#{deck.to_json}'
-          onclick='selectDeck(#{deck[:id]}, "#{deck[:side]}")'
+          onclick='selectDeck(#{deck[:id]})'
           ]
           - unless deck[:identity].nil?
             .deck-list-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{deck[:identity].nrdb_code}.jpg)"

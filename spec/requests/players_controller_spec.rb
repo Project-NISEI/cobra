@@ -72,8 +72,6 @@ RSpec.describe PlayersController do
         expect(player1.corp_identity).to eq('Some Corp')
         expect(player1.runner_deck).to be_nil
         expect(player1.corp_deck).to be_nil
-        expect(player1.runner_deck_format).to be_nil
-        expect(player1.corp_deck_format).to be_nil
       end
 
       it 'allows TO updating another user' do
