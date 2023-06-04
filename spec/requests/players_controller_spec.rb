@@ -61,10 +61,8 @@ RSpec.describe PlayersController do
         put tournament_player_path(tournament, player1), params: { player: {
           runner_identity: 'Some Runner',
           corp_identity: 'Some Corp',
-          runner_deck: '{"name": "Runner Deck"}',
-          corp_deck: '{"name": "Corp Deck"}',
-          runner_deck_format: 'nrdb_v2',
-          corp_deck_format: 'nrdb_v2'
+          runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}',
+          corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}'
         } }
 
         player1.reload
