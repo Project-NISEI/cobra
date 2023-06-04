@@ -70,19 +70,7 @@ class Player < ApplicationRecord
     decks.find_by side: 'runner'
   end
 
-  def corp_deck_view
-    deck_view(corp_deck)
-  end
-
-  def runner_deck_view
-    deck_view(runner_deck)
-  end
-
   private
-
-  def deck_view(deck)
-    {details: deck, cards: deck&.deck_cards}
-  end
 
   def destroy_pairings
     pairings.destroy_all
