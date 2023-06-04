@@ -6,6 +6,7 @@ $(document).on 'turbolinks:load', ->
     runnerPlaceholder = deckPlaceholders[1]
 
     $.get('https://netrunnerdb.com/api/2.0/public/cards', (nrdbCards) =>
+      nrdbCardsByCode = new Map(nrdbCards.data.map((card) => [card.code, card]))
 
       readDecks = () =>
         for item from $('#nrdb_decks li').get()
@@ -47,10 +48,9 @@ $(document).on 'turbolinks:load', ->
           $(ifNotPresent).appendTo('#nrdb_decks_selected')
 
       readDeck = (nrdbDeck) =>
-        cardsByCode = new Map(nrdbCards.data.map((card) => [card.code, card]))
         details = { name: nrdbDeck.name, nrdb_id: nrdbDeck.id }
         for code, count of nrdbDeck.cards
-          card = cardsByCode.get(code)
+          card = nrdbCardsByCode.get(code)
           if card.type_code == 'identity'
             identity = card
             details.identity = card.title
@@ -60,7 +60,7 @@ $(document).on 'turbolinks:load', ->
             details.max_influence = card.influence_limit
         cards = []
         for code, count of nrdbDeck.cards
-          card = cardsByCode.get(code)
+          card = nrdbCardsByCode.get(code)
           if card.type_code != 'identity'
             if identity.faction_code == card.faction_code
               influence_spent = 0
