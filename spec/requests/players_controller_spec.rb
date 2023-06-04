@@ -130,8 +130,9 @@ RSpec.describe PlayersController do
     end
 
     it 'ignores decks when locked' do
+      sign_in tournament.user
+      patch lock_decks_tournament_player_path(tournament, player1)
       sign_in user1
-      player1.update(decks_locked: true)
       put tournament_player_path(tournament, player1), params: { player: {
         runner_deck: '{"details": {}, "cards": [{"name": "Runner Card", "quantity": 3}]}',
         corp_deck: '{"details": {}, "cards": [{"name": "Corp Card", "quantity": 3}]}'
