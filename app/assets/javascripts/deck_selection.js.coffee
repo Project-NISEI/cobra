@@ -19,6 +19,32 @@ $(document).on 'turbolinks:load', ->
             'background-image':'url(https://static.nrdbassets.com/v1/small/'+deck.details.identity_nrdb_code+'.jpg)'}}))
           $item.append($('<small/>', text: deck.details.identity))
 
+      readDeck = (nrdbDeck) =>
+        details = { name: nrdbDeck.name, nrdb_id: nrdbDeck.id }
+        for code, count of nrdbDeck.cards
+          card = nrdbCardsByCode.get(code)
+          if card.type_code == 'identity'
+            identity = card
+            details.identity = card.title
+            details.identity_nrdb_code = card.code
+            details.side = card.side_code
+            details.min_deck_size = card.minimum_deck_size
+            details.max_influence = card.influence_limit
+        cards = []
+        for code, count of nrdbDeck.cards
+          card = nrdbCardsByCode.get(code)
+          if card.type_code != 'identity'
+            if identity.faction_code == card.faction_code
+              influence_spent = 0
+            else
+              influence_spent = card.faction_cost
+            cards.push({
+              name: card.title,
+              quantity: count,
+              influence: influence_spent
+            })
+        return {details: details, cards: cards}
+
       window.selectDeck = (id) =>
         $item = $('#nrdb_deck_'+id)
         deck = $item.data('deck')
@@ -46,32 +72,6 @@ $(document).on 'turbolinks:load', ->
           $clone.appendTo('#nrdb_decks_selected')
         else
           $(ifNotPresent).appendTo('#nrdb_decks_selected')
-
-      readDeck = (nrdbDeck) =>
-        details = { name: nrdbDeck.name, nrdb_id: nrdbDeck.id }
-        for code, count of nrdbDeck.cards
-          card = nrdbCardsByCode.get(code)
-          if card.type_code == 'identity'
-            identity = card
-            details.identity = card.title
-            details.identity_nrdb_code = card.code
-            details.side = card.side_code
-            details.min_deck_size = card.minimum_deck_size
-            details.max_influence = card.influence_limit
-        cards = []
-        for code, count of nrdbDeck.cards
-          card = nrdbCardsByCode.get(code)
-          if card.type_code != 'identity'
-            if identity.faction_code == card.faction_code
-              influence_spent = 0
-            else
-              influence_spent = card.faction_cost
-            cards.push({
-              name: card.title,
-              quantity: count,
-              influence: influence_spent
-            })
-        return {details: details, cards: cards}
 
       setDeckInputs = (deck, active) =>
         side = deck.details.side
