@@ -125,8 +125,8 @@ RSpec.describe PlayersController do
       } }
 
       player1.reload
-      expect(player1.runner_deck.deck_cards.map {|card| [card.name, card.quantity]}).to eq([['Runner Card', 3]])
-      expect(player1.corp_deck.deck_cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
+      expect(player1.runner_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Runner Card', 3]])
+      expect(player1.corp_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
     end
   end
 

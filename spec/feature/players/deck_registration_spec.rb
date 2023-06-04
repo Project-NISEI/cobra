@@ -49,10 +49,10 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future')
       VCR.use_cassette 'nrdb_decks/az_palantir_and_jammy_hb' do
         visit registration_tournament_path(Tournament.last)
-        select_corp_deck Deck.new identity: 'Haas-Bioroid: Engineering the Future', deck_cards: [
+        select_corp_deck Deck.new identity: 'Haas-Bioroid: Engineering the Future', cards: [
           DeckCard.new(name: 'Accelerated Beta Test', quantity: 3)
         ]
-        select_runner_deck Deck.new identity: 'Az McCaffrey: Mechanical Prodigy', deck_cards: [
+        select_runner_deck Deck.new identity: 'Az McCaffrey: Mechanical Prodigy', cards: [
           DeckCard.new(name: 'Diversion of Funds', quantity: 3)
         ]
         click_button 'Submit'
