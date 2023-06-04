@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_04_185223) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -194,6 +194,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
     t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
     t.boolean "self_registration"
     t.boolean "nrdb_deck_registration", default: false
+    t.boolean "decks_locked"
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 

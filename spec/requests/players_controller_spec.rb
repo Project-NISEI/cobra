@@ -129,9 +129,23 @@ RSpec.describe PlayersController do
       expect(player1.corp_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
     end
 
-    it 'ignores decks when locked' do
+    it 'ignores decks when player is locked' do
       sign_in tournament.user
       patch lock_decks_tournament_player_path(tournament, player1)
+      sign_in user1
+      put tournament_player_path(tournament, player1), params: { player: {
+        runner_deck: '{"details": {}, "cards": [{"name": "Runner Card", "quantity": 3}]}',
+        corp_deck: '{"details": {}, "cards": [{"name": "Corp Card", "quantity": 3}]}'
+      } }
+
+      player1.reload
+      expect(player1.runner_deck).to be_nil
+      expect(player1.corp_deck).to be_nil
+    end
+
+    it 'ignores decks when tournament is locked' do
+      sign_in tournament.user
+      patch lock_decks_tournament_path(tournament)
       sign_in user1
       put tournament_player_path(tournament, player1), params: { player: {
         runner_deck: '{"details": {}, "cards": [{"name": "Runner Card", "quantity": 3}]}',

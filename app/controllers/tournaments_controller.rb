@@ -1,7 +1,7 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [
       :show, :edit, :update, :destroy,
-      :upload_to_abr, :save_json, :cut, :qr, :registration, :timer
+      :upload_to_abr, :save_json, :cut, :qr, :registration, :timer, :lock_decks, :unlock_decks
     ]
 
   def index
@@ -168,6 +168,18 @@ class TournamentsController < ApplicationController
 
   def qr
     authorize @tournament, :edit?
+  end
+
+  def lock_decks
+    authorize @tournament, :edit?
+
+    @tournament.update(decks_locked: true)
+  end
+
+  def unlock_decks
+    authorize @tournament, :edit?
+
+    @tournament.update(decks_locked: false)
   end
 
   private
