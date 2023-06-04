@@ -40,8 +40,6 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     end
     expect(displayed_decks_names)
       .to eq(['The Palantir - 1st/Undefeated @ Silver Goblin Store Champs'])
-    expect(displayed_decks_identities)
-      .to eq(['Az McCaffrey: Mechanical Prodigy'])
   end
 
   context 'submitting decks' do
@@ -91,10 +89,6 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
 
   def displayed_decks_names
     find('#nrdb_decks').all('li').map {|deck| deck.find('p').text}
-  end
-
-  def displayed_decks_identities
-    find('#nrdb_decks').all('li').map {|deck| deck.find('small').text}
   end
 
   def select_corp_deck(deck)

@@ -81,7 +81,7 @@ class Player < ApplicationRecord
   private
 
   def deck_view(deck)
-    {details: deck, cards: deck.deck_cards}
+    {details: deck, cards: deck&.deck_cards}
   end
 
   def destroy_pairings

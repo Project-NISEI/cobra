@@ -14,6 +14,9 @@ $(document).on 'turbolinks:load', ->
           deck = readDeck(nrdbDeck)
           $item.attr('data-side', deck.details.side)
           $item.data('deck', deck)
+          $item.prepend($('<div/>', {class: 'deck-list-identity', css: {
+            'background-image':'url(https://static.nrdbassets.com/v1/small/'+deck.details.identity_nrdb_code+'.jpg)'}}))
+          $item.append($('<small/>', text: deck.details.identity))
 
       window.selectDeck = (id) =>
         $item = $('#nrdb_deck_'+id)
@@ -51,6 +54,7 @@ $(document).on 'turbolinks:load', ->
           if card.type_code == 'identity'
             identity = card
             details.identity = card.title
+            details.identity_nrdb_code = card.code
             details.side = card.side_code
             details.min_deck_size = card.minimum_deck_size
             details.max_influence = card.influence_limit

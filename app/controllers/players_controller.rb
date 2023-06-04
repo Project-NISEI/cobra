@@ -65,6 +65,7 @@ class PlayersController < ApplicationController
     request = JSON.parse(params[param])
     @player.decks.destroy_by(side: side)
     details = request['details']
+    details.keep_if { |key| Deck.column_names.include? key }
     details['side'] = side
     deck = @player.decks.create(details)
     deck.deck_cards.create(request['cards'])
