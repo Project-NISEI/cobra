@@ -66,12 +66,12 @@ class Player < ApplicationRecord
     decks.find_by side: 'corp'
   end
 
-  def corp_deck_view
-    deck_view(corp_deck)
-  end
-
   def runner_deck
     decks.find_by side: 'runner'
+  end
+
+  def corp_deck_view
+    deck_view(corp_deck)
   end
 
   def runner_deck_view
