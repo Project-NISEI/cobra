@@ -122,6 +122,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
     t.integer "previous_id"
     t.integer "manual_seed"
     t.bigint "user_id"
+    t.boolean "decks_locked"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end
