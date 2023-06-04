@@ -6,10 +6,10 @@
       ul.list-group.list-group-flush style='border-bottom: 0'
         li.list-group-item.selected-deck
           .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@corp_identity.nrdb_code}.jpg)"
-          p.mb-1 #{@corp_deck['name']}
+          p.mb-1 #{@corp_deck.name}
         li.list-group-item.selected-deck
           .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@runner_identity.nrdb_code}.jpg)"
-          p.mb-1 #{@runner_deck['name']}
+          p.mb-1 #{@runner_deck.name}
     - else
       .card-header
         | Please select from your decks below.
