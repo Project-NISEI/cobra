@@ -102,59 +102,138 @@ RSpec.describe PlayersController do
 
   describe 'deck submission' do
     let(:user1) { create(:user) }
-    let(:player1) { create(:player, tournament: tournament, user_id: user1.id) }
-    let(:tournament) { create(:tournament, name: 'My Tournament', self_registration: true, nrdb_deck_registration: true) }
+    let(:user2) { create(:user) }
+    let(:tournament) { create(:tournament, self_registration: true, nrdb_deck_registration: true) }
+
+    before do
+      sign_in user1
+      post tournament_players_path(tournament), params: { player: { name: 'Player 1' } }
+      sign_in user2
+      post tournament_players_path(tournament), params: { player: { name: 'Player 2' } }
+      @player1 = Player.find_by! user_id: user1.id
+      @player2 = Player.find_by! user_id: user2.id
+    end
 
     it 'stores decks' do
       sign_in user1
-      put tournament_player_path(tournament, player1), params: { player: {
+      put tournament_player_path(tournament, @player1), params: { player: {
+        corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}',
         runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}',
-        corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}'
       } }
 
-      player1.reload
-      expect(player1.runner_deck.name).to eq('Runner Deck')
-      expect(player1.corp_deck.name).to eq('Corp Deck')
+      @player1.reload
+      expect(@player1.corp_deck.name).to eq('Corp Deck')
+      expect(@player1.runner_deck.name).to eq('Runner Deck')
     end
 
     it 'stores cards' do
       sign_in user1
-      put tournament_player_path(tournament, player1), params: { player: {
+      put tournament_player_path(tournament, @player1), params: { player: {
+        corp_deck: '{"details": {}, "cards": [{"name": "Corp Card", "quantity": 3}]}',
         runner_deck: '{"details": {}, "cards": [{"name": "Runner Card", "quantity": 3}]}',
-        corp_deck: '{"details": {}, "cards": [{"name": "Corp Card", "quantity": 3}]}'
       } }
 
-      player1.reload
-      expect(player1.runner_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Runner Card', 3]])
-      expect(player1.corp_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
+      @player1.reload
+      expect(@player1.corp_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
+      expect(@player1.runner_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Runner Card', 3]])
     end
 
     it 'ignores decks when player is locked' do
       sign_in tournament.user
-      patch lock_decks_tournament_player_path(tournament, player1)
+      patch lock_decks_tournament_player_path(tournament, @player1)
       sign_in user1
-      put tournament_player_path(tournament, player1), params: { player: {
-        runner_deck: '{"details": {}, "cards": [{"name": "Runner Card", "quantity": 3}]}',
-        corp_deck: '{"details": {}, "cards": [{"name": "Corp Card", "quantity": 3}]}'
+      put tournament_player_path(tournament, @player1), params: { player: {
+        corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}',
+        runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}',
       } }
 
-      player1.reload
-      expect(player1.runner_deck).to be_nil
-      expect(player1.corp_deck).to be_nil
+      @player1.reload
+      expect(@player1.corp_deck).to be_nil
+      expect(@player1.runner_deck).to be_nil
     end
 
-    it 'ignores decks when tournament is locked' do
+    it 'has all decks unlocked to begin with' do
+      expect(@player1.reload.decks_locked?).to be(false)
+      expect(@player2.reload.decks_locked?).to be(false)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(true)
+      expect(tournament.any_player_decks_unlocked?).to be(true)
+    end
+
+    it 'locks decks for the whole tournament' do
       sign_in tournament.user
       patch lock_decks_tournament_path(tournament)
-      sign_in user1
-      put tournament_player_path(tournament, player1), params: { player: {
-        runner_deck: '{"details": {}, "cards": [{"name": "Runner Card", "quantity": 3}]}',
-        corp_deck: '{"details": {}, "cards": [{"name": "Corp Card", "quantity": 3}]}'
-      } }
 
-      player1.reload
-      expect(player1.runner_deck).to be_nil
-      expect(player1.corp_deck).to be_nil
+      expect(@player1.reload.decks_locked?).to be(true)
+      expect(@player2.reload.decks_locked?).to be(true)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
+      expect(tournament.any_player_decks_unlocked?).to be(false)
+    end
+
+    it 'locks decks for one player but not the other' do
+      sign_in tournament.user
+      patch lock_decks_tournament_player_path(tournament, @player1)
+
+      expect(@player1.reload.decks_locked?).to be(true)
+      expect(@player2.reload.decks_locked?).to be(false)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
+      expect(tournament.any_player_decks_unlocked?).to be(true)
+    end
+
+    it 'unlocks decks for one player' do
+      sign_in tournament.user
+      patch lock_decks_tournament_path(tournament)
+      patch unlock_decks_tournament_player_path(tournament, @player1)
+
+      expect(@player1.reload.decks_locked?).to be(false)
+      expect(@player2.reload.decks_locked?).to be(true)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
+      expect(tournament.any_player_decks_unlocked?).to be(true)
+    end
+
+    it 'unlocks decks for all players' do
+      sign_in tournament.user
+      patch lock_decks_tournament_path(tournament)
+      patch unlock_decks_tournament_path(tournament)
+
+      expect(@player1.reload.decks_locked?).to be(false)
+      expect(@player2.reload.decks_locked?).to be(false)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(true)
+      expect(tournament.any_player_decks_unlocked?).to be(true)
+    end
+
+    it 'locks decks for all players individually' do
+      sign_in tournament.user
+      patch lock_decks_tournament_player_path(tournament, @player1)
+      patch lock_decks_tournament_player_path(tournament, @player2)
+
+      expect(@player1.reload.decks_locked?).to be(true)
+      expect(@player2.reload.decks_locked?).to be(true)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
+      expect(tournament.any_player_decks_unlocked?).to be(false)
+    end
+
+    it 'unlocks decks for all players individually' do
+      sign_in tournament.user
+      patch lock_decks_tournament_path(tournament)
+      patch unlock_decks_tournament_player_path(tournament, @player1)
+      patch unlock_decks_tournament_player_path(tournament, @player2)
+
+      expect(@player1.reload.decks_locked?).to be(false)
+      expect(@player2.reload.decks_locked?).to be(false)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(true)
+      expect(tournament.any_player_decks_unlocked?).to be(true)
+    end
+
+    it 'unlocks decks for all but one player' do
+      sign_in tournament.user
+      patch lock_decks_tournament_path(tournament)
+      patch unlock_decks_tournament_path(tournament)
+      patch lock_decks_tournament_player_path(tournament, @player1)
+
+      expect(@player1.reload.decks_locked?).to be(true)
+      expect(@player2.reload.decks_locked?).to be(false)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
+      expect(tournament.any_player_decks_unlocked?).to be(true)
     end
   end
 

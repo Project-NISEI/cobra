@@ -173,13 +173,15 @@ class TournamentsController < ApplicationController
   def lock_decks
     authorize @tournament, :edit?
 
-    @tournament.update(decks_locked: true)
+    @tournament.players.active.update(decks_locked: true)
+    @tournament.update(all_players_decks_unlocked: false, any_player_decks_unlocked: false)
   end
 
   def unlock_decks
     authorize @tournament, :edit?
 
-    @tournament.update(decks_locked: false)
+    @tournament.players.active.update(decks_locked: false)
+    @tournament.update(all_players_decks_unlocked: true, any_player_decks_unlocked: true)
   end
 
   private

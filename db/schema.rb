@@ -194,7 +194,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_04_185223) do
     t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
     t.boolean "self_registration"
     t.boolean "nrdb_deck_registration", default: false
-    t.boolean "decks_locked"
+    t.boolean "all_players_decks_unlocked", default: true
+    t.boolean "any_player_decks_unlocked", default: true
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 

@@ -48,7 +48,7 @@ class PlayersController < ApplicationController
 
     @player.update(params.except(:corp_deck, :runner_deck))
 
-    if @tournament.nrdb_deck_registration? and not @player.decks_locked? and not @tournament.decks_locked?
+    if @tournament.nrdb_deck_registration? and not @player.decks_locked?
       save_deck(params, :corp_deck, 'corp')
       save_deck(params, :runner_deck, 'runner')
     end
@@ -95,6 +95,8 @@ class PlayersController < ApplicationController
     authorize @tournament, :update?
 
     @player.update(decks_locked: true)
+    @tournament.update(all_players_decks_unlocked: false,
+                       any_player_decks_unlocked: @tournament.unlocked_deck_players.count > 0)
 
     redirect_to tournament_players_path(@tournament)
   end
@@ -103,6 +105,8 @@ class PlayersController < ApplicationController
     authorize @tournament, :update?
 
     @player.update(decks_locked: false)
+    @tournament.update(any_player_decks_unlocked: true,
+                       all_players_decks_unlocked: @tournament.locked_deck_players.count == 0)
 
     redirect_to tournament_players_path(@tournament)
   end
