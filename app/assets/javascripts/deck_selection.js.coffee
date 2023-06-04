@@ -11,15 +11,16 @@ $(document).on 'turbolinks:load', ->
       readDecks = () =>
         for item from $('#nrdb_decks li').get()
           $item = $(item)
-          nrdbDeck = JSON.parse($item.attr('data-deck'))
-          deck = readDeck(nrdbDeck)
+          deck = readDeckFrom$Item($item)
           $item.attr('data-side', deck.details.side)
-          $item.data('deck', deck)
           $item.prepend($('<div/>', {class: 'deck-list-identity', css: {
             'background-image':'url(https://static.nrdbassets.com/v1/small/'+deck.details.identity_nrdb_code+'.jpg)'}}))
           $item.append($('<small/>', text: deck.details.identity))
 
-      readDeck = (nrdbDeck) =>
+      readDeckFrom$Item = ($item) =>
+        nrdbDeck = JSON.parse($item.attr('data-deck'))
+        return readNrdbDeck(nrdbDeck)
+      readNrdbDeck = (nrdbDeck) =>
         details = { name: nrdbDeck.name, nrdb_id: nrdbDeck.id }
         for code, count of nrdbDeck.cards
           nrdbCard = nrdbCardsByCode.get(code)
@@ -47,19 +48,19 @@ $(document).on 'turbolinks:load', ->
 
       window.selectDeck = (id) =>
         $item = $('#nrdb_deck_'+id)
-        deck = $item.data('deck')
+        deck = readDeckFrom$Item($item)
         side = deck.details.side
         activeBefore = $item.hasClass('active')
         $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
-        $('#nrdb_deck_'+id).toggleClass('active', !activeBefore)
+        $item.toggleClass('active', !activeBefore)
         $('#nrdb_decks_selected').empty()
         cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
         cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
         setDeckInputs(deck, $item.hasClass('active'))
 
-      cloneToSelectedOrElse = ($element, ifNotPresent) =>
-        if $element.length > 0
-          $clone = $element.clone().removeClass('active').addClass('selected-deck')
+      cloneToSelectedOrElse = ($item, ifNotPresent) =>
+        if $item.length > 0
+          $clone = $item.clone().removeClass('active').addClass('selected-deck')
           $clone.find('.deck-list-identity').removeClass('deck-list-identity').addClass('selected-deck-identity')
           $clone.find('small').remove()
           $clone.prop('onclick', null).off('click')
@@ -67,7 +68,7 @@ $(document).on 'turbolinks:load', ->
           $deselect.append($('<i/>', {'class': 'fa fa-close'}))
           $deselect.on('click', (e) =>
             e.preventDefault()
-            selectDeck($element.attr('data-deck-id')))
+            window.selectDeck(readDeckFrom$Item($item).details.nrdb_id))
           $clone.prepend($deselect)
           $clone.appendTo('#nrdb_decks_selected')
         else

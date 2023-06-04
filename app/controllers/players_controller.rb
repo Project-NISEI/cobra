@@ -68,7 +68,7 @@ class PlayersController < ApplicationController
     details.keep_if { |key| Deck.column_names.include? key }
     details['side'] = side
     deck = @player.decks.create(details)
-    deck.deck_cards.create(request['cards'])
+    deck.cards.create(request['cards'])
   end
 
   def destroy

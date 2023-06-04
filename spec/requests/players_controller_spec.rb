@@ -61,10 +61,8 @@ RSpec.describe PlayersController do
         put tournament_player_path(tournament, player1), params: { player: {
           runner_identity: 'Some Runner',
           corp_identity: 'Some Corp',
-          runner_deck: '{"name": "Runner Deck"}',
-          corp_deck: '{"name": "Corp Deck"}',
-          runner_deck_format: 'nrdb_v2',
-          corp_deck_format: 'nrdb_v2'
+          runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}',
+          corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}'
         } }
 
         player1.reload
@@ -127,8 +125,8 @@ RSpec.describe PlayersController do
       } }
 
       player1.reload
-      expect(player1.runner_deck.deck_cards.map {|card| [card.name, card.quantity]}).to eq([['Runner Card', 3]])
-      expect(player1.corp_deck.deck_cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
+      expect(player1.runner_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Runner Card', 3]])
+      expect(player1.corp_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
     end
   end
 
