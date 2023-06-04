@@ -6,6 +6,7 @@ class Player < ApplicationRecord
   has_one :next, class_name: 'Player', foreign_key: :previous_id
   has_many :registrations, dependent: :destroy
   has_many :standing_rows, dependent: :destroy
+  has_many :decks, dependent: :destroy
 
   before_destroy :destroy_pairings
 
@@ -61,7 +62,27 @@ class Player < ApplicationRecord
     Identity.find_or_initialize_by(name: runner_identity)
   end
 
+  def corp_deck
+    decks.find_by side: 'corp'
+  end
+
+  def runner_deck
+    decks.find_by side: 'runner'
+  end
+
+  def corp_deck_view
+    deck_view(corp_deck)
+  end
+
+  def runner_deck_view
+    deck_view(runner_deck)
+  end
+
   private
+
+  def deck_view(deck)
+    {details: deck, cards: deck&.deck_cards}
+  end
 
   def destroy_pairings
     pairings.destroy_all

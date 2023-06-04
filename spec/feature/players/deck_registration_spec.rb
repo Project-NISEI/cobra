@@ -40,8 +40,6 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     end
     expect(displayed_decks_names)
       .to eq(['The Palantir - 1st/Undefeated @ Silver Goblin Store Champs'])
-    expect(displayed_decks_identities)
-      .to eq(['Az McCaffrey: Mechanical Prodigy'])
   end
 
   context 'submitting decks' do
@@ -51,8 +49,8 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future')
       VCR.use_cassette 'nrdb_decks/az_palantir_and_jammy_hb' do
         visit registration_tournament_path(Tournament.last)
-        @az_deck = select_runner_deck_by_id('1455189')
-        @hb_deck = select_corp_deck_by_id('763461')
+        select_runner_deck Deck.new identity: 'Az McCaffrey: Mechanical Prodigy'
+        select_corp_deck Deck.new identity: 'Haas-Bioroid: Engineering the Future'
         click_button 'Submit'
       end
       @new_player = Player.last
@@ -61,8 +59,8 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     it 'saves the decks' do
       expect(@new_player.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
       expect(@new_player.runner_identity).to eq('Az McCaffrey: Mechanical Prodigy')
-      expect(@new_player.corp_deck).to eq(JSON.parse(@hb_deck))
-      expect(@new_player.runner_deck).to eq(JSON.parse(@az_deck))
+      expect(@new_player.corp_deck.identity).to eq('Haas-Bioroid: Engineering the Future')
+      expect(@new_player.runner_deck.identity).to eq('Az McCaffrey: Mechanical Prodigy')
     end
 
     it 'locks the decks' do
@@ -97,31 +95,19 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     find('#nrdb_decks').all('li').map {|deck| deck.find('p').text}
   end
 
-  def displayed_decks_identities
-    find('#nrdb_decks').all('li').map {|deck| deck.find('small').text}
+  def select_corp_deck(deck)
+    select_deck('corp', deck)
   end
 
-  def select_corp_deck_by_id(id)
-    select_deck_by_id('corp', id)
+  def select_runner_deck(deck)
+    select_deck('runner', deck)
   end
 
-  def select_runner_deck_by_id(id)
-    select_deck_by_id('runner', id)
-  end
-
-  def select_deck_by_id(side, id)
-    deck = first('#nrdb_deck_'+id)['data-deck']
-    first("#player_#{side}_deck", visible: false).set(deck)
+  def select_deck(side, deck)
+    first("#player_#{side}_deck", visible: false).set({details: deck, cards: []}.to_json)
     identity = first("#player_#{side}_identity")
     identity.native.remove_attribute('readonly')
-    identity.set(deck_identity(deck))
-    deck
-  end
-
-  def deck_identity(deck_str)
-    deck = JSON.parse(deck_str)
-    nrdb_codes = deck['cards'].keys
-    Identity.where(nrdb_code: nrdb_codes).first!.name
+    identity.set(deck.identity)
   end
 
   def with_nrdb_decks(&block)

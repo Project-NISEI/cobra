@@ -45,6 +45,7 @@ class TournamentsController < ApplicationController
     set_tournament_view_data
     unless @current_user_player
       redirect_to tournament_path(@tournament)
+      return
     end
 
     if @tournament.nrdb_deck_registration?

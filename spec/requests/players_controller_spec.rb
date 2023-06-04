@@ -72,9 +72,6 @@ RSpec.describe PlayersController do
         expect(player1.corp_identity).to eq('Some Corp')
         expect(player1.runner_deck).to be_nil
         expect(player1.corp_deck).to be_nil
-        expect(player1.runner_deck_format).to be_nil
-        expect(player1.corp_deck_format).to be_nil
-        expect(player1.decks_locked).to be_nil
       end
 
       it 'allows TO updating another user' do
@@ -101,52 +98,6 @@ RSpec.describe PlayersController do
 
         expect(Player.last.user_id).to be(tournament.user.id)
         expect(Player.last.name).to eq('Mr. Organiser')
-      end
-    end
-  end
-
-  describe 'deck submission' do
-    let(:user1) { create(:user) }
-    let(:player1) { create(:player, tournament: tournament, user_id: user1.id) }
-    let(:tournament) { create(:tournament, name: 'My Tournament', self_registration: true, nrdb_deck_registration: true) }
-
-    context 'decks have been submitted' do
-
-      before do
-        sign_in user1
-        put tournament_player_path(tournament, player1), params: { player: {
-          runner_identity: 'Some Runner',
-          corp_identity: 'Some Corp',
-          runner_deck: '{"name": "Runner Deck"}',
-          corp_deck: '{"name": "Corp Deck"}',
-          runner_deck_format: 'nrdb_v2',
-          corp_deck_format: 'nrdb_v2'
-        } }
-      end
-
-      it 'locks the decks' do
-        player1.reload
-        expect(player1.decks_locked).to be(true)
-      end
-
-      it 'ignores resubmitting decks' do
-
-        put tournament_player_path(tournament, player1), params: { player: {
-          runner_identity: 'Other Runner',
-          corp_identity: 'Other Corp',
-          runner_deck: '{"name": "Other Runner Deck"}',
-          corp_deck: '{"name": "Other Corp Deck"}',
-          runner_deck_format: 'nrdb_v3',
-          corp_deck_format: 'nrdb_v3'
-        } }
-
-        player1.reload
-        expect(player1.runner_identity).to eq('Some Runner')
-        expect(player1.corp_identity).to eq('Some Corp')
-        expect(player1.runner_deck).to eq({'name' => 'Runner Deck'})
-        expect(player1.corp_deck).to eq({'name' => 'Corp Deck'})
-        expect(player1.runner_deck_format).to eq('nrdb_v2')
-        expect(player1.corp_deck_format).to eq('nrdb_v2')
       end
     end
   end

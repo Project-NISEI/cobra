@@ -5,56 +5,88 @@ $(document).on 'turbolinks:load', ->
     corpPlaceholder = deckPlaceholders[0]
     runnerPlaceholder = deckPlaceholders[1]
 
-    cloneToSelectedOrElse = ($element, ifNotPresent) =>
-      if $element.length > 0
-        id = $element.attr('data-deck-id')
-        side = $element.attr('data-side')
-        $clone = $element.clone().removeClass('active').addClass('selected-deck')
-        $clone.find('.deck-list-identity').removeClass('deck-list-identity').addClass('selected-deck-identity')
-        $clone.find('small').remove()
-        $clone.prop('onclick', null).off('click')
-        $deselect = $('<a/>', {'class': 'float-right', 'title': 'Deselect', 'href': '#'})
-        $deselect.append($('<i/>', {'class': 'fa fa-close'}))
-        $deselect.on('click', (e) =>
-          e.preventDefault()
-          selectDeck(id, side))
-        $clone.prepend($deselect)
-        $clone.appendTo('#nrdb_decks_selected')
-      else
-        $(ifNotPresent).appendTo('#nrdb_decks_selected')
+    $.get('https://netrunnerdb.com/api/2.0/public/cards', (nrdbCards) =>
+      nrdbCardsByCode = new Map(nrdbCards.data.map((card) => [card.code, card]))
 
-    getDeckIdentityName = (deck, cards) =>
-      cardsByCode = new Map(cards.data.map((card) => [card.code, card]))
-      for code, count of deck.cards
-        card = cardsByCode.get(code)
-        if card.type_code == 'identity'
-          return card.title
+      readDecks = () =>
+        for item from $('#nrdb_decks li').get()
+          $item = $(item)
+          nrdbDeck = JSON.parse($item.attr('data-deck'))
+          deck = readDeck(nrdbDeck)
+          $item.attr('data-side', deck.details.side)
+          $item.data('deck', deck)
+          $item.prepend($('<div/>', {class: 'deck-list-identity', css: {
+            'background-image':'url(https://static.nrdbassets.com/v1/small/'+deck.details.identity_nrdb_code+'.jpg)'}}))
+          $item.append($('<small/>', text: deck.details.identity))
 
-    setDeckInputs = (side, $deck) =>
-      if $deck.length > 0
-        $.get('https://netrunnerdb.com/api/2.0/public/cards', (cards) =>
-          deckStr = $deck.attr('data-deck')
-          $('#player_'+side+'_deck').val(deckStr)
-          $('#player_'+side+'_deck_format').val('nrdb_v2')
-          $('#player_'+side+'_identity').val(getDeckIdentityName(JSON.parse(deckStr), cards)))
-      else
-        $('#player_'+side+'_deck').val('')
-        $('#player_'+side+'_deck_format').val('')
-        $('#player_'+side+'_identity').val('')
+      readDeck = (nrdbDeck) =>
+        details = { name: nrdbDeck.name, nrdb_id: nrdbDeck.id }
+        for code, count of nrdbDeck.cards
+          nrdbCard = nrdbCardsByCode.get(code)
+          if nrdbCard.type_code == 'identity'
+            identity = nrdbCard
+            details.identity = nrdbCard.title
+            details.identity_nrdb_code = nrdbCard.code
+            details.side = nrdbCard.side_code
+            details.min_deck_size = nrdbCard.minimum_deck_size
+            details.max_influence = nrdbCard.influence_limit
+        cards = []
+        for code, count of nrdbDeck.cards
+          nrdbCard = nrdbCardsByCode.get(code)
+          if nrdbCard.type_code != 'identity'
+            if identity.faction_code == nrdbCard.faction_code
+              influence_spent = 0
+            else
+              influence_spent = nrdbCard.faction_cost
+            cards.push({
+              name: nrdbCard.title,
+              quantity: count,
+              influence: influence_spent
+            })
+        return {details: details, cards: cards}
 
-    window.selectDeck = (id, side) =>
-      activeBefore = $('#nrdb_deck_'+id).hasClass('active')
-      $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
-      $('#nrdb_deck_'+id).toggleClass('active', !activeBefore)
-      $('#nrdb_decks_selected').empty()
-      cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
-      cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
-      setDeckInputs(side, $('#nrdb_deck_'+id+'.active'))
+      window.selectDeck = (id) =>
+        $item = $('#nrdb_deck_'+id)
+        deck = $item.data('deck')
+        side = deck.details.side
+        activeBefore = $item.hasClass('active')
+        $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
+        $('#nrdb_deck_'+id).toggleClass('active', !activeBefore)
+        $('#nrdb_decks_selected').empty()
+        cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
+        cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
+        setDeckInputs(deck, $item.hasClass('active'))
 
-    preselectDeck = (side) =>
-      deckStr = $('#player_'+side+'_deck').val()
-      if deckStr.length > 0
-        window.selectDeck(JSON.parse(deckStr)['id'], side)
+      cloneToSelectedOrElse = ($element, ifNotPresent) =>
+        if $element.length > 0
+          $clone = $element.clone().removeClass('active').addClass('selected-deck')
+          $clone.find('.deck-list-identity').removeClass('deck-list-identity').addClass('selected-deck-identity')
+          $clone.find('small').remove()
+          $clone.prop('onclick', null).off('click')
+          $deselect = $('<a/>', {'class': 'float-right', 'title': 'Deselect', 'href': '#'})
+          $deselect.append($('<i/>', {'class': 'fa fa-close'}))
+          $deselect.on('click', (e) =>
+            e.preventDefault()
+            selectDeck($element.attr('data-deck-id')))
+          $clone.prepend($deselect)
+          $clone.appendTo('#nrdb_decks_selected')
+        else
+          $(ifNotPresent).appendTo('#nrdb_decks_selected')
 
-    preselectDeck('corp')
-    preselectDeck('runner')
+      setDeckInputs = (deck, active) =>
+        side = deck.details.side
+        if active
+          $('#player_'+side+'_deck').val(JSON.stringify(deck))
+          $('#player_'+side+'_identity').val(deck.details.identity)
+        else
+          $('#player_'+side+'_deck').val('')
+          $('#player_'+side+'_identity').val('')
+
+      preselectDeck = (side) =>
+        deckStr = $('#player_'+side+'_deck').val()
+        if deckStr.length > 0
+          window.selectDeck(JSON.parse(deckStr).details.nrdb_id)
+
+      readDecks()
+      preselectDeck('corp')
+      preselectDeck('runner'))

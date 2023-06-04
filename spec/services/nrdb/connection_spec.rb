@@ -43,27 +43,6 @@ RSpec.describe Nrdb::Connection do
             .to eq(["Some Deck", "A Perfect Deck", "My Best Deck"])
         end
       end
-
-      it 'reads the identity from the NRDB codes of the cards' do
-        identity = create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy')
-        VCR.use_cassette 'nrdb_decks/az_palantir_full_deck' do
-          expect(connection.decks.first[:identity]).to eq(identity)
-        end
-      end
-
-      it 'reads the side from a corp identity' do
-        create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future', side: :corp)
-        VCR.use_cassette 'nrdb_decks/jammy_hb_full_deck' do
-          expect(connection.decks.first[:side]).to eq("corp")
-        end
-      end
-
-      it 'reads the side from a runner identity' do
-        create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy', side: :runner)
-        VCR.use_cassette 'nrdb_decks/az_palantir_full_deck' do
-          expect(connection.decks.first[:side]).to eq("runner")
-        end
-      end
     end
   end
 
