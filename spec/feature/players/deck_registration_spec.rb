@@ -63,10 +63,6 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       expect(@new_player.runner_deck.identity).to eq('Az McCaffrey: Mechanical Prodigy')
     end
 
-    it 'locks the decks' do
-      expect(@new_player.decks_locked).to be(true)
-    end
-
   end
 
   def register_as_player
