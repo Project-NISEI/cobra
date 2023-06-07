@@ -25,8 +25,8 @@
       ul.list-group.list-group-flush.overflow-auto#nrdb_decks style='height: 24em'
         - @decks.each do |deck|
           li.list-group-item [
-            id='nrdb_deck_#{deck[:id]}'
+            id='nrdb_deck_#{deck[:uuid]}'
             data-deck='#{deck.to_json}'
-            onclick='selectDeck(#{deck[:id]})'
+            onclick='selectDeck("#{deck[:uuid]}")'
             ]
             p.mb-1= deck[:name]

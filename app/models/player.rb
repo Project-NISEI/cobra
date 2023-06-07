@@ -63,11 +63,11 @@ class Player < ApplicationRecord
   end
 
   def corp_deck
-    decks.find_by side: 'corp'
+    decks.find_by side_id: 'corp'
   end
 
   def runner_deck
-    decks.find_by side: 'runner'
+    decks.find_by side_id: 'runner'
   end
 
   private

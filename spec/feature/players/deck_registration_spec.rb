@@ -49,11 +49,11 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future')
       VCR.use_cassette 'nrdb_decks/az_palantir_and_jammy_hb' do
         visit registration_tournament_path(Tournament.last)
-        select_corp_deck Deck.new identity: 'Haas-Bioroid: Engineering the Future', cards: [
-          DeckCard.new(name: 'Accelerated Beta Test', quantity: 3)
+        select_corp_deck Deck.new identity_title: 'Haas-Bioroid: Engineering the Future', cards: [
+          DeckCard.new(title: 'Accelerated Beta Test', quantity: 3)
         ]
-        select_runner_deck Deck.new identity: 'Az McCaffrey: Mechanical Prodigy', cards: [
-          DeckCard.new(name: 'Diversion of Funds', quantity: 3)
+        select_runner_deck Deck.new identity_title: 'Az McCaffrey: Mechanical Prodigy', cards: [
+          DeckCard.new(title: 'Diversion of Funds', quantity: 3)
         ]
         click_button 'Submit'
       end
@@ -66,14 +66,14 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     end
 
     it 'saves the decks' do
-      expect(@new_player.corp_deck.identity).to eq('Haas-Bioroid: Engineering the Future')
-      expect(@new_player.runner_deck.identity).to eq('Az McCaffrey: Mechanical Prodigy')
+      expect(@new_player.corp_deck.identity_title).to eq('Haas-Bioroid: Engineering the Future')
+      expect(@new_player.runner_deck.identity_title).to eq('Az McCaffrey: Mechanical Prodigy')
     end
 
     it 'saves the cards' do
-      expect(@new_player.corp_deck.deck_cards.map {|card| [card.name, card.quantity]})
+      expect(@new_player.corp_deck.deck_cards.map {|card| [card.title, card.quantity]})
         .to eq([['Accelerated Beta Test', 3]])
-      expect(@new_player.runner_deck.deck_cards.map {|card| [card.name, card.quantity]})
+      expect(@new_player.runner_deck.deck_cards.map {|card| [card.title, card.quantity]})
         .to eq([['Diversion of Funds', 3]])
     end
   end
@@ -116,7 +116,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     first("#player_#{side}_deck", visible: false).set(deck.as_view.to_json)
     identity = first("#player_#{side}_identity")
     identity.native.remove_attribute('readonly')
-    identity.set(deck.identity)
+    identity.set(deck.identity_title)
   end
 
   def with_nrdb_decks(&block)

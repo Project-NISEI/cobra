@@ -63,10 +63,10 @@ class PlayersController < ApplicationController
   def save_deck(params, param, side)
     return unless params.has_key?(param)
     request = JSON.parse(params[param])
-    @player.decks.destroy_by(side: side)
+    @player.decks.destroy_by(side_id: side)
     details = request['details']
     details.keep_if { |key| Deck.column_names.include? key }
-    details['side'] = side
+    details['side_id'] = side
     deck = @player.decks.create(details)
     deck.cards.create(request['cards'])
   end
