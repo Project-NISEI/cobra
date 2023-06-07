@@ -24,13 +24,17 @@
     = render @tournament.stages
 
     - if policy(@tournament).update?
-      - if @tournament.rounds.all?(&:completed?)
-        p=> link_to tournament_rounds_path(@tournament), method: :post, class: 'btn btn-success' do
-          => fa_icon 'plus'
-          | Pair new round!
-      - else
-        p
-          .btn.btn-secondary.mr-3.disabled
+      p
+        - if @tournament.any_player_decks_unlocked?
+          => link_to lock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
+            => fa_icon 'lock'
+            | Lock deck submission
+        - if @tournament.rounds.all?(&:completed?)
+          => link_to tournament_rounds_path(@tournament), method: :post, class: 'btn btn-success' do
+            => fa_icon 'plus'
+            | Pair new round!
+        - else
+          a.btn.btn-secondary.mr-3.disabled
             => fa_icon 'plus'
             | Pair new round!
           | All rounds must be flagged complete before you can add a new round
@@ -48,3 +52,7 @@
           => link_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do
             => fa_icon 'scissors'
             | Cut to Top 16
+        - if !@tournament.all_players_decks_unlocked?
+          p=> link_to unlock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
+            => fa_icon 'unlock'
+            | Unlock deck submission

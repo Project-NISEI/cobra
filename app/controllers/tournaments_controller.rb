@@ -175,6 +175,7 @@ class TournamentsController < ApplicationController
 
     @tournament.players.active.update(decks_locked: true)
     @tournament.update(all_players_decks_unlocked: false, any_player_decks_unlocked: false)
+    redirect_back(fallback_location: tournament_rounds_path(@tournament))
   end
 
   def unlock_decks
@@ -182,6 +183,7 @@ class TournamentsController < ApplicationController
 
     @tournament.players.active.update(decks_locked: false)
     @tournament.update(all_players_decks_unlocked: true, any_player_decks_unlocked: true)
+    redirect_back(fallback_location: tournament_rounds_path(@tournament))
   end
 
   private
