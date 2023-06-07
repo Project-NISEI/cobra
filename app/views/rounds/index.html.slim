@@ -52,7 +52,7 @@
           => link_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do
             => fa_icon 'scissors'
             | Cut to Top 16
-        - if @tournament.nrdb_deck_registration? && !@tournament.all_players_decks_unlocked?
+        - if @tournament.nrdb_deck_registration? and not @tournament.all_players_decks_unlocked?
           p=> link_to unlock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
             => fa_icon 'unlock'
             | Unlock deck submission
