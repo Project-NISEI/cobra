@@ -60,7 +60,7 @@ $(document).on 'turbolinks:load', ->
 
       cloneToSelectedOrElse = ($item, ifNotPresent) =>
         if $item.length > 0
-          $clone = $item.clone().removeClass('active').addClass('selected-deck')
+          $clone = $item.clone().removeClass('active').addClass('selected-deck').removeAttr('id')
           $clone.find('.deck-list-identity').removeClass('deck-list-identity').addClass('selected-deck-identity')
           $clone.find('small').remove()
           $clone.prop('onclick', null).off('click')
