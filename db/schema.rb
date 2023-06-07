@@ -44,9 +44,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
 
   create_table "deck_cards", force: :cascade do |t|
     t.bigint "deck_id"
-    t.string "name"
+    t.string "title"
     t.integer "quantity"
     t.integer "influence"
+    t.string "nrdb_card_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["deck_id"], name: "index_deck_cards_on_deck_id"
@@ -54,14 +55,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
 
   create_table "decks", force: :cascade do |t|
     t.bigint "player_id"
-    t.string "side"
+    t.string "side_id"
     t.string "name"
-    t.string "identity"
+    t.string "identity_title"
     t.integer "min_deck_size"
     t.integer "max_influence"
+    t.string "nrdb_uuid"
+    t.string "identity_nrdb_card_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "nrdb_id"
     t.index ["player_id"], name: "index_decks_on_player_id"
   end
 
