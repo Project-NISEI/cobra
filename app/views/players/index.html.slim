@@ -34,11 +34,11 @@
             - if player.decks_locked?
               =< link_to unlock_decks_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
                 => fa_icon 'lock'
-                | Unlock Decks
+                | Unlock decks
             - else
               =< link_to lock_decks_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
                 => fa_icon 'unlock'
-                | Lock Decks
+                | Lock decks
           = button_tag type: :submit, class: 'btn btn-link text-success mr-2' do
             => fa_icon 'floppy-o'
             | Save
