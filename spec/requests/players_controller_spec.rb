@@ -120,13 +120,13 @@ RSpec.describe PlayersController do
     it 'stores cards' do
       sign_in user1
       put tournament_player_path(tournament, player1), params: { player: {
-        runner_deck: '{"details": {}, "cards": [{"name": "Runner Card", "quantity": 3}]}',
-        corp_deck: '{"details": {}, "cards": [{"name": "Corp Card", "quantity": 3}]}'
+        runner_deck: '{"details": {}, "cards": [{"title": "Runner Card", "quantity": 3}]}',
+        corp_deck: '{"details": {}, "cards": [{"title": "Corp Card", "quantity": 3}]}'
       } }
 
       player1.reload
-      expect(player1.runner_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Runner Card', 3]])
-      expect(player1.corp_deck.cards.map {|card| [card.name, card.quantity]}).to eq([['Corp Card', 3]])
+      expect(player1.runner_deck.cards.map {|card| [card.title, card.quantity]}).to eq([['Runner Card', 3]])
+      expect(player1.corp_deck.cards.map {|card| [card.title, card.quantity]}).to eq([['Corp Card', 3]])
     end
   end
 
