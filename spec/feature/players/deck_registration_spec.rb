@@ -42,17 +42,31 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       .to eq(['The Palantir - 1st/Undefeated @ Silver Goblin Store Champs'])
   end
 
+  it 'displays no decks when locked with no deck' do
+    sign_in organiser
+    visit tournament_players_path(Tournament.last)
+    click_link 'Lock all decks'
+    register_as_player
+    expect(all('li.selected-deck').map {|deck| deck.find('p').text})
+      .to contain_exactly('No corp deck',
+                          'No runner deck')
+  end
+
   context 'submitting decks' do
     before do
       register_as_player
-      create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy')
       create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future')
+      create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy')
       VCR.use_cassette 'nrdb_decks/az_palantir_and_jammy_hb' do
         visit registration_tournament_path(Tournament.last)
-        select_corp_deck Deck.new identity_title: 'Haas-Bioroid: Engineering the Future', cards: [
+        select_corp_deck Deck.new identity_title: 'Haas-Bioroid: Engineering the Future',
+                                  name: 'Ben Ni Jammy HB \"Always Beta Test\" (UK Nationals \'16 14th)",',
+                                  identity_nrdb_printing_id: '01054', cards: [
           DeckCard.new(title: 'Accelerated Beta Test', quantity: 3)
         ]
-        select_runner_deck Deck.new identity_title: 'Az McCaffrey: Mechanical Prodigy', cards: [
+        select_runner_deck Deck.new identity_title: 'Az McCaffrey: Mechanical Prodigy',
+                                    name: 'The Palantir - 1st/Undefeated @ Silver Goblin Store Champs',
+                                    identity_nrdb_printing_id: '26010', cards: [
           DeckCard.new(title: 'Diversion of Funds', quantity: 3)
         ]
         click_button 'Submit'
@@ -75,6 +89,17 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
         .to eq([['Accelerated Beta Test', 3]])
       expect(@new_player.runner_deck.deck_cards.map {|card| [card.title, card.quantity]})
         .to eq([['Diversion of Funds', 3]])
+    end
+
+    it 'displays the decks when locked' do
+      sign_in organiser
+      visit tournament_players_path(Tournament.last)
+      click_link 'Lock all decks'
+      sign_in player
+      visit registration_tournament_path(Tournament.last)
+      expect(all('li.selected-deck').map {|deck| deck.find('p').text})
+        .to contain_exactly('Ben Ni Jammy HB \"Always Beta Test\" (UK Nationals \'16 14th)",',
+                            'The Palantir - 1st/Undefeated @ Silver Goblin Store Champs')
     end
   end
 

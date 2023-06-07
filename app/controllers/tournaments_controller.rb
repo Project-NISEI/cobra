@@ -50,10 +50,22 @@ class TournamentsController < ApplicationController
 
     if @tournament.nrdb_deck_registration?
       if @current_user_player.decks_locked?
-        @corp_deck = @current_user_player.corp_deck
-        @runner_deck = @current_user_player.runner_deck
-        @corp_identity = Identity.guess(@current_user_player.corp_identity)
-        @runner_identity = Identity.guess(@current_user_player.runner_identity)
+        corp_deck = @current_user_player.corp_deck
+        runner_deck = @current_user_player.runner_deck
+        if corp_deck.present?
+          @corp_deck = corp_deck.name
+          @corp_id_nrdb_code = corp_deck.identity_nrdb_printing_id
+        else
+          @corp_deck = 'No corp deck'
+          @corp_id_nrdb_code = '00005'
+        end
+        if runner_deck.present?
+          @runner_deck = runner_deck.name
+          @runner_id_nrdb_code = runner_deck.identity_nrdb_printing_id
+        else
+          @runner_deck = 'No runner deck'
+          @runner_id_nrdb_code = '00006'
+        end
       else
         begin
           @decks = Nrdb::Connection.new(current_user).decks
