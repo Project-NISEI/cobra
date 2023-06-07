@@ -103,6 +103,7 @@ RSpec.describe PlayersController do
   describe 'deck submission' do
     let(:user1) { create(:user) }
     let(:user2) { create(:user) }
+    let(:user3) { create(:user) }
     let(:tournament) { create(:tournament, self_registration: true, nrdb_deck_registration: true) }
 
     before do
@@ -232,6 +233,32 @@ RSpec.describe PlayersController do
 
       expect(@player1.reload.decks_locked?).to be(true)
       expect(@player2.reload.decks_locked?).to be(false)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
+      expect(tournament.any_player_decks_unlocked?).to be(true)
+    end
+
+    it 'locks decks for a new player when the tournament is locked' do
+      sign_in tournament.user
+      patch lock_decks_tournament_path(tournament)
+      sign_in user3
+      post tournament_players_path(tournament), params: { player: { name: 'Player 3' } }
+      @player3 = Player.find_by! user_id: user3.id
+      sign_in tournament.user
+
+      expect(@player3.reload.decks_locked?).to be(true)
+      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
+      expect(tournament.any_player_decks_unlocked?).to be(false)
+    end
+
+    it 'locks decks for a new player when only one player is locked' do
+      sign_in tournament.user
+      patch lock_decks_tournament_player_path(tournament, @player1)
+      sign_in user3
+      post tournament_players_path(tournament), params: { player: { name: 'Player 3' } }
+      @player3 = Player.find_by! user_id: user3.id
+      sign_in tournament.user
+
+      expect(@player3.reload.decks_locked?).to be(true)
       expect(tournament.reload.all_players_decks_unlocked?).to be(false)
       expect(tournament.any_player_decks_unlocked?).to be(true)
     end

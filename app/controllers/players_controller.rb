@@ -21,6 +21,7 @@ class PlayersController < ApplicationController
     unless is_organiser_view
       params[:user_id] = current_user.id
     end
+    params[:decks_locked] = !@tournament[:all_players_decks_unlocked]
 
     player = @tournament.players.create(params.except(:corp_deck, :runner_deck))
     unless @tournament.current_stage.nil?
