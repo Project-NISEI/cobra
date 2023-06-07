@@ -44,7 +44,7 @@ $(document).on 'turbolinks:load', ->
         deck = readNrdbDeck(nrdbDeck)
         $item.attr('data-side', deck.details.side_id)
         $item.prepend($('<div/>', {class: 'deck-list-identity', css: {
-          'background-image':'url(https://static.nrdbassets.com/v1/small/'+deck.details.identity_printing_id+'.jpg)'}}))
+          'background-image':'url(https://static.nrdbassets.com/v1/small/'+deck.details.identity_nrdb_printing_id+'.jpg)'}}))
         $item.append($('<small/>', text: deck.details.identity_title))
       preselectDeck('corp')
       preselectDeck('runner')
@@ -60,7 +60,8 @@ $(document).on 'turbolinks:load', ->
         if attributes.card_type_id.endsWith('identity')
           identity = attributes
           details.identity_title = attributes.title
-          details.identity_printing_id = code
+          details.identity_nrdb_printing_id = code
+          details.identity_nrdb_card_id = attributes.card_id
           details.side_id = attributes.side_id
           details.min_deck_size = attributes.minimum_deck_size
           details.max_influence = attributes.influence_limit
@@ -75,7 +76,8 @@ $(document).on 'turbolinks:load', ->
           cards.push({
             title: attributes.title,
             quantity: count,
-            influence: influence_spent
+            influence: influence_spent,
+            nrdb_card_id: attributes.card_id
           })
       return {details: details, cards: cards}
 
