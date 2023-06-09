@@ -5,15 +5,20 @@ $(document).on 'turbolinks:load', ->
       deckNameTitle = 'Corp Deck'
     else
       deckNameTitle = 'Runner Deck'
-    $name = $('<div/>', {class: 'card mb-3'}).append(
-      $('<div/>', {class: 'card-body'}).append(
-        $('<h5/>', {class: 'card-title', text: deckNameTitle}),
-        $('<p/>', {class: 'card-text', text: deck.details.name})))
+    $name = $('<table/>', {
+      class: 'table table-bordered table-striped'
+    }).append(
+      $('<thead/>', {'class': 'thead-dark'}).append(
+        $('<tr/>').append(
+          $('<th/>', {class: 'text-center deck-name-header', text: deckNameTitle}))),
+      $('<tbody/>').append(
+        $('<tr/>').append(
+          $('<td/>', {text: deck.details.name}))))
 
     $identity = $('<table/>', {
       class: 'table table-bordered table-striped'
     }).append(
-      $('<thead/>').append(
+      $('<thead/>', {'class': 'thead-dark'}).append(
         $('<tr/>').append(
           ['Min', 'Identity', 'Max'].map((title) =>
             $('<th/>', {class: 'text-center', text: title})))),
@@ -25,9 +30,10 @@ $(document).on 'turbolinks:load', ->
     $cards = $('<table/>', {
       class: 'table table-bordered table-striped'
     }).append(
-      $('<thead/>').append(
+      $('<thead/>', {'class': 'thead-dark'}).append(
         $('<tr/>').append(
-          ['Qty', 'Card Name', 'Inf'].map((title) => $('<th/>', {class: 'text-center', text: title})))),
+          ['Qty', 'Card Name', 'Inf'].map((title) =>
+            $('<th/>', {class: 'text-center', text: title})))),
       $('<tbody/>').append(deck.cards.map((card) =>
         if card.influence > 0
           influence = card.influence
