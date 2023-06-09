@@ -9,6 +9,12 @@ source .env
 DB_USER_NAME=cobra
 DB_NAME=cobra
 COMPOSE_FILE=${COMPOSE_FILE-override}
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 [app-in-docker|app-in-host]"
+  exit
+fi
+
 APP_RUN_TYPE=$1
 
 compose_for_deploy() {
