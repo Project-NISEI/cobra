@@ -27,6 +27,9 @@ $(document).on 'turbolinks:load', ->
           [deck.details.min_deck_size, deck.details.identity_title, deck.details.max_influence].map((value) =>
             $('<td/>', {text: value})))))
 
+    cards = deck.cards
+    cards.sort((a, b) =>
+      (a.title > b.title) ? 1 : (a.title < b.title ? -1 : 0))
     $cards = $('<table/>', {
       class: 'table table-bordered table-striped'
     }).append(
@@ -34,7 +37,7 @@ $(document).on 'turbolinks:load', ->
         $('<tr/>').append(
           ['Qty', 'Card Name', 'Inf'].map((title) =>
             $('<th/>', {class: 'text-center', text: title})))),
-      $('<tbody/>').append(deck.cards.map((card) =>
+      $('<tbody/>').append(cards.map((card) =>
         if card.influence > 0
           influence = card.influence
         else
