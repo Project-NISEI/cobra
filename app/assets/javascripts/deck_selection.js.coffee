@@ -89,9 +89,12 @@ $(document).on 'turbolinks:load', ->
       $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
       $item.toggleClass('active', !activeBefore)
       $('#nrdb_decks_selected').empty()
-      cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=corp]'), corpPlaceholder)
-      cloneToSelectedOrElse($('#nrdb_decks li.active[data-side*=runner]'), runnerPlaceholder)
+      $corp = $('#nrdb_decks li.active[data-side*=corp]')
+      $runner = $('#nrdb_decks li.active[data-side*=runner]')
+      cloneToSelectedOrElse($corp, corpPlaceholder)
+      cloneToSelectedOrElse($runner, runnerPlaceholder)
       setDeckInputs(deck, $item.hasClass('active'))
+      displayDecks($corp, $runner)
 
     cloneToSelectedOrElse = ($item, ifNotPresent) =>
       if $item.length > 0
@@ -122,5 +125,21 @@ $(document).on 'turbolinks:load', ->
       deckStr = $('#player_'+side+'_deck').val()
       if deckStr.length > 0
         window.selectDeck(JSON.parse(deckStr).details.nrdb_uuid)
+
+    displayDecks = ($corp, $runner) =>
+      if $corp.length > 0 || $runner.length > 0
+        $('#display_decks').removeClass('d-none')
+      else
+        $('#display_decks').addClass('d-none')
+
+      if $corp.length > 0
+        displayDeck(readDeckFrom$Item($corp), $('#display_corp_deck'))
+      else
+        $('#display_corp_deck').empty()
+
+      if $runner.length > 0
+        displayDeck(readDeckFrom$Item($runner), $('#display_runner_deck'))
+      else
+        $('#display_runner_deck').empty()
 
     readDecks()
