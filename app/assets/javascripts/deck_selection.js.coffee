@@ -72,7 +72,7 @@ $(document).on 'turbolinks:load', ->
           if identity.faction_id == attributes.faction_id
             influence_spent = 0
           else
-            influence_spent = attributes.influence_cost
+            influence_spent = attributes.influence_cost * count
           cards.push({
             title: attributes.title,
             quantity: count,
