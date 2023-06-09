@@ -17,10 +17,10 @@
         |< Refresh the page to reload from NetrunnerDB.
       ul.list-group.list-group-flush#nrdb_decks_selected style='border-bottom: 0'
         li.list-group-item.selected-deck
-          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/00005.jpg)"
+          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_shadow_corp_nrdb_code}.jpg)"
           p.mb-1 No corp selected
         li.list-group-item.selected-deck
-          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/00006.jpg)"
+          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_masque_runner_nrdb_code}.jpg)"
           p.mb-1 No runner selected
       ul.list-group.list-group-flush.overflow-auto#nrdb_decks style='height: 24em'
         - @decks.each do |deck|
