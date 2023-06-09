@@ -125,21 +125,17 @@ $(document).on 'turbolinks:load', ->
       deckStr = $('#player_'+side+'_deck').val()
       if deckStr.length > 0
         window.selectDeck(JSON.parse(deckStr).details.nrdb_uuid)
+      else
+        displayDecks([],[])
 
     displayDecks = ($corp, $runner) =>
-      if $corp.length > 0 || $runner.length > 0
-        $('#display_decks').removeClass('d-none')
-      else
-        $('#display_decks').addClass('d-none')
-
       if $corp.length > 0
         displayDeck(readDeckFrom$Item($corp), $('#display_corp_deck'))
       else
-        $('#display_corp_deck').empty()
-
+        displayDeck({details:{}, cards: []}, $('#display_corp_deck'))
       if $runner.length > 0
         displayDeck(readDeckFrom$Item($runner), $('#display_runner_deck'))
       else
-        $('#display_runner_deck').empty()
+        displayDeck({details:{}, cards: []}, $('#display_runner_deck'))
 
     readDecks()
