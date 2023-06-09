@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_07_220703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -64,6 +64,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
     t.string "identity_nrdb_card_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "identity_nrdb_printing_id"
     t.index ["player_id"], name: "index_decks_on_player_id"
   end
 
@@ -124,6 +125,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
     t.integer "previous_id"
     t.integer "manual_seed"
     t.bigint "user_id"
+    t.boolean "decks_locked"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end
@@ -195,6 +197,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_232606) do
     t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
     t.boolean "self_registration"
     t.boolean "nrdb_deck_registration", default: false
+    t.boolean "all_players_decks_unlocked", default: true
+    t.boolean "any_player_decks_unlocked", default: true
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 

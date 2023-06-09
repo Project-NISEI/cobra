@@ -1,6 +1,6 @@
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :registration]
+  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :lock_decks, :unlock_decks, :registration]
 
   def index
     authorize @tournament, :update?
@@ -21,6 +21,7 @@ class PlayersController < ApplicationController
     unless is_organiser_view
       params[:user_id] = current_user.id
     end
+    params[:decks_locked] = !@tournament[:all_players_decks_unlocked]
 
     player = @tournament.players.create(params.except(:corp_deck, :runner_deck))
     unless @tournament.current_stage.nil?
@@ -48,7 +49,7 @@ class PlayersController < ApplicationController
 
     @player.update(params.except(:corp_deck, :runner_deck))
 
-    if @tournament.nrdb_deck_registration?
+    if @tournament.nrdb_deck_registration? and not @player.decks_locked?
       save_deck(params, :corp_deck, 'corp')
       save_deck(params, :runner_deck, 'runner')
     end
@@ -62,7 +63,11 @@ class PlayersController < ApplicationController
 
   def save_deck(params, param, side)
     return unless params.has_key?(param)
-    request = JSON.parse(params[param])
+    begin
+      request = JSON.parse(params[param])
+    rescue
+      return
+    end
     @player.decks.destroy_by(side_id: side)
     details = request['details']
     details.keep_if { |key| Deck.column_names.include? key }
@@ -87,6 +92,26 @@ class PlayersController < ApplicationController
     authorize @tournament, :update?
 
     @player.update(active: false)
+
+    redirect_to tournament_players_path(@tournament)
+  end
+
+  def lock_decks
+    authorize @tournament, :update?
+
+    @player.update(decks_locked: true)
+    @tournament.update(all_players_decks_unlocked: false,
+                       any_player_decks_unlocked: @tournament.unlocked_deck_players.count > 0)
+
+    redirect_to tournament_players_path(@tournament)
+  end
+
+  def unlock_decks
+    authorize @tournament, :update?
+
+    @player.update(decks_locked: false)
+    @tournament.update(any_player_decks_unlocked: true,
+                       all_players_decks_unlocked: @tournament.locked_deck_players.count == 0)
 
     redirect_to tournament_players_path(@tournament)
   end

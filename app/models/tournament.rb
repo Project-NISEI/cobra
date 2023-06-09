@@ -60,6 +60,14 @@ class Tournament < ApplicationRecord
     stages.last
   end
 
+  def unlocked_deck_players
+    players.active.where('decks_locked IS NOT TRUE')
+  end
+
+  def locked_deck_players
+    players.active.where('decks_locked IS TRUE')
+  end
+
   private
 
   def default_date
