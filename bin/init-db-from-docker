@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+THIS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+PROJECT_DIR=$(cd "$THIS_DIR" && cd "../" && pwd)
+pushd "${PROJECT_DIR}"
+docker compose build app
+popd
+
+$THIS_DIR/init-db app-in-docker
