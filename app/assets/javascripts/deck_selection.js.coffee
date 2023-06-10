@@ -129,13 +129,14 @@ $(document).on 'turbolinks:load', ->
         displayDecks([],[])
 
     displayDecks = ($corp, $runner) =>
-      if $corp.length > 0
-        displayDeck(readDeckFrom$Item($corp), $('#display_corp_deck'))
+      displayDeckBy$ItemAndSide($corp, 'corp')
+      displayDeckBy$ItemAndSide($runner, 'runner')
+
+    displayDeckBy$ItemAndSide = ($item, side) =>
+      $container = $('#display_'+side+'_deck')
+      if $item.length > 0
+        displayDeck(readDeckFrom$Item($item), $container)
       else
-        displayDeck({details:{}, cards: []}, $('#display_corp_deck'))
-      if $runner.length > 0
-        displayDeck(readDeckFrom$Item($runner), $('#display_runner_deck'))
-      else
-        displayDeck({details:{}, cards: []}, $('#display_runner_deck'))
+        displayDeck({details:{side_id: side}, cards: []}, $container)
 
     readDecks()
