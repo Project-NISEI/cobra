@@ -6,6 +6,7 @@ $(document).on 'turbolinks:load', ->
     runnerPlaceholder = deckPlaceholders[1]
 
     nrdbPrintingsById = new Map()
+    decksOnLoad = new Map()
 
     readDecks = () =>
       nrdbDecks = $('#nrdb_decks li')
@@ -138,9 +139,9 @@ $(document).on 'turbolinks:load', ->
     displayDeckBy$ItemAndSide = ($item, side) =>
       $container = $('#display_'+side+'_deck')
       if $item.length > 0
-        displayDeck(readDeckFrom$Item($item), $container)
+        displayDeck(readDeckFrom$Item($item), $container, decksOnLoad.get(side))
       else
-        displayDeck(emptyDeck(side), $container)
+        displayDeck(emptyDeck(side), $container, decksOnLoad.get(side))
 
     displayDecksFromInputs = () =>
       displayDeckFromInput('corp')
@@ -150,9 +151,11 @@ $(document).on 'turbolinks:load', ->
       deckStr = $('#player_'+side+'_deck').val()
       $container = $('#display_'+side+'_deck')
       if deckStr.length > 0
-        displayDeck(JSON.parse(deckStr),$container)
+        deck = JSON.parse(deckStr)
+        decksOnLoad.set(side, deck)
+        displayDeck(deck, $container, deck)
       else
-        displayDeck(emptyDeck(side),$container)
+        displayDeck(emptyDeck(side), $container)
 
     try
       displayDecksFromInputs()
