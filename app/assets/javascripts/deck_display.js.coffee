@@ -9,7 +9,8 @@ $(document).on 'turbolinks:load', ->
       deckSummaryTable(deck, deckBefore, diff),
       deckDiffTable(deck, deckBefore, diff),
       identityTable(deck),
-      cardsTable(deck))
+      cardsTable(deck),
+      totalsTable(deck))
 
   deckSummaryTable = (deck, deckBefore, diff) =>
     if deck.details.side_id == 'corp'
@@ -103,6 +104,21 @@ $(document).on 'turbolinks:load', ->
           influence = ''
         $('<tr/>').append(
           [card.quantity, card.title, influence].map((value) => $('<td/>', {text: value}))))))
+
+  totalsTable = (deck) =>
+    cards = deck.cards
+    qty = cards.map((card) => card.quantity)
+      .reduce(((partialSum, a) => partialSum + a), 0)
+    influence = cards.map((card) => card.influence)
+      .reduce(((partialSum, a) => partialSum + a), 0)
+    return $('<table/>', {
+      class: 'table table-bordered table-striped'
+    }).append(
+      $('<tbody/>').append(
+        $('<tr/>').append(
+          $('<td/>', {class: 'text-center table-light', text: qty}),
+          $('<td/>', {class: 'text-center table-dark', text: 'Totals'}),
+          $('<td/>', {class: 'text-center table-light', text: influence}))))
 
   diffDecks = (before, after) =>
     added = []
