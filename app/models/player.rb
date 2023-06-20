@@ -47,7 +47,7 @@ class Player < ApplicationRecord
   end
 
   def seed_in_stage(stage)
-    registrations.find_by(stage: stage).seed
+    registrations.find_by(stage: stage)&.seed
   end
 
   def had_bye?
