@@ -17,20 +17,32 @@ $(document).on 'turbolinks:load', ->
     else
       deckNameTitle = 'Runner Deck'
 
-    rows = [deck.details.name]
     if deckBefore && deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
-      rows.push('Deck not yet submitted, selection changed from: ' + deckBefore.details.name)
+      deckChangesRow = [$('<tr/>').append($('<td/>').append(
+        $('<p/>', {text: 'Deck not yet submitted. Previous selection:'}),
+        $('<p/>', {text: deckBefore.details.name, class: 'mb-0'})))]
     else if diff
-      rows.push('Changes not yet submitted, see below for differences')
+      deckChangesRow = [$('<tr/>').append($('<td/>', {text: 'Changes not yet submitted, see below for differences'}))]
+    else
+      deckChangesRow = []
+
+    $editDeck = $('<a/>', {
+      class: 'float-right',
+      title: 'Edit Deck',
+      href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
+      target: '_blank'
+    })
+    $editDeck.append($('<i/>', {class: 'fa fa-external-link'}))
 
     return $('<table/>', {
       class: 'table table-bordered table-striped'
     }).append(
-      $('<thead/>', {'class': 'thead-dark'}).append(
+      $('<thead/>', {class: 'thead-dark'}).append(
         $('<tr/>').append(
           $('<th/>', {class: 'text-center deck-name-header', text: deckNameTitle}))),
-      $('<tbody/>').append(rows.map((row) =>
-        $('<tr/>').append($('<td/>', {text: row})))))
+      $('<tbody/>')
+        .append($('<tr/>').append($('<td/>').append($editDeck).append(document.createTextNode(deck.details.name))))
+        .append(deckChangesRow))
 
   deckDiffTable = (deck, deckBefore, diff) =>
     if not diff
