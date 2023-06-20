@@ -154,7 +154,7 @@ $(document).on 'turbolinks:load', ->
 
     readDecks()
 
-  if document.getElementById('display_corp_deck')?
+  if document.getElementById('display_corp_deck')? && document.getElementById('player_corp_deck')?
     displayDecksFromInputs = () =>
       displayDeckFromInput('corp')
       displayDeckFromInput('runner')
