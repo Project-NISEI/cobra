@@ -80,12 +80,14 @@ $(document).on 'turbolinks:load', ->
     }).append(
       $('<thead/>', {'class': 'thead-dark'}).append(
         $('<tr/>').append(
-          ['Min', 'Identity', 'Max'].map((title) =>
-            $('<th/>', {class: 'text-center', text: title})))),
+          $('<th/>', {class: 'text-center deck-side-column', text: 'Min'}),
+          $('<th/>', {class: 'text-center', text: 'Identity'}),
+          $('<th/>', {class: 'text-center deck-side-column', text: 'Max'}))),
       $('<tbody/>').append(
         $('<tr/>').append(
-          [deck.details.min_deck_size, deck.details.identity_title, deck.details.max_influence].map((value) =>
-            $('<td/>', {text: value})))))
+          $('<td/>', {class: 'text-center', text: deck.details.min_deck_size}),
+          $('<td/>', {text: deck.details.identity_title}),
+          $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
 
   cardsTable = (deck) =>
     cards = deck.cards
@@ -95,15 +97,18 @@ $(document).on 'turbolinks:load', ->
     }).append(
       $('<thead/>', {'class': 'thead-dark'}).append(
         $('<tr/>').append(
-          ['Qty', 'Card Name', 'Inf'].map((title) =>
-            $('<th/>', {class: 'text-center', text: title})))),
+          $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'}),
+          $('<th/>', {class: 'text-center', text: 'Card Name'}),
+          $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
       $('<tbody/>').append(cards.map((card) =>
         if card.influence > 0
           influence = card.influence
         else
           influence = ''
         $('<tr/>').append(
-          [card.quantity, card.title, influence].map((value) => $('<td/>', {text: value}))))))
+          $('<td/>', {class: 'text-center', text: card.quantity}),
+          $('<td/>', {text: card.title}),
+          $('<td/>', {class: 'text-center', text: influence})))))
 
   totalsTable = (deck) =>
     cards = deck.cards
@@ -116,9 +121,9 @@ $(document).on 'turbolinks:load', ->
     }).append(
       $('<tbody/>').append(
         $('<tr/>').append(
-          $('<td/>', {class: 'text-center table-light', text: qty}),
+          $('<td/>', {class: 'text-center table-light deck-side-column', text: qty}),
           $('<td/>', {class: 'text-center table-dark', text: 'Totals'}),
-          $('<td/>', {class: 'text-center table-light', text: influence}))))
+          $('<td/>', {class: 'text-center table-light deck-side-column', text: influence}))))
 
   diffDecks = (before, after) =>
     added = []
