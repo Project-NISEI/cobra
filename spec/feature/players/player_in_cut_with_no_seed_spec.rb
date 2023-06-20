@@ -61,7 +61,7 @@ RSpec.describe 'a completed top cut with a player with no seed' do
 
   it 'generates NRTM data for the tournament' do
     expect(NrtmJson.new(tournament).data('https://server/SLUG')[:eliminationPlayers]
-             .map {|player| [player[:rank], player[:seed]]})
+             .map { |player| [player[:rank], player[:seed]] })
       .to eq([[1, nil], [2, 2], [3, 4], [4, 3]])
   end
 
@@ -76,7 +76,7 @@ RSpec.describe 'a completed top cut with a player with no seed' do
 
   def set_round_score1_and_complete(round_number, score1)
     round = round_number(round_number)
-    round.pairings.each {|pairing| pairing.update({score1: score1, score2: 0})}
+    round.pairings.each { |pairing| pairing.update({ score1: score1, score2: 0 }) }
     round.update(completed: true)
   end
 
