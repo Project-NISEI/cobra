@@ -22,7 +22,9 @@ $(document).on 'turbolinks:load', ->
         $('<p/>', {text: 'Deck not yet submitted. Previous selection:'}),
         $('<p/>', {text: deckBefore.details.name, class: 'mb-0'})))]
     else if diff
-      deckChangesRow = [$('<tr/>').append($('<td/>', {text: 'Changes not yet submitted, see below for differences'}))]
+      deckChangesRow = [$('<tr/>').append($('<td/>', {
+        text: 'Changes not yet submitted. See below for differences from NetrunnerDB.'
+      }))]
     else
       deckChangesRow = []
 
