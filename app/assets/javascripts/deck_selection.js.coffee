@@ -1,4 +1,14 @@
 $(document).on 'turbolinks:load', ->
+  deckBefore = (side) =>
+    deckBeforeStr = $('#player_' + side + '_deck_before').val()
+    if deckBeforeStr.length > 0
+      JSON.parse(deckBeforeStr)
+    else
+      null
+
+  emptyDeck = (side) =>
+    {details: {side_id: side}, cards: []}
+
   if document.getElementById('nrdb_decks')?
 
     deckPlaceholders = $('#nrdb_decks_selected li').get()
@@ -6,7 +16,6 @@ $(document).on 'turbolinks:load', ->
     runnerPlaceholder = deckPlaceholders[1]
 
     nrdbPrintingsById = new Map()
-    decksBefore = new Map()
 
     readDecks = () =>
       nrdbDecks = $('#nrdb_decks li')
@@ -85,9 +94,6 @@ $(document).on 'turbolinks:load', ->
           })
       return {details: details, cards: cards}
 
-    emptyDeck = (side) =>
-      {details: {side_id: side}, cards: []}
-
     window.selectDeck = (id) =>
       $item = $('#nrdb_deck_' + id)
       deck = readDeckFrom$Item($item)
@@ -142,30 +148,27 @@ $(document).on 'turbolinks:load', ->
     displayDeckBy$ItemAndSide = ($item, side) =>
       $container = $('#display_' + side + '_deck')
       if $item.length > 0
-        displayDeck(readDeckFrom$Item($item), $container, decksBefore.get(side))
+        displayDeck(readDeckFrom$Item($item), $container, deckBefore(side))
       else
-        displayDeck(emptyDeck(side), $container, decksBefore.get(side))
+        displayDeck(emptyDeck(side), $container, deckBefore(side))
 
+    readDecks()
+
+  if document.getElementById('display_corp_deck')?
     displayDecksFromInputs = () =>
       displayDeckFromInput('corp')
       displayDeckFromInput('runner')
 
     displayDeckFromInput = (side) =>
-      deckBeforeStr = $('#player_' + side + '_deck_before').val()
-      if deckBeforeStr.length > 0
-        decksBefore.set(side, JSON.parse(deckBeforeStr))
-
       deckStr = $('#player_' + side + '_deck').val()
       $container = $('#display_' + side + '_deck')
       if deckStr.length > 0
         deck = JSON.parse(deckStr)
-        displayDeck(deck, $container, deck)
+        displayDeck(deck, $container, deckBefore(side))
       else
-        displayDeck(emptyDeck(side), $container)
+        displayDeck(emptyDeck(side), $container, deckBefore(side))
 
     try
       displayDecksFromInputs()
     catch e
       console.log(e)
-
-    readDecks()

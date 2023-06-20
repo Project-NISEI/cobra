@@ -21,8 +21,9 @@
                 => fa_icon 'check'
                 | Submit
 
-  .row.mt-4
-    .col-md-6#display_corp_deck
-    .col-md-6#display_runner_deck
+  - if @tournament.nrdb_deck_registration?
+    .row.mt-4
+      .col-md-6#display_corp_deck
+      .col-md-6#display_runner_deck
 
   = render 'player_counts'
