@@ -1,12 +1,17 @@
 $(document).on 'turbolinks:load', ->
   window.displayDeck = (deck, container, deckBefore) =>
+    if deckBefore && deckBefore.details.nrdb_uuid == deck.details.nrdb_uuid
+      diff = diffDecks(deckBefore, deck)
+    else
+      diff = null
+
     $(container).empty().append(
-      deckSummaryTable(deck, deckBefore),
-      deckDiffTable(deck, deckBefore),
+      deckSummaryTable(deck, deckBefore, diff),
+      deckDiffTable(deck, deckBefore, diff),
       identityTable(deck),
       cardsTable(deck))
 
-  deckSummaryTable = (deck, deckBefore) =>
+  deckSummaryTable = (deck, deckBefore, diff) =>
     if deck.details.side_id == 'corp'
       deckNameTitle = 'Corp Deck'
     else
@@ -15,6 +20,8 @@ $(document).on 'turbolinks:load', ->
     rows = [deck.details.name]
     if deckBefore && deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
       rows.push('Selection changed from: ' + deckBefore.details.name)
+    else if diff
+      rows.push('Changes not yet submitted, see below for differences')
 
     return $('<table/>', {
       class: 'table table-bordered table-striped'
@@ -25,11 +32,10 @@ $(document).on 'turbolinks:load', ->
       $('<tbody/>').append(rows.map((row) =>
         $('<tr/>').append($('<td/>', {text: row})))))
 
-  deckDiffTable = (deck, deckBefore) =>
-    if !deckBefore || deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
+  deckDiffTable = (deck, deckBefore, diff) =>
+    if not diff
       return []
 
-    diff = diffDecks(deckBefore, deck)
     maxLength = Math.max(diff.added.length, diff.removed.length)
     if maxLength == 0
       return []
@@ -103,7 +109,10 @@ $(document).on 'turbolinks:load', ->
         added.push({title: title, quantity: countAfter - countBefore})
     sortCards(added)
     sortCards(removed)
-    return {added: added, removed: removed}
+    if added.length + removed.length == 0
+      return null
+    else
+      return {added: added, removed: removed}
 
   cardCountsByTitle = (deck) =>
     countByTitle = {}
