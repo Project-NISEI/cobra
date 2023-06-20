@@ -5,7 +5,7 @@ FROM ruby:3.2.2
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client curl
 
 # Install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
         && apt-get install -y nodejs
 
 # Define where our application will live inside the image
