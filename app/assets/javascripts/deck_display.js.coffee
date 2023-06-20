@@ -1,14 +1,12 @@
 $(document).on 'turbolinks:load', ->
-
   window.displayDeck = (deck, container, deckBefore) =>
     $(container).empty().append(
       deckSummaryTable(deck, deckBefore),
-      deckDiffTable(deck, deckBefore)
+      deckDiffTable(deck, deckBefore),
       identityTable(deck),
       cardsTable(deck))
 
   deckSummaryTable = (deck, deckBefore) =>
-
     if deck.details.side_id == 'corp'
       deckNameTitle = 'Corp Deck'
     else
@@ -16,7 +14,7 @@ $(document).on 'turbolinks:load', ->
 
     rows = [deck.details.name]
     if deckBefore && deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
-      rows.push('Selection changed from: '+deckBefore.details.name)
+      rows.push('Selection changed from: ' + deckBefore.details.name)
 
     return $('<table/>', {
       class: 'table table-bordered table-striped'
@@ -28,7 +26,6 @@ $(document).on 'turbolinks:load', ->
         $('<tr/>').append($('<td/>', {text: row})))))
 
   deckDiffTable = (deck, deckBefore) =>
-
     if !deckBefore || deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
       return []
 
@@ -38,7 +35,7 @@ $(document).on 'turbolinks:load', ->
       return []
 
     changes = []
-    for i in [0..maxLength-1]
+    for i in [0..maxLength - 1]
       changes.push({
         added: changeStr(diff.added[i]),
         removed: changeStr(diff.removed[i])
@@ -123,4 +120,9 @@ $(document).on 'turbolinks:load', ->
 
   sortCards = (cards) =>
     cards.sort((a, b) =>
-      (a.title > b.title) ? 1 : (a.title < b.title ? -1 : 0))
+      if a.title > b.title
+        1
+      else if a.title < b.title
+        -1
+      else
+        0)
