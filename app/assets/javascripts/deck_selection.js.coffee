@@ -6,7 +6,7 @@ $(document).on 'turbolinks:load', ->
     runnerPlaceholder = deckPlaceholders[1]
 
     nrdbPrintingsById = new Map()
-    decksOnLoad = new Map()
+    decksBefore = new Map()
 
     readDecks = () =>
       nrdbDecks = $('#nrdb_decks li')
@@ -16,15 +16,15 @@ $(document).on 'turbolinks:load', ->
       printingIds = new Set(nrdbDecks.flatMap((deck) => Object.keys(deck.cards)))
       printingIdsStr = Array.from(printingIds).join()
       $.get({
-          url: 'https://api-preview.netrunnerdb.com/api/v3/public/printings',
-          data: {
-            'fields[printings]': 'card_id,card_type_id,title,side_id,faction_id,minimum_deck_size,influence_limit,influence_cost',
-            'filter[id]': printingIdsStr,
-            'page[limit]': 1000
-          },
-          success: (response) =>
-            readDecksWithPrintingsResponse(nrdbDecks, new Array(), response)
-        })
+        url: 'https://api-preview.netrunnerdb.com/api/v3/public/printings',
+        data: {
+          'fields[printings]': 'card_id,card_type_id,title,side_id,faction_id,minimum_deck_size,influence_limit,influence_cost',
+          'filter[id]': printingIdsStr,
+          'page[limit]': 1000
+        },
+        success: (response) =>
+          readDecksWithPrintingsResponse(nrdbDecks, new Array(), response)
+      })
 
     readDecksWithPrintingsResponse = (nrdbDecks, nrdbPrintingsBefore, response) =>
       nrdbPrintings = nrdbPrintingsBefore.concat(response.data)
@@ -41,11 +41,14 @@ $(document).on 'turbolinks:load', ->
 
     readDecksWithPrintings = (nrdbDecks) =>
       for nrdbDeck from nrdbDecks
-        $item = $('#nrdb_deck_'+nrdbDeck.uuid)
+        $item = $('#nrdb_deck_' + nrdbDeck.uuid)
         deck = readNrdbDeck(nrdbDeck)
         $item.attr('data-side', deck.details.side_id)
-        $item.prepend($('<div/>', {class: 'deck-list-identity', css: {
-          'background-image':'url(https://static.nrdbassets.com/v1/small/'+deck.details.identity_nrdb_printing_id+'.jpg)'}}))
+        $item.prepend($('<div/>', {
+          class: 'deck-list-identity', css: {
+            'background-image': 'url(https://static.nrdbassets.com/v1/small/' + deck.details.identity_nrdb_printing_id + '.jpg)'
+          }
+        }))
         $item.append($('<small/>', text: deck.details.identity_title))
       preselectDeck('corp')
       preselectDeck('runner')
@@ -55,7 +58,7 @@ $(document).on 'turbolinks:load', ->
       return readNrdbDeck(nrdbDeck)
 
     readNrdbDeck = (nrdbDeck) =>
-      details = { name: nrdbDeck.name, nrdb_uuid: nrdbDeck.uuid }
+      details = {name: nrdbDeck.name, nrdb_uuid: nrdbDeck.uuid}
       for code, count of nrdbDeck.cards
         attributes = nrdbPrintingsById.get(code).attributes
         if attributes.card_type_id.endsWith('identity')
@@ -83,14 +86,14 @@ $(document).on 'turbolinks:load', ->
       return {details: details, cards: cards}
 
     emptyDeck = (side) =>
-      {details:{side_id: side}, cards: []}
+      {details: {side_id: side}, cards: []}
 
     window.selectDeck = (id) =>
-      $item = $('#nrdb_deck_'+id)
+      $item = $('#nrdb_deck_' + id)
       deck = readDeckFrom$Item($item)
       side = deck.details.side_id
       activeBefore = $item.hasClass('active')
-      $('#nrdb_decks li[data-side*='+side+']').removeClass('active')
+      $('#nrdb_decks li[data-side*=' + side + ']').removeClass('active')
       $item.toggleClass('active', !activeBefore)
       $('#nrdb_decks_selected').empty()
       $corp = $('#nrdb_decks li.active[data-side*=corp]')
@@ -119,40 +122,43 @@ $(document).on 'turbolinks:load', ->
     setDeckInputs = (deck, active) =>
       side = deck.details.side_id
       if active
-        $('#player_'+side+'_deck').val(JSON.stringify(deck))
-        $('#player_'+side+'_identity').val(deck.details.identity_title)
+        $('#player_' + side + '_deck').val(JSON.stringify(deck))
+        $('#player_' + side + '_identity').val(deck.details.identity_title)
       else
-        $('#player_'+side+'_deck').val('')
-        $('#player_'+side+'_identity').val('')
+        $('#player_' + side + '_deck').val('')
+        $('#player_' + side + '_identity').val('')
 
     preselectDeck = (side) =>
-      deckStr = $('#player_'+side+'_deck').val()
+      deckStr = $('#player_' + side + '_deck').val()
       if deckStr.length > 0
         window.selectDeck(JSON.parse(deckStr).details.nrdb_uuid)
       else
-        displayDecksBy$Item([],[])
+        displayDecksBy$Item([], [])
 
     displayDecksBy$Item = ($corp, $runner) =>
       displayDeckBy$ItemAndSide($corp, 'corp')
       displayDeckBy$ItemAndSide($runner, 'runner')
 
     displayDeckBy$ItemAndSide = ($item, side) =>
-      $container = $('#display_'+side+'_deck')
+      $container = $('#display_' + side + '_deck')
       if $item.length > 0
-        displayDeck(readDeckFrom$Item($item), $container, decksOnLoad.get(side))
+        displayDeck(readDeckFrom$Item($item), $container, decksBefore.get(side))
       else
-        displayDeck(emptyDeck(side), $container, decksOnLoad.get(side))
+        displayDeck(emptyDeck(side), $container, decksBefore.get(side))
 
     displayDecksFromInputs = () =>
       displayDeckFromInput('corp')
       displayDeckFromInput('runner')
 
     displayDeckFromInput = (side) =>
-      deckStr = $('#player_'+side+'_deck').val()
-      $container = $('#display_'+side+'_deck')
+      deckBeforeStr = $('#player_' + side + '_deck_before').val()
+      if deckBeforeStr.length > 0
+        decksBefore.set(side, JSON.parse(deckBeforeStr))
+
+      deckStr = $('#player_' + side + '_deck').val()
+      $container = $('#display_' + side + '_deck')
       if deckStr.length > 0
         deck = JSON.parse(deckStr)
-        decksOnLoad.set(side, deck)
         displayDeck(deck, $container, deck)
       else
         displayDeck(emptyDeck(side), $container)

@@ -19,7 +19,7 @@ $(document).on 'turbolinks:load', ->
 
     rows = [deck.details.name]
     if deckBefore && deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
-      rows.push('Selection changed from: ' + deckBefore.details.name)
+      rows.push('Deck not yet submitted, selection changed from: ' + deckBefore.details.name)
     else if diff
       rows.push('Changes not yet submitted, see below for differences')
 
