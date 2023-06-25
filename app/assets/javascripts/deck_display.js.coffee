@@ -1,21 +1,26 @@
 $(document).on 'turbolinks:load', ->
-
-  if document.getElementById('display_corp_deck')? && document.getElementById('player_corp_deck')?
+  if document.getElementById('display_decks')? && document.getElementById('player_corp_deck')?
     window.displayDecksFromInputs = () =>
       decks = readDecksFromInputs()
       maxCards = Math.max(decks.corp.after.cards.length, decks.runner.after.cards.length)
-      displayDeck(decks.corp, $('#display_corp_deck'), maxCards)
-      displayDeck(decks.runner, $('#display_runner_deck'), maxCards)
+      $('#display_decks').empty().append(
+        renderDeck(decks.corp, maxCards),
+        renderDeck(decks.runner, maxCards)
+      )
+      $('#display_deck_changes').empty().append(
+        renderDeckChanges(decks.corp),
+        renderDeckChanges(decks.runner)
+      )
 
     readDecksFromInputs = () =>
       {
         corp: {
-          description: 'Corp Deck',
+          name: 'Corp',
           before: readDeck($('#player_corp_deck_before')),
           after: readDeck($('#player_corp_deck'))
         },
         runner: {
-          description: 'Runner Deck',
+          name: 'Runner',
           before: readDeck($('#player_runner_deck_before')),
           after: readDeck($('#player_runner_deck'))
         }
@@ -28,86 +33,36 @@ $(document).on 'turbolinks:load', ->
       else
         {details: {}, cards: [], unset: true}
 
-    displayDeck = (decks, container, cardsTableSize) =>
-      if decks.before.unset && decks.after.unset
-        $(container).empty()
-        return
+    renderDeck = (decks, cardsTableSize) =>
+      $container = $('<div/>', {class: 'col-md-6'})
+      if decks.after.unset
+        return $container
       deck = decks.after
-      diff = diffDecks(decks.before, decks.after)
-      $(container).empty().append(
-        deckSummaryTable(decks, diff),
-        deckDiffTable(diff),
+      $container.append(
+        deckSummaryTable(decks),
         identityTable(deck),
         cardsTable(deck, cardsTableSize),
         totalsTable(deck))
 
-    deckSummaryTable = (decks, diff) =>
+    deckSummaryTable = (decks) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
         $('<thead/>', {class: 'thead-dark'}).append(
           $('<tr/>').append(
-            $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
+            $('<th/>', {class: 'text-center deck-name-header', text: decks.name + ' Deck'}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after))
-          .append(deckChangesRow(decks.after, decks.before, diff)))
-
-    deckNameRow = (deck) =>
-      if deck.details.name
-        $('<tr/>').append($('<td/>').append(
-          $('<a/>', {
-            class: 'float-right',
-            title: 'Edit Deck',
-            href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
-            target: '_blank'
-          }).append(
-            $('<i/>', {class: 'fa fa-external-link'})
-          ),
-          document.createTextNode(deck.details.name)
-        ))
-      else
-        []
-
-    deckChangesRow = (deck, deckBefore, diff) =>
-      if deckBefore.unset
-        [$('<tr/>').append($('<td/>').append('Not yet submitted'))]
-      else if deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
-        [$('<tr/>').append($('<td/>').append(
-          $('<p/>', {text: 'Change not yet submitted. Previously submitted:'}),
-          $('<p/>', {text: deckBefore.details.name, class: 'mb-0'})))]
-      else if diff
-        [$('<tr/>').append($('<td/>', {
-          text: 'Changes not yet submitted. See below for differences from NetrunnerDB.'
-        }))]
-      else
-        []
-
-    deckDiffTable = (diff) =>
-      if not diff
-        return []
-
-      maxLength = Math.max(diff.added.length, diff.removed.length)
-      if maxLength == 0
-        return []
-
-      changes = []
-      for i in [0..maxLength - 1]
-        changes.push({
-          added: changeStr(diff.added[i]),
-          removed: changeStr(diff.removed[i])
-        })
-
-      return $('<table/>', {
-        class: 'table table-bordered table-striped'
-      }).append(
-        $('<thead/>', {'class': 'thead-dark'}).append(
-          $('<tr/>').append(
-            $('<th/>', {class: 'text-center', text: 'Added'}),
-            $('<th/>', {class: 'text-center', text: 'Removed'}))),
-        $('<tbody/>').append(changes.map((change) =>
-          $('<tr/>').append(
-            $('<td/>', {text: change.added}),
-            $('<td/>', {text: change.removed})))))
+          .append($('<tr/>').append($('<td/>').append(
+            $('<a/>', {
+              class: 'float-right',
+              title: 'Edit Deck',
+              href: 'https://netrunnerdb.com/en/deck/edit/' + decks.after.details.nrdb_uuid,
+              target: '_blank'
+            }).append(
+              $('<i/>', {class: 'fa fa-external-link'})
+            ),
+            document.createTextNode(decks.after.details.name)
+          ))))
 
     identityTable = (deck) =>
       if not deck.details.identity_title
@@ -178,7 +133,65 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {class: 'text-center table-dark', text: 'Totals'}),
             $('<td/>', {class: 'text-center table-light deck-side-column', text: influence}))))
 
-    diffDecks = (before, after) =>
+    renderDeckChanges = (decks) =>
+      $container = $('<div/>', {class: 'col-md-6'})
+      diff = diffDecks(decks)
+      if decks.before.unset && !decks.after.unset
+        summary = 'Not yet submitted'
+      else if decks.before.details.nrdb_uuid != decks.after.details.nrdb_uuid
+        summary = [
+          $('<p/>', {text: 'Change not yet submitted. Previously submitted:'}),
+          $('<p/>', {text: decks.before.details.name, class: 'mb-0'})]
+      else if diff
+        summary = 'Changes not yet submitted. See below for differences from NetrunnerDB.'
+      else
+        return $container
+
+      return $container.append(
+        deckChangeSummaryTable(decks, summary),
+        deckDiffTable(diff))
+
+    deckChangeSummaryTable = (decks, summary) =>
+      return $('<table/>', {
+        class: 'table table-bordered table-striped'
+      }).append(
+        $('<thead/>', {class: 'thead-dark'}).append(
+          $('<tr/>').append(
+            $('<th/>', {class: 'text-center deck-name-header', text: decks.name + ' Changes'}))),
+        $('<tbody/>').append(
+          $('<tr/>').append(
+            $('<td/>').append(summary))))
+
+    deckDiffTable = (diff) =>
+      if not diff
+        return []
+
+      maxLength = Math.max(diff.added.length, diff.removed.length)
+      if maxLength == 0
+        return []
+
+      changes = []
+      for i in [0..maxLength - 1]
+        changes.push({
+          added: changeStr(diff.added[i]),
+          removed: changeStr(diff.removed[i])
+        })
+
+      return $('<table/>', {
+        class: 'table table-bordered table-striped'
+      }).append(
+        $('<thead/>', {'class': 'thead-dark'}).append(
+          $('<tr/>').append(
+            $('<th/>', {class: 'text-center', text: 'Added'}),
+            $('<th/>', {class: 'text-center', text: 'Removed'}))),
+        $('<tbody/>').append(changes.map((change) =>
+          $('<tr/>').append(
+            $('<td/>', {text: change.added}),
+            $('<td/>', {text: change.removed})))))
+
+    diffDecks = (decks) =>
+      before = decks.before
+      after = decks.after
       if before.unset || after.unset || before.details.nrdb_uuid != after.details.nrdb_uuid
         return null
       added = []
@@ -225,6 +238,12 @@ $(document).on 'turbolinks:load', ->
           -1
         else
           0)
+
+    displayIfNotEmpty = ($container) =>
+      if $container.children().length > 0
+        $container.removeClass('d-none')
+      else
+        $container.addClass('d-none')
 
     try
       displayDecksFromInputs()
