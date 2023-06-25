@@ -140,22 +140,3 @@ $(document).on 'turbolinks:load', ->
         window.selectDeck(JSON.parse(deckStr).details.nrdb_uuid)
 
     readDecks()
-
-  if document.getElementById('display_corp_deck')? && document.getElementById('player_corp_deck')?
-    displayDecksFromInputs = () =>
-      displayDeckFromInput('corp')
-      displayDeckFromInput('runner')
-
-    displayDeckFromInput = (side) =>
-      deckStr = $('#player_' + side + '_deck').val()
-      $container = $('#display_' + side + '_deck')
-      if deckStr.length > 0
-        deck = JSON.parse(deckStr)
-        displayDeck(deck, $container, deckBefore(side))
-      else
-        displayDeck(emptyDeck(side), $container, deckBefore(side))
-
-    try
-      displayDecksFromInputs()
-    catch e
-      console.log(e)
