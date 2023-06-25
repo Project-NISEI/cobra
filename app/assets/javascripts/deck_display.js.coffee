@@ -18,25 +18,6 @@ $(document).on 'turbolinks:load', ->
     else
       deckNameTitle = 'Runner Deck'
 
-    if deckBefore && deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
-      deckChangesRow = [$('<tr/>').append($('<td/>').append(
-        $('<p/>', {text: 'Deck not yet submitted. Previous selection:'}),
-        $('<p/>', {text: deckBefore.details.name, class: 'mb-0'})))]
-    else if diff
-      deckChangesRow = [$('<tr/>').append($('<td/>', {
-        text: 'Changes not yet submitted. See below for differences from NetrunnerDB.'
-      }))]
-    else
-      deckChangesRow = []
-
-    $editDeck = $('<a/>', {
-      class: 'float-right',
-      title: 'Edit Deck',
-      href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
-      target: '_blank'
-    })
-    $editDeck.append($('<i/>', {class: 'fa fa-external-link'}))
-
     return $('<table/>', {
       class: 'table table-bordered table-striped'
     }).append(
@@ -44,8 +25,36 @@ $(document).on 'turbolinks:load', ->
         $('<tr/>').append(
           $('<th/>', {class: 'text-center deck-name-header', text: deckNameTitle}))),
       $('<tbody/>')
-        .append($('<tr/>').append($('<td/>').append($editDeck).append(document.createTextNode(deck.details.name))))
-        .append(deckChangesRow))
+        .append(deckNameRow(deck))
+        .append(deckChangesRow(deck, deckBefore, diff)))
+
+  deckNameRow = (deck) =>
+    if deck.details.name
+      $('<tr/>').append($('<td/>').append(
+        $('<a/>', {
+          class: 'float-right',
+          title: 'Edit Deck',
+          href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
+          target: '_blank'
+        }).append(
+          $('<i/>', {class: 'fa fa-external-link'})
+        ),
+        document.createTextNode(deck.details.name)
+      ))
+    else
+      []
+
+  deckChangesRow = (deck, deckBefore, diff) =>
+    if deckBefore && deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
+      [$('<tr/>').append($('<td/>').append(
+        $('<p/>', {text: 'Deck not yet submitted. Previous selection:'}),
+        $('<p/>', {text: deckBefore.details.name, class: 'mb-0'})))]
+    else if diff
+      [$('<tr/>').append($('<td/>', {
+        text: 'Changes not yet submitted. See below for differences from NetrunnerDB.'
+      }))]
+    else
+      []
 
   deckDiffTable = (deck, deckBefore, diff) =>
     if not diff
@@ -75,6 +84,9 @@ $(document).on 'turbolinks:load', ->
           $('<td/>', {text: change.removed})))))
 
   identityTable = (deck) =>
+    if not deck.details.identity_title
+      return []
+
     return $('<table/>', {
       class: 'table table-bordered table-striped'
     }).append(
@@ -91,6 +103,8 @@ $(document).on 'turbolinks:load', ->
 
   cardsTable = (deck) =>
     cards = deck.cards
+    if not cards || cards.length < 1
+      return []
     sortCards(cards)
     return $('<table/>', {
       class: 'table table-bordered table-striped'
@@ -112,6 +126,8 @@ $(document).on 'turbolinks:load', ->
 
   totalsTable = (deck) =>
     cards = deck.cards
+    if not cards || cards.length < 1
+      return []
     qty = cards.map((card) => card.quantity)
       .reduce(((partialSum, a) => partialSum + a), 0)
     influence = cards.map((card) => card.influence)
