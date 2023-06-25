@@ -48,7 +48,9 @@ $(document).on 'turbolinks:load', ->
       []
 
   deckChangesRow = (deck, deckBefore, diff) =>
-    if deckBefore && deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
+    if not deckBefore
+      [$('<tr/>').append($('<td/>').append('Not yet submitted'))]
+    else if deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
       [$('<tr/>').append($('<td/>').append(
         $('<p/>', {text: 'Not yet submitted. Previous selection:'}),
         $('<p/>', {text: deckBefore.details.name, class: 'mb-0'})))]
