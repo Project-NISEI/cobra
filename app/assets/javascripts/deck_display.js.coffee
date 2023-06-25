@@ -81,7 +81,7 @@ $(document).on 'turbolinks:load', ->
       if deck.details.name
         $('<tr/>').append($('<td/>').append(
           $('<a/>', {
-            class: 'float-right',
+            class: 'float-right dontprint',
             title: 'Edit Deck',
             href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
             target: '_blank'
@@ -179,7 +179,7 @@ $(document).on 'turbolinks:load', ->
     emptyCardRows = (numRows) =>
       rows = []
       for i in [0...numRows]
-        rows.push($('<tr/>').append(
+        rows.push($('<tr/>', {class: 'd-none d-md-table-row'}).append(
           $('<td/>').append('&nbsp;'),
           $('<td/>').append('&nbsp;'),
           $('<td/>').append('&nbsp;')
@@ -195,13 +195,13 @@ $(document).on 'turbolinks:load', ->
       influence = cards.map((card) => card.influence)
         .reduce(((partialSum, a) => partialSum + a), 0)
       return $('<table/>', {
-        class: 'table table-bordered table-striped'
+        class: 'table table-bordered table-striped-horizontal'
       }).append(
         $('<tbody/>').append(
           $('<tr/>').append(
-            $('<td/>', {class: 'text-center table-light deck-side-column', text: qty}),
-            $('<td/>', {class: 'text-center table-dark', text: 'Totals'}),
-            $('<td/>', {class: 'text-center table-light deck-side-column', text: influence}))))
+            $('<td/>', {class: 'text-center deck-side-column', text: qty}),
+            $('<td/>', {class: 'text-center', text: 'Totals'}),
+            $('<td/>', {class: 'text-center deck-side-column', text: influence}))))
 
     diffDecks = (before, after) =>
       if before.unset || after.unset || before.details.nrdb_uuid != after.details.nrdb_uuid
