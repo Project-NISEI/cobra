@@ -6,13 +6,27 @@ $(document).on 'turbolinks:load', ->
       displayDeckFromInput('runner')
 
     displayDeckFromInput = (side) =>
+      displayDeck(
+        readDeckFromInput(side),
+        $('#display_' + side + '_deck'),
+        deckBefore(side))
+
+    readDeckFromInput = (side) =>
       deckStr = $('#player_' + side + '_deck').val()
-      $container = $('#display_' + side + '_deck')
       if deckStr.length > 0
-        deck = JSON.parse(deckStr)
-        displayDeck(deck, $container, deckBefore(side))
+        JSON.parse(deckStr)
       else
-        displayDeck(emptyDeck(side), $container, deckBefore(side))
+        emptyDeck(side)
+
+    deckBefore = (side) =>
+      deckBeforeStr = $('#player_' + side + '_deck_before').val()
+      if deckBeforeStr.length > 0
+        JSON.parse(deckBeforeStr)
+      else
+        null
+
+    emptyDeck = (side) =>
+      {details: {side_id: side}, cards: [], unset: true}
 
     displayDeck = (deck, container, deckBefore) =>
       if deck.unset && not deckBefore

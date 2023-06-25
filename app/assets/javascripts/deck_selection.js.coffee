@@ -1,13 +1,4 @@
 $(document).on 'turbolinks:load', ->
-  deckBefore = (side) =>
-    deckBeforeStr = $('#player_' + side + '_deck_before').val()
-    if deckBeforeStr.length > 0
-      JSON.parse(deckBeforeStr)
-    else
-      null
-
-  emptyDeck = (side) =>
-    {details: {side_id: side}, cards: [], unset: true}
 
   if document.getElementById('nrdb_decks')?
 
