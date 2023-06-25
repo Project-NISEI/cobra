@@ -3,15 +3,21 @@ $(document).on 'turbolinks:load', ->
   if document.getElementById('display_corp_deck')? && document.getElementById('player_corp_deck')?
     window.displayDecksFromInputs = () =>
       decks = readDecksFromInputs()
-      displayDeck(decks.corp, $('#display_corp_deck'), decks.corpBefore)
-      displayDeck(decks.runner, $('#display_runner_deck'), decks.runnerBefore)
+      displayDeck(decks.corp, $('#display_corp_deck'))
+      displayDeck(decks.runner, $('#display_runner_deck'))
 
     readDecksFromInputs = () =>
       {
-        corp: readDeck($('#player_corp_deck'), 'corp'),
-        runner: readDeck($('#player_runner_deck'), 'runner'),
-        corpBefore: readDeckBefore($('#player_corp_deck_before')),
-        runnerBefore: readDeckBefore($('#player_runner_deck_before'))
+        corp: {
+          description: 'Corp Deck',
+          before: readDeck($('#player_corp_deck_before')),
+          after: readDeck($('#player_corp_deck'))
+        },
+        runner: {
+          description: 'Runner Deck',
+          before: readDeck($('#player_runner_deck_before')),
+          after: readDeck($('#player_runner_deck'))
+        }
       }
 
     readDeck = ($input, side) =>
@@ -19,49 +25,31 @@ $(document).on 'turbolinks:load', ->
       if deckStr.length > 0
         JSON.parse(deckStr)
       else
-        emptyDeck(side)
+        {details: {}, cards: [], unset: true}
 
-    readDeckBefore = ($input) =>
-      deckBeforeStr = $input.val()
-      if deckBeforeStr.length > 0
-        JSON.parse(deckBeforeStr)
-      else
-        null
-
-    emptyDeck = (side) =>
-      {details: {side_id: side}, cards: [], unset: true}
-
-    displayDeck = (deck, container, deckBefore) =>
-      if deck.unset && not deckBefore
+    displayDeck = (decks, container) =>
+      if decks.before.unset && decks.after.unset
         $(container).empty()
         return
-      if deckBefore && deckBefore.details.nrdb_uuid == deck.details.nrdb_uuid
-        diff = diffDecks(deckBefore, deck)
-      else
-        diff = null
-
+      deck = decks.after
+      diff = diffDecks(decks.before, decks.after)
       $(container).empty().append(
-        deckSummaryTable(deck, deckBefore, diff),
-        deckDiffTable(deck, deckBefore, diff),
+        deckSummaryTable(decks, diff),
+        deckDiffTable(diff),
         identityTable(deck),
         cardsTable(deck),
         totalsTable(deck))
 
-    deckSummaryTable = (deck, deckBefore, diff) =>
-      if deck.details.side_id == 'corp'
-        deckNameTitle = 'Corp Deck'
-      else
-        deckNameTitle = 'Runner Deck'
-
+    deckSummaryTable = (decks, diff) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
         $('<thead/>', {class: 'thead-dark'}).append(
           $('<tr/>').append(
-            $('<th/>', {class: 'text-center deck-name-header', text: deckNameTitle}))),
+            $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
-          .append(deckNameRow(deck))
-          .append(deckChangesRow(deck, deckBefore, diff)))
+          .append(deckNameRow(decks.after))
+          .append(deckChangesRow(decks.after, decks.before, diff)))
 
     deckNameRow = (deck) =>
       if deck.details.name
@@ -80,7 +68,7 @@ $(document).on 'turbolinks:load', ->
         []
 
     deckChangesRow = (deck, deckBefore, diff) =>
-      if not deckBefore
+      if deckBefore.unset
         [$('<tr/>').append($('<td/>').append('Not yet submitted'))]
       else if deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
         [$('<tr/>').append($('<td/>').append(
@@ -93,7 +81,7 @@ $(document).on 'turbolinks:load', ->
       else
         []
 
-    deckDiffTable = (deck, deckBefore, diff) =>
+    deckDiffTable = (diff) =>
       if not diff
         return []
 
@@ -179,6 +167,8 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {class: 'text-center table-light deck-side-column', text: influence}))))
 
     diffDecks = (before, after) =>
+      if before.unset || after.unset || before.details.nrdb_uuid != after.details.nrdb_uuid
+        return null
       added = []
       removed = []
       countsBefore = cardCountsByTitle(before)
