@@ -2,24 +2,27 @@ $(document).on 'turbolinks:load', ->
 
   if document.getElementById('display_corp_deck')? && document.getElementById('player_corp_deck')?
     window.displayDecksFromInputs = () =>
-      displayDeckFromInput('corp')
-      displayDeckFromInput('runner')
+      decks = readDecksFromInputs()
+      displayDeck(decks.corp, $('#display_corp_deck'), decks.corpBefore)
+      displayDeck(decks.runner, $('#display_runner_deck'), decks.runnerBefore)
 
-    displayDeckFromInput = (side) =>
-      displayDeck(
-        readDeckFromInput(side),
-        $('#display_' + side + '_deck'),
-        deckBefore(side))
+    readDecksFromInputs = () =>
+      {
+        corp: readDeck($('#player_corp_deck'), 'corp'),
+        runner: readDeck($('#player_runner_deck'), 'runner'),
+        corpBefore: readDeckBefore($('#player_corp_deck_before')),
+        runnerBefore: readDeckBefore($('#player_runner_deck_before'))
+      }
 
-    readDeckFromInput = (side) =>
-      deckStr = $('#player_' + side + '_deck').val()
+    readDeck = ($input, side) =>
+      deckStr = $input.val()
       if deckStr.length > 0
         JSON.parse(deckStr)
       else
         emptyDeck(side)
 
-    deckBefore = (side) =>
-      deckBeforeStr = $('#player_' + side + '_deck_before').val()
+    readDeckBefore = ($input) =>
+      deckBeforeStr = $input.val()
       if deckBeforeStr.length > 0
         JSON.parse(deckBeforeStr)
       else
