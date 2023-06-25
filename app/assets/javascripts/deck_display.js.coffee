@@ -1,25 +1,25 @@
 $(document).on 'turbolinks:load', ->
-
-  if document.getElementById('display_corp_deck')? && document.getElementById('player_corp_deck')?
+  if document.getElementById('display_decks')? && document.getElementById('player_corp_deck')?
     window.displayDecksFromInputs = () =>
-      decks = readDecksFromInputs()
-      maxCards = Math.max(decks.corp.after.cards.length, decks.runner.after.cards.length)
-      displayDeck(decks.corp, $('#display_corp_deck'), maxCards)
-      displayDeck(decks.runner, $('#display_runner_deck'), maxCards)
+      renderDecks(readDecksFromInputs())
 
     readDecksFromInputs = () =>
       {
-        corp: {
+        corp: addDiff({
           description: 'Corp Deck',
           before: readDeck($('#player_corp_deck_before')),
           after: readDeck($('#player_corp_deck'))
-        },
-        runner: {
+        }),
+        runner: addDiff({
           description: 'Runner Deck',
           before: readDeck($('#player_runner_deck_before')),
           after: readDeck($('#player_runner_deck'))
-        }
+        })
       }
+
+    addDiff = (decks) =>
+      decks.diff = diffDecks(decks.before, decks.after)
+      decks
 
     readDeck = ($input, side) =>
       deckStr = $input.val()
@@ -28,20 +28,30 @@ $(document).on 'turbolinks:load', ->
       else
         {details: {}, cards: [], unset: true}
 
-    displayDeck = (decks, container, cardsTableSize) =>
+    renderDecks = (decks) =>
+      maxCards = Math.max(decks.corp.after.cards.length, decks.runner.after.cards.length)
+      $('#display_decks').empty().append(
+        renderDeck(decks.corp, maxCards),
+        renderDeck(decks.runner, maxCards))
+
+    renderRow = (decks, renderContent) =>
+      $('<div/>', {class: 'row'}).append(
+        $('<div/>', {class: 'col-md-6'}).append(renderContent(decks.corp)),
+        $('<div/>', {class: 'col-md-6'}).append(renderContent(decks.runner)))
+
+    renderDeck = (decks, cardsTableSize) =>
+      $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
-        $(container).empty()
-        return
+        return $container
       deck = decks.after
-      diff = diffDecks(decks.before, decks.after)
-      $(container).empty().append(
-        deckSummaryTable(decks, diff),
-        deckDiffTable(diff),
+      $container.append(
+        deckSummaryTable(decks),
+        deckDiffTable(decks.diff),
         identityTable(deck),
         cardsTable(deck, cardsTableSize),
         totalsTable(deck))
 
-    deckSummaryTable = (decks, diff) =>
+    deckSummaryTable = (decks) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -50,7 +60,7 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
           .append(deckNameRow(decks.after))
-          .append(deckChangesRow(decks.after, decks.before, diff)))
+          .append(deckChangesRow(decks.after, decks.before, decks.diff)))
 
     deckNameRow = (deck) =>
       if deck.details.name
