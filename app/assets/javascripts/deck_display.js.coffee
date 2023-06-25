@@ -4,7 +4,7 @@ $(document).on 'turbolinks:load', ->
       renderDecks(readDecksFromInputs())
 
     readDecksFromInputs = () =>
-      {
+      normaliseCardTables({
         corp: addDiff({
           description: 'Corp Deck',
           before: readDeck($('#player_corp_deck_before')),
@@ -15,10 +15,31 @@ $(document).on 'turbolinks:load', ->
           before: readDeck($('#player_runner_deck_before')),
           after: readDeck($('#player_runner_deck'))
         })
-      }
+      })
 
     addDiff = (decks) =>
       decks.diff = diffDecks(decks.before, decks.after)
+
+      if decks.before.unset
+        decks.change_type = 'choose_deck'
+      else if decks.before.details.nrdb_uuid != decks.after.details.nrdb_uuid
+        decks.change_type = 'change_deck'
+      else if decks.diff
+        decks.change_type = 'change_cards'
+      else
+        decks.change_type = 'none'
+
+      decks
+
+    normaliseCardTables = (decks) =>
+      decks.corp.pad_cards = 0
+      decks.runner.pad_cards = 0
+      if decks.corp.change_type != decks.runner.change_type
+        return decks
+      if decks.corp.change_type != 'change_cards'
+        max_cards = Math.max(decks.runner.after.cards.length, decks.corp.after.cards.length)
+        decks.corp.pad_cards = max_cards - decks.corp.after.cards.length
+        decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
       decks
 
     readDeck = ($input, side) =>
@@ -29,12 +50,11 @@ $(document).on 'turbolinks:load', ->
         {details: {}, cards: [], unset: true}
 
     renderDecks = (decks) =>
-      maxCards = Math.max(decks.corp.after.cards.length, decks.runner.after.cards.length)
       $('#display_decks').empty().append(
-        renderDeck(decks.corp, maxCards),
-        renderDeck(decks.runner, maxCards))
+        renderDeck(decks.corp),
+        renderDeck(decks.runner))
 
-    renderDeck = (decks, cardsTableSize) =>
+    renderDeck = (decks) =>
       $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
         return $container
@@ -43,7 +63,7 @@ $(document).on 'turbolinks:load', ->
         deckSummaryTable(decks),
         deckDiffTable(decks.diff),
         identityTable(deck),
-        cardsTable(deck, cardsTableSize),
+        cardsTable(decks),
         totalsTable(deck))
 
     deckSummaryTable = (decks) =>
@@ -55,7 +75,7 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
           .append(deckNameRow(decks.after))
-          .append(deckChangesRow(decks.after, decks.before, decks.diff)))
+          .append(deckChangesRow(decks)))
 
     deckNameRow = (deck) =>
       if deck.details.name
@@ -73,19 +93,18 @@ $(document).on 'turbolinks:load', ->
       else
         []
 
-    deckChangesRow = (deck, deckBefore, diff) =>
-      if deckBefore.unset
-        [$('<tr/>').append($('<td/>').append('Not yet submitted'))]
-      else if deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
-        [$('<tr/>').append($('<td/>').append(
-          $('<p/>', {text: 'Change not yet submitted. Previously submitted:'}),
-          $('<p/>', {text: deckBefore.details.name, class: 'mb-0'})))]
-      else if diff
-        [$('<tr/>').append($('<td/>', {
-          text: 'Changes not yet submitted. See below for differences from NetrunnerDB.'
-        }))]
-      else
-        []
+    deckChangesRow = (decks) =>
+      switch decks.change_type
+        when 'choose_deck' then $('<tr/>').append(
+          $('<td/>').append('Not yet submitted'))
+        when 'change_deck' then $('<tr/>').append(
+          $('<td/>').append(
+            $('<p/>', {text: 'Change not yet submitted. Previously submitted:'}),
+            $('<p/>', {text: decks.before.details.name, class: 'mb-0'})))
+        when 'change_cards' then $('<tr/>').append(
+          $('<td/>').append('Changes not yet submitted. See below for differences from NetrunnerDB.'))
+        else
+          []
 
     deckDiffTable = (diff) =>
       if not diff
@@ -132,7 +151,8 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {text: deck.details.identity_title}),
             $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
 
-    cardsTable = (deck, cardsTableSize) =>
+    cardsTable = (decks) =>
+      deck = decks.after
       cards = deck.cards
       if not cards || cards.length < 1
         return []
@@ -154,7 +174,7 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {class: 'text-center', text: card.quantity}),
             $('<td/>', {text: card.title}),
             $('<td/>', {class: 'text-center', text: influence})))
-        ).append(emptyCardRows(cardsTableSize - cards.length)))
+        ).append(emptyCardRows(decks.pad_cards)))
 
     emptyCardRows = (numRows) =>
       rows = []
