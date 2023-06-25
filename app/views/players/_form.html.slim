@@ -2,6 +2,8 @@
 	- if defined?(organiser_view)
 		= f.input_field :organiser_view, value: true, hidden: true
 	- elsif @tournament.nrdb_deck_registration?
+		= f.input_field :corp_deck_before, hidden: true, disabled: true, value: @current_user_player&.corp_deck&.as_view&.to_json
+		= f.input_field :runner_deck_before, hidden: true, disabled: true, value: @current_user_player&.runner_deck&.as_view&.to_json
 		= f.input_field :corp_deck, hidden: true, value: @current_user_player&.corp_deck&.as_view&.to_json
 		= f.input_field :runner_deck, hidden: true, value: @current_user_player&.runner_deck&.as_view&.to_json
 	.form-group

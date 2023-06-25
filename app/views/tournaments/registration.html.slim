@@ -1,5 +1,5 @@
 .container
-  .row
+  .row.mb-3
     - if @tournament.nrdb_deck_registration?
       = render 'deck_selection'
     - else
@@ -20,5 +20,8 @@
               = button_tag type: :submit, class: 'btn btn-primary' do
                 => fa_icon 'check'
                 | Submit
+
+  - if @tournament.nrdb_deck_registration?
+    .row#display_decks
 
   = render 'player_counts'

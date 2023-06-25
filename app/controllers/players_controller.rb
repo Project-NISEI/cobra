@@ -66,6 +66,7 @@ class PlayersController < ApplicationController
     begin
       request = JSON.parse(params[param])
     rescue
+      @player.decks.destroy_by(side_id: side)
       return
     end
     @player.decks.destroy_by(side_id: side)
