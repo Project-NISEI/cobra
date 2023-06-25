@@ -7,7 +7,7 @@ $(document).on 'turbolinks:load', ->
       null
 
   emptyDeck = (side) =>
-    {details: {side_id: side}, cards: []}
+    {details: {side_id: side}, cards: [], unset: true}
 
   if document.getElementById('nrdb_decks')?
 
@@ -139,7 +139,7 @@ $(document).on 'turbolinks:load', ->
       if deckStr.length > 0
         window.selectDeck(JSON.parse(deckStr).details.nrdb_uuid)
       else
-        displayDecksBy$Item([], [])
+        displayDeckBy$ItemAndSide([], side)
 
     displayDecksBy$Item = ($corp, $runner) =>
       displayDeckBy$ItemAndSide($corp, 'corp')

@@ -1,5 +1,8 @@
 $(document).on 'turbolinks:load', ->
   window.displayDeck = (deck, container, deckBefore) =>
+    if deck.unset && not deckBefore
+      $(container).empty()
+      return
     if deckBefore && deckBefore.details.nrdb_uuid == deck.details.nrdb_uuid
       diff = diffDecks(deckBefore, deck)
     else
@@ -47,7 +50,7 @@ $(document).on 'turbolinks:load', ->
   deckChangesRow = (deck, deckBefore, diff) =>
     if deckBefore && deckBefore.details.nrdb_uuid != deck.details.nrdb_uuid
       [$('<tr/>').append($('<td/>').append(
-        $('<p/>', {text: 'Deck not yet submitted. Previous selection:'}),
+        $('<p/>', {text: 'Not yet submitted. Previous selection:'}),
         $('<p/>', {text: deckBefore.details.name, class: 'mb-0'})))]
     else if diff
       [$('<tr/>').append($('<td/>', {
