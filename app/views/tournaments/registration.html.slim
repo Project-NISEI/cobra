@@ -11,8 +11,9 @@
           .d-flex.justify-content-between
             h5.mb-0 My Registration Information
             span.float-right.dontprint
-              a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
-                => fa_icon 'print'
+              - if @tournament.nrdb_deck_registration?
+                a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
+                  => fa_icon 'print'
               = link_to tournament_path(@tournament), title: 'Cancel' do
                 => fa_icon 'undo'
                 span.d-none Cancel registration edits
