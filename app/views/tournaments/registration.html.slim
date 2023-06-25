@@ -1,5 +1,5 @@
 .container
-  .row.mb-3
+  .row
     - if @tournament.nrdb_deck_registration?
       = render 'deck_selection'
     - else
@@ -22,7 +22,8 @@
                 | Submit
 
   - if @tournament.nrdb_deck_registration?
-    .row#display_deck_changes
-    .row#display_decks
+    .row.mt-4
+      .col-md-6#display_corp_deck
+      .col-md-6#display_runner_deck
 
   = render 'player_counts'
