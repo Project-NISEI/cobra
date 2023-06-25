@@ -34,11 +34,6 @@ $(document).on 'turbolinks:load', ->
         renderDeck(decks.corp, maxCards),
         renderDeck(decks.runner, maxCards))
 
-    renderRow = (decks, renderContent) =>
-      $('<div/>', {class: 'row'}).append(
-        $('<div/>', {class: 'col-md-6'}).append(renderContent(decks.corp)),
-        $('<div/>', {class: 'col-md-6'}).append(renderContent(decks.runner)))
-
     renderDeck = (decks, cardsTableSize) =>
       $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
