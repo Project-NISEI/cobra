@@ -107,7 +107,7 @@ $(document).on 'turbolinks:load', ->
       cloneToSelectedOrElse($corp, corpPlaceholder)
       cloneToSelectedOrElse($runner, runnerPlaceholder)
       setDeckInputs(deck, $item.hasClass('active'))
-      displayDecksBy$Item($corp, $runner)
+      displayDecksFromInputs()
 
     cloneToSelectedOrElse = ($item, ifNotPresent) =>
       if $item.length > 0
@@ -138,19 +138,6 @@ $(document).on 'turbolinks:load', ->
       deckStr = $('#player_' + side + '_deck').val()
       if deckStr.length > 0
         window.selectDeck(JSON.parse(deckStr).details.nrdb_uuid)
-      else
-        displayDeckBy$ItemAndSide([], side)
-
-    displayDecksBy$Item = ($corp, $runner) =>
-      displayDeckBy$ItemAndSide($corp, 'corp')
-      displayDeckBy$ItemAndSide($runner, 'runner')
-
-    displayDeckBy$ItemAndSide = ($item, side) =>
-      $container = $('#display_' + side + '_deck')
-      if $item.length > 0
-        displayDeck(readDeckFrom$Item($item), $container, deckBefore(side))
-      else
-        displayDeck(emptyDeck(side), $container, deckBefore(side))
 
     readDecks()
 
