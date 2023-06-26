@@ -5,16 +5,29 @@ $(document).on 'turbolinks:load', ->
 
     readDecksFromInputs = () =>
       normaliseCardTables({
-        corp: addDiff({
-          description: 'Corp Deck',
-          before: readDeck($('#player_corp_deck_before')),
-          after: readDeck($('#player_corp_deck'))
-        }),
-        runner: addDiff({
-          description: 'Runner Deck',
-          before: readDeck($('#player_runner_deck_before')),
-          after: readDeck($('#player_runner_deck'))
-        })
+        corp: readSideDecks(
+          'Corp Deck',
+          $('#player_corp_deck_before'),
+          $('#player_corp_deck')),
+        runner: readSideDecks(
+          'Runner Deck',
+          $('#player_runner_deck_before'),
+          $('#player_runner_deck')),
+        view: $('#player_decks_view').val()
+      })
+
+    readSideDecks = (description, $beforeInput, $afterInput) =>
+
+      after = readDeck($afterInput)
+      if $beforeInput.length < 1
+        before = after
+      else
+        before = readDeck($beforeInput)
+
+      addDiff({
+        description: description,
+        before: before,
+        after: after
       })
 
     addDiff = (decks) =>
@@ -42,7 +55,7 @@ $(document).on 'turbolinks:load', ->
         decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
       decks
 
-    readDeck = ($input, side) =>
+    readDeck = ($input) =>
       deckStr = $input.val()
       if deckStr.length > 0
         JSON.parse(deckStr)
@@ -51,22 +64,22 @@ $(document).on 'turbolinks:load', ->
 
     renderDecks = (decks) =>
       $('#display_decks').empty().append(
-        renderDeck(decks.corp),
-        renderDeck(decks.runner))
+        renderDeck(decks.corp, decks.view),
+        renderDeck(decks.runner, decks.view))
 
-    renderDeck = (decks) =>
+    renderDeck = (decks, view) =>
       $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
         return $container
       deck = decks.after
       $container.append(
-        deckSummaryTable(decks),
+        deckSummaryTable(decks, view),
         deckDiffTable(decks.diff),
         identityTable(deck),
         cardsTable(decks),
         totalsTable(deck))
 
-    deckSummaryTable = (decks) =>
+    deckSummaryTable = (decks, view) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -74,22 +87,27 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after))
+          .append(deckNameRow(decks.after, view))
           .append(deckChangesRow(decks)))
 
-    deckNameRow = (deck) =>
+    deckNameRow = (deck, view) =>
       if deck.details.name
-        $('<tr/>').append($('<td/>').append(
-          $('<a/>', {
-            class: 'float-right dontprint',
-            title: 'Edit Deck',
-            href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
-            target: '_blank'
-          }).append(
-            $('<i/>', {class: 'fa fa-external-link'})
-          ),
-          document.createTextNode(deck.details.name)
-        ))
+        $('<tr/>').append($('<td/>')
+            .append(deckNameButtons(deck, view))
+            .append(document.createTextNode(deck.details.name)))
+      else
+        []
+
+    deckNameButtons = (deck, view) =>
+      if view == 'player'
+        $('<a/>', {
+          class: 'float-right dontprint',
+          title: 'Edit Deck',
+          href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
+          target: '_blank'
+        }).append(
+          $('<i/>', {class: 'fa fa-external-link'})
+        )
       else
         []
 
