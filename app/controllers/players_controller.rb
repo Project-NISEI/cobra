@@ -73,6 +73,7 @@ class PlayersController < ApplicationController
     details = request['details']
     details.keep_if { |key| Deck.column_names.include? key }
     details['side_id'] = side
+    details['user_id'] = current_user.id
     deck = @player.decks.create(details)
     deck.cards.create(request['cards'])
   end

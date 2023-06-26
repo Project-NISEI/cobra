@@ -91,6 +91,11 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
         .to eq([['Diversion of Funds', 3]])
     end
 
+    it 'records the user who saved the decks' do
+      expect(@new_player.corp_deck.user).to eq(player)
+      expect(@new_player.runner_deck.user).to eq(player)
+    end
+
     it 'displays the decks when locked' do
       sign_in organiser
       visit tournament_players_path(Tournament.last)
