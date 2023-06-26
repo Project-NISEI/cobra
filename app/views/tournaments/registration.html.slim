@@ -10,13 +10,17 @@
         .card-header
           .d-flex.justify-content-between
             h5.mb-0 My Registration Information
-            = link_to tournament_path(@tournament), title: 'Cancel', class: 'float-right' do
-              => fa_icon 'undo'
-              span.d-none Cancel registration edits
+            span.float-right.dontprint
+              - if @tournament.nrdb_deck_registration?
+                a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
+                  => fa_icon 'print'
+              = link_to tournament_path(@tournament), title: 'Cancel' do
+                => fa_icon 'undo'
+                span.d-none Cancel registration edits
         .card-body
           = simple_form_for @current_user_player, url: tournament_player_path(@tournament, @current_user_player) do |f|
             = render 'players/form', f: f
-            .text-right
+            .text-right.dontprint
               = button_tag type: :submit, class: 'btn btn-primary' do
                 => fa_icon 'check'
                 | Submit

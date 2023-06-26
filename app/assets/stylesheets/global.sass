@@ -61,3 +61,26 @@ nav.navbar, .footer
 
     .match_slip
       page-break-inside: avoid
+
+  // This is particularly used for deck registration, as the cards are displayed in striped tables,
+  // and there's a button to print the decks.
+  .table-striped tbody tr:nth-of-type(2n+1)
+    background-color: transparent !important
+  .table-striped tbody tr:nth-of-type(2n+1) td
+    background-color: #f2f2f2 !important
+  .table .thead-dark tr th, .table-striped-horizontal tbody tr td:nth-of-type(2n)
+    color: #fff !important
+    background-color: #343a40 !important
+  .table-light, .table-striped-horizontal tbody tr td:nth-of-type(2n+1)
+    background-color: #fdfdfe !important
+  .table
+    -webkit-print-color-adjust: exact !important
+    print-color-adjust: exact !important
+    color-adjust: exact !important
+
+.table-striped-horizontal tbody tr td:nth-of-type(2n)
+  color: #fff
+  background-color: #343a40
+
+.table-striped-horizontal tbody tr td:nth-of-type(2n+1)
+  background-color: #fdfdfe
