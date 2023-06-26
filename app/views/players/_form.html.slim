@@ -1,6 +1,11 @@
 .identities_form.d-block
 	- if defined?(organiser_view)
 		= f.input_field :organiser_view, value: true, hidden: true
+	- elsif defined?(player_registration_view)
+		= f.input_field :corp_deck_before, hidden: true, disabled: true, value: @player&.corp_deck&.as_view&.to_json
+		= f.input_field :runner_deck_before, hidden: true, disabled: true, value: @player&.runner_deck&.as_view&.to_json
+		= f.input_field :corp_deck, hidden: true, disabled: true, value: @player&.corp_deck&.as_view&.to_json
+		= f.input_field :runner_deck, hidden: true, disabled: true, value: @player&.runner_deck&.as_view&.to_json
 	- elsif @tournament.nrdb_deck_registration?
 		= f.input_field :corp_deck_before, hidden: true, disabled: true, value: @current_user_player&.corp_deck&.as_view&.to_json
 		= f.input_field :runner_deck_before, hidden: true, disabled: true, value: @current_user_player&.runner_deck&.as_view&.to_json
