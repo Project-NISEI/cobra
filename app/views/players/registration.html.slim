@@ -1,4 +1,24 @@
-.col-12
-  h2 Placeholder for TO view of a player's deck registration
-  = @player.name
-  = " (Dropped)" unless @player.active?
+.container
+  .row.mb-3
+    .col-md-6
+      .card
+        .card-header
+          .d-flex.justify-content-between
+            h5.mb-0 Registration Information
+            span.float-right.dontprint
+              - if @tournament.nrdb_deck_registration?
+                a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
+                  => fa_icon 'print'
+              = link_to tournament_players_path(@tournament), title: 'Cancel' do
+                => fa_icon 'undo'
+                span.d-none Back
+        .card-body
+          = simple_form_for @player, url: tournament_player_path(@tournament, @player) do |f|
+            = render 'form', f: f, player_registration_view: true
+            .text-right.dontprint
+              = button_tag type: :submit, class: 'btn btn-primary' do
+                => fa_icon 'check'
+                | Submit
+
+  - if @tournament.nrdb_deck_registration?
+    .row#display_decks
