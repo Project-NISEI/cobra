@@ -9,10 +9,12 @@
             .card-header
               .d-flex.justify-content-between
                 h5.mb-0 My Registration Information
-                - if policy(@tournament).register?
-                  = link_to registration_tournament_path(@tournament), title: 'Edit', class: 'float-right' do
+                = link_to registration_tournament_path(@tournament), title: 'View/Edit', class: 'float-right' do
+                  - if @tournament.nrdb_deck_registration?
+                    => fa_icon 'list'
+                  - else
                     => fa_icon 'pencil'
-                    span.d-none Edit my registration information
+                  span.d-none Edit my registration information
             ul.list-group.list-group-flush
               li.list-group-item
                 .small.text-secondary Name:
