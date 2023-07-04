@@ -15,7 +15,7 @@
                 a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
                   => fa_icon 'print'
               = link_to tournament_path(@tournament), title: 'Cancel' do
-                => fa_icon 'undo'
+                => fa_icon 'close'
                 span.d-none Cancel registration edits
         .card-body
           = simple_form_for @current_user_player, url: tournament_player_path(@tournament, @current_user_player) do |f|
