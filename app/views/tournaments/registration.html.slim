@@ -24,6 +24,10 @@
               = button_tag type: :submit, class: 'btn btn-primary' do
                 => fa_icon 'check'
                 | Submit
+      - if @tournament.nrdb_deck_registration? and not @current_user_player.decks_locked?
+        .alert.alert-danger.mt-3 role=alert
+          => fa_icon 'exclamation-triangle', class: 'mr-2'
+          | Deck legality is not checked. Please ensure your decks are legal.
 
   - if @tournament.nrdb_deck_registration?
     .row#display_decks
