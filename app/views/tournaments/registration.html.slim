@@ -25,7 +25,7 @@
                 => fa_icon 'check'
                 | Submit
       - if @tournament.nrdb_deck_registration? and not @current_user_player.decks_locked?
-        .alert.alert-danger.mt-3 role=alert
+        .alert.alert-danger.mt-3.dontprint role=alert
           => fa_icon 'exclamation-triangle', class: 'mr-2'
           | Deck legality is not checked. Please ensure your decks are legal.
 

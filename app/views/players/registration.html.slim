@@ -19,6 +19,11 @@
               = button_tag type: :submit, class: 'btn btn-primary' do
                 => fa_icon 'check'
                 | Submit
+    - if @tournament.nrdb_deck_registration?
+      .col-md-6
+        .alert.alert-danger.dontprint role=alert
+          => fa_icon 'exclamation-triangle', class: 'mr-2'
+          | Deck legality is not checked. Please check decks manually.
 
   - if @tournament.nrdb_deck_registration?
     .row#display_decks
