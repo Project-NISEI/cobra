@@ -15,12 +15,14 @@
 
   h3.mt-4
     | Players
-    span.ml-4
-      - if @tournament.nrdb_deck_registration? and @tournament.any_player_decks_unlocked?
+    - if @tournament.nrdb_deck_registration?
+      span.badge.badge-pill.badge-info.ml-2<> style='font-size:1rem; vertical-align: middle'
+        | Deck status: #{@tournament.decks_status_description}
+      - if @tournament.any_player_decks_unlocked?
         => link_to lock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'lock'
           | Lock all decks
-      - if @tournament.nrdb_deck_registration? and not @tournament.all_players_decks_unlocked?
+      - unless @tournament.all_players_decks_unlocked?
         => link_to unlock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'unlock'
           | Unlock all decks
@@ -28,16 +30,16 @@
   - @players.each do |player|
     li.list-group-item
       = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mt-2 d-block' } do |f|
-        = render 'form', f: f, organiser_view: true
+        = render 'form', f: f, organiser_view: true, player: player
         .text-right
           - if @tournament.nrdb_deck_registration?
             - if player.decks_locked?
               =< link_to unlock_decks_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
-                => fa_icon 'lock'
+                => fa_icon 'unlock'
                 | Unlock decks
             - else
               =< link_to lock_decks_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
-                => fa_icon 'unlock'
+                => fa_icon 'lock'
                 | Lock decks
             =< link_to registration_tournament_player_path(@tournament, player), class: 'btn btn-link text-info mr-2' do
               => fa_icon 'eye'
