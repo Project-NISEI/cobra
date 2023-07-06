@@ -113,13 +113,15 @@ $(document).on 'turbolinks:load', ->
 
     deckChangesRow = (decks) =>
       switch decks.change_type
-        when 'choose_deck' then $('<tr/>').append(
+        when 'choose_deck' then $('<tr/>', {class: 'alert-warning'}).append(
           $('<td/>').append('Not yet submitted'))
-        when 'change_deck' then $('<tr/>').append(
+        when 'change_deck' then $('<tr/>', {class: 'alert-warning'}).append(
           $('<td/>').append(
-            $('<p/>', {text: 'Change not yet submitted. Previously submitted:'}),
-            $('<p/>', {text: decks.before.details.name, class: 'mb-0'})))
-        when 'change_cards' then $('<tr/>').append(
+            'Change not yet submitted. Previously submitted:',
+            $('<br/>'),
+            $('<span/>', {text: decks.before.details.name})
+          ))
+        when 'change_cards' then $('<tr/>', {class: 'alert-warning'}).append(
           $('<td/>').append('Changes not yet submitted. See below for differences from NetrunnerDB.'))
         else
           []
