@@ -31,7 +31,7 @@
                 | Submit
               - if @current_user_player.decks_locked?
                 span.ml-2 Decks are locked, talk to a Tournament Organiser to change your decks.
-              span.ml-2.alert-warning.p-1.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+              span.ml-2.badge.badge-warning.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
     = render 'deck_selection'
   - else
     = render 'overview_card'
