@@ -1,32 +1,41 @@
-.col-md-6.dontprint
-  .card
-    - if @current_user_player.decks_locked?
-      .card-header
-        | Talk to a Tournament Organiser to change your decks.
-      ul.list-group.list-group-flush style='border-bottom: 0'
-        li.list-group-item.selected-deck
-          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@corp_id_nrdb_code}.jpg)"
-          p.mb-1 #{@corp_deck}
-        li.list-group-item.selected-deck
-          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@runner_id_nrdb_code}.jpg)"
-          p.mb-1 #{@runner_deck}
-    - else
-      .card-header
-        | Please select from your decks below.
-        a< href="https://netrunnerdb.com/en/decks" target="_blank" See your decks in NetrunnerDB.
-        |< Refresh the page to reload from NetrunnerDB.
-      ul.list-group.list-group-flush#nrdb_decks_selected style='border-bottom: 0'
-        li.list-group-item.selected-deck
-          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_shadow_corp_nrdb_code}.jpg)"
-          p.mb-1 No corp selected
-        li.list-group-item.selected-deck
-          .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_masque_runner_nrdb_code}.jpg)"
-          p.mb-1 No runner selected
-      ul.list-group.list-group-flush.overflow-auto#nrdb_decks style='height: 24em'
-        - @decks.each do |deck|
-          li.list-group-item [
-            id='nrdb_deck_#{deck[:uuid]}'
-            data-deck='#{deck.to_json}'
-            onclick='selectDeck("#{deck[:uuid]}")'
-            ]
-            p.mb-1= deck[:name]
+- unless @current_user_player.decks_locked?
+  .row.mb-3.dontprint
+    .col
+      .card
+        .card-header style='border: 0'
+          | Please select from your decks below.
+          a< href="https://netrunnerdb.com/en/decks" target="_blank" See your decks in NetrunnerDB.
+          |< Refresh the page to reload from NetrunnerDB.
+  .row.mb-3.dontprint
+    .col-md-6
+      .card
+        ul.list-group.list-group-flush#nrdb_corp_selected style='border-bottom: 0'
+          li.list-group-item.selected-deck
+            .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_shadow_corp_nrdb_code}.jpg)"
+            p.mb-1 No corp selected
+        ul.list-group.list-group-flush.overflow-auto#nrdb_corp_decks style='height: 24em'
+          - @decks.each do |deck|
+            li.list-group-item.d-none [
+              id='nrdb_corp_#{deck[:uuid]}'
+              data-deck='#{deck.to_json}'
+              onclick='selectDeck("#{deck[:uuid]}")'
+              ]
+              p.mb-1= deck[:name]
+    .col-md-6
+      .card
+        ul.list-group.list-group-flush#nrdb_decks_selected style='border-bottom: 0'
+          li.list-group-item.selected-deck
+            .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_shadow_corp_nrdb_code}.jpg)"
+            p.mb-1 No corp selected
+          li.list-group-item.selected-deck
+            .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_masque_runner_nrdb_code}.jpg)"
+            p.mb-1 No runner selected
+        ul.list-group.list-group-flush.overflow-auto#nrdb_decks style='height: 24em'
+          - @decks.each do |deck|
+            li.list-group-item [
+              id='nrdb_deck_#{deck[:uuid]}'
+              data-deck='#{deck.to_json}'
+              onclick='selectDeck("#{deck[:uuid]}")'
+              ]
+              p.mb-1= deck[:name]
+  .row#display_decks
