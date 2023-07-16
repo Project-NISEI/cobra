@@ -19,6 +19,8 @@
               = f.input_field :runner_deck_before, hidden: true, disabled: true, value: @current_user_player&.runner_deck&.as_view&.to_json
               = f.input_field :corp_deck, hidden: true, value: @current_user_player&.corp_deck&.as_view&.to_json
               = f.input_field :runner_deck, hidden: true, value: @current_user_player&.runner_deck&.as_view&.to_json
+              = f.input_field :corp_identity, hidden: true
+              = f.input_field :runner_identity, hidden: true
               .form-group
                 label.d-block.mr-2 for="player_name" Name
                 = f.input_field :name,
@@ -29,6 +31,7 @@
                 | Submit
               - if @current_user_player.decks_locked?
                 span.ml-2 Decks are locked, talk to a Tournament Organiser to change your decks.
+              span.ml-2.alert-warning.p-1.d-none#deck_changes_not_submitted_warning Changes not yet submitted
     = render 'deck_selection'
   - else
     = render 'overview_card'
