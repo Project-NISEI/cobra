@@ -54,6 +54,10 @@ $(document).on 'turbolinks:load', ->
         $('#nrdb_' + side + '_decks').append($item)
       preselectDeck('corp')
       preselectDeck('runner')
+      for corp from $('#nrdb_corp_decks li.active').get()
+        corp.scrollIntoView(false)
+      for runner from $('#nrdb_runner_decks li.active').get()
+        runner.scrollIntoView(false)
 
     readDeckFrom$Item = ($item) =>
       nrdbDeck = JSON.parse($item.attr('data-deck'))
