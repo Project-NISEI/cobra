@@ -32,6 +32,10 @@
               - if @current_user_player.decks_locked?
                 span.ml-2 Decks are locked, talk to a Tournament Organiser to change your decks.
               span.ml-2.badge.badge-warning.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+        - unless @current_user_player.decks_locked?
+          .alert.alert-danger.mt-3.mb-0.dontprint role=alert
+            => fa_icon 'exclamation-triangle', class: 'mr-2'
+            | Deck legality is not checked. Please ensure your decks are legal.
     = render 'deck_selection'
   - else
     = render 'overview_card'
@@ -51,9 +55,5 @@
               = button_tag type: :submit, class: 'btn btn-primary' do
                 => fa_icon 'check'
                 | Submit
-      - if @tournament.nrdb_deck_registration? and not @current_user_player.decks_locked?
-        .alert.alert-danger.mt-3.dontprint role=alert
-          => fa_icon 'exclamation-triangle', class: 'mr-2'
-          | Deck legality is not checked. Please ensure your decks are legal.
 
   = render 'player_counts'
