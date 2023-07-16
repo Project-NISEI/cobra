@@ -97,7 +97,8 @@ $(document).on 'turbolinks:load', ->
           .append(deckNameButtons(deck, view))
           .append(document.createTextNode(deck.details.name)))
       else
-        []
+        $('<tr/>').append($('<td/>')
+          .append('None selected'))
 
     deckNameButtons = (deck, view) =>
       if view == 'player'
