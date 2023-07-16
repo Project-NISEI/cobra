@@ -47,9 +47,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     visit tournament_players_path(Tournament.last)
     click_link 'Lock all decks'
     register_as_player
-    expect(all('li.selected-deck').map {|deck| deck.find('p').text})
-      .to contain_exactly('No corp deck',
-                          'No runner deck')
+    expect(page).not_to have_selector '#nrdb_decks'
   end
 
   context 'submitting decks' do
@@ -61,14 +59,16 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
         visit registration_tournament_path(Tournament.last)
         select_corp_deck Deck.new identity_title: 'Haas-Bioroid: Engineering the Future',
                                   name: 'Ben Ni Jammy HB \"Always Beta Test\" (UK Nationals \'16 14th)",',
-                                  identity_nrdb_printing_id: '01054', cards: [
-          DeckCard.new(title: 'Accelerated Beta Test', quantity: 3)
-        ]
+                                  identity_nrdb_printing_id: '01054',
+                                  cards: [
+                                    DeckCard.new(title: 'Accelerated Beta Test', quantity: 3)
+                                  ]
         select_runner_deck Deck.new identity_title: 'Az McCaffrey: Mechanical Prodigy',
                                     name: 'The Palantir - 1st/Undefeated @ Silver Goblin Store Champs',
-                                    identity_nrdb_printing_id: '26010', cards: [
-          DeckCard.new(title: 'Diversion of Funds', quantity: 3)
-        ]
+                                    identity_nrdb_printing_id: '26010',
+                                    cards: [
+                                      DeckCard.new(title: 'Diversion of Funds', quantity: 3)
+                                    ]
         click_button 'Submit'
       end
       @new_player = Player.last
@@ -85,9 +85,9 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     end
 
     it 'saves the cards' do
-      expect(@new_player.corp_deck.deck_cards.map {|card| [card.title, card.quantity]})
+      expect(@new_player.corp_deck.deck_cards.map { |card| [card.title, card.quantity] })
         .to eq([['Accelerated Beta Test', 3]])
-      expect(@new_player.runner_deck.deck_cards.map {|card| [card.title, card.quantity]})
+      expect(@new_player.runner_deck.deck_cards.map { |card| [card.title, card.quantity] })
         .to eq([['Diversion of Funds', 3]])
     end
 
@@ -97,9 +97,10 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       click_link 'Lock all decks'
       sign_in player
       visit registration_tournament_path(Tournament.last)
-      expect(all('li.selected-deck').map {|deck| deck.find('p').text})
-        .to contain_exactly('Ben Ni Jammy HB \"Always Beta Test\" (UK Nationals \'16 14th)",',
-                            'The Palantir - 1st/Undefeated @ Silver Goblin Store Champs')
+      expect(page).not_to have_selector '#nrdb_decks'
+      expect(page).to have_selector '#display_decks'
+      expect(find("#player_corp_deck", visible: false).value).to match /^\{.+}$/
+      expect(find("#player_runner_deck", visible: false).value).to match /^\{.+}$/
     end
   end
 
@@ -126,7 +127,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   end
 
   def displayed_decks_names
-    find('#nrdb_decks').all('li').map {|deck| deck.find('p').text}
+    find('#nrdb_decks').all('li').map { |deck| deck.find('p').text }
   end
 
   def select_corp_deck(deck)
@@ -139,9 +140,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
 
   def select_deck(side, deck)
     first("#player_#{side}_deck", visible: false).set(deck.as_view.to_json)
-    identity = first("#player_#{side}_identity")
-    identity.native.remove_attribute('readonly')
-    identity.set(deck.identity_title)
+    first("#player_#{side}_identity", visible: false).set(deck.identity_title)
   end
 
   def with_nrdb_decks(&block)
