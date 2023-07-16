@@ -35,7 +35,7 @@
         - unless @current_user_player.decks_locked?
           .alert.alert-danger.mt-3.mb-0.dontprint role=alert
             => fa_icon 'exclamation-triangle', class: 'mr-2'
-            | Deck legality is not checked. Please ensure your decks are legal.
+            | Deck legality is not yet checked. Please ensure your decks are legal.
     = render 'deck_selection'
   - else
     = render 'overview_card'
