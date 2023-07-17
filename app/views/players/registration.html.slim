@@ -25,6 +25,10 @@
             = button_tag type: :submit, class: 'btn btn-primary ml-2 dontprint' do
               => fa_icon 'check'
               | Submit
+      - if @tournament.nrdb_deck_registration?
+        .alert.alert-danger.mt-3.mb-0.dontprint role=alert
+          => fa_icon 'exclamation-triangle', class: 'mr-2'
+          | Deck legality is not yet checked. Please check decks manually.
 
   - if @tournament.nrdb_deck_registration?
     .row#display_decks
