@@ -52,7 +52,7 @@ class Tournament < ApplicationRecord
   end
 
   def generate_slug
-    self.slug = rand(36**4).to_s(36).upcase
+    self.slug = rand(Integer(36 ** 4)).to_s(36).upcase
     generate_slug if Tournament.exists?(slug: slug)
   end
 
@@ -66,6 +66,16 @@ class Tournament < ApplicationRecord
 
   def locked_deck_players
     players.active.where('decks_locked IS TRUE')
+  end
+
+  def decks_status_description
+    if all_players_decks_unlocked?
+      'all unlocked'
+    elsif any_player_decks_unlocked?
+      'partially unlocked'
+    else
+      'all locked'
+    end
   end
 
   private

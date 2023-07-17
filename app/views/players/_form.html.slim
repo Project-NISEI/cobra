@@ -1,17 +1,16 @@
 .identities_form.d-block
 	- if defined?(organiser_view)
 		= f.input_field :organiser_view, value: true, hidden: true
-	- elsif defined?(player_registration_view)
-		= f.input_field :decks_view, hidden: true, disabled: true, value: 'organiser'
-		= f.input_field :corp_deck, hidden: true, disabled: true, value: @player&.corp_deck&.as_view&.to_json
-		= f.input_field :runner_deck, hidden: true, disabled: true, value: @player&.runner_deck&.as_view&.to_json
-	- elsif @tournament.nrdb_deck_registration?
-		= f.input_field :decks_view, hidden: true, disabled: true, value: 'player'
-		= f.input_field :corp_deck_before, hidden: true, disabled: true, value: @current_user_player&.corp_deck&.as_view&.to_json
-		= f.input_field :runner_deck_before, hidden: true, disabled: true, value: @current_user_player&.runner_deck&.as_view&.to_json
-		= f.input_field :corp_deck, hidden: true, value: @current_user_player&.corp_deck&.as_view&.to_json
-		= f.input_field :runner_deck, hidden: true, value: @current_user_player&.runner_deck&.as_view&.to_json
 	.form-group
+		- if defined?(player)
+			span.text-info.float-left.mr-2 style='width: 12px'
+				- if player.decks_locked?
+					=> fa_icon 'lock', class: 'player-locked', title: 'Decks locked'
+				- else
+					=> fa_icon 'unlock', class: 'player-unlocked', title: 'Decks unlocked'
+		javascript:
+          $('.player-locked').tooltip()
+		  $('.player-unlocked').tooltip()
 		label.d-block for="player_name" Name
 		- if defined?(default_name)
 			= f.input_field :name,
