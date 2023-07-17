@@ -93,6 +93,8 @@ $(document).on 'turbolinks:load', ->
 
     window.selectDeck = (id) =>
       $item = $('#nrdb_deck_' + id)
+      if $item.length == 0
+        return
       deck = readDeckFrom$Item($item)
       side = deck.details.side_id
       activeBefore = $item.hasClass('active')

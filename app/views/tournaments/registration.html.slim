@@ -15,6 +15,8 @@
           .card-body
             = simple_form_for @current_user_player, url: tournament_player_path(@tournament, @current_user_player), html: {class: 'form-inline'} do |f|
               = f.input_field :decks_view, hidden: true, disabled: true, value: 'player'
+              = f.input_field :corp_deck_mine, hidden: true, disabled: true, value: @current_user_player&.corp_deck&.user == current_user
+              = f.input_field :runner_deck_mine, hidden: true, disabled: true, value: @current_user_player&.runner_deck&.user == current_user
               = f.input_field :corp_deck_before, hidden: true, disabled: true, value: @current_user_player&.corp_deck&.as_view&.to_json
               = f.input_field :runner_deck_before, hidden: true, disabled: true, value: @current_user_player&.runner_deck&.as_view&.to_json
               = f.input_field :corp_deck, hidden: true, value: @current_user_player&.corp_deck&.as_view&.to_json
@@ -36,7 +38,7 @@
           .alert.alert-danger.mt-3.mb-0.dontprint role=alert
             => fa_icon 'exclamation-triangle', class: 'mr-2'
             | Deck legality is not yet checked. Please ensure your decks are legal.
-    = render 'deck_selection'
+    = render 'players/deck_selection'
   - else
     = render 'overview_card'
     .col-md-6

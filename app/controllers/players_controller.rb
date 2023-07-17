@@ -42,7 +42,7 @@ class PlayersController < ApplicationController
   def update
     authorize @player
 
-    params=player_params
+    params = player_params
     unless is_organiser_view
       params[:user_id] = current_user.id
     end
@@ -132,14 +132,22 @@ class PlayersController < ApplicationController
 
   def registration
     authorize @tournament, :update?
+    @edit_decks = params[:edit_decks] || @player.decks.empty?
+    if @edit_decks
+      begin
+        @decks = Nrdb::Connection.new(current_user).decks
+      rescue
+        redirect_to login_path(:return_to => request.path)
+      end
+    end
   end
 
   private
 
   def player_params
     params.require(:player)
-      .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-              :first_round_bye, :manual_seed)
+          .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
+                  :first_round_bye, :manual_seed)
   end
 
   def is_organiser_view
