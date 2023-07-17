@@ -1,19 +1,46 @@
 .container
-  .row.mb-3
-    - if @tournament.nrdb_deck_registration?
-      = render 'deck_selection'
-    - else
-      = render 'overview_card'
-
+  - if @tournament.nrdb_deck_registration?
+    .row.mb-3
+      .col
+        .card
+          .card-header
+            .d-flex.justify-content-between
+              h5.mb-0 My Registration Information
+              span.float-right.dontprint
+                a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
+                  => fa_icon 'print'
+                = link_to tournament_path(@tournament), title: 'Cancel' do
+                  => fa_icon 'undo'
+                  span.d-none Cancel registration edits
+          .card-body
+            = simple_form_for @current_user_player, url: tournament_player_path(@tournament, @current_user_player), html: {class: 'form-inline'} do |f|
+              = f.input_field :decks_view, hidden: true, disabled: true, value: 'player'
+              = f.input_field :corp_deck_before, hidden: true, disabled: true, value: @current_user_player&.corp_deck&.as_view&.to_json
+              = f.input_field :runner_deck_before, hidden: true, disabled: true, value: @current_user_player&.runner_deck&.as_view&.to_json
+              = f.input_field :corp_deck, hidden: true, value: @current_user_player&.corp_deck&.as_view&.to_json
+              = f.input_field :runner_deck, hidden: true, value: @current_user_player&.runner_deck&.as_view&.to_json
+              = f.input_field :corp_identity, hidden: true
+              = f.input_field :runner_identity, hidden: true
+              .form-group
+                label.d-block.mr-2 for="player_name" Name
+                = f.input_field :name,
+                        placeholder: 'Enter player name',
+                        class: 'form-control'
+              = button_tag type: :submit, class: 'btn btn-primary ml-2 dontprint' do
+                => fa_icon 'check'
+                | Submit
+              - if @current_user_player.decks_locked?
+                span.ml-2 Decks are locked, talk to a Tournament Organiser to change your decks.
+              span.ml-2.badge.badge-warning.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+    = render 'deck_selection'
+  - else
+    = render 'overview_card'
     .col-md-6
       .card
         .card-header
           .d-flex.justify-content-between
             h5.mb-0 My Registration Information
             span.float-right.dontprint
-              - if @tournament.nrdb_deck_registration?
-                a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
-                  => fa_icon 'print'
               = link_to tournament_path(@tournament), title: 'Cancel' do
                 => fa_icon 'undo'
                 span.d-none Cancel registration edits
@@ -24,8 +51,5 @@
               = button_tag type: :submit, class: 'btn btn-primary' do
                 => fa_icon 'check'
                 | Submit
-
-  - if @tournament.nrdb_deck_registration?
-    .row#display_decks
 
   = render 'player_counts'

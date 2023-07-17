@@ -1,10 +1,8 @@
 $(document).on 'turbolinks:load', ->
-
   if document.getElementById('nrdb_decks')?
 
-    deckPlaceholders = $('#nrdb_decks_selected li').get()
-    corpPlaceholder = deckPlaceholders[0]
-    runnerPlaceholder = deckPlaceholders[1]
+    corpPlaceholder = $('#nrdb_corp_selected li').get()[0]
+    runnerPlaceholder = $('#nrdb_runner_selected li').get()[0]
 
     nrdbPrintingsById = new Map()
 
@@ -40,18 +38,26 @@ $(document).on 'turbolinks:load', ->
         readDecksWithPrintings(nrdbDecks)
 
     readDecksWithPrintings = (nrdbDecks) =>
+      $('#nrdb_corp_decks').empty()
+      $('#nrdb_runner_decks').empty()
       for nrdbDeck from nrdbDecks
         $item = $('#nrdb_deck_' + nrdbDeck.uuid)
         deck = readNrdbDeck(nrdbDeck)
-        $item.attr('data-side', deck.details.side_id)
+        side = deck.details.side_id
+        $item.attr('data-side', side)
         $item.prepend($('<div/>', {
           class: 'deck-list-identity', css: {
             'background-image': 'url(https://static.nrdbassets.com/v1/small/' + deck.details.identity_nrdb_printing_id + '.jpg)'
           }
         }))
         $item.append($('<small/>', text: deck.details.identity_title))
+        $('#nrdb_' + side + '_decks').append($item)
       preselectDeck('corp')
       preselectDeck('runner')
+      for corp from $('#nrdb_corp_decks li.active').get()
+        corp.scrollIntoView(false)
+      for runner from $('#nrdb_runner_decks li.active').get()
+        runner.scrollIntoView(false)
 
     readDeckFrom$Item = ($item) =>
       nrdbDeck = JSON.parse($item.attr('data-deck'))
@@ -90,17 +96,16 @@ $(document).on 'turbolinks:load', ->
       deck = readDeckFrom$Item($item)
       side = deck.details.side_id
       activeBefore = $item.hasClass('active')
-      $('#nrdb_decks li[data-side*=' + side + ']').removeClass('active')
+      $('#nrdb_' + side + '_decks li').removeClass('active')
       $item.toggleClass('active', !activeBefore)
-      $('#nrdb_decks_selected').empty()
-      $corp = $('#nrdb_decks li.active[data-side*=corp]')
-      $runner = $('#nrdb_decks li.active[data-side*=runner]')
-      cloneToSelectedOrElse($corp, corpPlaceholder)
-      cloneToSelectedOrElse($runner, runnerPlaceholder)
+      $('#nrdb_corp_selected').empty().append(
+        cloneSelectedOrElse($('#nrdb_corp_decks li.active'), corpPlaceholder))
+      $('#nrdb_runner_selected').empty().append(
+        cloneSelectedOrElse($('#nrdb_runner_decks li.active'), runnerPlaceholder))
       setDeckInputs(deck, $item.hasClass('active'))
       displayDecksFromInputs()
 
-    cloneToSelectedOrElse = ($item, ifNotPresent) =>
+    cloneSelectedOrElse = ($item, ifNotPresent) =>
       if $item.length > 0
         $clone = $item.clone().removeClass('active').addClass('selected-deck').removeAttr('id')
         $clone.find('.deck-list-identity').removeClass('deck-list-identity').addClass('selected-deck-identity')
@@ -112,9 +117,9 @@ $(document).on 'turbolinks:load', ->
           e.preventDefault()
           window.selectDeck(readDeckFrom$Item($item).details.nrdb_uuid))
         $clone.prepend($deselect)
-        $clone.appendTo('#nrdb_decks_selected')
+        $clone
       else
-        $(ifNotPresent).appendTo('#nrdb_decks_selected')
+        $(ifNotPresent)
 
     setDeckInputs = (deck, active) =>
       side = deck.details.side_id

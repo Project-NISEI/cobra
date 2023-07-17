@@ -1,6 +1,6 @@
 .container
   .row.mb-3
-    .col-md-6
+    .col
       .card
         .card-header
           .d-flex.justify-content-between
@@ -13,12 +13,18 @@
                 => fa_icon 'undo'
                 span.d-none Back
         .card-body
-          = simple_form_for @player, url: tournament_player_path(@tournament, @player) do |f|
-            = render 'form', f: f, player_registration_view: true
-            .text-right.dontprint
-              = button_tag type: :submit, class: 'btn btn-primary' do
-                => fa_icon 'check'
-                | Submit
+          = simple_form_for @player, url: tournament_player_path(@tournament, @player), html: {class: 'form-inline'} do |f|
+            = f.input_field :decks_view, hidden: true, disabled: true, value: 'organiser'
+            = f.input_field :corp_deck, hidden: true, disabled: true, value: @player&.corp_deck&.as_view&.to_json
+            = f.input_field :runner_deck, hidden: true, disabled: true, value: @player&.runner_deck&.as_view&.to_json
+            .form-group
+              label.d-block.mr-2 for="player_name" Name
+              = f.input_field :name,
+                      placeholder: 'Enter player name',
+                      class: 'form-control'
+            = button_tag type: :submit, class: 'btn btn-primary ml-2 dontprint' do
+              => fa_icon 'check'
+              | Submit
 
   - if @tournament.nrdb_deck_registration?
     .row#display_decks

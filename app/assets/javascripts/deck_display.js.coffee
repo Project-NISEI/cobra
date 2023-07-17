@@ -17,7 +17,6 @@ $(document).on 'turbolinks:load', ->
       })
 
     readSideDecks = (description, $beforeInput, $afterInput) =>
-
       after = readDeck($afterInput)
       if $beforeInput.length < 1
         before = after
@@ -66,6 +65,8 @@ $(document).on 'turbolinks:load', ->
       $('#display_decks').empty().append(
         renderDeck(decks.corp, decks.view),
         renderDeck(decks.runner, decks.view))
+      any_changes = decks.corp.change_type != 'none' || decks.runner.change_type != 'none'
+      $('#deck_changes_not_submitted_warning').toggleClass('d-none', !any_changes)
 
     renderDeck = (decks, view) =>
       $container = $('<div/>', {class: 'col-md-6'})
@@ -93,10 +94,11 @@ $(document).on 'turbolinks:load', ->
     deckNameRow = (deck, view) =>
       if deck.details.name
         $('<tr/>').append($('<td/>')
-            .append(deckNameButtons(deck, view))
-            .append(document.createTextNode(deck.details.name)))
+          .append(deckNameButtons(deck, view))
+          .append(document.createTextNode(deck.details.name)))
       else
-        []
+        $('<tr/>').append($('<td/>')
+          .append('None selected'))
 
     deckNameButtons = (deck, view) =>
       if view == 'player'
