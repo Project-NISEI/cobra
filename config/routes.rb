@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       patch :lock_decks, on: :member
       patch :unlock_decks, on: :member
       get :registration, on: :member
+      get :import_decks, on: :member
     end
     resources :rounds, only: [:index, :show, :create, :edit, :update, :destroy] do
       resources :pairings, only: [:index, :create, :destroy] do

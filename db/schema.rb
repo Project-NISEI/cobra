@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_26_211857) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_25_224705) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,6 +50,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_26_211857) do
     t.string "nrdb_card_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "nrdb_printing_id"
     t.index ["deck_id"], name: "index_deck_cards_on_deck_id"
   end
 

@@ -1,6 +1,6 @@
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :lock_decks, :unlock_decks, :registration]
+  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :lock_decks, :unlock_decks, :registration, :import_decks]
 
   def index
     authorize @tournament, :update?
@@ -69,11 +69,14 @@ class PlayersController < ApplicationController
       @player.decks.destroy_by(side_id: side)
       return
     end
-    @player.decks.destroy_by(side_id: side)
     details = request['details']
+    if details['user_id'] && details['user_id'] != current_user.id
+      return
+    end
     details.keep_if { |key| Deck.column_names.include? key }
     details['side_id'] = side
     details['user_id'] = current_user.id
+    @player.decks.destroy_by(side_id: side)
     deck = @player.decks.create(details)
     deck.cards.create(request['cards'])
   end
@@ -132,6 +135,7 @@ class PlayersController < ApplicationController
 
   def registration
     authorize @tournament, :update?
+    @any_decks_to_import = @player.decks.any? { |deck| deck.user != current_user }
     @edit_decks = params[:edit_decks] || @player.decks.empty?
     if @edit_decks
       begin
@@ -140,6 +144,21 @@ class PlayersController < ApplicationController
         redirect_to login_path(:return_to => request.path)
       end
     end
+  end
+
+  def import_decks
+    authorize @tournament, :update?
+
+    begin
+      connection = Nrdb::Connection.new(current_user)
+    rescue
+      redirect_to login_path(:return_to => request.path)
+      return
+    end
+    @player.decks
+           .filter { |deck| deck.user != current_user }
+           .each { |deck| connection.import_deck(deck) }
+    redirect_to registration_tournament_player_path(@tournament, @player, { edit_decks: true })
   end
 
   private

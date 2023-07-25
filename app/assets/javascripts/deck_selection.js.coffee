@@ -86,7 +86,8 @@ $(document).on 'turbolinks:load', ->
             title: attributes.title,
             quantity: count,
             influence: influence_spent,
-            nrdb_card_id: attributes.card_id
+            nrdb_card_id: attributes.card_id,
+            nrdb_printing_id: code
           })
       return {details: details, cards: cards}
 
