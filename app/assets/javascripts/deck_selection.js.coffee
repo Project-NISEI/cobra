@@ -124,38 +124,38 @@ $(document).on 'turbolinks:load', ->
         $item = $('#nrdb_deck_' + deck.details.nrdb_uuid)
         if $item.length > 0
           $item.toggleClass('active', true)
-      setSelectedView(side)
+      setSelectedView(side, decks)
 
-    setSelectedView = (side) =>
-      if side == 'corp'
-        unselectedPlaceholder = corpPlaceholder
-      else
-        unselectedPlaceholder = runnerPlaceholder
+    setSelectedView = (side, decks) =>
       $('#nrdb_' + side + '_selected').empty().append(
-        cloneSelectedOrElse(side, unselectedPlaceholder))
+        cloneSelectedOrGetPlaceholder(side, decks))
 
-    cloneSelectedOrElse = (side, unselectedPlaceholder) =>
-      $item = $('#nrdb_' + side + '_decks li.active')
+    cloneSelectedOrGetPlaceholder = (side, decks) =>
+      $item = $('#nrdb_deck_' + decks.after.details.nrdb_uuid)
       if $item.length > 0
         $clone = $item.clone().removeClass('active').addClass('selected-deck').removeAttr('id')
         $clone.find('.deck-list-identity').removeClass('deck-list-identity').addClass('selected-deck-identity')
         $clone.find('small').remove()
         $clone.prop('onclick', null).off('click')
         $clone.prepend($('<div/>', {'class': 'selected-deck-buttons'}))
-        addSelectedDeckButtons($clone, side, true)
+        addSelectedDeckButtons($clone, side, decks)
       else
-        addSelectedDeckButtons($(unselectedPlaceholder), side, false)
+        if side == 'corp'
+          unselectedPlaceholder = corpPlaceholder
+        else
+          unselectedPlaceholder = runnerPlaceholder
+        addSelectedDeckButtons($(unselectedPlaceholder), side, decks)
 
-    addSelectedDeckButtons = ($item, side, selected) =>
+    addSelectedDeckButtons = ($item, side, decks) =>
       $buttons = $item.find('.selected-deck-buttons').empty()
-      if selected
+      if !decks.after.unset
         $deselect = $('<a/>', {'title': 'Deselect', 'href': '#'})
         $deselect.append($('<i/>', {'class': 'fa fa-close'}))
         $deselect.on('click', (e) =>
           e.preventDefault()
           window.selectDeck(readDeckFrom$Item($item).details.nrdb_uuid))
         $buttons.append($deselect)
-      if $('#player_' + side + '_deck_before').val().length > 0
+      if !decks.before.unset && decks.change_type != 'none'
         $undo = $('<a/>', {'title': 'Undo', 'href': '#'})
         $undo.append($('<i/>', {'class': 'fa fa-undo'}))
         $undo.on('click', (e) =>
