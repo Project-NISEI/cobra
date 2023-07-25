@@ -20,11 +20,6 @@ module Nrdb
           .sort_by { |d| -(d[:date_update] || '').to_datetime.to_i }
     end
 
-    def import_deck(deck)
-      resp = connection.post('/api/2.0/private/decks', deck_to_nrdb(deck).to_json)
-      raise 'NRDB API connection failed' unless resp.success?
-    end
-
     def cards
       resp = public_connection.get('/api/2.0/public/cards')
       raise 'NRDB API connection failed' unless resp.success?
@@ -48,13 +43,6 @@ module Nrdb
       @connection ||= Faraday.new(url: "https://netrunnerdb.com") do |conn|
         conn.adapter :net_http
       end
-    end
-
-    def deck_to_nrdb(deck)
-      {
-        name: deck.name,
-        cards: deck.cards.index_by(&:nrdb_printing_id).transform_values(&:quantity)
-      }
     end
   end
 end

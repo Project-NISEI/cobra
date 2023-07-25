@@ -32,10 +32,6 @@
             = button_tag type: :submit, class: 'btn btn-primary ml-2 dontprint' do
               => fa_icon 'check'
               | Submit
-            - if @any_decks_to_import
-              = link_to import_decks_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info mr-2' do
-                => fa_icon 'upload'
-                | Import decks to NRDB
             - if !@edit_decks
               = link_to registration_tournament_player_path(@tournament, @player, {edit_decks: true}), class: 'btn btn-link text-info mr-2' do
                 => fa_icon 'edit'
