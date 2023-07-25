@@ -22,6 +22,7 @@ ruby:
       .card
         ul.list-group.list-group-flush#nrdb_corp_selected style='border-bottom: 0'
           li.list-group-item.selected-deck
+            .selected-deck-buttons
             .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_shadow_corp_nrdb_code}.jpg)"
             p.mb-1 No corp selected
         ul.list-group.list-group-flush.overflow-auto#nrdb_corp_decks style='height: 24em'
@@ -31,6 +32,7 @@ ruby:
       .card
         ul.list-group.list-group-flush#nrdb_runner_selected style='border-bottom: 0'
           li.list-group-item.selected-deck
+            .selected-deck-buttons
             .selected-deck-identity style="background-image:url(https://static.nrdbassets.com/v1/small/#{@the_masque_runner_nrdb_code}.jpg)"
             p.mb-1 No runner selected
         ul.list-group.list-group-flush.overflow-auto#nrdb_runner_decks style='height: 24em'

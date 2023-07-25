@@ -113,15 +113,21 @@ $(document).on 'turbolinks:load', ->
         $clone.find('.deck-list-identity').removeClass('deck-list-identity').addClass('selected-deck-identity')
         $clone.find('small').remove()
         $clone.prop('onclick', null).off('click')
-        $deselect = $('<a/>', {'class': 'float-right', 'title': 'Deselect', 'href': '#'})
+        $clone.prepend($('<div/>', {'class': 'selected-deck-buttons'}))
+        addSelectedDeckButtons($clone, true)
+      else
+        addSelectedDeckButtons($(ifNotPresent), false)
+
+    addSelectedDeckButtons = ($item, selected) =>
+      $buttons = $item.find('.selected-deck-buttons')
+      if selected
+        $deselect = $('<a/>', {'title': 'Deselect', 'href': '#'})
         $deselect.append($('<i/>', {'class': 'fa fa-close'}))
         $deselect.on('click', (e) =>
           e.preventDefault()
           window.selectDeck(readDeckFrom$Item($item).details.nrdb_uuid))
-        $clone.prepend($deselect)
-        $clone
-      else
-        $(ifNotPresent)
+        $buttons.append($deselect)
+      $item
 
     setDeckInputs = (deck, active) =>
       side = deck.details.side_id
