@@ -104,6 +104,12 @@ $(document).on 'turbolinks:load', ->
     setDeckSelected = (deck, active) =>
       side = deck.details.side_id
       if active
+        setSideDeckSelected(side, deck)
+      else
+        setSideDeckSelected(side, null)
+
+    setSideDeckSelected = (side, deck) =>
+      if deck
         $('#player_' + side + '_deck').val(JSON.stringify(deck))
         $('#player_' + side + '_identity').val(deck.details.identity_title)
       else
@@ -141,20 +147,23 @@ $(document).on 'turbolinks:load', ->
         addSelectedDeckButtons($clone, side, decks)
       else
         if side == 'corp'
-          unselectedPlaceholder = corpPlaceholder
+          $placeholder = $(corpPlaceholder)
         else
-          unselectedPlaceholder = runnerPlaceholder
-        addSelectedDeckButtons($(unselectedPlaceholder), side, decks)
+          $placeholder = $(runnerPlaceholder)
+        $placeholder.find('p').text(unselectedPlaceholderText(side, decks))
+        addSelectedDeckButtons($placeholder, side, decks)
+
+    unselectedPlaceholderText = (side, decks) =>
+      if !decks.before.unset
+        if decks.change_type == 'none'
+          'No ' + side + ' selected, leaving deck unchanged'
+        else
+          'No ' + side + ' selected, will submit no deck'
+      else
+        'No ' + side + ' selected'
 
     addSelectedDeckButtons = ($item, side, decks) =>
       $buttons = $item.find('.selected-deck-buttons').empty()
-      if !decks.after.unset
-        $deselect = $('<a/>', {'title': 'Deselect', 'href': '#'})
-        $deselect.append($('<i/>', {'class': 'fa fa-close'}))
-        $deselect.on('click', (e) =>
-          e.preventDefault()
-          window.selectDeck(readDeckFrom$Item($item).details.nrdb_uuid))
-        $buttons.append($deselect)
       if !decks.before.unset && decks.change_type != 'none'
         $undo = $('<a/>', {'title': 'Undo', 'href': '#'})
         $undo.append($('<i/>', {'class': 'fa fa-undo'}))
@@ -162,6 +171,13 @@ $(document).on 'turbolinks:load', ->
           e.preventDefault()
           undoDeckSelection(side))
         $buttons.append($undo)
+      if !decks.after.unset
+        $deselect = $('<a/>', {'title': 'Deselect', 'href': '#'})
+        $deselect.append($('<i/>', {'class': 'fa fa-close'}))
+        $deselect.on('click', (e) =>
+          e.preventDefault()
+          setSideDeckSelected(side, null))
+        $buttons.append($deselect)
       $item
 
     renderDeckSelection(readDecksFromInputs())
