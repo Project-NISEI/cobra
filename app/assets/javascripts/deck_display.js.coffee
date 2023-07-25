@@ -1,47 +1,13 @@
 $(document).on 'turbolinks:load', ->
   if document.getElementById('display_decks')? && document.getElementById('player_corp_deck')?
-    window.displayDecksFromInputs = () =>
-      renderDecks(readDecksFromInputs())
 
-    readDecksFromInputs = () =>
-      normaliseCardTables({
-        corp: readSideDecks(
-          'Corp Deck',
-          $('#player_corp_deck_before'),
-          $('#player_corp_deck')),
-        runner: readSideDecks(
-          'Runner Deck',
-          $('#player_runner_deck_before'),
-          $('#player_runner_deck')),
-        view: $('#player_decks_view').val()
-      })
-
-    readSideDecks = (description, $beforeInput, $afterInput) =>
-      after = readDeck($afterInput)
-      if $beforeInput.length < 1
-        before = after
-      else
-        before = readDeck($beforeInput)
-
-      addDiff({
-        description: description,
-        before: before,
-        after: after
-      })
-
-    addDiff = (decks) =>
-      decks.diff = diffDecks(decks.before, decks.after)
-
-      if decks.before.unset
-        decks.change_type = 'choose_deck'
-      else if decks.before.details.nrdb_uuid != decks.after.details.nrdb_uuid
-        decks.change_type = 'change_deck'
-      else if decks.diff
-        decks.change_type = 'change_cards'
-      else
-        decks.change_type = 'none'
-
-      decks
+    window.renderDecksDisplay = (decks) =>
+      normaliseCardTables(decks)
+      $('#display_decks').empty().append(
+        renderDeck(decks.corp, decks.view),
+        renderDeck(decks.runner, decks.view))
+      any_changes = decks.corp.change_type != 'none' || decks.runner.change_type != 'none'
+      $('#deck_changes_not_submitted_warning').toggleClass('d-none', !any_changes)
 
     normaliseCardTables = (decks) =>
       decks.corp.pad_cards = 0
@@ -53,20 +19,6 @@ $(document).on 'turbolinks:load', ->
         decks.corp.pad_cards = max_cards - decks.corp.after.cards.length
         decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
       decks
-
-    readDeck = ($input) =>
-      deckStr = $input.val()
-      if deckStr.length > 0
-        JSON.parse(deckStr)
-      else
-        {details: {}, cards: [], unset: true}
-
-    renderDecks = (decks) =>
-      $('#display_decks').empty().append(
-        renderDeck(decks.corp, decks.view),
-        renderDeck(decks.runner, decks.view))
-      any_changes = decks.corp.change_type != 'none' || decks.runner.change_type != 'none'
-      $('#deck_changes_not_submitted_warning').toggleClass('d-none', !any_changes)
 
     renderDeck = (decks, view) =>
       $container = $('<div/>', {class: 'col-md-6'})
@@ -178,7 +130,6 @@ $(document).on 'turbolinks:load', ->
       cards = deck.cards
       if not cards || cards.length < 1
         return []
-      sortCards(cards)
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -225,55 +176,13 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {class: 'text-center', text: 'Totals'}),
             $('<td/>', {class: 'text-center deck-side-column', text: influence}))))
 
-    diffDecks = (before, after) =>
-      if before.unset || after.unset || before.details.nrdb_uuid != after.details.nrdb_uuid
-        return null
-      added = []
-      removed = []
-      countsBefore = cardCountsByTitle(before)
-      countsAfter = cardCountsByTitle(after)
-      for title, countBefore of countsBefore
-        countAfter = countsAfter[title]
-        if !countAfter
-          removed.push({title: title, quantity: countBefore})
-        else if countAfter < countBefore
-          removed.push({title: title, quantity: countBefore - countAfter})
-      for title, countAfter of countsAfter
-        countBefore = countsBefore[title]
-        if !countBefore
-          added.push({title: title, quantity: countAfter})
-        else if countsAfter > countBefore
-          added.push({title: title, quantity: countAfter - countBefore})
-      sortCards(added)
-      sortCards(removed)
-      if added.length + removed.length == 0
-        return null
-      else
-        return {added: added, removed: removed}
-
-    cardCountsByTitle = (deck) =>
-      countByTitle = {}
-      countByTitle[deck.details.identity_title] = 1
-      for card from deck.cards
-        countByTitle[card.title] = card.quantity
-      return countByTitle
-
     changeStr = (change) =>
       if change
         return change.quantity + ' ' + change.title
       else
         return ''
 
-    sortCards = (cards) =>
-      cards.sort((a, b) =>
-        if a.title > b.title
-          1
-        else if a.title < b.title
-          -1
-        else
-          0)
-
     try
-      displayDecksFromInputs()
+      renderDecksDisplay(readDecksFromInputs())
     catch e
       console.log(e)

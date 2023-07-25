@@ -52,8 +52,7 @@ $(document).on 'turbolinks:load', ->
         }))
         $item.append($('<small/>', text: deck.details.identity_title))
         $('#nrdb_' + side + '_decks').append($item)
-      preselectDeck('corp')
-      preselectDeck('runner')
+      renderDeckSelection(readDecksFromInputs())
       for corp from $('#nrdb_corp_decks li.active').get()
         corp.scrollIntoView(false)
       for runner from $('#nrdb_runner_decks li.active').get()
@@ -96,13 +95,36 @@ $(document).on 'turbolinks:load', ->
       if $item.length == 0
         return
       deck = readDeckFrom$Item($item)
+      setDeckSelected(deck, !$item.hasClass('active'))
+
+    undoDeckSelection = (side) =>
+      deck = JSON.parse($('#player_' + side + '_deck_before').val())
+      setDeckSelected(deck, true)
+
+    setDeckSelected = (deck, active) =>
       side = deck.details.side_id
-      activeBefore = $item.hasClass('active')
+      if active
+        $('#player_' + side + '_deck').val(JSON.stringify(deck))
+        $('#player_' + side + '_identity').val(deck.details.identity_title)
+      else
+        $('#player_' + side + '_deck').val('')
+        $('#player_' + side + '_identity').val('')
+      decks = readDecksFromInputs()
+      renderDeckSelection(decks)
+      renderDecksDisplay(decks)
+
+    renderDeckSelection = (decks) =>
+      renderSideDeckSelection('corp', decks.corp)
+      renderSideDeckSelection('runner', decks.runner)
+
+    renderSideDeckSelection = (side, decks) =>
       $('#nrdb_' + side + '_decks li').removeClass('active')
-      $item.toggleClass('active', !activeBefore)
-      setSelectedView('corp')
-      setSelectedView('runner')
-      setDeckInputs(deck, $item.hasClass('active'))
+      deck = decks.after
+      if !deck.unset
+        $item = $('#nrdb_deck_' + deck.details.nrdb_uuid)
+        if $item.length > 0
+          $item.toggleClass('active', true)
+      setSelectedView(side)
 
     setSelectedView = (side) =>
       if side == 'corp'
@@ -138,32 +160,9 @@ $(document).on 'turbolinks:load', ->
         $undo.append($('<i/>', {'class': 'fa fa-undo'}))
         $undo.on('click', (e) =>
           e.preventDefault()
-          revertDeckSelection(side))
+          undoDeckSelection(side))
         $buttons.append($undo)
       $item
 
-    revertDeckSelection = (side) =>
-      deck = JSON.parse($('#player_' + side + '_deck_before').val())
-      $('#nrdb_' + side + '_decks li').removeClass('active')
-      setSelectedView(side)
-      setDeckInputs(deck, true)
-      window.selectDeck(deck.details.nrdb_uuid)
-
-    setDeckInputs = (deck, active) =>
-      side = deck.details.side_id
-      if active
-        $('#player_' + side + '_deck').val(JSON.stringify(deck))
-        $('#player_' + side + '_identity').val(deck.details.identity_title)
-      else
-        $('#player_' + side + '_deck').val('')
-        $('#player_' + side + '_identity').val('')
-      displayDecksFromInputs()
-
-    preselectDeck = (side) =>
-      deckStr = $('#player_' + side + '_deck').val()
-      if deckStr.length > 0
-        window.selectDeck(JSON.parse(deckStr).details.nrdb_uuid)
-
-    setSelectedView('corp')
-    setSelectedView('runner')
+    renderDeckSelection(readDecksFromInputs())
     readDecks()
