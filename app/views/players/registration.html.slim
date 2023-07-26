@@ -1,3 +1,6 @@
+ruby:
+  @corp_deck_json = @player&.corp_deck&.as_view(current_user)&.to_json
+  @runner_deck_json = @player&.runner_deck&.as_view(current_user)&.to_json
 .container
   .row.mb-3
     .col
@@ -14,14 +17,11 @@
                 span.d-none Back
         .card-body
           = simple_form_for @player, url: tournament_player_path(@tournament, @player), html: {class: 'form-inline'} do |f|
-            = f.input_field :decks_view, hidden: true, disabled: true, value: 'organiser'
             = f.input_field :organiser_view, hidden: true, readonly: true, value: true
-            = f.input_field :corp_deck_mine, hidden: true, disabled: true, value: @player&.corp_deck&.user == current_user
-            = f.input_field :runner_deck_mine, hidden: true, disabled: true, value: @player&.runner_deck&.user == current_user
-            = f.input_field :corp_deck_before, hidden: true, disabled: true, value: @player&.corp_deck&.as_view&.to_json
-            = f.input_field :runner_deck_before, hidden: true, disabled: true, value: @player&.runner_deck&.as_view&.to_json
-            = f.input_field :corp_deck, hidden: true, value: @player&.corp_deck&.as_view&.to_json
-            = f.input_field :runner_deck, hidden: true, value: @player&.runner_deck&.as_view&.to_json
+            = f.input_field :corp_deck_before, hidden: true, disabled: true, value: @corp_deck_json
+            = f.input_field :runner_deck_before, hidden: true, disabled: true, value: @runner_deck_json
+            = f.input_field :corp_deck, hidden: true, value: @corp_deck_json
+            = f.input_field :runner_deck, hidden: true, value: @runner_deck_json
             = f.input_field :corp_identity, hidden: true
             = f.input_field :runner_identity, hidden: true
             .form-group

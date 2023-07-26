@@ -63,7 +63,7 @@ $(document).on 'turbolinks:load', ->
       return readNrdbDeck(nrdbDeck)
 
     readNrdbDeck = (nrdbDeck) =>
-      details = {name: nrdbDeck.name, nrdb_uuid: nrdbDeck.uuid}
+      details = {name: nrdbDeck.name, nrdb_uuid: nrdbDeck.uuid, mine: true}
       for code, count of nrdbDeck.cards
         attributes = nrdbPrintingsById.get(code).attributes
         if attributes.card_type_id.endsWith('identity')

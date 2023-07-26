@@ -9,8 +9,7 @@ $(document).on 'turbolinks:load', ->
         runner: readSideDecks(
           'Runner Deck',
           $('#player_runner_deck_before'),
-          $('#player_runner_deck')),
-        view: $('#player_decks_view').val()
+          $('#player_runner_deck'))
       }
 
     readSideDecks = (description, $beforeInput, $afterInput) =>

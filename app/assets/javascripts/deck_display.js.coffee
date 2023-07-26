@@ -4,8 +4,8 @@ $(document).on 'turbolinks:load', ->
     window.renderDecksDisplay = (decks) =>
       normaliseCardTables(decks)
       $('#display_decks').empty().append(
-        renderDeck(decks.corp, decks.view),
-        renderDeck(decks.runner, decks.view))
+        renderDeck(decks.corp),
+        renderDeck(decks.runner))
       any_changes = decks.corp.change_type != 'none' || decks.runner.change_type != 'none'
       $('#deck_changes_not_submitted_warning').toggleClass('d-none', !any_changes)
 
@@ -20,19 +20,19 @@ $(document).on 'turbolinks:load', ->
         decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
       decks
 
-    renderDeck = (decks, view) =>
+    renderDeck = (decks) =>
       $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
         return $container
       deck = decks.after
       $container.append(
-        deckSummaryTable(decks, view),
+        deckSummaryTable(decks),
         deckDiffTable(decks.diff),
         identityTable(deck),
         cardsTable(decks),
         totalsTable(deck))
 
-    deckSummaryTable = (decks, view) =>
+    deckSummaryTable = (decks) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -40,20 +40,20 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after, view))
+          .append(deckNameRow(decks.after))
           .append(deckChangesRow(decks)))
 
-    deckNameRow = (deck, view) =>
+    deckNameRow = (deck) =>
       if deck.details.name
         $('<tr/>').append($('<td/>')
-          .append(deckNameButtons(deck, view))
+          .append(deckNameButtons(deck))
           .append(document.createTextNode(deck.details.name)))
       else
         $('<tr/>').append($('<td/>')
           .append('None selected'))
 
-    deckNameButtons = (deck, view) =>
-      if view == 'player'
+    deckNameButtons = (deck) =>
+      if deck.details.mine
         $('<a/>', {
           class: 'float-right dontprint',
           title: 'Edit Deck',
