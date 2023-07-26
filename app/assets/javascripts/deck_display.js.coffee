@@ -63,7 +63,22 @@ $(document).on 'turbolinks:load', ->
           $('<i/>', {class: 'fa fa-external-link'})
         )
       else
-        []
+        $('<a/>', {
+          class: 'float-right dontprint',
+          title: 'Copy deck to clipboard',
+          href: '#'
+        }).append(
+          $('<i/>', {class: 'fa fa-clipboard'})
+        ).on('click', (e) =>
+          e.preventDefault()
+          copyDeckToClipboard(deck))
+
+    copyDeckToClipboard = (deck) =>
+      msg = ""
+      for card from deck.cards
+        msg += card.quantity + " " + card.title + "\n"
+      navigator.clipboard.writeText(msg)
+      alert("Copied to clipboard")
 
     deckChangesRow = (decks) =>
       switch decks.change_type
