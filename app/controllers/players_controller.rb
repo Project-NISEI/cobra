@@ -140,7 +140,7 @@ class PlayersController < ApplicationController
       begin
         @decks = Nrdb::Connection.new(current_user).decks
       rescue
-        redirect_to login_path(:return_to => request.path)
+        redirect_to login_path(:return_to => request.fullpath)
       end
     end
   end
