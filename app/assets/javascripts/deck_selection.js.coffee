@@ -52,11 +52,26 @@ $(document).on 'turbolinks:load', ->
         }))
         $item.append($('<small/>', text: deck.details.identity_title))
         $('#nrdb_' + side + '_decks').append($item)
-      renderDeckSelection(readDecksFromInputs())
+      updateDecksFromNrdb(readDecksFromInputs())
+      decks = readDecksFromInputs()
+      renderDeckSelection(decks)
+      renderDecksDisplay(decks)
       for corp from $('#nrdb_corp_decks li.active').get()
         corp.scrollIntoView(false)
       for runner from $('#nrdb_runner_decks li.active').get()
         runner.scrollIntoView(false)
+
+    updateDecksFromNrdb = (decks) =>
+      updateDeckFromNrdb('corp', decks.corp.after)
+      updateDeckFromNrdb('runner', decks.runner.after)
+
+    updateDeckFromNrdb = (side, deck) =>
+      $item = $('#nrdb_deck_' + deck.details.nrdb_uuid)
+      if $item.length == 0
+        return
+      updated = readDeckFrom$Item($item)
+      $('#player_' + side + '_deck').val(JSON.stringify(updated))
+      $('#player_' + side + '_identity').val(updated.details.identity_title)
 
     readDeckFrom$Item = ($item) =>
       nrdbDeck = JSON.parse($item.attr('data-deck'))
