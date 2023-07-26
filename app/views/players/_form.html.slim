@@ -21,7 +21,7 @@
 			= f.input_field :name,
 				placeholder: 'Enter player name',
 				class: 'form-control'
-	- if !@tournament.nrdb_deck_registration? or not defined?(new_self_registration)
+	- if !@tournament.nrdb_deck_registration? or not defined?(new_registration)
 		.form-group
 			label.d-block for="player_corp_identity" Corp ID
 			= f.input_field :corp_identity,

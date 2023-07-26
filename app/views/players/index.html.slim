@@ -7,7 +7,7 @@
   .alert.alert-secondary.mt-4
     h5.mb-3 Register New Player
     = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline d-block' } do |f|
-      = render 'form', f: f, organiser_view: true
+      = render 'form', f: f, organiser_view: true, new_registration: true
       .mt-2.text-right
         = button_tag type: :submit, class: 'btn btn-success' do
           => fa_icon 'plus'
