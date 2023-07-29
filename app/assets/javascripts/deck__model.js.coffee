@@ -28,7 +28,7 @@ $(document).on 'turbolinks:load', ->
     addDiff = (decks) =>
       decks.diff = diffDecks(decks.before, decks.after)
 
-      if decks.before.unset
+      if decks.before.unset && !decks.after.unset
         decks.change_type = 'choose_deck'
       else if decks.before.details.nrdb_uuid != decks.after.details.nrdb_uuid
         decks.change_type = 'change_deck'
