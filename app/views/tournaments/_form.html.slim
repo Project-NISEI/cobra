@@ -9,6 +9,8 @@
 - if Flipper.enabled? :nrdb_deck_registration
   .form-group
     = f.input :nrdb_deck_registration, as: :boolean, inline_label: 'Deck registration: Upload decks from NetrunnerDB'
+  .form-group
+    = f.input :open_list_cut, as: :boolean, inline_label: 'Open lists in cut: Display uploaded decks to opponent in cut'
 .form-group
   = f.input :private, as: :boolean, inline_label: 'Private: Only I will be able to view this tournament'
 .form-group
