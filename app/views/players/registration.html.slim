@@ -33,11 +33,11 @@ ruby:
               => fa_icon 'check'
               | Submit
             - if !@edit_decks
-              = link_to registration_tournament_player_path(@tournament, @player, {edit_decks: true}), class: 'btn btn-link text-info mr-2' do
+              = link_to registration_tournament_player_path(@tournament, @player, {edit_decks: true}), class: 'btn btn-link text-info mr-2 dontprint' do
                 => fa_icon 'edit'
                 | Edit decks
             - else
-              = link_to registration_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info mr-2' do
+              = link_to registration_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info mr-2 dontprint' do
                 => fa_icon 'undo'
                 | Cancel deck edits
             span.ml-2.badge.badge-warning.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
