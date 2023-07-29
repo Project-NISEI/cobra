@@ -55,6 +55,9 @@ class PairingsController < ApplicationController
 
   def view_opponent_deck
     authorize @tournament, :show?
+    unless @tournament.open_list_cut?
+      return
+    end
     @opponent = pairing.user_opponent(current_user)
     if @opponent
       @opponent_side = pairing.side_for @opponent
