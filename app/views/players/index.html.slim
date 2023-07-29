@@ -21,7 +21,8 @@
       input#download_decks_tournament type='hidden' value='#{@tournament.name}'
       input#download_decks_path type='hidden' value='#{download_decks_tournament_players_path(@tournament)}'
       a.btn.btn-link.text-info#download_decks_button href='#'
-        => fa_icon 'download'
+        .spinner-border.spinner-border-sm.d-none#download_decks_spinner style='width: 15px'
+        => fa_icon 'download', id: 'download_decks_icon'
         | Download decks spreadsheet
       - if @tournament.any_player_decks_unlocked?
         => link_to lock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do

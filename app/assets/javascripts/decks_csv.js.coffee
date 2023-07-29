@@ -52,11 +52,16 @@ $(document).on 'turbolinks:load', ->
     quoteCsvValue = (string) =>
       '"' + string.replace('"', '""') + '"'
 
+    downloadDecksSpinner = (spin) =>
+      $('#download_decks_spinner').toggleClass('d-none', !spin)
+      $('#download_decks_icon').toggleClass('d-none', spin)
+
     $('#download_decks_button').on('click', (e) =>
         e.preventDefault()
-        $.get({
-          url: $('#download_decks_path').val(),
-          success: (response) =>
+        downloadDecksSpinner(true)
+        $.get($('#download_decks_path').val())
+          .done((response) =>
             downloadCsv('Decks for ' + $('#download_decks_tournament').val() + '.csv',
-              renderDecksCsv(response))
-        }))
+              renderDecksCsv(response)))
+          .always(() => downloadDecksSpinner(false))
+    )
