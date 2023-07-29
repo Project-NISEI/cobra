@@ -63,15 +63,23 @@ $(document).on 'turbolinks:load', ->
           $('<i/>', {class: 'fa fa-external-link'})
         )
       else
-        $('<a/>', {
-          class: 'float-right dontprint',
-          title: 'Copy deck to clipboard',
-          href: '#'
-        }).append(
-          $('<i/>', {class: 'fa fa-clipboard'})
-        ).on('click', (e) =>
-          e.preventDefault()
-          copyDeckToClipboard(deck))
+        $('<div/>', {class: 'dropdown float-right dontprint'}).append(
+          $('<a/>', {
+            title: 'Export deck',
+            href: '#',
+            'data-toggle': 'dropdown',
+            'aria-expanded': false
+          }).append(
+            $('<i/>', {class: 'fa fa-upload'})
+          ),
+          $('<div/>', {class: 'dropdown-menu'}).append(
+            $('<a/>', {class: 'dropdown-item', href: '#'})
+              .append('Copy to clipboard in NetrunnerDB format')
+              .on('click', (e) =>
+                e.preventDefault()
+                copyDeckToClipboard(deck))
+          )
+        )
 
     copyDeckToClipboard = (deck) =>
       msg = ""
