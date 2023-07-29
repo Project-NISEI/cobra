@@ -146,6 +146,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   end
 
   def select_deck(side, deck)
+    deck.player = Player.last
     first("#player_#{side}_deck", visible: false).set(deck.as_view(player).to_json)
     first("#player_#{side}_identity", visible: false).set(deck.identity_title)
   end
