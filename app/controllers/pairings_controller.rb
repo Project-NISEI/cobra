@@ -53,6 +53,19 @@ class PairingsController < ApplicationController
     end
   end
 
+  def view_opponent_deck
+    authorize @tournament, :show?
+    @opponent = pairing.user_opponent(current_user)
+    if @opponent
+      @opponent_side = pairing.side_for @opponent
+      if @opponent_side == :corp
+        @deck = @opponent.corp_deck
+      else
+        @deck = @opponent.runner_deck
+      end
+    end
+  end
+
   private
 
   def round

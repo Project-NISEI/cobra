@@ -82,6 +82,16 @@ class Pairing < ApplicationRecord
     player1 == player ? player1_side : player2_side
   end
 
+  def user_opponent(user)
+    if player1.user_id == user.id
+      player2
+    elsif player2.user_id == user.id
+      player1
+    else
+      nil
+    end
+  end
+
   private
 
   def normalise_scores_before_save

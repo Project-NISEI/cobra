@@ -5,6 +5,10 @@
     .col-sm.left_player_name
       = @players[pairing.player1_id].name
       =< render 'player_side', pairing: pairing, player: @players[pairing.player1_id], single_sided: single_sided
+      - if @players[pairing.player2_id].user_id == current_user.id
+        =< link_to view_opponent_deck_tournament_round_pairing_path(@tournament, round, pairing), class: 'btn btn-sm btn-info' do
+          => fa_icon 'eye'
+          | View deck
       - if @players[pairing.player1_id].id
         .ids
           = render @players[pairing.player1_id].corp_identity_object
@@ -47,6 +51,10 @@
     .col-sm.right_player_name
       = @players[pairing.player2_id].name
       =< render 'player_side', pairing: pairing, player: @players[pairing.player2_id], single_sided: single_sided
+      - if @players[pairing.player1_id].user_id == current_user.id
+        =< link_to view_opponent_deck_tournament_round_pairing_path(@tournament, round, pairing), class: 'btn btn-sm btn-info' do
+          => fa_icon 'eye'
+          | View deck
       - if @players[pairing.player2_id].id
         .ids
           = render @players[pairing.player2_id].corp_identity_object

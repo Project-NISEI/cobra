@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       resources :pairings, only: [:index, :create, :destroy] do
         post :report, on: :member
         get :match_slips, on: :collection
+        get :view_opponent_deck, on: :member
       end
       patch :repair, on: :member
       patch :complete, on: :member
