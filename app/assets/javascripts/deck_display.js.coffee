@@ -93,16 +93,6 @@ $(document).on 'turbolinks:load', ->
       navigator.clipboard.writeText(msg)
       alert("Copied to clipboard")
 
-    downloadDeckCsv = (deck) =>
-      csv = 'Player,' + quoteCsvValue(deck.details.player_name) + '\n' +
-        'Deck,' + quoteCsvValue(deck.details.name) + '\n' +
-        'Min,Identity,Max\n' +
-        deck.details.min_deck_size + ',' + quoteCsvValue(deck.details.identity_title) + ',' + deck.details.max_influence + '\n' +
-        'Qty,Card Name,Inf\n'
-      for card from deck.cards
-        csv += card.quantity + ',' + quoteCsvValue(card.title) + ',' + card.influence + "\n"
-      downloadCsv(deck.details.player_name + ' - ' + deck.details.name + '.csv', csv)
-
     deckChangesRow = (decks) =>
       switch decks.change_type
         when 'choose_deck' then $('<tr/>', {class: 'alert-warning'}).append(
