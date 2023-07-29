@@ -26,7 +26,7 @@ $(document).on 'turbolinks:load', ->
         csv += forEachDeck(decks, (deck) =>
           if i < deck.cards.length
             card = deck.cards[i]
-            card.quantity + ',' + quoteCsvValue(card.title) + ',' + card.influence
+            card.quantity + ',' + quoteCsvValue(card.title) + ',' + renderIfPositive(card.influence)
           else
             ',,'
         ) + '\n'
@@ -54,6 +54,12 @@ $(document).on 'turbolinks:load', ->
 
     quoteCsvValue = (string) =>
       '"' + string.replace('"', '""') + '"'
+
+    renderIfPositive = (number) =>
+      if number > 0
+        number
+      else
+        ''
 
     downloadDecksSpinner = (spin) =>
       $('#download_decks_spinner').toggleClass('d-none', !spin)
