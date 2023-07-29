@@ -77,7 +77,12 @@ $(document).on 'turbolinks:load', ->
               .append('Copy to clipboard in NetrunnerDB format')
               .on('click', (e) =>
                 e.preventDefault()
-                copyDeckToClipboard(deck))
+                copyDeckToClipboard(deck)),
+            $('<a/>', {class: 'dropdown-item', href: '#'})
+              .append('Download as a CSV spreadsheet')
+              .on('click', (e) =>
+                e.preventDefault()
+                downloadDeckCsv(deck))
           )
         )
 
@@ -87,6 +92,16 @@ $(document).on 'turbolinks:load', ->
         msg += card.quantity + " " + card.title + "\n"
       navigator.clipboard.writeText(msg)
       alert("Copied to clipboard")
+
+    downloadDeckCsv = (deck) =>
+      csv = 'Player,' + quoteCsvValue(deck.details.player_name) + '\n' +
+        'Deck,' + quoteCsvValue(deck.details.name) + '\n' +
+        'Min,Identity,Max\n' +
+        deck.details.min_deck_size + ',' + quoteCsvValue(deck.details.identity_title) + ',' + deck.details.max_influence + '\n' +
+        'Qty,Card Name,Inf\n'
+      for card from deck.cards
+        csv += card.quantity + ',' + quoteCsvValue(card.title) + ',' + card.influence + "\n"
+      downloadCsv(deck.details.player_name + ' - ' + deck.details.name + '.csv', csv)
 
     deckChangesRow = (decks) =>
       switch decks.change_type

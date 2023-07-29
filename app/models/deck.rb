@@ -5,6 +5,6 @@ class Deck < ApplicationRecord
   alias_attribute :cards, :deck_cards
 
   def as_view(user)
-    { details: self.attributes.merge({ mine: self.user == user }), cards: cards }
+    { details: self.attributes.merge({ mine: self.user == user, player_name: self.player.name }), cards: cards }
   end
 end
