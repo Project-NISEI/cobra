@@ -1,8 +1,12 @@
 input type='hidden' id='download_player_decks' value='#{@decks_json}'
 input type='hidden' id='tournament_name' value='#{@tournament.name}'
 
-.col
-  p
-    | Decks downloading.
-    =< link_to tournament_players_path(@tournament) do
-      | Return to players list.
+.container-fluid
+  .row.vh-100.justify-content-center.text-center
+    .col.col-auto
+      .card.mt-5
+        .card-header
+          | Decks downloaded
+        .card-body
+          a.btn.btn-primary onclick='window.close()'
+            | OK
