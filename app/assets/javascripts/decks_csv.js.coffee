@@ -31,7 +31,7 @@ $(document).on 'turbolinks:load', ->
             ',,'
         ) + '\n'
       csv + '\n' + forEachDeck(decks, (deck) =>
-        deck.cards.length + ',Totals,' + deck.cards.reduce(getTotalInfluence, 0))
+        deck.cards.reduce(addCardQuantity, 0) + ',Totals,' + deck.cards.reduce(addCardInfluence, 0))
 
     forEachDeck = (decks, render) =>
       decks.map(render).join(',,')
@@ -39,7 +39,10 @@ $(document).on 'turbolinks:load', ->
     getMaxCards = (max, deck) =>
       Math.max(max, deck.cards.length)
 
-    getTotalInfluence = (total, card) =>
+    addCardQuantity = (total, card) =>
+      total + card.quantity
+
+    addCardInfluence = (total, card) =>
       total + card.influence
 
     downloadCsv = (filename, csv) =>
