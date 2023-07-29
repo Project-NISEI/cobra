@@ -1,20 +1,57 @@
 $(document).on 'turbolinks:load', ->
-  window.downloadDeckCsv = (deck) =>
-    csv = 'Player,' + quoteCsvValue(deck.details.player_name) + '\n' +
-      'Deck,' + quoteCsvValue(deck.details.name) + '\n' +
-      'Min,Identity,Max\n' +
-      deck.details.min_deck_size + ',' + quoteCsvValue(deck.details.identity_title) + ',' + deck.details.max_influence + '\n' +
-      'Qty,Card Name,Inf\n'
-    for card from deck.cards
-      csv += card.quantity + ',' + quoteCsvValue(card.title) + ',' + card.influence + "\n"
-    downloadCsv(deck.details.player_name + ' - ' + deck.details.name + '.csv', csv)
+  if document.getElementById('display_decks')? || document.getElementById('download_player_decks')?
+    window.downloadDeckCsv = (deck) =>
+      downloadCsv(deck.details.player_name + ' - ' + deck.details.name + '.csv',
+        renderDecksCsv([deck]))
 
-  downloadCsv = (filename, csv) =>
-    csvData = new Blob([csv], {type: "text/csv"})
-    a = document.createElement('a')
-    a.href = URL.createObjectURL(csvData)
-    a.download = filename
-    a.click()
+    renderDecksCsv = (decks) =>
+      deck_separator = ',,'
+      '' +
+        forEachDeck(decks, (deck) => 'Player,' + deck.details.player_name + ',') + '\n' +
+        forEachDeck(decks, (deck) => 'Deck,' + deck.details.name + ',') + '\n' +
+        '\n' +
+        forEachDeck(decks, (deck) => 'Min,Identity,Max') + '\n' +
+        forEachDeck(decks, (deck) =>
+          deck.details.min_deck_size + ',' +
+          quoteCsvValue(deck.details.identity_title) + ',' +
+          deck.details.max_influence
+        ) + '\n' +
+        '\n' +
+        renderCardsCsv(decks)
 
-  quoteCsvValue = (string) =>
-    '"' + string.replace('"', '""') + '"'
+    renderCardsCsv = (decks) =>
+      maxCards = decks.reduce(getMaxCards, 0)
+      csv = forEachDeck(decks, (deck) => 'Qty,Card Name,Inf') + '\n'
+      for i in [0...maxCards]
+        csv += forEachDeck(decks, (deck) =>
+          if i < deck.cards.length
+            card = deck.cards[i]
+            card.quantity + ',' + quoteCsvValue(card.title) + ',' + card.influence
+          else
+            ',,'
+        ) + '\n'
+      csv + '\n' + forEachDeck(decks, (deck) =>
+        deck.cards.length + ',Totals,' + deck.cards.reduce(getTotalInfluence, 0))
+
+    forEachDeck = (decks, render) =>
+      decks.map(render).join(',,')
+
+    getMaxCards = (max, deck) =>
+      Math.max(max, deck.cards.length)
+
+    getTotalInfluence = (total, card) =>
+      total + card.influence
+
+    downloadCsv = (filename, csv) =>
+      csvData = new Blob([csv], {type: "text/csv"})
+      a = document.createElement('a')
+      a.href = URL.createObjectURL(csvData)
+      a.download = filename
+      a.click()
+
+    quoteCsvValue = (string) =>
+      '"' + string.replace('"', '""') + '"'
+
+    if document.getElementById('download_player_decks')?
+      downloadCsv('Decks for ' + $('#tournament_name').val() + '.csv',
+        renderDecksCsv(JSON.parse($('#download_player_decks').val())))

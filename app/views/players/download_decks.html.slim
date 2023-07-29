@@ -1,0 +1,8 @@
+input type='hidden' id='download_player_decks' value='#{@decks_json}'
+input type='hidden' id='tournament_name' value='#{@tournament.name}'
+
+.col
+  p
+    | Decks downloading.
+    =< link_to tournament_players_path(@tournament) do
+      | Return to players list.

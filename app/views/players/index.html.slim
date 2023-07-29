@@ -18,6 +18,9 @@
     - if @tournament.nrdb_deck_registration?
       span.badge.badge-pill.badge-light.text-muted.ml-2<> style='font-size:1rem; vertical-align: middle'
         | Deck status: #{@tournament.decks_status_description}
+      => link_to download_decks_tournament_players_path(@tournament), class: 'btn btn-link text-info' do
+        => fa_icon 'download'
+        | Download decks spreadsheet
       - if @tournament.any_player_decks_unlocked?
         => link_to lock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'lock'
