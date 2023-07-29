@@ -1,5 +1,5 @@
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('player_corp_deck')?
+  if document.getElementById('player_corp_deck')? || document.getElementById('opponent_deck')?
     window.readDecksFromInputs = () =>
       {
         corp: readSideDecks(
@@ -11,6 +11,9 @@ $(document).on 'turbolinks:load', ->
           $('#player_runner_deck_before'),
           $('#player_runner_deck'))
       }
+
+    window.readOpponentDeckFromInputs = () =>
+      readSideDecks($('#opponent_name').val(), [], $('#opponent_deck'))
 
     readSideDecks = (description, $beforeInput, $afterInput) =>
       after = readDeck($afterInput)

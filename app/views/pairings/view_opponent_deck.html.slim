@@ -1,3 +1,4 @@
-.col
-  p Opponent: #{@opponent.name}
-  p Deck: #{@deck.name}
+input#opponent_name type='hidden' value='#{@opponent&.name}'
+input#opponent_deck type='hidden' value='#{@deck&.as_view(current_user).to_json}'
+.container
+  .row.justify-content-center#display_opponent_deck
