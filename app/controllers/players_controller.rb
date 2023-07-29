@@ -11,8 +11,7 @@ class PlayersController < ApplicationController
 
   def download_decks
     authorize @tournament, :update?
-    @decks_json = @tournament.players.active.flat_map { |p| p.decks }.map { |d| d.as_view(current_user) }.to_json
-    render layout: 'fullscreen'
+    render json: @tournament.players.active.flat_map { |p| p.decks }.map { |d| d.as_view(current_user) }
   end
 
   def create

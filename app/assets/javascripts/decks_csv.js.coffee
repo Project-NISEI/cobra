@@ -1,5 +1,5 @@
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('display_decks')? || document.getElementById('download_player_decks')?
+  if document.getElementById('display_decks')? || document.getElementById('download_decks_button')?
     window.downloadDeckCsv = (deck) =>
       downloadCsv(deck.details.player_name + ' - ' + deck.details.name + '.csv',
         renderDecksCsv([deck]))
@@ -52,6 +52,11 @@ $(document).on 'turbolinks:load', ->
     quoteCsvValue = (string) =>
       '"' + string.replace('"', '""') + '"'
 
-    if document.getElementById('download_player_decks')?
-      downloadCsv('Decks for ' + $('#tournament_name').val() + '.csv',
-        renderDecksCsv(JSON.parse($('#download_player_decks').val())))
+    $('#download_decks_button').on('click', (e) =>
+        e.preventDefault()
+        $.get({
+          url: $('#download_decks_path').val(),
+          success: (response) =>
+            downloadCsv('Decks for ' + $('#download_decks_tournament').val() + '.csv',
+              renderDecksCsv(response))
+        }))
