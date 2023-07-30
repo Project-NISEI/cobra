@@ -7,8 +7,8 @@ $(document).on 'turbolinks:load', ->
     renderDecksCsv = (decks) =>
       deck_separator = ',,'
       '' +
-        forEachDeck(decks, (deck) => 'Player,' + deck.details.player_name + ',') + '\n' +
-        forEachDeck(decks, (deck) => 'Deck,' + deck.details.name + ',') + '\n' +
+        forEachDeck(decks, (deck) => 'Player,' + quoteCsvValue(deck.details.player_name) + ',') + '\n' +
+        forEachDeck(decks, (deck) => 'Deck,' + quoteCsvValue(deck.details.name) + ',') + '\n' +
         '\n' +
         forEachDeck(decks, (deck) => 'Min,Identity,Max') + '\n' +
         forEachDeck(decks, (deck) =>
