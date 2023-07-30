@@ -21,7 +21,7 @@ $(document).on 'turbolinks:load', ->
 
     renderCardsCsv = (decks) =>
       maxCards = decks.reduce(getMaxCards, 0)
-      csv = forEachDeck(decks, (deck) => 'Qty,Card Name,Inf') + '\n'
+      csv = forEachDeck(decks, (deck) => 'Qty,"Card Name",Inf') + '\n'
       for i in [0...maxCards]
         csv += forEachDeck(decks, (deck) =>
           if i < deck.cards.length
