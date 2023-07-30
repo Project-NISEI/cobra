@@ -53,7 +53,7 @@ $(document).on 'turbolinks:load', ->
       a.click()
 
     quoteCsvValue = (string) =>
-      '"' + string.replace('"', '""') + '"'
+      '"' + string.replaceAll('"', '""') + '"'
 
     renderIfPositive = (number) =>
       if number > 0
