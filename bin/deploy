@@ -30,6 +30,8 @@ compose_for_deploy run --rm app rake assets:precompile --trace
 if [ "$COMPOSE_FILE" == "prod" ]; then
   compose_for_deploy up -d app --force-recreate
   bin/init-certbot
+else if [ "$COMPOSE_FILE" == "staging" ]; then
+  compose_for_deploy up -d app --force-recreate
 fi
 
 compose_for_deploy up -d
