@@ -65,12 +65,13 @@ $(document).on 'turbolinks:load', ->
       $('#download_decks_spinner').toggleClass('d-none', !spin)
       $('#download_decks_icon').toggleClass('d-none', spin)
 
-    $('#download_decks_button').on('click', (e) =>
-        e.preventDefault()
-        downloadDecksSpinner(true)
-        $.get($('#download_decks_path').val())
-          .done((response) =>
-            downloadCsv('Decks for ' + $('#download_decks_tournament').val() + '.csv',
-              renderDecksCsv(response)))
-          .always(() => downloadDecksSpinner(false))
-    )
+    if document.getElementById('download_decks_button')?
+      $('#download_decks_button').on('click', (e) =>
+          e.preventDefault()
+          downloadDecksSpinner(true)
+          $.get($('#download_decks_path').val())
+            .done((response) =>
+              downloadCsv('Decks for ' + $('#download_decks_tournament').val() + '.csv',
+                renderDecksCsv(response)))
+            .always(() => downloadDecksSpinner(false))
+      )

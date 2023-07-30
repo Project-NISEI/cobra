@@ -1,3 +1,5 @@
+#= require deck_model
+
 $(document).on 'turbolinks:load', ->
   if document.getElementById('display_decks')? || document.getElementById('display_opponent_deck')?
 
@@ -218,5 +220,6 @@ $(document).on 'turbolinks:load', ->
       catch e
         console.log(e)
 
-    $('#display_opponent_deck').append(
-      renderDeck(readOpponentDeckFromInputs(), true))
+    if document.getElementById('display_opponent_deck')?
+      $('#display_opponent_deck').append(
+        renderDeck(readOpponentDeckFromInputs(), true))

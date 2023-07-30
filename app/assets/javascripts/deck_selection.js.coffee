@@ -1,3 +1,6 @@
+#= require deck_model
+#= require deck_display
+
 $(document).on 'turbolinks:load', ->
   if document.getElementById('nrdb_decks')?
 
