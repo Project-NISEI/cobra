@@ -6,11 +6,27 @@ $(document).on 'turbolinks:load', ->
     window.getNrdbPrinting = (printingId) =>
       nrdbPrintingsById.get(printingId)
 
+    window.nrdbFactionBackground = (printing) =>
+      'background-' + printing.attributes.faction_id.replaceAll('_', '-') + '-20'
+
+    window.nrdbFactionBackgroundStriped = (printing, index) =>
+      if index % 2 == 0
+        'background-' + printing.attributes.faction_id.replaceAll('_', '-') + '-20'
+      else
+        'background-' + printing.attributes.faction_id.replaceAll('_', '-') + '-10'
+
+    window.nrdbFactionClass = (printing) =>
+      printing.attributes.faction_id.replaceAll('_', '-')
+
+    window.nrdbFactionIcon = (printing) =>
+      'icon-' + nrdbFactionClass(printing)
+
     window.loadNrdbPrintings = (printingIds, callback) =>
+      printingIds = new Set(printingIds)
       for printingId from printingIds
         if nrdbPrintingsById.has(printingId)
-          printingIds.remove(printingId)
-      if printingIds.length == 0
+          printingIds.delete(printingId)
+      if printingIds.size == 0
         callback()
         return
       printingIdsStr = Array.from(printingIds).join()

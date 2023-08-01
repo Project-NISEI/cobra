@@ -12,7 +12,7 @@ $(document).on 'turbolinks:load', ->
       nrdbDecks = $('#nrdb_decks li')
         .map((index, item) => JSON.parse($(item).attr('data-deck')))
         .get()
-      printingIds = new Set(nrdbDecks.flatMap((deck) => Object.keys(deck.cards)))
+      printingIds = nrdbDecks.flatMap((deck) => Object.keys(deck.cards))
       loadNrdbPrintings(printingIds, () =>
         readDecksWithPrintings(nrdbDecks))
 

@@ -1,4 +1,5 @@
 #= require deck_model
+#= require nrdb_cards
 
 $(document).on 'turbolinks:load', ->
   if document.getElementById('display_decks')? || document.getElementById('display_opponent_deck')?
@@ -79,12 +80,14 @@ $(document).on 'turbolinks:load', ->
           $('<div/>', {class: 'dropdown-menu'}).append(
             $('<a/>', {class: 'dropdown-item', href: '#'})
               .append('Copy to clipboard in NetrunnerDB format')
-              .on('click', (e) =>
+              .on('click',
+              (e) =>
                 e.preventDefault()
                 copyDeckToClipboard(deck)),
             $('<a/>', {class: 'dropdown-item', href: '#'})
               .append('Download as a CSV spreadsheet')
-              .on('click', (e) =>
+              .on('click',
+              (e) =>
                 e.preventDefault()
                 downloadDeckCsv(deck))
           )
@@ -143,6 +146,8 @@ $(document).on 'turbolinks:load', ->
       if not deck.details.identity_title
         return []
 
+      identity = getNrdbPrinting(deck.details.identity_nrdb_printing_id)
+
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -154,7 +159,9 @@ $(document).on 'turbolinks:load', ->
         $('<tbody/>').append(
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: deck.details.min_deck_size}),
-            $('<td/>', {text: deck.details.identity_title}),
+            $('<td/>', {class: nrdbFactionClass(identity)})
+              .append($('<i/>', {class: 'fa icon ' + nrdbFactionIcon(identity)}))
+              .append(document.createTextNode(' ' + deck.details.identity_title)),
             $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
 
     cardsTable = (decks) =>
@@ -170,16 +177,20 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'}),
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
-        $('<tbody/>').append(cards.map((card) =>
+        $('<tbody/>').append(cards.map((card, index) =>
+          printing = getNrdbPrinting(card.nrdb_printing_id)
           if card.influence > 0
             influence = card.influence
           else
             influence = ''
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: card.quantity}),
-            $('<td/>', {text: card.title}),
-            $('<td/>', {class: 'text-center', text: influence})))
-        ).append(emptyCardRows(decks.pad_cards)))
+            $('<td/>', {class: nrdbFactionClass(printing)})
+              .append($('<img/>', {src: 'https://netrunnerdb.com/images/types/' + printing.attributes.card_type_id + '.png'}))
+              .append(document.createTextNode(' ' + card.title)),
+            $('<td/>', {class: 'text-center', text: influence}))
+        )).append(emptyCardRows(decks.pad_cards))
+      )
 
     emptyCardRows = (numRows) =>
       rows = []
@@ -214,12 +225,26 @@ $(document).on 'turbolinks:load', ->
       else
         return ''
 
+    deckPrintingIds = (deck) =>
+      singleDeckPrintingIds(deck.before).concat(singleDeckPrintingIds(deck.after))
+
+    singleDeckPrintingIds = (deck) =>
+      deck.cards.map((card) => card.nrdb_printing_id).concat([deck.details.identity_nrdb_printing_id])
+
     if document.getElementById('display_decks')?
       try
-        renderDecksDisplay(readDecksFromInputs())
+        decks = readDecksFromInputs()
+        printingIds = deckPrintingIds(decks.corp).concat(deckPrintingIds(decks.runner))
+        $('#display_decks').toggleClass('justify-content-center', true)
+          .empty().append($('<div/>', {class: 'spinner-border'}))
+        loadNrdbPrintings(printingIds, () =>
+          renderDecksDisplay(decks))
       catch e
         console.log(e)
 
     if document.getElementById('display_opponent_deck')?
-      $('#display_opponent_deck').append(
-        renderDeck(readOpponentDeckFromInputs(), true))
+      deck = readOpponentDeckFromInputs()
+      $('#display_opponent_deck').empty().append($('<div/>', {class: 'spinner-border'}))
+      loadNrdbPrintings(singleDeckPrintingIds(deck.after), () =>
+        $('#display_opponent_deck').empty().append(
+          renderDeck(deck, true)))
