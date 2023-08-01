@@ -210,9 +210,9 @@ $(document).on 'turbolinks:load', ->
           if factionB == identity.attributes.faction_id
             return 1
           if factionA.startsWith('neutral')
-            return 1
-          if factionB.startsWith('neutral')
             return -1
+          if factionB.startsWith('neutral')
+            return 1
           return compareFaction
         a.title.localeCompare(b.title))
 
