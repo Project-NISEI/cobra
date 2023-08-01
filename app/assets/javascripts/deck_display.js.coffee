@@ -178,7 +178,7 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'}),
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
-        $('<tbody/>').append(cards.map((card, index) =>
+        $('<tbody/>').append(cards.map((card) =>
           printing = getNrdbPrinting(card.nrdb_printing_id)
           if card.influence > 0
             influence = card.influence
