@@ -169,6 +169,7 @@ $(document).on 'turbolinks:load', ->
       cards = deck.cards
       if not cards || cards.length < 1
         return []
+      sortCards(deck.details.identity_nrdb_printing_id, cards)
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -191,6 +192,29 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {class: 'text-center', text: influence}))
         )).append(emptyCardRows(decks.pad_cards))
       )
+
+    sortCards = (identity_nrdb_printing_id, cards) =>
+      identity = getNrdbPrinting(identity_nrdb_printing_id)
+      cards.sort((a, b) =>
+        printingA = getNrdbPrinting(a.nrdb_printing_id)
+        printingB = getNrdbPrinting(b.nrdb_printing_id)
+        compareType = printingA.attributes.card_type_id.localeCompare(printingB.attributes.card_type_id)
+        if compareType != 0
+          return compareType
+        factionA = printingA.attributes.faction_id
+        factionB = printingB.attributes.faction_id
+        compareFaction = factionA.localeCompare(factionB)
+        if compareFaction != 0
+          if factionA == identity.attributes.faction_id
+            return -1
+          if factionB == identity.attributes.faction_id
+            return 1
+          if factionA.startsWith('neutral')
+            return 1
+          if factionB.startsWith('neutral')
+            return -1
+          return compareFaction
+        a.title.localeCompare(b.title))
 
     emptyCardRows = (numRows) =>
       rows = []
