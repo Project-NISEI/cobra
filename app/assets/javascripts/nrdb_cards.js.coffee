@@ -17,9 +17,14 @@ $(document).on 'turbolinks:load', ->
 
     window.nrdbFactionImage = (printing) =>
       if printing.attributes.faction_id.startsWith('neutral')
-        $('<img/>', {src: 'https://netrunnerdb.com/images/factions/16px/' + printing.attributes.faction_id.replaceAll('_', '-') + '.png'})
+        $('<img/>', {
+          src: 'https://netrunnerdb.com/images/factions/16px/' + printing.attributes.faction_id.replaceAll('_', '-') + '.png'
+        })
       else
-        $('<i/>', {class: 'fa icon ' + nrdbFactionIcon(printing) + ' ' + nrdbFactionClass(printing)})
+        $('<i/>', {
+          class: 'fa icon text-center ' + nrdbFactionIcon(printing) + ' ' + nrdbFactionClass(printing),
+          style: 'width: 16px'
+        })
 
     nrdbFactionIcon = (printing) =>
       'icon-' + nrdbFactionClass(printing)
