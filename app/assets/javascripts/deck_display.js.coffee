@@ -159,8 +159,8 @@ $(document).on 'turbolinks:load', ->
         $('<tbody/>').append(
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: deck.details.min_deck_size}),
-            $('<td/>', {class: nrdbFactionClass(identity)})
-              .append($('<i/>', {class: 'fa icon ' + nrdbFactionIcon(identity)}))
+            $('<td/>')
+              .append(nrdbFactionImage(identity))
               .append(document.createTextNode(' ' + deck.details.identity_title)),
             $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
 
@@ -186,8 +186,10 @@ $(document).on 'turbolinks:load', ->
             influence = ''
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: card.quantity}),
-            $('<td/>', {class: nrdbFactionClass(printing)})
+            $('<td/>')
               .append($('<img/>', {src: 'https://netrunnerdb.com/images/types/' + printing.attributes.card_type_id + '.png'}))
+              .append(' ')
+              .append(nrdbFactionImage(printing))
               .append(document.createTextNode(' ' + card.title)),
             $('<td/>', {class: 'text-center', text: influence}))
         )).append(emptyCardRows(decks.pad_cards))

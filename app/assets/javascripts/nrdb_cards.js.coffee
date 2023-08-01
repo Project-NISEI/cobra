@@ -15,11 +15,17 @@ $(document).on 'turbolinks:load', ->
       else
         'background-' + printing.attributes.faction_id.replaceAll('_', '-') + '-10'
 
-    window.nrdbFactionClass = (printing) =>
-      printing.attributes.faction_id.replaceAll('_', '-')
+    window.nrdbFactionImage = (printing) =>
+      if printing.attributes.faction_id.startsWith('neutral')
+        $('<img/>', {src: 'https://netrunnerdb.com/images/factions/16px/' + printing.attributes.faction_id.replaceAll('_', '-') + '.png'})
+      else
+        $('<i/>', {class: 'fa icon ' + nrdbFactionIcon(printing) + ' ' + nrdbFactionClass(printing)})
 
-    window.nrdbFactionIcon = (printing) =>
+    nrdbFactionIcon = (printing) =>
       'icon-' + nrdbFactionClass(printing)
+
+    nrdbFactionClass = (printing) =>
+      printing.attributes.faction_id.replaceAll('_', '-')
 
     window.loadNrdbPrintings = (printingIds, callback) =>
       printingIds = new Set(printingIds)
