@@ -58,7 +58,7 @@ class PlayersController < ApplicationController
 
     @player.update(params.except(:corp_deck, :runner_deck))
 
-    if @tournament.nrdb_deck_registration? and not @player.decks_locked?
+    if @tournament.nrdb_deck_registration? and (current_user == @tournament.user || !@player.decks_locked?)
       save_deck(params, :corp_deck, 'corp')
       save_deck(params, :runner_deck, 'runner')
     end
