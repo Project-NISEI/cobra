@@ -13,8 +13,8 @@ $(document).on 'turbolinks:load', ->
         forEachDeck(decks, (deck) => 'Min,Identity,Max') + '\n' +
         forEachDeck(decks, (deck) =>
           deck.details.min_deck_size + ',' +
-          quoteCsvValue(deck.details.identity_title) + ',' +
-          deck.details.max_influence
+            quoteCsvValue(deck.details.identity_title) + ',' +
+            deck.details.max_influence
         ) + '\n' +
         '\n' +
         renderCardsCsv(decks)
@@ -46,7 +46,7 @@ $(document).on 'turbolinks:load', ->
       total + card.influence
 
     downloadCsv = (filename, csv) =>
-      csvData = new Blob([csv], {type: "text/csv"})
+      csvData = new Blob(["\ufeff" + csv], {type: "text/csv"}) # "\ufeff" lets Excel know it's Unicode encoded
       a = document.createElement('a')
       a.href = URL.createObjectURL(csvData)
       a.download = filename
@@ -67,11 +67,10 @@ $(document).on 'turbolinks:load', ->
 
     if document.getElementById('download_decks_button')?
       $('#download_decks_button').on('click', (e) =>
-          e.preventDefault()
-          downloadDecksSpinner(true)
-          $.get($('#download_decks_path').val())
-            .done((response) =>
-              downloadCsv('Decks for ' + $('#download_decks_tournament').val() + '.csv',
-                renderDecksCsv(response)))
-            .always(() => downloadDecksSpinner(false))
+        e.preventDefault()
+        downloadDecksSpinner(true)
+        $.get($('#download_decks_path').val()).done((response) =>
+          downloadCsv('Decks for ' + $('#download_decks_tournament').val() + '.csv',
+            renderDecksCsv(response))
+        ).always(() => downloadDecksSpinner(false))
       )
