@@ -83,16 +83,10 @@ $(document).on 'turbolinks:load', ->
           $('<div/>', {class: 'dropdown-menu'}).append(
             $('<a/>', {class: 'dropdown-item', href: '#'})
               .append('Copy to clipboard in NetrunnerDB format')
-              .on('click',
-              (e) =>
-                e.preventDefault()
-                copyDeckToClipboard(deck)),
+              .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deck)),
             $('<a/>', {class: 'dropdown-item', href: '#'})
               .append('Download as a CSV spreadsheet')
-              .on('click',
-              (e) =>
-                e.preventDefault()
-                downloadDeckCsv(deck))
+              .on('click', (e) => e.preventDefault(); downloadDeckCsv(deck))
           )
         )
 
