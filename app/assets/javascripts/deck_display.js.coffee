@@ -154,9 +154,11 @@ $(document).on 'turbolinks:load', ->
         $('<tbody/>').append(
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: deck.details.min_deck_size}),
-            $('<td/>')
-              .append(nrdbFactionImageOrEmpty(deck.details.faction_id))
-              .append(document.createTextNode(' ' + deck.details.identity_title)),
+            $('<td/>').append(
+              cardDisplay({
+                title: deck.details.identity_title,
+                faction_id: deck.details.faction_id
+              })),
             $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
 
     cardsTable = (decks) =>
