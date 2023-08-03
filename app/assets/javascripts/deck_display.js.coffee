@@ -23,6 +23,9 @@ $(document).on 'turbolinks:load', ->
         decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
       decks
 
+    renderOpponentDeck = (decks) =>
+      renderDeck(decks, true)
+
     renderDeck = (decks, opponent) =>
       $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
@@ -263,5 +266,5 @@ $(document).on 'turbolinks:load', ->
         console.log(e)
 
     if document.getElementById('display_opponent_deck')?
-      deck = readOpponentDeckFromInputs()
-      $('#display_opponent_deck').append(renderDeck(deck, true))
+      $('#display_opponent_deck').append(
+        renderOpponentDeck(readOpponentDeckFromInputs()))
