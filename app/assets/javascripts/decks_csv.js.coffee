@@ -46,7 +46,7 @@ $(document).on 'turbolinks:load', ->
       total + card.influence
 
     downloadCsv = (filename, csv) =>
-      csvData = new Blob([csv], {type: "text/csv"})
+      csvData = new Blob(["\ufeff" + csv], {type: "text/csv"}) # "\ufeff" lets Excel know it's Unicode encoded
       a = document.createElement('a')
       a.href = URL.createObjectURL(csvData)
       a.download = filename
