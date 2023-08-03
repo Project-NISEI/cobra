@@ -183,19 +183,18 @@ $(document).on 'turbolinks:load', ->
             influence = ''
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: card.quantity}),
-            $('<td/>')
-              .append(cardImages(card))
-              .append(document.createTextNode(' ' + card.title)),
+            $('<td/>').append(cardDisplay(card)),
             $('<td/>', {class: 'text-center', text: influence}))
         )).append(emptyCardRows(decks.pad_cards))
       )
 
-    cardImages = (card) =>
+    cardDisplay = (card) =>
       nodes = []
       if card.card_type_id
         nodes.push($('<img/>', {src: 'https://netrunnerdb.com/images/types/' + card.card_type_id + '.png'}))
       if card.faction_id
         nodes.push(nrdbFactionImage(card.faction_id))
+      nodes.push(card.title)
       nodes.flatMap((node, index) =>
         if index < nodes.length - 1
           [node, ' ']
