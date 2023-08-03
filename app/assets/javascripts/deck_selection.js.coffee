@@ -66,6 +66,7 @@ $(document).on 'turbolinks:load', ->
           details.identity_nrdb_printing_id = code
           details.identity_nrdb_card_id = attributes.card_id
           details.side_id = attributes.side_id
+          details.faction_id = attributes.faction_id
           details.min_deck_size = attributes.minimum_deck_size
           details.max_influence = attributes.influence_limit
       cards = []
@@ -81,7 +82,9 @@ $(document).on 'turbolinks:load', ->
             quantity: count,
             influence: influence_spent,
             nrdb_card_id: attributes.card_id,
-            nrdb_printing_id: code
+            nrdb_printing_id: code,
+            faction_id: attributes.faction_id,
+            card_type_id: attributes.card_type_id
           })
       return {details: details, cards: cards}
 
