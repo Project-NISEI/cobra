@@ -176,17 +176,17 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'}),
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
-        $('<tbody/>').append(cards.map((card) =>
-          if card.influence > 0
-            influence = card.influence
-          else
-            influence = ''
-          $('<tr/>').append(
-            $('<td/>', {class: 'text-center', text: card.quantity}),
-            $('<td/>').append(cardDisplay(card)),
-            $('<td/>', {class: 'text-center', text: influence}))
-        )).append(emptyCardRows(decks.pad_cards))
-      )
+        $('<tbody/>').append(
+          cards.map((card) =>
+            if card.influence > 0
+              influence = card.influence
+            else
+              influence = ''
+            $('<tr/>').append(
+              $('<td/>', {class: 'text-center', text: card.quantity}),
+              $('<td/>').append(cardDisplay(card)),
+              $('<td/>', {class: 'text-center', text: influence}))),
+          emptyCardRows(decks.pad_cards)))
 
     cardDisplay = (card) =>
       nodes = []
@@ -199,8 +199,7 @@ $(document).on 'turbolinks:load', ->
         if index < nodes.length - 1
           [node, ' ']
         else
-          node
-      )
+          node)
 
     sortCards = (deck) =>
       deck.cards.sort((a, b) =>
