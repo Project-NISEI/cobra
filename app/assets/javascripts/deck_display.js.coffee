@@ -146,8 +146,6 @@ $(document).on 'turbolinks:load', ->
       if not deck.details.identity_title
         return []
 
-      identity = getNrdbPrinting(deck.details.identity_nrdb_printing_id)
-
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -160,7 +158,7 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: deck.details.min_deck_size}),
             $('<td/>')
-              .append(nrdbFactionImage(identity))
+              .append(nrdbFactionImageOrEmpty(deck.details.faction_id))
               .append(document.createTextNode(' ' + deck.details.identity_title)),
             $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
 
@@ -169,7 +167,7 @@ $(document).on 'turbolinks:load', ->
       cards = deck.cards
       if not cards || cards.length < 1
         return []
-      sortCards(deck.details.identity_nrdb_printing_id, cards)
+      sortCards(deck)
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -179,7 +177,6 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
         $('<tbody/>').append(cards.map((card) =>
-          printing = getNrdbPrinting(card.nrdb_printing_id)
           if card.influence > 0
             influence = card.influence
           else
@@ -187,35 +184,45 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: card.quantity}),
             $('<td/>')
-              .append($('<img/>', {src: 'https://netrunnerdb.com/images/types/' + printing.attributes.card_type_id + '.png'}))
-              .append(' ')
-              .append(nrdbFactionImage(printing))
+              .append(cardImages(card))
               .append(document.createTextNode(' ' + card.title)),
             $('<td/>', {class: 'text-center', text: influence}))
         )).append(emptyCardRows(decks.pad_cards))
       )
 
-    sortCards = (identity_nrdb_printing_id, cards) =>
-      identity = getNrdbPrinting(identity_nrdb_printing_id)
-      cards.sort((a, b) =>
-        printingA = getNrdbPrinting(a.nrdb_printing_id)
-        printingB = getNrdbPrinting(b.nrdb_printing_id)
-        compareType = printingA.attributes.card_type_id.localeCompare(printingB.attributes.card_type_id)
-        if compareType != 0
-          return compareType
-        factionA = printingA.attributes.faction_id
-        factionB = printingB.attributes.faction_id
-        compareFaction = factionA.localeCompare(factionB)
-        if compareFaction != 0
-          if factionA == identity.attributes.faction_id
-            return -1
-          if factionB == identity.attributes.faction_id
-            return 1
-          if factionA.startsWith('neutral')
-            return -1
-          if factionB.startsWith('neutral')
-            return 1
-          return compareFaction
+    cardImages = (card) =>
+      nodes = []
+      if card.card_type_id
+        nodes.push($('<img/>', {src: 'https://netrunnerdb.com/images/types/' + card.card_type_id + '.png'}))
+      if card.faction_id
+        nodes.push(nrdbFactionImage(card.faction_id))
+      nodes.flatMap((node, index) =>
+        if index < nodes.length - 1
+          [node, ' ']
+        else
+          node
+      )
+
+    sortCards = (deck) =>
+      deck.cards.sort((a, b) =>
+        if a.card_type_id && b.card_type_id
+          compareType = a.card_type_id.localeCompare(b.card_type_id)
+          if compareType != 0
+            return compareType
+        factionA = a.faction_id
+        factionB = b.faction_id
+        if factionA && factionB
+          compareFaction = factionA.localeCompare(factionB)
+          if compareFaction != 0
+            if factionA == deck.details.faction_id
+              return -1
+            if factionB == deck.details.faction_id
+              return 1
+            if factionA.startsWith('neutral')
+              return -1
+            if factionB.startsWith('neutral')
+              return 1
+            return compareFaction
         a.title.localeCompare(b.title))
 
     emptyCardRows = (numRows) =>
@@ -251,26 +258,12 @@ $(document).on 'turbolinks:load', ->
       else
         return ''
 
-    deckPrintingIds = (deck) =>
-      singleDeckPrintingIds(deck.before).concat(singleDeckPrintingIds(deck.after))
-
-    singleDeckPrintingIds = (deck) =>
-      deck.cards.map((card) => card.nrdb_printing_id).concat([deck.details.identity_nrdb_printing_id])
-
     if document.getElementById('display_decks')?
       try
-        decks = readDecksFromInputs()
-        printingIds = deckPrintingIds(decks.corp).concat(deckPrintingIds(decks.runner))
-        $('#display_decks').toggleClass('justify-content-center', true)
-          .empty().append($('<div/>', {class: 'spinner-border'}))
-        loadNrdbPrintings(printingIds, () =>
-          renderDecksDisplay(decks))
+        renderDecksDisplay(readDecksFromInputs())
       catch e
         console.log(e)
 
     if document.getElementById('display_opponent_deck')?
       deck = readOpponentDeckFromInputs()
-      $('#display_opponent_deck').empty().append($('<div/>', {class: 'spinner-border'}))
-      loadNrdbPrintings(singleDeckPrintingIds(deck.after), () =>
-        $('#display_opponent_deck').empty().append(
-          renderDeck(deck, true)))
+      $('#display_opponent_deck').append(renderDeck(deck, true))

@@ -6,31 +6,28 @@ $(document).on 'turbolinks:load', ->
     window.getNrdbPrinting = (printingId) =>
       nrdbPrintingsById.get(printingId)
 
-    window.nrdbFactionBackground = (printing) =>
-      'background-' + printing.attributes.faction_id.replaceAll('_', '-') + '-20'
-
-    window.nrdbFactionBackgroundStriped = (printing, index) =>
-      if index % 2 == 0
-        'background-' + printing.attributes.faction_id.replaceAll('_', '-') + '-20'
+    window.nrdbFactionImageOrEmpty = (faction_id) =>
+      if !faction_id
+        []
       else
-        'background-' + printing.attributes.faction_id.replaceAll('_', '-') + '-10'
+        nrdbFactionImage(faction_id)
 
-    window.nrdbFactionImage = (printing) =>
-      if printing.attributes.faction_id.startsWith('neutral')
+    window.nrdbFactionImage = (faction_id) =>
+      if faction_id.startsWith('neutral')
         $('<img/>', {
-          src: 'https://netrunnerdb.com/images/factions/16px/' + printing.attributes.faction_id.replaceAll('_', '-') + '.png'
+          src: 'https://netrunnerdb.com/images/factions/16px/' + nrdbFactionClass(faction_id) + '.png'
         })
       else
         $('<i/>', {
-          class: 'fa icon text-center ' + nrdbFactionIcon(printing) + ' ' + nrdbFactionClass(printing),
+          class: 'fa icon text-center ' + nrdbFactionIcon(faction_id) + ' ' + nrdbFactionClass(faction_id),
           style: 'width: 16px'
         })
 
-    nrdbFactionIcon = (printing) =>
-      'icon-' + nrdbFactionClass(printing)
+    nrdbFactionIcon = (faction_id) =>
+      'icon-' + nrdbFactionClass(faction_id)
 
-    nrdbFactionClass = (printing) =>
-      printing.attributes.faction_id.replaceAll('_', '-')
+    nrdbFactionClass = (faction_id) =>
+      faction_id.replaceAll('_', '-')
 
     window.loadNrdbPrintings = (printingIds, callback) =>
       printingIds = new Set(printingIds)
