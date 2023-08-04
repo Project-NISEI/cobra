@@ -190,7 +190,7 @@ $(document).on 'turbolinks:load', ->
     cardDisplay = (card) =>
       nodes = []
       if card.card_type_id
-        nodes.push($('<img/>', {src: 'https://netrunnerdb.com/images/types/' + card.card_type_id + '.png'}))
+        nodes.push($('<img/>', {src: '/assets/types/' + card.card_type_id + '.png'}))
       if card.faction_id
         nodes.push(nrdbFactionImage(card.faction_id))
       nodes.push(card.title)
