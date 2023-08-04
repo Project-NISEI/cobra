@@ -15,7 +15,7 @@ $(document).on 'turbolinks:load', ->
     window.nrdbFactionImage = (faction_id) =>
       if faction_id.startsWith('neutral')
         $('<img/>', {
-          src: '/assets/neutral-faction.png'
+          src: '/assets/nsg.png'
         })
       else
         $('<i/>', {
