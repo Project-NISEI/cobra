@@ -2,5 +2,5 @@
   i.fa.icon class="icon-#{identity.faction}"
   =< identity.name
   - if local_assigns[:points]
-    = side if identity.name.empty? && local_assigns[:side]
+    = side if identity.name&.empty? && local_assigns[:side]
     = " (#{points})"
