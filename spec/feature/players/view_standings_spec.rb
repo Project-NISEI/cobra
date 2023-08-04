@@ -14,6 +14,10 @@ RSpec.describe 'viewing standings' do
       corp_identity: 'Another Corp',
       runner_identity: 'Another Runner'
     )
+    tournament.players << create(
+      :player,
+      name: 'Anonymous'
+    )
 
     sign_in tournament.user
   end
@@ -31,6 +35,7 @@ RSpec.describe 'viewing standings' do
       aggregate_failures do
         expect(page).to have_content('Jack')
         expect(page).to have_content('Jill')
+        expect(page).to have_content('Anonymous')
       end
     end
   end
@@ -57,6 +62,7 @@ RSpec.describe 'viewing standings' do
       aggregate_failures do
         expect(page).to have_content('Jack')
         expect(page).to have_content('Jill')
+        expect(page).to have_content('Anonymous')
       end
     end
   end
