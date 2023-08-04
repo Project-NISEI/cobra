@@ -38,6 +38,7 @@ Rails.application.routes.draw do
     get :timer, on: :member
     patch :unlock_decks, on: :member
     patch :lock_decks, on: :member
+    patch :close_registration, on: :member
     get :shortlink, on: :collection
     get :not_found, on: :collection
     get :my, on: :collection

@@ -1,7 +1,7 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [
     :show, :edit, :update, :destroy,
-    :upload_to_abr, :save_json, :cut, :qr, :registration, :timer, :lock_decks, :unlock_decks
+    :upload_to_abr, :save_json, :cut, :qr, :registration, :timer, :lock_decks, :unlock_decks, :close_registration
   ]
 
   def index
@@ -154,19 +154,24 @@ class TournamentsController < ApplicationController
     authorize @tournament, :edit?
   end
 
+  def close_registration
+    authorize @tournament, :edit?
+
+    @tournament.close_registration!
+    redirect_back(fallback_location: tournament_rounds_path(@tournament))
+  end
+
   def lock_decks
     authorize @tournament, :edit?
 
-    @tournament.players.active.update(decks_locked: true)
-    @tournament.update(all_players_decks_unlocked: false, any_player_decks_unlocked: false)
+    @tournament.lock_decks!
     redirect_back(fallback_location: tournament_rounds_path(@tournament))
   end
 
   def unlock_decks
     authorize @tournament, :edit?
 
-    @tournament.players.active.update(decks_locked: false)
-    @tournament.update(all_players_decks_unlocked: true, any_player_decks_unlocked: true)
+    @tournament.unlock_decks!
     redirect_back(fallback_location: tournament_rounds_path(@tournament))
   end
 

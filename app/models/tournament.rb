@@ -33,6 +33,21 @@ class Tournament < ApplicationRecord
     end
   end
 
+  def close_registration!
+    players.active.update(decks_locked: true)
+    update(all_players_decks_unlocked: false, any_player_decks_unlocked: false, self_registration: false)
+  end
+
+  def lock_decks!
+    players.active.update(decks_locked: true)
+    update(all_players_decks_unlocked: false, any_player_decks_unlocked: false)
+  end
+
+  def unlock_decks!
+    players.active.update(decks_locked: false)
+    update(all_players_decks_unlocked: true, any_player_decks_unlocked: true)
+  end
+
   def corp_counts
     players.group_by(&:corp_identity).map do |id, players|
       [
