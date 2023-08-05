@@ -15,6 +15,10 @@ class NilPlayer
     nil
   end
 
+  def user_id
+    nil
+  end
+
   def active?
     true
   end
