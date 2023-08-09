@@ -135,6 +135,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_09_195151) do
     t.boolean "consent_data_sharing"
     t.boolean "consent_deck_sharing_with_to"
     t.boolean "consent_deck_sharing_with_opponent"
+    t.boolean "consent_deck_sharing_with_public_if_in_cut"
     t.boolean "consent_streaming"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
