@@ -36,9 +36,9 @@ ruby:
               = button_tag type: :submit, class: 'btn btn-primary mr-2 dontprint' do
                 => fa_icon 'check'
                 | Submit
+              span.badge.badge-warning.ml-1.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
               - if @current_user_player.decks_locked?
-                span.mr-2 Decks are locked, talk to a Tournament Organiser to change your decks.
-              span.badge.badge-warning.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+                div.mt-3 Decks are locked, talk to a Tournament Organiser to change your decks.
         - unless @current_user_player.decks_locked?
           .alert.alert-danger.mt-3.mb-0.dontprint role=alert
             => fa_icon 'exclamation-triangle', class: 'mr-2'
