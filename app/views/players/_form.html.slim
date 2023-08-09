@@ -24,7 +24,7 @@
 	.form-group
 		label.d-block for="player_pronouns" Pronouns
 		= f.input_field :pronouns,
-			placeholder: 'Enter pronouns, eg. they/them',
+			placeholder: 'Example: they/them',
 			class: 'form-control'
 	- if !@tournament.nrdb_deck_registration? or not defined?(new_registration)
 		.form-group
