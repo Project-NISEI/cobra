@@ -25,14 +25,6 @@ class PlayersController < ApplicationController
     params = player_params
     unless is_organiser_view
       params[:user_id] = current_user.id
-      unless params[:consent_data_sharing] == '1'
-        redirect_to tournament_path(@tournament)
-        return
-      end
-      unless !@tournament.nrdb_deck_registration? || params[:consent_deck_sharing_with_to] == '1'
-        redirect_to tournament_path(@tournament)
-        return
-      end
     end
     params[:decks_locked] = !@tournament[:all_players_decks_unlocked]
 
