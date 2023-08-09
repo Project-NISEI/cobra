@@ -23,20 +23,20 @@ ruby:
               = f.input_field :runner_deck, hidden: true, value: @runner_deck_json
               = f.input_field :corp_identity, hidden: true
               = f.input_field :runner_identity, hidden: true
-              .form-group
+              .form-group.mr-3
                 label.d-block.mr-2 for="player_name" Name
                 = f.input_field :name,
                         placeholder: 'Enter player name',
-                        class: 'form-control mr-3'
-              .form-group
+                        class: 'form-control'
+              .form-group.mr-3
                 label.d-block.mr-2 for="player_pronouns" Pronouns
                 = f.input_field :pronouns,
                         placeholder: 'Example: they/them',
-                        class: 'form-control mr-3'
-              = button_tag type: :submit, class: 'btn btn-primary mr-2 dontprint' do
+                        class: 'form-control'
+              = button_tag type: :submit, class: 'btn btn-primary dontprint' do
                 => fa_icon 'check'
                 | Submit
-              span.badge.badge-warning.ml-1.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+              span.badge.badge-warning.ml-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
               - if @current_user_player.decks_locked?
                 div.mt-3 Decks are locked, talk to a Tournament Organiser to change your decks.
         - unless @current_user_player.decks_locked?
