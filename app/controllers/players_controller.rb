@@ -42,7 +42,11 @@ class PlayersController < ApplicationController
     end
 
     if player.user_id
-      redirect_to registration_tournament_path(@tournament)
+      if @tournament.nrdb_deck_registration?
+        redirect_to registration_tournament_path(@tournament)
+      else
+        redirect_to tournament_path(@tournament)
+      end
     else
       if @tournament.nrdb_deck_registration?
         redirect_to registration_tournament_player_path(@tournament, player, { edit_decks: true })
