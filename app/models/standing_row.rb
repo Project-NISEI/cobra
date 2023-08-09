@@ -4,7 +4,7 @@ class StandingRow < ApplicationRecord
 
   default_scope { order(position: :asc) }
 
-  delegate :name, :corp_identity, :runner_identity, :manual_seed, to: :player
+  delegate :name, :pronouns, :name_with_pronouns, :corp_identity, :runner_identity, :manual_seed, to: :player
 
   def corp_identity
     identity(player.corp_identity)
