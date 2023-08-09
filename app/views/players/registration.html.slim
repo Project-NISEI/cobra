@@ -28,8 +28,13 @@ ruby:
               label.d-block.mr-2 for="player_name" Name
               = f.input_field :name,
                       placeholder: 'Enter player name',
-                      class: 'form-control'
-            = button_tag type: :submit, class: 'btn btn-primary ml-2 dontprint' do
+                      class: 'form-control mr-3'
+            .form-group
+              label.d-block.mr-2 for="player_pronouns" Pronouns
+              = f.input_field :pronouns,
+                      placeholder: 'Example: they/them',
+                      class: 'form-control mr-3'
+            = button_tag type: :submit, class: 'btn btn-primary dontprint mr-2' do
               => fa_icon 'check'
               | Submit
             - if !@edit_decks
@@ -40,7 +45,7 @@ ruby:
               = link_to registration_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info mr-2 dontprint' do
                 => fa_icon 'undo'
                 | Cancel deck edits
-            span.ml-2.badge.badge-warning.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+            span.badge.badge-warning.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
       - if @tournament.nrdb_deck_registration?
         .alert.alert-danger.mt-3.mb-0.dontprint role=alert
           => fa_icon 'exclamation-triangle', class: 'mr-2'

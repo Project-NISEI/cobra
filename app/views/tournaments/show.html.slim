@@ -17,6 +17,8 @@
               li.list-group-item
                 .small.text-secondary Name:
                 | #{@current_user_player.name}
+                - if @current_user_player.pronouns
+                  |< (#{@current_user_player.pronouns})
               li.list-group-item
                 .small.text-secondary Corp ID:
                 = render @current_user_player.corp_identity_object
