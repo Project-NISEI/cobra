@@ -25,6 +25,14 @@ class PlayersController < ApplicationController
     params = player_params
     unless is_organiser_view
       params[:user_id] = current_user.id
+      unless params[:consent_data_sharing] == '1'
+        redirect_to tournament_path(@tournament)
+        return
+      end
+      unless !@tournament.nrdb_deck_registration? || params[:consent_deck_sharing_with_to] == '1'
+        redirect_to tournament_path(@tournament)
+        return
+      end
     end
     params[:decks_locked] = !@tournament[:all_players_decks_unlocked]
 
@@ -34,11 +42,7 @@ class PlayersController < ApplicationController
     end
 
     if player.user_id
-      if @tournament.nrdb_deck_registration?
-        redirect_to registration_tournament_path(@tournament)
-      else
-        redirect_to tournament_path(@tournament)
-      end
+      redirect_to registration_tournament_path(@tournament)
     else
       if @tournament.nrdb_deck_registration?
         redirect_to registration_tournament_player_path(@tournament, player, { edit_decks: true })
@@ -159,7 +163,7 @@ class PlayersController < ApplicationController
   def player_params
     params.require(:player)
           .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-                  :first_round_bye, :manual_seed)
+                  :first_round_bye, :manual_seed, :consent_data_sharing, :consent_deck_sharing_with_to)
   end
 
   def is_organiser_view
