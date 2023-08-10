@@ -1,5 +1,5 @@
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('display_decks')? && document.getElementById('player_corp_deck')?
+  if document.getElementById('display_decks')? || document.getElementById('display_opponent_deck')?
 
     window.renderDecksDisplay = (decks) =>
       normaliseCardTables(decks)
@@ -20,19 +20,19 @@ $(document).on 'turbolinks:load', ->
         decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
       decks
 
-    renderDeck = (decks) =>
+    renderDeck = (decks, opponent) =>
       $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
         return $container
       deck = decks.after
       $container.append(
-        deckSummaryTable(decks),
+        deckSummaryTable(decks, opponent),
         deckDiffTable(decks.diff),
         identityTable(deck),
         cardsTable(decks),
         totalsTable(deck))
 
-    deckSummaryTable = (decks) =>
+    deckSummaryTable = (decks, opponent) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -40,20 +40,22 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after))
+          .append(deckNameRow(decks.after, opponent))
           .append(deckChangesRow(decks)))
 
-    deckNameRow = (deck) =>
+    deckNameRow = (deck, opponent) =>
       if deck.details.name
         $('<tr/>').append($('<td/>')
-          .append(deckNameButtons(deck))
+          .append(deckNameButtons(deck, opponent))
           .append(document.createTextNode(deck.details.name)))
       else
         $('<tr/>').append($('<td/>')
           .append('None selected'))
 
-    deckNameButtons = (deck) =>
-      if deck.details.mine
+    deckNameButtons = (deck, opponent) =>
+      if opponent
+        []
+      else if deck.details.mine
         $('<a/>', {
           class: 'float-right dontprint',
           title: 'Edit Deck',
@@ -210,7 +212,11 @@ $(document).on 'turbolinks:load', ->
       else
         return ''
 
-    try
-      renderDecksDisplay(readDecksFromInputs())
-    catch e
-      console.log(e)
+    if document.getElementById('display_decks')?
+      try
+        renderDecksDisplay(readDecksFromInputs())
+      catch e
+        console.log(e)
+
+    $('#display_opponent_deck').append(
+      renderDeck(readOpponentDeckFromInputs(), true))

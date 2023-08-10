@@ -53,6 +53,22 @@ class PairingsController < ApplicationController
     end
   end
 
+  def view_opponent_deck
+    authorize @tournament, :show?
+    unless @tournament.open_list_cut? && pairing.stage.double_elim?
+      return
+    end
+    @opponent = pairing.user_opponent(current_user)
+    if @opponent
+      @opponent_side = pairing.side_for @opponent
+      if @opponent_side == :corp
+        @deck = @opponent.corp_deck
+      else
+        @deck = @opponent.runner_deck
+      end
+    end
+  end
+
   private
 
   def round
@@ -69,6 +85,6 @@ class PairingsController < ApplicationController
 
   def score_params
     params.require(:pairing)
-      .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp, :score1, :score2, :side, :intentional_draw, :two_for_one)
+          .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp, :score1, :score2, :side, :intentional_draw, :two_for_one)
   end
 end
