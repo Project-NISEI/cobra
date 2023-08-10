@@ -34,9 +34,19 @@
 				readonly: @tournament.nrdb_deck_registration?,
 				placeholder: ( @tournament.nrdb_deck_registration? ? '' : 'Search for runner ID' ),
 				class: 'form-control runner_identities'
-- if policy(@tournament).edit?
-	=> f.input :first_round_bye, as: :boolean, class: 'form-check-input', input_html: { class: 'mr-1'}, inline_label: 'First Round Bye'
-	- if @tournament.manual_seed
-		.form-group
-			label.d-block for="player_manual_seed" Manual Seed
-			=> f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
+	- if policy(@tournament).edit?
+		=> f.input :first_round_bye, as: :boolean, class: 'form-check-input', input_html: { class: 'mr-1'}, inline_label: 'First Round Bye'
+		- if @tournament.manual_seed
+			.form-group
+				label.d-block for="player_manual_seed" Manual Seed
+				=> f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
+	- if defined?(new_registration) and not defined?(organiser_view)
+		= f.input :consent_data_sharing, as: :boolean,
+						class: 'form-check-input', input_html: { class: 'mr-1' },
+						inline_label: 'I consent for my personal data to be shared on this website'
+
+		- if @tournament.nrdb_deck_registration?
+			= f.input :consent_deck_sharing_with_to, as: :boolean,
+							class: 'form-check-input', input_html: { class: 'mr-1' },
+							inline_label: 'I consent for my decks to be shared with the organiser'
+

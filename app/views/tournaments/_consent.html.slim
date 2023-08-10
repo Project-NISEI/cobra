@@ -1,8 +1,0 @@
-= f.input :consent_data_sharing, as: :boolean,
-        class: 'form-check-input', input_html: { class: 'mr-1' },
-        inline_label: 'I consent for my personal data to be shared on this website'
-
-- if @tournament.nrdb_deck_registration?
-  = f.input :consent_deck_sharing_with_to, as: :boolean,
-          class: 'form-check-input', input_html: { class: 'mr-1' },
-          inline_label: 'I consent for my decks to be shared with the organiser'
