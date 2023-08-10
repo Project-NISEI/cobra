@@ -1,4 +1,5 @@
 #= require deck_model
+#= require nrdb_cards
 
 $(document).on 'turbolinks:load', ->
   if document.getElementById('display_decks')? || document.getElementById('display_opponent_deck')?
@@ -21,6 +22,9 @@ $(document).on 'turbolinks:load', ->
         decks.corp.pad_cards = max_cards - decks.corp.after.cards.length
         decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
       decks
+
+    renderOpponentDeck = (decks) =>
+      renderDeck(decks, true)
 
     renderDeck = (decks, opponent) =>
       $container = $('<div/>', {class: 'col-md-6'})
@@ -79,14 +83,10 @@ $(document).on 'turbolinks:load', ->
           $('<div/>', {class: 'dropdown-menu'}).append(
             $('<a/>', {class: 'dropdown-item', href: '#'})
               .append('Copy to clipboard in NetrunnerDB format')
-              .on('click', (e) =>
-                e.preventDefault()
-                copyDeckToClipboard(deck)),
+              .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deck)),
             $('<a/>', {class: 'dropdown-item', href: '#'})
               .append('Download as a CSV spreadsheet')
-              .on('click', (e) =>
-                e.preventDefault()
-                downloadDeckCsv(deck))
+              .on('click', (e) => e.preventDefault(); downloadDeckCsv(deck))
           )
         )
 
@@ -154,7 +154,11 @@ $(document).on 'turbolinks:load', ->
         $('<tbody/>').append(
           $('<tr/>').append(
             $('<td/>', {class: 'text-center', text: deck.details.min_deck_size}),
-            $('<td/>', {text: deck.details.identity_title}),
+            $('<td/>').append(
+              cardDisplay({
+                title: deck.details.identity_title,
+                faction_id: deck.details.faction_id
+              })),
             $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
 
     cardsTable = (decks) =>
@@ -162,6 +166,7 @@ $(document).on 'turbolinks:load', ->
       cards = deck.cards
       if not cards || cards.length < 1
         return []
+      sortCards(deck)
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -170,16 +175,52 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'}),
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
-        $('<tbody/>').append(cards.map((card) =>
-          if card.influence > 0
-            influence = card.influence
-          else
-            influence = ''
-          $('<tr/>').append(
-            $('<td/>', {class: 'text-center', text: card.quantity}),
-            $('<td/>', {text: card.title}),
-            $('<td/>', {class: 'text-center', text: influence})))
-        ).append(emptyCardRows(decks.pad_cards)))
+        $('<tbody/>').append(
+          cards.map((card) =>
+            if card.influence > 0
+              influence = card.influence
+            else
+              influence = ''
+            $('<tr/>').append(
+              $('<td/>', {class: 'text-center', text: card.quantity}),
+              $('<td/>').append(cardDisplay(card)),
+              $('<td/>', {class: 'text-center', text: influence}))),
+          emptyCardRows(decks.pad_cards)))
+
+    cardDisplay = (card) =>
+      nodes = []
+      if card.card_type_id
+        nodes.push($('<img/>', {src: '/assets/types/' + card.card_type_id + '.png'}))
+      if card.faction_id
+        nodes.push(nrdbFactionImage(card.faction_id))
+      nodes.push(card.title)
+      nodes.flatMap((node, index) =>
+        if index < nodes.length - 1
+          [node, ' ']
+        else
+          node)
+
+    sortCards = (deck) =>
+      deck.cards.sort((a, b) =>
+        if a.card_type_id && b.card_type_id
+          compareType = a.card_type_id.localeCompare(b.card_type_id)
+          if compareType != 0
+            return compareType
+        factionA = a.faction_id
+        factionB = b.faction_id
+        if factionA && factionB
+          compareFaction = factionA.localeCompare(factionB)
+          if compareFaction != 0
+            if factionA == deck.details.faction_id
+              return -1
+            if factionB == deck.details.faction_id
+              return 1
+            if factionA.startsWith('neutral')
+              return -1
+            if factionB.startsWith('neutral')
+              return 1
+            return compareFaction
+        a.title.localeCompare(b.title))
 
     emptyCardRows = (numRows) =>
       rows = []
@@ -222,4 +263,4 @@ $(document).on 'turbolinks:load', ->
 
     if document.getElementById('display_opponent_deck')?
       $('#display_opponent_deck').append(
-        renderDeck(readOpponentDeckFromInputs(), true))
+        renderOpponentDeck(readOpponentDeckFromInputs()))

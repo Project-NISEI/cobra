@@ -1,5 +1,6 @@
 #= require deck_model
 #= require deck_display
+#= require nrdb_cards
 
 $(document).on 'turbolinks:load', ->
   if document.getElementById('nrdb_decks')?
@@ -7,38 +8,13 @@ $(document).on 'turbolinks:load', ->
     corpPlaceholder = $('#nrdb_corp_selected li').get()[0]
     runnerPlaceholder = $('#nrdb_runner_selected li').get()[0]
 
-    nrdbPrintingsById = new Map()
-
     readDecks = () =>
       nrdbDecks = $('#nrdb_decks li')
         .map((index, item) => JSON.parse($(item).attr('data-deck')))
         .get()
-
-      printingIds = new Set(nrdbDecks.flatMap((deck) => Object.keys(deck.cards)))
-      printingIdsStr = Array.from(printingIds).join()
-      $.get({
-        url: 'https://api-preview.netrunnerdb.com/api/v3/public/printings',
-        data: {
-          'fields[printings]': 'card_id,card_type_id,title,side_id,faction_id,minimum_deck_size,influence_limit,influence_cost',
-          'filter[id]': printingIdsStr,
-          'page[limit]': 1000
-        },
-        success: (response) =>
-          readDecksWithPrintingsResponse(nrdbDecks, new Array(), response)
-      })
-
-    readDecksWithPrintingsResponse = (nrdbDecks, nrdbPrintingsBefore, response) =>
-      nrdbPrintings = nrdbPrintingsBefore.concat(response.data)
-      if response.links.next?
-        $.get({
-          url: response.links.next,
-          success: (response) =>
-            readDecksWithPrintingsResponse(nrdbDecks, nrdbPrintings, response)
-        })
-      else
-        for nrdbPrinting from nrdbPrintings
-          nrdbPrintingsById.set(nrdbPrinting.id, nrdbPrinting)
-        readDecksWithPrintings(nrdbDecks)
+      printingIds = nrdbDecks.flatMap((deck) => Object.keys(deck.cards))
+      loadNrdbPrintings(printingIds, () =>
+        readDecksWithPrintings(nrdbDecks))
 
     readDecksWithPrintings = (nrdbDecks) =>
       $('#nrdb_corp_decks').empty()
@@ -83,18 +59,19 @@ $(document).on 'turbolinks:load', ->
     readNrdbDeck = (nrdbDeck) =>
       details = {name: nrdbDeck.name, nrdb_uuid: nrdbDeck.uuid, mine: true}
       for code, count of nrdbDeck.cards
-        attributes = nrdbPrintingsById.get(code).attributes
+        attributes = getNrdbPrinting(code).attributes
         if attributes.card_type_id.endsWith('identity')
           identity = attributes
           details.identity_title = attributes.title
           details.identity_nrdb_printing_id = code
           details.identity_nrdb_card_id = attributes.card_id
           details.side_id = attributes.side_id
+          details.faction_id = attributes.faction_id
           details.min_deck_size = attributes.minimum_deck_size
           details.max_influence = attributes.influence_limit
       cards = []
       for code, count of nrdbDeck.cards
-        attributes = nrdbPrintingsById.get(code).attributes
+        attributes = getNrdbPrinting(code).attributes
         if !attributes.card_type_id.endsWith('identity')
           if identity.faction_id == attributes.faction_id
             influence_spent = 0
@@ -105,7 +82,9 @@ $(document).on 'turbolinks:load', ->
             quantity: count,
             influence: influence_spent,
             nrdb_card_id: attributes.card_id,
-            nrdb_printing_id: code
+            nrdb_printing_id: code,
+            faction_id: attributes.faction_id,
+            card_type_id: attributes.card_type_id
           })
       return {details: details, cards: cards}
 
