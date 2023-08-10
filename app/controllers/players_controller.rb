@@ -35,14 +35,18 @@ class PlayersController < ApplicationController
         redirect_to tournament_path(@tournament)
       end
     else
-      redirect_to tournament_players_path(@tournament)
+      if @tournament.nrdb_deck_registration?
+        redirect_to registration_tournament_player_path(@tournament, player, { edit_decks: true })
+      else
+        redirect_to tournament_players_path(@tournament)
+      end
     end
   end
 
   def update
     authorize @player
 
-    params=player_params
+    params = player_params
     unless is_organiser_view
       params[:user_id] = current_user.id
     end
@@ -69,10 +73,14 @@ class PlayersController < ApplicationController
       @player.decks.destroy_by(side_id: side)
       return
     end
-    @player.decks.destroy_by(side_id: side)
     details = request['details']
+    if details['user_id'] && details['user_id'] != current_user.id
+      return
+    end
     details.keep_if { |key| Deck.column_names.include? key }
     details['side_id'] = side
+    details['user_id'] = current_user.id
+    @player.decks.destroy_by(side_id: side)
     deck = @player.decks.create(details)
     deck.cards.create(request['cards'])
   end
@@ -131,14 +139,22 @@ class PlayersController < ApplicationController
 
   def registration
     authorize @tournament, :update?
+    @edit_decks = params[:edit_decks]
+    if @edit_decks
+      begin
+        @decks = Nrdb::Connection.new(current_user).decks
+      rescue
+        redirect_to login_path(:return_to => request.fullpath)
+      end
+    end
   end
 
   private
 
   def player_params
     params.require(:player)
-      .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-              :first_round_bye, :manual_seed)
+          .permit(:name, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
+                  :first_round_bye, :manual_seed)
   end
 
   def is_organiser_view

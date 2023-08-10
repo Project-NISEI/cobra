@@ -35,7 +35,7 @@
               - unless @current_user_dropped
                 h5.card-title Register for this Event
                 = simple_form_for :player, url: tournament_players_path(@tournament) do |f|
-                  = render 'players/form', f: f, default_name: current_user.nrdb_username, new_self_registration: true
+                  = render 'players/form', f: f, default_name: current_user.nrdb_username, new_registration: true
                   .text-right
                     = button_tag type: :submit, class: 'btn btn-primary' do
                       => fa_icon 'user-plus'

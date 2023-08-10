@@ -29,7 +29,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     expect do
       create_player_as_organizer
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(tournament_players_path(Tournament.last))
+    expect(page.current_path).to eq(registration_tournament_player_path(Tournament.last, Player.last))
   end
 
   it 'displays a deck in the list' do
@@ -91,6 +91,11 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
         .to eq([['Diversion of Funds', 3]])
     end
 
+    it 'records the user who saved the decks' do
+      expect(@new_player.corp_deck.user).to eq(player)
+      expect(@new_player.runner_deck.user).to eq(player)
+    end
+
     it 'displays the decks when locked' do
       sign_in organiser
       visit tournament_players_path(Tournament.last)
@@ -123,7 +128,9 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   def create_player_as_organizer
     visit tournament_players_path(Tournament.last)
     fill_in 'Name', with: 'Test Player'
-    click_button 'Create'
+    with_nrdb_decks do
+      click_button 'Create'
+    end
   end
 
   def displayed_decks_names
@@ -139,7 +146,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   end
 
   def select_deck(side, deck)
-    first("#player_#{side}_deck", visible: false).set(deck.as_view.to_json)
+    first("#player_#{side}_deck", visible: false).set(deck.as_view(player).to_json)
     first("#player_#{side}_identity", visible: false).set(deck.identity_title)
   end
 

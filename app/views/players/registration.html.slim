@@ -1,3 +1,6 @@
+ruby:
+  @corp_deck_json = @player&.corp_deck&.as_view(current_user)&.to_json
+  @runner_deck_json = @player&.runner_deck&.as_view(current_user)&.to_json
 .container
   .row.mb-3
     .col
@@ -14,9 +17,13 @@
                 span.d-none Back
         .card-body
           = simple_form_for @player, url: tournament_player_path(@tournament, @player), html: {class: 'form-inline'} do |f|
-            = f.input_field :decks_view, hidden: true, disabled: true, value: 'organiser'
-            = f.input_field :corp_deck, hidden: true, disabled: true, value: @player&.corp_deck&.as_view&.to_json
-            = f.input_field :runner_deck, hidden: true, disabled: true, value: @player&.runner_deck&.as_view&.to_json
+            = f.input_field :organiser_view, hidden: true, readonly: true, value: true
+            = f.input_field :corp_deck_before, hidden: true, disabled: true, value: @corp_deck_json
+            = f.input_field :runner_deck_before, hidden: true, disabled: true, value: @runner_deck_json
+            = f.input_field :corp_deck, hidden: true, value: @corp_deck_json
+            = f.input_field :runner_deck, hidden: true, value: @runner_deck_json
+            = f.input_field :corp_identity, hidden: true
+            = f.input_field :runner_identity, hidden: true
             .form-group
               label.d-block.mr-2 for="player_name" Name
               = f.input_field :name,
@@ -25,10 +32,18 @@
             = button_tag type: :submit, class: 'btn btn-primary ml-2 dontprint' do
               => fa_icon 'check'
               | Submit
+            - if !@edit_decks
+              = link_to registration_tournament_player_path(@tournament, @player, {edit_decks: true}), class: 'btn btn-link text-info mr-2 dontprint' do
+                => fa_icon 'edit'
+                | Edit decks
+            - else
+              = link_to registration_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info mr-2 dontprint' do
+                => fa_icon 'undo'
+                | Cancel deck edits
+            span.ml-2.badge.badge-warning.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
       - if @tournament.nrdb_deck_registration?
         .alert.alert-danger.mt-3.mb-0.dontprint role=alert
           => fa_icon 'exclamation-triangle', class: 'mr-2'
           | Deck legality is not yet checked. Please check decks manually.
 
-  - if @tournament.nrdb_deck_registration?
-    .row#display_decks
+  = render 'deck_selection'

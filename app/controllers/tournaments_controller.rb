@@ -1,15 +1,15 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [
-      :show, :edit, :update, :destroy,
-      :upload_to_abr, :save_json, :cut, :qr, :registration, :timer, :lock_decks, :unlock_decks
-    ]
+    :show, :edit, :update, :destroy,
+    :upload_to_abr, :save_json, :cut, :qr, :registration, :timer, :lock_decks, :unlock_decks
+  ]
 
   def index
     authorize Tournament
 
     @tournaments = Tournament.where(private: false)
-      .order(date: :desc)
-      .limit(20)
+                             .order(date: :desc)
+                             .limit(20)
   end
 
   def my
@@ -36,7 +36,7 @@ class TournamentsController < ApplicationController
     authorize @tournament, :show?
     @round = @tournament.rounds.last
     @timer = @round.timer
-    render layout:'fullscreen'
+    render layout: 'fullscreen'
   end
 
   def registration
@@ -49,9 +49,7 @@ class TournamentsController < ApplicationController
     end
 
     if @tournament.nrdb_deck_registration?
-      if @current_user_player.decks_locked?
-        set_locked_decks_view_data
-      else
+      unless @current_user_player.decks_locked?
         begin
           @decks = Nrdb::Connection.new(current_user).decks
         rescue
@@ -105,7 +103,7 @@ class TournamentsController < ApplicationController
 
     response = AbrUpload.upload!(@tournament, tournament_url(@tournament.slug, @request))
 
-    if(response[:code])
+    if (response[:code])
       @tournament.update(abr_code: response[:code])
     end
 
@@ -118,16 +116,16 @@ class TournamentsController < ApplicationController
     data = NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
 
     send_data data.to_json,
-      type: :json,
-      disposition: :attachment,
-      filename: "#{@tournament.name.underscore}.json"
+              type: :json,
+              disposition: :attachment,
+              filename: "#{@tournament.name.underscore}.json"
   end
 
   def cut
     authorize @tournament
 
     number = params[:number].to_i
-    return redirect_to standings_tournament_players_path(@tournament) unless [3,4,8,16].include? number
+    return redirect_to standings_tournament_players_path(@tournament) unless [3, 4, 8, 16].include? number
 
     @tournament.cut_to!(:double_elim, number)
 
@@ -190,28 +188,6 @@ class TournamentsController < ApplicationController
       @current_user_is_running_tournament = @tournament.user_id == current_user.id
       @current_user_player = @players.find { |p| p.user_id == current_user.id }
       @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
-    end
-
-    @the_shadow_corp_nrdb_code = '00005'
-    @the_masque_runner_nrdb_code = '00006'
-  end
-
-  def set_locked_decks_view_data
-    corp_deck = @current_user_player.corp_deck
-    runner_deck = @current_user_player.runner_deck
-    if corp_deck.present?
-      @corp_deck = corp_deck.name
-      @corp_id_nrdb_code = corp_deck.identity_nrdb_printing_id
-    else
-      @corp_deck = 'No corp deck'
-      @corp_id_nrdb_code = @the_shadow_corp_nrdb_code
-    end
-    if runner_deck.present?
-      @runner_deck = runner_deck.name
-      @runner_id_nrdb_code = runner_deck.identity_nrdb_printing_id
-    else
-      @runner_deck = 'No runner deck'
-      @runner_id_nrdb_code = @the_masque_runner_nrdb_code
     end
   end
 end
