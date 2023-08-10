@@ -9,6 +9,11 @@ class PlayersController < ApplicationController
     @dropped = @tournament.players.dropped.sort_by { |p| p.name.downcase || '' }
   end
 
+  def download_decks
+    authorize @tournament, :update?
+    render json: @tournament.players.active.flat_map { |p| p.decks }.map { |d| d.as_view(current_user) }
+  end
+
   def create
     authorize Player
     if @tournament.self_registration?

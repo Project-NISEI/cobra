@@ -77,7 +77,12 @@ $(document).on 'turbolinks:load', ->
               .append('Copy to clipboard in NetrunnerDB format')
               .on('click', (e) =>
                 e.preventDefault()
-                copyDeckToClipboard(deck))
+                copyDeckToClipboard(deck)),
+            $('<a/>', {class: 'dropdown-item', href: '#'})
+              .append('Download as a CSV spreadsheet')
+              .on('click', (e) =>
+                e.preventDefault()
+                downloadDeckCsv(deck))
           )
         )
 

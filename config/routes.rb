@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     resources :players, only: [:index, :new, :create, :update, :destroy] do
       get :standings, on: :collection
       get :meeting, on: :collection
+      get :download_decks, on: :collection
       patch :drop, on: :member
       patch :reinstate, on: :member
       patch :lock_decks, on: :member
