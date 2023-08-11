@@ -213,6 +213,23 @@ $(document).on 'turbolinks:load', ->
         when 'resource' then "<%= asset_path('types/resource.png') %>"
         when 'upgrade' then "<%= asset_path('types/upgrade.png') %>"
 
+    nrdbFactionImage = (faction_id) =>
+      if faction_id.startsWith('neutral')
+        $('<img/>', {
+          src: "<%= asset_path('nsg.png') %>"
+        })
+      else
+        $('<i/>', {
+          class: 'fa icon text-center ' + nrdbFactionIcon(faction_id) + ' ' + nrdbFactionClass(faction_id),
+          style: 'width: 16px'
+        })
+
+    nrdbFactionIcon = (faction_id) =>
+      'icon-' + nrdbFactionClass(faction_id)
+
+    nrdbFactionClass = (faction_id) =>
+      faction_id.replaceAll('_', '-')
+
     sortCards = (deck) =>
       deck.cards.sort((a, b) =>
         if a.card_type_id && b.card_type_id

@@ -6,29 +6,6 @@ $(document).on 'turbolinks:load', ->
     window.getNrdbPrinting = (printingId) =>
       nrdbPrintingsById.get(printingId)
 
-    window.nrdbFactionImageOrEmpty = (faction_id) =>
-      if !faction_id
-        []
-      else
-        nrdbFactionImage(faction_id)
-
-    window.nrdbFactionImage = (faction_id) =>
-      if faction_id.startsWith('neutral')
-        $('<img/>', {
-          src: '/assets/nsg.png'
-        })
-      else
-        $('<i/>', {
-          class: 'fa icon text-center ' + nrdbFactionIcon(faction_id) + ' ' + nrdbFactionClass(faction_id),
-          style: 'width: 16px'
-        })
-
-    nrdbFactionIcon = (faction_id) =>
-      'icon-' + nrdbFactionClass(faction_id)
-
-    nrdbFactionClass = (faction_id) =>
-      faction_id.replaceAll('_', '-')
-
     window.loadNrdbPrintings = (printingIds, callback) =>
       printingIds = new Set(printingIds)
       for printingId from printingIds
