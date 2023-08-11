@@ -21,6 +21,11 @@
 			= f.input_field :name,
 				placeholder: 'Enter player name',
 				class: 'form-control'
+	.form-group
+		label.d-block for="player_pronouns" Pronouns
+		= f.input_field :pronouns,
+			placeholder: 'Example: they/them',
+			class: 'form-control'
 	- if !@tournament.nrdb_deck_registration? or not defined?(new_registration)
 		.form-group
 			label.d-block for="player_corp_identity" Corp ID

@@ -15,7 +15,7 @@ table.table.table-striped.standings
       - stage.standing_rows.each do |row|
         tr
           td= row.position
-          td= row.name
+          td= row.name_with_pronouns
           td.ids
             = render row.corp_identity, points: row.corp_points, side: 'Corp'
             = render row.runner_identity, points: row.runner_points, side: 'Runner'
@@ -28,7 +28,7 @@ table.table.table-striped.standings
       - stage.players.sort.each_with_index do |player, i|
         tr
           td= i+1
-          td= player.name
+          td= player.name_with_pronouns
           td.ids -
           td= 0
           - if @tournament.manual_seed?
