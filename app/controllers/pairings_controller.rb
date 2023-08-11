@@ -8,13 +8,13 @@ class PairingsController < ApplicationController
     @pairings = round.pairings.inject([]) do |pairings, p|
       pairings << {
         table_number: p.table_number,
-        player1_name: p.player1.name,
-        player2_name: p.player2.name
+        player1_name: p.player1.name_with_pronouns,
+        player2_name: p.player2.name_with_pronouns
       }
       pairings << {
         table_number: p.table_number,
-        player1_name: p.player2.name,
-        player2_name: p.player1.name
+        player1_name: p.player2.name_with_pronouns,
+        player2_name: p.player1.name_with_pronouns
       }
     end.sort_by { |p| p[:player1_name] }
   end

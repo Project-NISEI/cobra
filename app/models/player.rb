@@ -70,6 +70,14 @@ class Player < ApplicationRecord
     decks.find_by side_id: 'runner'
   end
 
+  def name_with_pronouns
+    if pronouns?
+      "#{name} (#{pronouns})"
+    else
+      name
+    end
+  end
+
   private
 
   def destroy_pairings

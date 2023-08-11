@@ -10,7 +10,7 @@ table.table.table-striped.standings
       tr
         td= i+1
         - if standing.player
-          td= standing.name
+          td= standing.name_with_pronouns
           td.ids
             = render standing.corp_identity
             = render standing.runner_identity

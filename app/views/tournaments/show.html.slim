@@ -16,7 +16,7 @@
             ul.list-group.list-group-flush
               li.list-group-item
                 .small.text-secondary Name:
-                | #{@current_user_player.name}
+                | #{@current_user_player.name_with_pronouns}
               li.list-group-item
                 .small.text-secondary Corp ID:
                 = render @current_user_player.corp_identity_object

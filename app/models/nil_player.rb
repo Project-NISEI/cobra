@@ -7,6 +7,10 @@ class NilPlayer
     '(Bye)'
   end
 
+  def name_with_pronouns
+    name
+  end
+
   def pairings
     []
   end
