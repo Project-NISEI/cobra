@@ -1,3 +1,7 @@
+ruby:
+  @consent_notice = 'I agree my name, pronouns and Netrunner identities will be publicly visible on this ' \
+          'website. If I submit decklists they will be shared with the organiser. If I enter a round with open ' \
+          'decklists, they may be publicly visible.'
 .identities_form.d-block
   - if defined?(organiser_view)
     = f.input_field :organiser_view, value: true, hidden: true
@@ -47,9 +51,5 @@
         => f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
   - if defined?(new_registration) and not defined?(organiser_view)
     = f.input :consent_data_sharing, as: :boolean,
-                    class: 'form-check-input', input_html: { class: 'mr-1' },
-                    inline_label: 'I consent for my personal data to be shared on this website'
-    - if @tournament.nrdb_deck_registration?
-      = f.input :consent_deck_sharing_with_to, as: :boolean,
-                      class: 'form-check-input', input_html: { class: 'mr-1' },
-                      inline_label: 'I consent for my decks to be shared with the organiser'
+            class: 'form-check-input', input_html: { class: 'mr-1' },
+            inline_label: @consent_notice
