@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_09_225321) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_17_194851) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -131,7 +131,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_09_225321) do
     t.integer "previous_id"
     t.integer "manual_seed"
     t.bigint "user_id"
-    t.boolean "decks_locked"
+    t.boolean "registration_locked"
     t.string "pronouns"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
@@ -204,8 +204,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_09_225321) do
     t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
     t.boolean "self_registration"
     t.boolean "nrdb_deck_registration", default: false
-    t.boolean "all_players_decks_unlocked", default: true
-    t.boolean "any_player_decks_unlocked", default: true
+    t.boolean "all_players_unlocked", default: true
+    t.boolean "any_player_unlocked", default: true
     t.boolean "open_list_cut", default: false
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end

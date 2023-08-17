@@ -24,11 +24,11 @@
         .spinner-border.spinner-border-sm.d-none#download_decks_spinner style='width: 15px'
         => fa_icon 'download', id: 'download_decks_icon'
         | Download decks spreadsheet
-      - if @tournament.any_player_decks_unlocked?
+      - if @tournament.any_player_unlocked?
         => link_to lock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'lock'
           | Lock all decks
-      - unless @tournament.all_players_decks_unlocked?
+      - unless @tournament.all_players_unlocked?
         => link_to unlock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'unlock'
           | Unlock all decks
@@ -39,7 +39,7 @@
         = render 'form', f: f, organiser_view: true, player: player
         .text-right
           - if @tournament.nrdb_deck_registration?
-            - if player.decks_locked?
+            - if player.registration_locked?
               =< link_to unlock_decks_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
                 => fa_icon 'unlock'
                 | Unlock decks

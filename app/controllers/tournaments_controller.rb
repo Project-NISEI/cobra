@@ -49,7 +49,7 @@ class TournamentsController < ApplicationController
     end
 
     if @tournament.nrdb_deck_registration?
-      unless @current_user_player.decks_locked?
+      unless @current_user_player.registration_locked?
         begin
           @decks = Nrdb::Connection.new(current_user).decks
         rescue

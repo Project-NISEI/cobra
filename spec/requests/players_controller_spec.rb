@@ -170,30 +170,30 @@ RSpec.describe PlayersController do
     end
 
     it 'has all decks unlocked to begin with' do
-      expect(@player1.reload.decks_locked?).to be(false)
-      expect(@player2.reload.decks_locked?).to be(false)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(true)
-      expect(tournament.any_player_decks_unlocked?).to be(true)
+      expect(@player1.reload.registration_locked?).to be(false)
+      expect(@player2.reload.registration_locked?).to be(false)
+      expect(tournament.reload.all_players_unlocked?).to be(true)
+      expect(tournament.any_player_unlocked?).to be(true)
     end
 
     it 'locks decks for the whole tournament' do
       sign_in tournament.user
       patch lock_decks_tournament_path(tournament)
 
-      expect(@player1.reload.decks_locked?).to be(true)
-      expect(@player2.reload.decks_locked?).to be(true)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
-      expect(tournament.any_player_decks_unlocked?).to be(false)
+      expect(@player1.reload.registration_locked?).to be(true)
+      expect(@player2.reload.registration_locked?).to be(true)
+      expect(tournament.reload.all_players_unlocked?).to be(false)
+      expect(tournament.any_player_unlocked?).to be(false)
     end
 
     it 'locks decks for one player but not the other' do
       sign_in tournament.user
       patch lock_decks_tournament_player_path(tournament, @player1)
 
-      expect(@player1.reload.decks_locked?).to be(true)
-      expect(@player2.reload.decks_locked?).to be(false)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
-      expect(tournament.any_player_decks_unlocked?).to be(true)
+      expect(@player1.reload.registration_locked?).to be(true)
+      expect(@player2.reload.registration_locked?).to be(false)
+      expect(tournament.reload.all_players_unlocked?).to be(false)
+      expect(tournament.any_player_unlocked?).to be(true)
     end
 
     it 'unlocks decks for one player' do
@@ -201,10 +201,10 @@ RSpec.describe PlayersController do
       patch lock_decks_tournament_path(tournament)
       patch unlock_decks_tournament_player_path(tournament, @player1)
 
-      expect(@player1.reload.decks_locked?).to be(false)
-      expect(@player2.reload.decks_locked?).to be(true)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
-      expect(tournament.any_player_decks_unlocked?).to be(true)
+      expect(@player1.reload.registration_locked?).to be(false)
+      expect(@player2.reload.registration_locked?).to be(true)
+      expect(tournament.reload.all_players_unlocked?).to be(false)
+      expect(tournament.any_player_unlocked?).to be(true)
     end
 
     it 'unlocks decks for all players' do
@@ -212,10 +212,10 @@ RSpec.describe PlayersController do
       patch lock_decks_tournament_path(tournament)
       patch unlock_decks_tournament_path(tournament)
 
-      expect(@player1.reload.decks_locked?).to be(false)
-      expect(@player2.reload.decks_locked?).to be(false)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(true)
-      expect(tournament.any_player_decks_unlocked?).to be(true)
+      expect(@player1.reload.registration_locked?).to be(false)
+      expect(@player2.reload.registration_locked?).to be(false)
+      expect(tournament.reload.all_players_unlocked?).to be(true)
+      expect(tournament.any_player_unlocked?).to be(true)
     end
 
     it 'locks decks for all players individually' do
@@ -223,10 +223,10 @@ RSpec.describe PlayersController do
       patch lock_decks_tournament_player_path(tournament, @player1)
       patch lock_decks_tournament_player_path(tournament, @player2)
 
-      expect(@player1.reload.decks_locked?).to be(true)
-      expect(@player2.reload.decks_locked?).to be(true)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
-      expect(tournament.any_player_decks_unlocked?).to be(false)
+      expect(@player1.reload.registration_locked?).to be(true)
+      expect(@player2.reload.registration_locked?).to be(true)
+      expect(tournament.reload.all_players_unlocked?).to be(false)
+      expect(tournament.any_player_unlocked?).to be(false)
     end
 
     it 'unlocks decks for all players individually' do
@@ -235,10 +235,10 @@ RSpec.describe PlayersController do
       patch unlock_decks_tournament_player_path(tournament, @player1)
       patch unlock_decks_tournament_player_path(tournament, @player2)
 
-      expect(@player1.reload.decks_locked?).to be(false)
-      expect(@player2.reload.decks_locked?).to be(false)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(true)
-      expect(tournament.any_player_decks_unlocked?).to be(true)
+      expect(@player1.reload.registration_locked?).to be(false)
+      expect(@player2.reload.registration_locked?).to be(false)
+      expect(tournament.reload.all_players_unlocked?).to be(true)
+      expect(tournament.any_player_unlocked?).to be(true)
     end
 
     it 'unlocks decks for all but one player' do
@@ -247,10 +247,10 @@ RSpec.describe PlayersController do
       patch unlock_decks_tournament_path(tournament)
       patch lock_decks_tournament_player_path(tournament, @player1)
 
-      expect(@player1.reload.decks_locked?).to be(true)
-      expect(@player2.reload.decks_locked?).to be(false)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
-      expect(tournament.any_player_decks_unlocked?).to be(true)
+      expect(@player1.reload.registration_locked?).to be(true)
+      expect(@player2.reload.registration_locked?).to be(false)
+      expect(tournament.reload.all_players_unlocked?).to be(false)
+      expect(tournament.any_player_unlocked?).to be(true)
     end
 
     it 'locks decks for a new player when the tournament is locked' do
@@ -261,9 +261,9 @@ RSpec.describe PlayersController do
       @player3 = Player.find_by! user_id: user3.id
       sign_in tournament.user
 
-      expect(@player3.reload.decks_locked?).to be(true)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
-      expect(tournament.any_player_decks_unlocked?).to be(false)
+      expect(@player3.reload.registration_locked?).to be(true)
+      expect(tournament.reload.all_players_unlocked?).to be(false)
+      expect(tournament.any_player_unlocked?).to be(false)
     end
 
     it 'locks decks for a new player when only one player is locked' do
@@ -274,9 +274,9 @@ RSpec.describe PlayersController do
       @player3 = Player.find_by! user_id: user3.id
       sign_in tournament.user
 
-      expect(@player3.reload.decks_locked?).to be(true)
-      expect(tournament.reload.all_players_decks_unlocked?).to be(false)
-      expect(tournament.any_player_decks_unlocked?).to be(true)
+      expect(@player3.reload.registration_locked?).to be(true)
+      expect(tournament.reload.all_players_unlocked?).to be(false)
+      expect(tournament.any_player_unlocked?).to be(true)
     end
   end
 

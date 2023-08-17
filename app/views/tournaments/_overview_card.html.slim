@@ -1,10 +1,10 @@
 .col-md-6
   - if @tournament.nrdb_deck_registration?
-    - if @tournament.all_players_decks_unlocked?
+    - if @tournament.all_players_unlocked?
       .alert.alert-info Deck submission is open
-    - elsif @current_user_is_running_tournament && @tournament.any_player_decks_unlocked?
+    - elsif @current_user_is_running_tournament && @tournament.any_player_unlocked?
       .alert.alert-info One or more players' decks are unlocked for editing
-    - elsif @current_user_player && !@current_user_player.decks_locked?
+    - elsif @current_user_player && !@current_user_player.registration_locked?
       .alert.alert-info Your decks are unlocked for editing
   .card
     ul.list-group.list-group-flush

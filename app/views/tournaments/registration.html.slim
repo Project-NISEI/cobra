@@ -37,9 +37,9 @@ ruby:
                 => fa_icon 'check'
                 | Submit
               span.badge.badge-warning.ml-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
-              - if @current_user_player.decks_locked?
+              - if @current_user_player.registration_locked?
                 div.mt-3 Decks are locked, talk to a Tournament Organiser to change your decks.
-        - unless @current_user_player.decks_locked?
+        - unless @current_user_player.registration_locked?
           .alert.alert-danger.mt-3.mb-0.dontprint role=alert
             => fa_icon 'exclamation-triangle', class: 'mr-2'
             | Deck legality is not yet checked. Please ensure your decks are legal.

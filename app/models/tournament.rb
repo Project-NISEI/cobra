@@ -34,18 +34,18 @@ class Tournament < ApplicationRecord
   end
 
   def close_registration!
-    players.active.update(decks_locked: true)
-    update(all_players_decks_unlocked: false, any_player_decks_unlocked: false, self_registration: false)
+    players.active.update(registration_locked: true)
+    update(all_players_unlocked: false, any_player_unlocked: false, self_registration: false)
   end
 
   def lock_decks!
-    players.active.update(decks_locked: true)
-    update(all_players_decks_unlocked: false, any_player_decks_unlocked: false)
+    players.active.update(registration_locked: true)
+    update(all_players_unlocked: false, any_player_unlocked: false)
   end
 
   def unlock_decks!
-    players.active.update(decks_locked: false)
-    update(all_players_decks_unlocked: true, any_player_decks_unlocked: true)
+    players.active.update(registration_locked: false)
+    update(all_players_unlocked: true, any_player_unlocked: true)
   end
 
   def corp_counts
@@ -76,17 +76,17 @@ class Tournament < ApplicationRecord
   end
 
   def unlocked_deck_players
-    players.active.where('decks_locked IS NOT TRUE')
+    players.active.where('registration_locked IS NOT TRUE')
   end
 
   def locked_deck_players
-    players.active.where('decks_locked IS TRUE')
+    players.active.where('registration_locked IS TRUE')
   end
 
   def decks_status_description
-    if all_players_decks_unlocked?
+    if all_players_unlocked?
       'all unlocked'
-    elsif any_player_decks_unlocked?
+    elsif any_player_unlocked?
       'partially unlocked'
     else
       'all locked'

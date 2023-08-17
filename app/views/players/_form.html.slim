@@ -8,7 +8,7 @@ ruby:
   .form-group
     - if defined?(player)
       span.text-info.float-left.mr-2 style='width: 12px'
-        - if player.decks_locked?
+        - if player.registration_locked?
           => fa_icon 'lock', class: 'player-locked', title: 'Decks locked'
         - else
           => fa_icon 'unlock', class: 'player-unlocked', title: 'Decks unlocked'
