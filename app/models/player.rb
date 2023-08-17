@@ -9,6 +9,7 @@ class Player < ApplicationRecord
   has_many :decks, dependent: :destroy
 
   before_destroy :destroy_pairings
+  before_save :handle_blank_identities
 
   scope :active, -> { where(active: true) }
   scope :dropped, -> { where(active: false) }
@@ -82,5 +83,14 @@ class Player < ApplicationRecord
 
   def destroy_pairings
     pairings.destroy_all
+  end
+
+  def handle_blank_identities
+    if corp_identity == ''
+      self.corp_identity = nil
+    end
+    if runner_identity == ''
+      self.runner_identity = nil
+    end
   end
 end

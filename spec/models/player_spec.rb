@@ -44,6 +44,15 @@ RSpec.describe Player do
     end
   end
 
+  describe 'identities' do
+
+    it 'sets empty identities to nil on update' do
+      player.update(runner_identity: '', corp_identity: '')
+      expect(player.runner_identity).to be_nil
+      expect(player.corp_identity).to be_nil
+    end
+  end
+
   describe 'opponents' do
     let!(:pairing1) { create(:pairing, player1: player, score1: 6) }
     let!(:pairing2) { create(:pairing, player1: player, score1: 3) }
