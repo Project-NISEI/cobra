@@ -2,13 +2,13 @@
 - round.pairings.each do |pairing|
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user}"
     .col-sm-2 Table #{pairing.table_number}
+    - if pairing.cut_decks_visible_to(current_user)
+      =< link_to view_decks_tournament_round_pairing_path(@tournament, round, pairing), class: 'btn btn-sm btn-info' do
+        => fa_icon 'eye'
+        | View decks
     .col-sm.left_player_name
       = @players[pairing.player1_id].name_with_pronouns
       =< render 'player_side', pairing: pairing, player: @players[pairing.player1_id], single_sided: single_sided
-      - if round.stage.double_elim? && @tournament.open_list_cut? && @players[pairing.player2_id].user_id == current_user.id
-        =< link_to view_opponent_deck_tournament_round_pairing_path(@tournament, round, pairing), class: 'btn btn-sm btn-info' do
-          => fa_icon 'eye'
-          | View deck
       - if @players[pairing.player1_id].id
         .ids
           = render @players[pairing.player1_id].corp_identity_object
@@ -51,10 +51,6 @@
     .col-sm.right_player_name
       = @players[pairing.player2_id].name_with_pronouns
       =< render 'player_side', pairing: pairing, player: @players[pairing.player2_id], single_sided: single_sided
-      - if @tournament.open_list_cut? && @players[pairing.player1_id].user_id == current_user.id
-        =< link_to view_opponent_deck_tournament_round_pairing_path(@tournament, round, pairing), class: 'btn btn-sm btn-info' do
-          => fa_icon 'eye'
-          | View deck
       - if @players[pairing.player2_id].id
         .ids
           = render @players[pairing.player2_id].corp_identity_object

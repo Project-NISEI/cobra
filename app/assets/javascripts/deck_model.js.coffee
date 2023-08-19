@@ -1,5 +1,5 @@
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('player_corp_deck')? || document.getElementById('opponent_deck')?
+  if document.getElementById('player_corp_deck')? || document.getElementById('display_pairing_decks')?
     window.readDecksFromInputs = () =>
       {
         corp: readSideDecks(
@@ -12,8 +12,11 @@ $(document).on 'turbolinks:load', ->
           $('#player_runner_deck'))
       }
 
-    window.readOpponentDeckFromInputs = () =>
-      readSideDecks($('#opponent_name').val(), [], $('#opponent_deck'))
+    window.readPlayer1DeckFromInputs = () =>
+      readSideDecks($('#player1_name').val(), [], $('#player1_deck'))
+
+    window.readPlayer2DeckFromInputs = () =>
+      readSideDecks($('#player2_name').val(), [], $('#player2_deck'))
 
     readSideDecks = (description, $beforeInput, $afterInput) =>
       after = readDeck($afterInput)

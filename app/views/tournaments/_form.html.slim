@@ -12,6 +12,8 @@
 - if Flipper.enabled? :open_list_cut
   .form-group
     = f.input :open_list_cut, as: :boolean, inline_label: 'Open lists in cut: Display uploaded decks to opponent in cut'
+  .form-group
+    = f.input :public_list_cut, as: :boolean, inline_label: 'Public lists in cut: Decks of all players in cut will be public'
 .form-group
   = f.input :private, as: :boolean, inline_label: 'Private: Only I will be able to view this tournament'
 .form-group

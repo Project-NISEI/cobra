@@ -2,7 +2,7 @@
 #= require nrdb_cards
 
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('display_decks')? || document.getElementById('display_opponent_deck')?
+  if document.getElementById('display_decks')? || document.getElementById('display_pairing_decks')?
 
     window.renderDecksDisplay = (decks) =>
       normaliseCardTables(decks)
@@ -23,22 +23,22 @@ $(document).on 'turbolinks:load', ->
         decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
       decks
 
-    renderOpponentDeck = (decks) =>
+    renderPairingDeck = (decks) =>
       renderDeck(decks, true)
 
-    renderDeck = (decks, opponent) =>
+    renderDeck = (decks, viewOnly) =>
       $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
         return $container
       deck = decks.after
       $container.append(
-        deckSummaryTable(decks, opponent),
+        deckSummaryTable(decks, viewOnly),
         deckDiffTable(decks.diff),
         identityTable(deck),
         cardsTable(decks),
         totalsTable(deck))
 
-    deckSummaryTable = (decks, opponent) =>
+    deckSummaryTable = (decks, viewOnly) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -46,20 +46,20 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after, opponent))
+          .append(deckNameRow(decks.after, viewOnly))
           .append(deckChangesRow(decks)))
 
-    deckNameRow = (deck, opponent) =>
+    deckNameRow = (deck, viewOnly) =>
       if deck.details.name
         $('<tr/>').append($('<td/>')
-          .append(deckNameButtons(deck, opponent))
+          .append(deckNameButtons(deck, viewOnly))
           .append(document.createTextNode(deck.details.name)))
       else
         $('<tr/>').append($('<td/>')
           .append('None selected'))
 
-    deckNameButtons = (deck, opponent) =>
-      if opponent
+    deckNameButtons = (deck, viewOnly) =>
+      if viewOnly
         []
       else if deck.details.mine
         $('<a/>', {
@@ -291,6 +291,7 @@ $(document).on 'turbolinks:load', ->
       catch e
         console.log(e)
 
-    if document.getElementById('display_opponent_deck')?
-      $('#display_opponent_deck').append(
-        renderOpponentDeck(readOpponentDeckFromInputs()))
+    if document.getElementById('display_pairing_decks')?
+      $('#display_pairing_decks').append(
+        renderPairingDeck(readPlayer1DeckFromInputs()),
+        renderPairingDeck(readPlayer2DeckFromInputs()))
