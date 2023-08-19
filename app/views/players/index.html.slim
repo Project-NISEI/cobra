@@ -17,36 +17,38 @@
     | Players
     - if @tournament.nrdb_deck_registration?
       span.badge.badge-pill.badge-light.text-muted.ml-2<> style='font-size:1rem; vertical-align: middle'
-        | Deck status: #{@tournament.decks_status_description}
+        | Registration status: #{@tournament.registration_lock_description}
       input#download_decks_tournament type='hidden' value='#{@tournament.name}'
       input#download_decks_path type='hidden' value='#{download_decks_tournament_players_path(@tournament)}'
       a.btn.btn-link.text-info#download_decks_button href='#'
         .spinner-border.spinner-border-sm.d-none#download_decks_spinner style='width: 15px'
         => fa_icon 'download', id: 'download_decks_icon'
         | Download decks spreadsheet
+    - if @tournament.self_registration?
       - if @tournament.any_player_unlocked?
         => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'lock'
-          | Lock all decks
+          | Lock all players
       - unless @tournament.all_players_unlocked?
         => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'unlock'
-          | Unlock all decks
+          | Unlock all players
   ul.list-group.list-group-flush
   - @players.each do |player|
     li.list-group-item
       = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mt-2 d-block' } do |f|
         = render 'form', f: f, organiser_view: true, player: player
         .text-right
-          - if @tournament.nrdb_deck_registration?
+          - if @tournament.self_registration?
             - if player.registration_locked?
               =< link_to unlock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
                 => fa_icon 'unlock'
-                | Unlock decks
+                | Unlock registration
             - else
               =< link_to lock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
                 => fa_icon 'lock'
-                | Lock decks
+                | Lock registration
+          - if @tournament.nrdb_deck_registration?
             =< link_to registration_tournament_player_path(@tournament, player), class: 'btn btn-link text-info mr-2' do
               => fa_icon 'eye'
               | View decks

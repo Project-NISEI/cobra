@@ -78,7 +78,7 @@ class Tournament < ApplicationRecord
     players.active.where('registration_locked IS TRUE')
   end
 
-  def decks_status_description
+  def registration_lock_description
     if all_players_unlocked?
       'all unlocked'
     elsif any_player_unlocked?
