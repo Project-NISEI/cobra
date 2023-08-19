@@ -5,40 +5,42 @@ $(document).on 'turbolinks:load', ->
   if document.getElementById('display_decks')? || document.getElementById('display_pairing_decks')?
 
     window.renderDecksDisplay = (decks) =>
-      normaliseCardTables(decks)
       $('#display_decks').empty().append(
-        renderDeck(decks.corp),
-        renderDeck(decks.runner))
+        renderDecksDisplayLeftRight({left: decks.corp, right: decks.runner}))
       any_changes = decks.corp.change_type != 'none' || decks.runner.change_type != 'none'
       $('#deck_changes_not_submitted_warning').toggleClass('d-none', !any_changes)
 
+    renderDecksDisplayLeftRight = (decks) =>
+      normaliseCardTables(decks)
+      [
+        renderDeck(decks.left),
+        renderDeck(decks.right)
+      ]
+
     normaliseCardTables = (decks) =>
-      decks.corp.pad_cards = 0
-      decks.runner.pad_cards = 0
-      if decks.corp.change_type != decks.runner.change_type
+      decks.left.pad_cards = 0
+      decks.right.pad_cards = 0
+      if decks.left.change_type != decks.right.change_type
         return decks
-      if decks.corp.change_type != 'change_cards'
-        max_cards = Math.max(decks.runner.after.cards.length, decks.corp.after.cards.length)
-        decks.corp.pad_cards = max_cards - decks.corp.after.cards.length
-        decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
+      if decks.left.change_type != 'change_cards'
+        max_cards = Math.max(decks.right.after.cards.length, decks.left.after.cards.length)
+        decks.left.pad_cards = max_cards - decks.left.after.cards.length
+        decks.right.pad_cards = max_cards - decks.right.after.cards.length
       decks
 
-    renderPairingDeck = (decks) =>
-      renderDeck(decks, true)
-
-    renderDeck = (decks, viewOnly) =>
+    renderDeck = (decks) =>
       $container = $('<div/>', {class: 'col-md-6'})
       if decks.before.unset && decks.after.unset
         return $container
       deck = decks.after
       $container.append(
-        deckSummaryTable(decks, viewOnly),
+        deckSummaryTable(decks),
         deckDiffTable(decks.diff),
         identityTable(deck),
         cardsTable(decks),
         totalsTable(deck))
 
-    deckSummaryTable = (decks, viewOnly) =>
+    deckSummaryTable = (decks) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -46,7 +48,7 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after, viewOnly))
+          .append(deckNameRow(decks.after, decks.viewOnly))
           .append(deckChangesRow(decks)))
 
     deckNameRow = (deck, viewOnly) =>
@@ -292,6 +294,9 @@ $(document).on 'turbolinks:load', ->
         console.log(e)
 
     if document.getElementById('display_pairing_decks')?
-      $('#display_pairing_decks').append(
-        renderPairingDeck(readPlayer1DeckFromInputs()),
-        renderPairingDeck(readPlayer2DeckFromInputs()))
+      try
+        decks = readPairingDecksFromInputs()
+        $('#display_pairing_decks').append(
+          renderDecksDisplayLeftRight({left: decks.player1, right: decks.player2}))
+      catch e
+        console.log(e)

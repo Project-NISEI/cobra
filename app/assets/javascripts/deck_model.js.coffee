@@ -12,11 +12,15 @@ $(document).on 'turbolinks:load', ->
           $('#player_runner_deck'))
       }
 
-    window.readPlayer1DeckFromInputs = () =>
-      readSideDecks($('#player1_name').val(), [], $('#player1_deck'))
+    window.readPairingDecksFromInputs = () =>
+      {
+        player1: markPairingDeck(readSideDecks($('#player1_name').val(), [], $('#player1_deck'))),
+        player2: markPairingDeck(readSideDecks($('#player2_name').val(), [], $('#player2_deck')))
+      }
 
-    window.readPlayer2DeckFromInputs = () =>
-      readSideDecks($('#player2_name').val(), [], $('#player2_deck'))
+    markPairingDeck = (decks) =>
+      decks.viewOnly = true
+      decks
 
     readSideDecks = (description, $beforeInput, $afterInput) =>
       after = readDeck($afterInput)
