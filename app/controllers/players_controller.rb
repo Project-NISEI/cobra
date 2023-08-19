@@ -51,17 +51,11 @@ class PlayersController < ApplicationController
   def update
     authorize @player
 
+    params = player_params
     if is_organiser_view
       redirect_to tournament_players_path(@tournament)
     else
       redirect_to tournament_path(@tournament)
-    end
-
-    params = player_params
-    unless is_organiser_view
-      if @player.registration_locked?
-        return
-      end
       params[:user_id] = current_user.id
     end
 
