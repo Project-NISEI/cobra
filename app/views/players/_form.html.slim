@@ -6,7 +6,7 @@ ruby:
   - if defined?(organiser_view)
     = f.input_field :organiser_view, value: true, hidden: true
   .form-group
-    - if defined?(player)
+    - if defined?(player) && @tournament.self_registration?
       span.text-info.float-left.mr-2 style='width: 12px'
         - if player.registration_locked?
           => fa_icon 'lock', class: 'player-locked', title: 'Registration locked'

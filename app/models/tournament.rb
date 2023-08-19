@@ -83,12 +83,18 @@ class Tournament < ApplicationRecord
   end
 
   def registration_lock_description
-    if all_players_unlocked?
-      'all unlocked'
-    elsif any_player_unlocked?
-      'partially unlocked'
+    if registration_closed?
+      if any_player_unlocked?
+        'partially unlocked'
+      else
+        'closed'
+      end
     else
-      'all locked'
+      if all_players_unlocked?
+        'open'
+      else
+        'partially locked'
+      end
     end
   end
 

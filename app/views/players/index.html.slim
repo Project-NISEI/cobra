@@ -15,32 +15,32 @@
 
   h3.mt-4
     | Players
-    - if @tournament.nrdb_deck_registration?
+    - if @tournament.self_registration?
       span.badge.badge-pill.badge-light.text-muted.ml-2<> style='font-size:1rem; vertical-align: middle'
-        | Registration status: #{@tournament.registration_lock_description}
+        | Registration: #{@tournament.registration_lock_description}
+      - if @tournament.registration_closed?
+        - if @tournament.any_player_unlocked?
+          => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+            => fa_icon 'lock'
+            | Lock all players
+        => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+          => fa_icon 'unlock'
+          | Open registration
+      - else
+        - unless @tournament.all_players_unlocked?
+          => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+            => fa_icon 'unlock'
+            | Unlock all players
+        => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+          => fa_icon 'lock'
+          | Close registration
+    - if @tournament.nrdb_deck_registration?
       input#download_decks_tournament type='hidden' value='#{@tournament.name}'
       input#download_decks_path type='hidden' value='#{download_decks_tournament_players_path(@tournament)}'
       a.btn.btn-link.text-info#download_decks_button href='#'
         .spinner-border.spinner-border-sm.d-none#download_decks_spinner style='width: 15px'
         => fa_icon 'download', id: 'download_decks_icon'
         | Download decks spreadsheet
-    - if @tournament.self_registration?
-      - if @tournament.registration_closed?
-        => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-          => fa_icon 'unlock'
-          | Open registration
-        - if @tournament.any_player_unlocked?
-          => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-            => fa_icon 'lock'
-            | Lock all players
-      - else
-        => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-          => fa_icon 'lock'
-          | Close registration
-        - unless @tournament.all_players_unlocked?
-          => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-            => fa_icon 'unlock'
-            | Unlock all players
   ul.list-group.list-group-flush
   - @players.each do |player|
     li.list-group-item
