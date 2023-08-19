@@ -26,7 +26,7 @@
     - if policy(@tournament).update?
       p
         - if @tournament.self_registration?
-          => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
+          => link_to lock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
             => fa_icon 'lock'
             | Close registration
         - if @tournament.rounds.all?(&:completed?)
