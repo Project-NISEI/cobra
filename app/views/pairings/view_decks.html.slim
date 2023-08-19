@@ -3,6 +3,8 @@ input#player2_name type='hidden' value='#{@pairing.player2&.name}'
 input#player1_deck type='hidden' value='#{@pairing.player1_deck&.as_view(current_user).to_json}'
 input#player2_deck type='hidden' value='#{@pairing.player2_deck&.as_view(current_user).to_json}'
 .container
-  .col
-    h4 Round
+  .row.mb-2
+    .col
+      h4 #{@pairing.stage.format.titleize}
+      h5 Round #{@pairing.round.number} table #{@pairing.table_number}
   .row#display_pairing_decks
