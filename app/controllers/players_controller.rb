@@ -1,6 +1,6 @@
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :lock_decks, :unlock_decks, :registration]
+  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :close_registration, :unlock_decks, :registration]
 
   def index
     authorize @tournament, :update?

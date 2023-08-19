@@ -135,8 +135,8 @@ RSpec.describe PlayersController do
       } }
 
       @player1.reload
-      expect(@player1.corp_deck.cards.map {|card| [card.title, card.quantity]}).to eq([['Corp Card', 3]])
-      expect(@player1.runner_deck.cards.map {|card| [card.title, card.quantity]}).to eq([['Runner Card', 3]])
+      expect(@player1.corp_deck.cards.map { |card| [card.title, card.quantity] }).to eq([['Corp Card', 3]])
+      expect(@player1.runner_deck.cards.map { |card| [card.title, card.quantity] }).to eq([['Runner Card', 3]])
     end
 
     it 'deletes decks' do
@@ -178,7 +178,7 @@ RSpec.describe PlayersController do
 
     it 'locks decks for the whole tournament' do
       sign_in tournament.user
-      patch lock_decks_tournament_path(tournament)
+      patch close_registration_tournament_path(tournament)
 
       expect(@player1.reload.registration_locked?).to be(true)
       expect(@player2.reload.registration_locked?).to be(true)
@@ -198,7 +198,7 @@ RSpec.describe PlayersController do
 
     it 'unlocks decks for one player' do
       sign_in tournament.user
-      patch lock_decks_tournament_path(tournament)
+      patch close_registration_tournament_path(tournament)
       patch unlock_decks_tournament_player_path(tournament, @player1)
 
       expect(@player1.reload.registration_locked?).to be(false)
@@ -209,7 +209,7 @@ RSpec.describe PlayersController do
 
     it 'unlocks decks for all players' do
       sign_in tournament.user
-      patch lock_decks_tournament_path(tournament)
+      patch close_registration_tournament_path(tournament)
       patch unlock_decks_tournament_path(tournament)
 
       expect(@player1.reload.registration_locked?).to be(false)
@@ -231,7 +231,7 @@ RSpec.describe PlayersController do
 
     it 'unlocks decks for all players individually' do
       sign_in tournament.user
-      patch lock_decks_tournament_path(tournament)
+      patch close_registration_tournament_path(tournament)
       patch unlock_decks_tournament_player_path(tournament, @player1)
       patch unlock_decks_tournament_player_path(tournament, @player2)
 
@@ -243,7 +243,7 @@ RSpec.describe PlayersController do
 
     it 'unlocks decks for all but one player' do
       sign_in tournament.user
-      patch lock_decks_tournament_path(tournament)
+      patch close_registration_tournament_path(tournament)
       patch unlock_decks_tournament_path(tournament)
       patch lock_decks_tournament_player_path(tournament, @player1)
 
@@ -255,7 +255,7 @@ RSpec.describe PlayersController do
 
     it 'locks decks for a new player when the tournament is locked' do
       sign_in tournament.user
-      patch lock_decks_tournament_path(tournament)
+      patch close_registration_tournament_path(tournament)
       sign_in user3
       post tournament_players_path(tournament), params: { player: { name: 'Player 3' } }
       @player3 = Player.find_by! user_id: user3.id

@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       get :download_decks, on: :collection
       patch :drop, on: :member
       patch :reinstate, on: :member
-      patch :lock_decks, on: :member
+      patch :close_registration, on: :member
       patch :unlock_decks, on: :member
       get :registration, on: :member
     end
@@ -37,7 +37,7 @@ Rails.application.routes.draw do
     get :registration, on: :member
     get :timer, on: :member
     patch :unlock_decks, on: :member
-    patch :lock_decks, on: :member
+    patch :close_registration, on: :member
     get :shortlink, on: :collection
     get :not_found, on: :collection
     get :my, on: :collection

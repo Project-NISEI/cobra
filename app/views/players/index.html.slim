@@ -25,7 +25,7 @@
         => fa_icon 'download', id: 'download_decks_icon'
         | Download decks spreadsheet
       - if @tournament.any_player_unlocked?
-        => link_to lock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+        => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'lock'
           | Lock all decks
       - unless @tournament.all_players_unlocked?
