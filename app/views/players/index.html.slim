@@ -25,14 +25,22 @@
         => fa_icon 'download', id: 'download_decks_icon'
         | Download decks spreadsheet
     - if @tournament.self_registration?
-      - if @tournament.any_player_unlocked?
-        => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-          => fa_icon 'lock'
-          | Lock all players
-      - unless @tournament.all_players_unlocked?
+      - if @tournament.registration_closed?
         => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'unlock'
-          | Unlock all players
+          | Open registration
+        - if @tournament.any_player_unlocked?
+          => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+            => fa_icon 'lock'
+            | Lock all players
+      - else
+        => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+          => fa_icon 'lock'
+          | Close registration
+        - unless @tournament.all_players_unlocked?
+          => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+            => fa_icon 'unlock'
+            | Unlock all players
   ul.list-group.list-group-flush
   - @players.each do |player|
     li.list-group-item
