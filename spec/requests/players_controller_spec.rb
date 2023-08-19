@@ -210,7 +210,7 @@ RSpec.describe PlayersController do
     it 'unlocks decks for all players' do
       sign_in tournament.user
       patch close_registration_tournament_path(tournament)
-      patch unlock_decks_tournament_path(tournament)
+      patch open_registration_tournament_path(tournament)
 
       expect(@player1.reload.registration_locked?).to be(false)
       expect(@player2.reload.registration_locked?).to be(false)
@@ -244,7 +244,7 @@ RSpec.describe PlayersController do
     it 'unlocks decks for all but one player' do
       sign_in tournament.user
       patch close_registration_tournament_path(tournament)
-      patch unlock_decks_tournament_path(tournament)
+      patch open_registration_tournament_path(tournament)
       patch lock_decks_tournament_player_path(tournament, @player1)
 
       expect(@player1.reload.registration_locked?).to be(true)

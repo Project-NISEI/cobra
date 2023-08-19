@@ -29,7 +29,7 @@
           => fa_icon 'lock'
           | Lock all decks
       - unless @tournament.all_players_unlocked?
-        => link_to unlock_decks_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
+        => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
           => fa_icon 'unlock'
           | Unlock all decks
   ul.list-group.list-group-flush

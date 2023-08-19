@@ -38,7 +38,7 @@ class Tournament < ApplicationRecord
     update(all_players_unlocked: false, any_player_unlocked: false)
   end
 
-  def unlock_decks!
+  def open_registration!
     players.active.update(registration_locked: false)
     update(all_players_unlocked: true, any_player_unlocked: true)
   end
