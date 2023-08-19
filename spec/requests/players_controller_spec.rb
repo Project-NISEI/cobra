@@ -169,6 +169,24 @@ RSpec.describe PlayersController do
       expect(@player1.runner_deck).to be_nil
     end
 
+    it 'ignores player details change when player is locked' do
+      sign_in tournament.user
+      patch lock_registration_tournament_player_path(tournament, @player1)
+      sign_in user1
+      put tournament_player_path(tournament, @player1), params: { player: {
+        name: 'Updated name',
+        pronouns: 'they/them',
+        corp_identity: 'Some corp',
+        runner_identity: 'Some runner',
+      } }
+
+      @player1.reload
+      expect(@player1.name).to eq('Player 1')
+      expect(@player1.runner_deck).to be_nil
+      expect(@player1.corp_identity).to be_nil
+      expect(@player1.runner_identity).to be_nil
+    end
+
     it 'has all decks unlocked to begin with' do
       expect(@player1.reload.registration_locked?).to be(false)
       expect(@player2.reload.registration_locked?).to be(false)

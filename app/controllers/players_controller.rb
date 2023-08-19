@@ -51,22 +51,24 @@ class PlayersController < ApplicationController
   def update
     authorize @player
 
+    if is_organiser_view
+      redirect_to tournament_players_path(@tournament)
+    else
+      redirect_to tournament_path(@tournament)
+    end
+
     params = player_params
     unless is_organiser_view
+      if @player.registration_locked?
+        return
+      end
       params[:user_id] = current_user.id
     end
 
     @player.update(params.except(:corp_deck, :runner_deck))
-
-    if @tournament.nrdb_deck_registration? and (current_user == @tournament.user || !@player.registration_locked?)
+    if @tournament.nrdb_deck_registration?
       save_deck(params, :corp_deck, 'corp')
       save_deck(params, :runner_deck, 'runner')
-    end
-
-    if current_user.id == @tournament.user_id && @player.user_id != current_user.id
-      redirect_to tournament_players_path(@tournament)
-    else
-      redirect_to tournament_path(@tournament)
     end
   end
 
