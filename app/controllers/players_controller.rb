@@ -16,7 +16,7 @@ class PlayersController < ApplicationController
 
   def create
     authorize Player
-    if @tournament.self_registration?
+    if @tournament.registration_open?
       authorize @tournament, :show?
     else
       authorize @tournament, :update?

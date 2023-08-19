@@ -3,7 +3,7 @@
     = render 'overview_card'
 
     .col-md-6
-      - if @tournament.self_registration? || @current_user_player
+      - if @tournament.registration_open? || @current_user_player
         - if @current_user_player
           .card
             .card-header
