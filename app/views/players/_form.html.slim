@@ -49,7 +49,7 @@ ruby:
       .form-group
         label.d-block for="player_manual_seed" Manual Seed
         => f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
-  - if defined?(new_registration) and not defined?(organiser_view)
+  - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
     = f.input :consent_data_sharing, as: :boolean,
             class: 'form-check-input', input_html: { class: 'mr-1' },
             inline_label: @consent_notice
