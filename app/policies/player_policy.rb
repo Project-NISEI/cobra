@@ -4,6 +4,6 @@ class PlayerPolicy < ApplicationPolicy
   end
 
   def update?
-    user && (record.user_id == user.id || record.tournament.user == user)
+    user && ((record.user_id == user.id && !record.registration_locked?) || record.tournament.user == user)
   end
 end

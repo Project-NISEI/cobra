@@ -6,12 +6,12 @@ ruby:
   - if defined?(organiser_view)
     = f.input_field :organiser_view, value: true, hidden: true
   .form-group
-    - if defined?(player)
+    - if defined?(player) && @tournament.self_registration?
       span.text-info.float-left.mr-2 style='width: 12px'
-        - if player.decks_locked?
-          => fa_icon 'lock', class: 'player-locked', title: 'Decks locked'
+        - if player.registration_locked?
+          => fa_icon 'lock', class: 'player-locked', title: 'Registration locked'
         - else
-          => fa_icon 'unlock', class: 'player-unlocked', title: 'Decks unlocked'
+          => fa_icon 'unlock', class: 'player-unlocked', title: 'Registration unlocked'
     javascript:
         $('.player-locked').tooltip()
         $('.player-unlocked').tooltip()

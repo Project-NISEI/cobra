@@ -27,19 +27,22 @@ ruby:
                 label.d-block.mr-2 for="player_name" Name
                 = f.input_field :name,
                         placeholder: 'Enter player name',
-                        class: 'form-control'
+                        class: 'form-control',
+                        readonly: @current_user_player.registration_locked?
               .form-group.mr-3
                 label.d-block.mr-2 for="player_pronouns" Pronouns
                 = f.input_field :pronouns,
                         placeholder: 'Example: they/them',
-                        class: 'form-control'
-              = button_tag type: :submit, class: 'btn btn-primary dontprint' do
-                => fa_icon 'check'
-                | Submit
+                        class: 'form-control',
+                        readonly: @current_user_player.registration_locked?
+              - unless @current_user_player.registration_locked?
+                = button_tag type: :submit, class: 'btn btn-primary dontprint' do
+                  => fa_icon 'check'
+                  | Submit
               span.badge.badge-warning.ml-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
-              - if @current_user_player.decks_locked?
-                div.mt-3 Decks are locked, talk to a Tournament Organiser to change your decks.
-        - unless @current_user_player.decks_locked?
+              - if @current_user_player.registration_locked?
+                div.mt-3 Registration is locked, talk to a Tournament Organiser to change your decks or details.
+        - unless @current_user_player.registration_locked?
           .alert.alert-danger.mt-3.mb-0.dontprint role=alert
             => fa_icon 'exclamation-triangle', class: 'mr-2'
             | Deck legality is not yet checked. Please ensure your decks are legal.
@@ -59,9 +62,12 @@ ruby:
           .card-body
             = simple_form_for @current_user_player, url: tournament_player_path(@tournament, @current_user_player) do |f|
               = render 'players/form', f: f
-              .text-right.dontprint
-                = button_tag type: :submit, class: 'btn btn-primary' do
-                  => fa_icon 'check'
-                  | Submit
+              - if @current_user_player.registration_locked?
+                div.mt-3 Registration is locked, talk to a Tournament Organiser to change your details.
+              - else
+                .text-right.dontprint
+                  = button_tag type: :submit, class: 'btn btn-primary' do
+                    => fa_icon 'check'
+                    | Submit
 
   = render 'player_counts'

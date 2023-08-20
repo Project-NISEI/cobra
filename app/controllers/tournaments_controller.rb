@@ -1,7 +1,7 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [
     :show, :edit, :update, :destroy,
-    :upload_to_abr, :save_json, :cut, :qr, :registration, :timer, :lock_decks, :unlock_decks, :close_registration
+    :upload_to_abr, :save_json, :cut, :qr, :registration, :timer, :close_registration, :open_registration
   ]
 
   def index
@@ -49,7 +49,7 @@ class TournamentsController < ApplicationController
     end
 
     if @tournament.nrdb_deck_registration?
-      unless @current_user_player.decks_locked?
+      unless @current_user_player.registration_locked?
         begin
           @decks = Nrdb::Connection.new(current_user).decks
         rescue
@@ -161,17 +161,10 @@ class TournamentsController < ApplicationController
     redirect_back(fallback_location: tournament_rounds_path(@tournament))
   end
 
-  def lock_decks
+  def open_registration
     authorize @tournament, :edit?
 
-    @tournament.lock_decks!
-    redirect_back(fallback_location: tournament_rounds_path(@tournament))
-  end
-
-  def unlock_decks
-    authorize @tournament, :edit?
-
-    @tournament.unlock_decks!
+    @tournament.open_registration!
     redirect_back(fallback_location: tournament_rounds_path(@tournament))
   end
 

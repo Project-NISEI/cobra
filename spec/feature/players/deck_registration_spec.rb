@@ -43,10 +43,12 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   end
 
   it 'displays no decks when locked with no deck' do
+    register_as_player
     sign_in organiser
     visit tournament_players_path(Tournament.last)
-    click_link 'Lock all decks'
-    register_as_player
+    click_link 'Close registration'
+    sign_in player
+    visit registration_tournament_path(Tournament.last)
     expect(page).not_to have_selector '#nrdb_decks'
   end
 
@@ -99,7 +101,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     it 'displays the decks when locked' do
       sign_in organiser
       visit tournament_players_path(Tournament.last)
-      click_link 'Lock all decks'
+      click_link 'Close registration'
       sign_in player
       visit registration_tournament_path(Tournament.last)
       expect(page).not_to have_selector '#nrdb_decks'

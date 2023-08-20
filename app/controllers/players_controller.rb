@@ -1,6 +1,6 @@
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :lock_decks, :unlock_decks, :registration]
+  before_action :set_player, only: [:update, :destroy, :drop, :reinstate, :lock_registration, :unlock_registration, :registration]
 
   def index
     authorize @tournament, :update?
@@ -16,7 +16,7 @@ class PlayersController < ApplicationController
 
   def create
     authorize Player
-    if @tournament.self_registration?
+    if @tournament.registration_open?
       authorize @tournament, :show?
     else
       authorize @tournament, :update?
@@ -26,7 +26,7 @@ class PlayersController < ApplicationController
     unless is_organiser_view
       params[:user_id] = current_user.id
     end
-    params[:decks_locked] = !@tournament[:all_players_decks_unlocked]
+    params[:registration_locked] = !@tournament[:all_players_unlocked]
 
     player = @tournament.players.create(params.except(:corp_deck, :runner_deck))
     unless @tournament.current_stage.nil?
@@ -52,21 +52,17 @@ class PlayersController < ApplicationController
     authorize @player
 
     params = player_params
-    unless is_organiser_view
+    if is_organiser_view
+      redirect_to tournament_players_path(@tournament)
+    else
+      redirect_to tournament_path(@tournament)
       params[:user_id] = current_user.id
     end
 
     @player.update(params.except(:corp_deck, :runner_deck))
-
-    if @tournament.nrdb_deck_registration? and (current_user == @tournament.user || !@player.decks_locked?)
+    if @tournament.nrdb_deck_registration?
       save_deck(params, :corp_deck, 'corp')
       save_deck(params, :runner_deck, 'runner')
-    end
-
-    if current_user.id == @tournament.user_id && @player.user_id != current_user.id
-      redirect_to tournament_players_path(@tournament)
-    else
-      redirect_to tournament_path(@tournament)
     end
   end
 
@@ -110,22 +106,22 @@ class PlayersController < ApplicationController
     redirect_to tournament_players_path(@tournament)
   end
 
-  def lock_decks
+  def lock_registration
     authorize @tournament, :update?
 
-    @player.update(decks_locked: true)
-    @tournament.update(all_players_decks_unlocked: false,
-                       any_player_decks_unlocked: @tournament.unlocked_deck_players.count > 0)
+    @player.update(registration_locked: true)
+    @tournament.update(all_players_unlocked: false,
+                       any_player_unlocked: @tournament.unlocked_deck_players.count > 0)
 
     redirect_to tournament_players_path(@tournament)
   end
 
-  def unlock_decks
+  def unlock_registration
     authorize @tournament, :update?
 
-    @player.update(decks_locked: false)
-    @tournament.update(any_player_decks_unlocked: true,
-                       all_players_decks_unlocked: @tournament.locked_deck_players.count == 0)
+    @player.update(registration_locked: false)
+    @tournament.update(any_player_unlocked: true,
+                       all_players_unlocked: @tournament.locked_deck_players.count == 0)
 
     redirect_to tournament_players_path(@tournament)
   end
