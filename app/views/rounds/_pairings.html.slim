@@ -3,7 +3,7 @@
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user}"
     .col-sm-2 Table #{pairing.table_number}
     - if pairing.cut_decks_visible_to(current_user)
-      =< link_to view_decks_tournament_round_pairing_path(@tournament, round, pairing), class: 'btn btn-sm btn-info' do
+      =< link_to view_decks_tournament_round_pairing_path(@tournament, round, pairing) do
         => fa_icon 'eye'
         | View decks
     .col-sm.left_player_name

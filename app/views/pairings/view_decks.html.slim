@@ -1,3 +1,8 @@
+.col-12
+  p.dontprint= link_to tournament_rounds_path(@tournament), class: 'btn btn-primary' do
+    => fa_icon 'arrow-left'
+    | Back to pairings
+
 input#player1_name type='hidden' value='#{@pairing.player1&.name}'
 input#player2_name type='hidden' value='#{@pairing.player2&.name}'
 input#player1_deck type='hidden' value='#{@pairing.player1_deck&.as_view(current_user).to_json}'

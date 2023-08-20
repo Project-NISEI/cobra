@@ -14,6 +14,11 @@
     tbody
       - @pairings.each do |p|
         tr
-          td= p[:table_number]
+          td
+            | #{p[:table_number]}
+            - if p[:view_decks]
+              =< link_to view_decks_tournament_round_pairing_path(@tournament, @round, p[:pairing]), class: 'ml-2' do
+                => fa_icon 'eye'
+                | View decks
           td= p[:player1_name]
           td= p[:player2_name]
