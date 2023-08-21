@@ -16,25 +16,44 @@
   h3.mt-4
     | Players
     - if @tournament.self_registration?
-      span.badge.badge-pill.badge-light.text-muted.ml-2<> style='font-size:1rem; vertical-align: middle'
+      span.badge.badge-pill.badge-light.text-muted.ml-3 style='font-size:1rem; vertical-align: middle'
         | Registration: #{@tournament.registration_lock_description}
-      - if @tournament.registration_closed?
-        - if @tournament.any_player_unlocked?
-          => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-            => fa_icon 'lock'
-            | Lock all players
-        => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-          => fa_icon 'unlock'
-          | Open registration
-      - else
-        - unless @tournament.all_players_unlocked?
-          => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-            => fa_icon 'unlock'
-            | Unlock all players
-        => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-          => fa_icon 'lock'
-          | Close registration
+        span.dropdown<
+          a data-toggle='dropdown' aria-expanded=false href='#' title='Registration options'
+            = fa_icon 'caret-down'
+          .dropdown-menu
+            - if @tournament.registration_closed?
+              - if @tournament.any_player_unlocked?
+                => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'dropdown-item' do
+                  => fa_icon 'lock'
+                  | Lock all players
+              => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'dropdown-item' do
+                => fa_icon 'unlock'
+                | Open registration
+            - else
+              - unless @tournament.all_players_unlocked?
+                => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'dropdown-item' do
+                  => fa_icon 'unlock'
+                  | Unlock all players
+              => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'dropdown-item' do
+                => fa_icon 'lock'
+                | Close registration
     - if @tournament.nrdb_deck_registration?
+      - if Flipper.enabled? :open_list_cut
+        span.badge.badge-pill.badge-light.text-muted.ml-2 style='font-size:1rem; vertical-align: middle'
+          | Decks: #{@tournament.decks_visibility_description}
+          span.dropdown<
+            a data-toggle='dropdown' aria-expanded=false href='#' title='Registration options'
+              = fa_icon 'caret-down'
+            .dropdown-menu
+              - if @tournament.public_list_cut?
+                => link_to tournament_path(@tournament, {tournament: {public_list_cut: false}}), method: :patch, class: 'dropdown-item' do
+                  => fa_icon 'lock'
+                  | Make all decks private
+              - else
+                => link_to tournament_path(@tournament, {tournament: {public_list_cut: true}}), method: :patch, class: 'dropdown-item' do
+                  => fa_icon 'lock'
+                  | Make decks in cut public
       input#download_decks_tournament type='hidden' value='#{@tournament.name}'
       input#download_decks_path type='hidden' value='#{download_decks_tournament_players_path(@tournament)}'
       a.btn.btn-link.text-info#download_decks_button href='#'

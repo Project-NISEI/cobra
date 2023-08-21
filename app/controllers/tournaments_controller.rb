@@ -87,7 +87,7 @@ class TournamentsController < ApplicationController
 
     @tournament.update(tournament_params)
 
-    redirect_to edit_tournament_path(@tournament)
+    redirect_back_or_to edit_tournament_path(@tournament)
   end
 
   def destroy

@@ -98,6 +98,14 @@ class Tournament < ApplicationRecord
     end
   end
 
+  def decks_visibility_description
+    if public_list_cut?
+      'cut public, swiss private'
+    else
+      'private'
+    end
+  end
+
   private
 
   def default_date
