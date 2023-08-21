@@ -33,6 +33,16 @@ class Tournament < ApplicationRecord
     end
   end
 
+  def lock_player_registrations!
+    players.active.update(registration_locked: true)
+    update(all_players_unlocked: false, any_player_unlocked: false)
+  end
+
+  def unlock_player_registrations!
+    players.active.update(registration_locked: false)
+    update(all_players_unlocked: true, any_player_unlocked: true)
+  end
+
   def close_registration!
     players.active.update(registration_locked: true)
     update(all_players_unlocked: false, any_player_unlocked: false, registration_closed: true)
@@ -84,16 +94,20 @@ class Tournament < ApplicationRecord
 
   def registration_lock_description
     if registration_closed?
-      if any_player_unlocked?
-        'partially unlocked'
+      if all_players_unlocked?
+        'closed, unlocked'
+      elsif any_player_unlocked?
+        'closed, part unlocked'
       else
         'closed'
       end
     else
       if all_players_unlocked?
         'open'
+      elsif any_player_unlocked?
+        'open, part locked'
       else
-        'partially locked'
+        'open, all locked'
       end
     end
   end
