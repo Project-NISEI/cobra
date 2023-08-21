@@ -24,10 +24,11 @@
                   class: ['dropdown-item', *('disabled' unless @tournament.any_player_unlocked?)] do
             => fa_icon 'lock', style: 'width: 16px'
             | Lock all players, prevent editing
-          => link_to open_registration_tournament_path(@tournament), method: :patch,
+          => link_to unlock_player_registrations_tournament_path(@tournament), method: :patch,
                   class: ['dropdown-item', *('disabled' if @tournament.all_players_unlocked?)] do
             => fa_icon 'unlock', style: 'width: 16px'
             | Unlock all players, allow editing
+          .dropdown-divider
           => link_to close_registration_tournament_path(@tournament), method: :patch,
                   class: ['dropdown-item', *('disabled' if @tournament.registration_closed?)] do
             => fa_icon 'lock', style: 'width: 16px'
