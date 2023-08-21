@@ -32,11 +32,11 @@
           => link_to close_registration_tournament_path(@tournament), method: :patch,
                   class: ['dropdown-item', *('disabled' if @tournament.registration_closed?)] do
             => fa_icon 'lock', style: 'width: 16px'
-            | Close registration
+            | Close registration, prevent new players
           => link_to open_registration_tournament_path(@tournament), method: :patch,
                   class: ['dropdown-item', *('disabled' unless @tournament.registration_closed?)] do
             => fa_icon 'unlock', style: 'width: 16px'
-            | Open registration
+            | Open registration, allow new players
     - if @tournament.nrdb_deck_registration?
       - if Flipper.enabled? :open_list_cut
         span.dropdown
