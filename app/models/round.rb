@@ -40,4 +40,8 @@ class Round < ApplicationRecord
   def name
     "#{stage.format.humanize(capitalize: false)} round #{number}"
   end
+
+  def current?
+    self == tournament.current_stage.rounds.last
+  end
 end
