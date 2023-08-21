@@ -11,7 +11,7 @@ RSpec.describe 'list pairings for a round' do
       round.pairings.create(player1: jack, player2: jill, table_number: 1)
       round.pairings.create(player1: snap, player2: crackle, table_number: 2)
       round.pairings.create(player1: pop, player2: nil, table_number: 3)
-      round.tournament.update(open_list_cut: true)
+      round.tournament.update(public_list_cut: true)
     end
 
     it 'displays pairings, repeated' do
