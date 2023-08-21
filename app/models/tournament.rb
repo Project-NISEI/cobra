@@ -44,13 +44,13 @@ class Tournament < ApplicationRecord
   end
 
   def close_registration!
-    players.active.update(registration_locked: true)
-    update(all_players_unlocked: false, any_player_unlocked: false, registration_closed: true)
+    update(registration_closed: true)
+    lock_player_registrations!
   end
 
   def open_registration!
-    players.active.update(registration_locked: false)
-    update(all_players_unlocked: true, any_player_unlocked: true, registration_closed: false)
+    update(registration_closed: false)
+    unlock_player_registrations!
   end
 
   def registration_open?
