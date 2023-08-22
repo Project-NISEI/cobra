@@ -80,7 +80,7 @@ class Pairing < ApplicationRecord
     unless stage.double_elim? && !side.nil?
       return false
     end
-    if tournament.open_list_cut? && (player1 == user || player2 == user)
+    if tournament.open_list_cut? && (user == tournament.user || stage.users.exists?(user&.id))
       true
     else
       tournament.public_list_cut?

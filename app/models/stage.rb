@@ -3,6 +3,7 @@ class Stage < ApplicationRecord
   has_many :rounds, dependent: :destroy
   has_many :registrations, dependent: :destroy
   has_many :players, through: :registrations
+  has_many :users, through: :players
   has_many :standing_rows, dependent: :destroy
 
   delegate :top, to: :standings
@@ -47,7 +48,7 @@ class Stage < ApplicationRecord
     standing_rows.destroy_all
     standings.each_with_index do |standing, i|
       standing_rows.create(
-        position: i+1,
+        position: i + 1,
         player: standing.player,
         points: standing.points,
         sos: standing.sos,

@@ -2,6 +2,7 @@ class Player < ApplicationRecord
   include Pairable
 
   belongs_to :tournament
+  belongs_to :user, optional: true
   belongs_to :previous, class_name: 'Player', optional: true
   has_one :next, class_name: 'Player', foreign_key: :previous_id
   has_many :registrations, dependent: :destroy

@@ -115,6 +115,8 @@ class Tournament < ApplicationRecord
   def decks_visibility_description
     if public_list_cut?
       'cut public, swiss private'
+    elsif open_list_cut?
+      'cut open, swiss private'
     else
       'private'
     end
