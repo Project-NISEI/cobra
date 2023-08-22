@@ -10,9 +10,6 @@ RSpec.describe 'pairing deck visibility' do
 
   let(:swiss) { tournament.stages.find_by!(format: :swiss) }
   let(:cut) { create(:stage, tournament: tournament, format: :double_elim) }
-  let(:pairing) { create(:pairing, :player1_is_corp,
-                         round: create(:round, stage: cut),
-                         player1: jack, player2: jill) }
 
   before do
     create(:registration, player: jack, stage: swiss)
@@ -26,85 +23,120 @@ RSpec.describe 'pairing deck visibility' do
     create(:registration, player: bob, stage: cut)
   end
 
-  describe 'private lists' do
-    it 'does not let you see decks in your pairing' do
-      expect(pairing.cut_decks_visible_to(jack.user)).to be(false)
+  context 'a pairing in the cut' do
+    let(:pairing) { create(:pairing, :player1_is_corp,
+                           round: create(:round, stage: cut),
+                           player1: jack, player2: jill) }
+
+    describe 'private lists' do
+      it 'does not let you see decks in your pairing' do
+        expect(pairing.cut_decks_visible_to(jack.user)).to be(false)
+      end
+
+      it 'does not let you see decks in a pairing of other players' do
+        expect(pairing.cut_decks_visible_to(alice.user)).to be(false)
+      end
+
+      it 'does not let you see decks when not in cut' do
+        expect(pairing.cut_decks_visible_to(bubble_boy.user)).to be(false)
+      end
+
+      it 'does not let you see decks when unregistered' do
+        expect(pairing.cut_decks_visible_to(unregistered_user)).to be(false)
+      end
+
+      it 'does not let you see decks when unauthenticated' do
+        expect(pairing.cut_decks_visible_to(nil)).to be(false)
+      end
+
+      it 'forces the TO to use the players tab to see decks' do
+        expect(pairing.cut_decks_visible_to(tournament.user)).to be(false)
+      end
     end
 
-    it 'does not let you see decks in a pairing of other players' do
-      expect(pairing.cut_decks_visible_to(alice.user)).to be(false)
+    describe 'open list cut' do
+      before { tournament.update(open_list_cut: true) }
+
+      it 'allows you to see decks in your pairing' do
+        expect(pairing.cut_decks_visible_to(jack.user)).to be(true)
+      end
+
+      it 'allows you to see decks in a pairing of other players' do
+        expect(pairing.cut_decks_visible_to(alice.user)).to be(true)
+      end
+
+      it 'does not let you see decks when not in cut' do
+        expect(pairing.cut_decks_visible_to(bubble_boy.user)).to be(false)
+      end
+
+      it 'does not let you see decks when unregistered' do
+        expect(pairing.cut_decks_visible_to(unregistered_user)).to be(false)
+      end
+
+      it 'does not let you see decks when unauthenticated' do
+        expect(pairing.cut_decks_visible_to(nil)).to be(false)
+      end
+
+      it 'allows the TO to see decks' do
+        expect(pairing.cut_decks_visible_to(tournament.user)).to be(true)
+      end
     end
 
-    it 'does not let you see decks when not in cut' do
-      expect(pairing.cut_decks_visible_to(bubble_boy.user)).to be(false)
-    end
+    describe 'public list cut' do
+      before { tournament.update(public_list_cut: true) }
 
-    it 'does not let you see decks when unregistered' do
-      expect(pairing.cut_decks_visible_to(unregistered_user)).to be(false)
-    end
+      it 'allows you to see decks in your pairing' do
+        expect(pairing.cut_decks_visible_to(jack.user)).to be(true)
+      end
 
-    it 'does not let you see decks when unauthenticated' do
-      expect(pairing.cut_decks_visible_to(nil)).to be(false)
-    end
+      it 'allows you to see decks in a pairing of other players' do
+        expect(pairing.cut_decks_visible_to(alice.user)).to be(true)
+      end
 
-    it 'forces the TO to use the players tab to see decks' do
-      expect(pairing.cut_decks_visible_to(tournament.user)).to be(false)
+      it 'allows you to see decks when not in cut' do
+        expect(pairing.cut_decks_visible_to(bubble_boy.user)).to be(true)
+      end
+
+      it 'allows you to see decks when unregistered' do
+        expect(pairing.cut_decks_visible_to(unregistered_user)).to be(true)
+      end
+
+      it 'allows you to see decks when unauthenticated' do
+        expect(pairing.cut_decks_visible_to(nil)).to be(true)
+      end
+
+      it 'allows the TO to see decks' do
+        expect(pairing.cut_decks_visible_to(tournament.user)).to be(true)
+      end
     end
   end
 
-  describe 'open list cut' do
-    before { tournament.update(open_list_cut: true) }
+  context 'a pairing in swiss' do
+    let(:pairing) { create(:pairing, :player1_is_corp,
+                           round: create(:round, stage: swiss),
+                           player1: jack, player2: jill) }
 
-    it 'allows you to see decks in your pairing' do
-      expect(pairing.cut_decks_visible_to(jack.user)).to be(true)
-    end
+    describe 'public list cut' do
+      before { tournament.update(public_list_cut: true) }
 
-    it 'allows you to see decks in a pairing of other players' do
-      expect(pairing.cut_decks_visible_to(alice.user)).to be(true)
-    end
-
-    it 'does not let you see decks when not in cut' do
-      expect(pairing.cut_decks_visible_to(bubble_boy.user)).to be(false)
-    end
-
-    it 'does not let you see decks when unregistered' do
-      expect(pairing.cut_decks_visible_to(unregistered_user)).to be(false)
-    end
-
-    it 'does not let you see decks when unauthenticated' do
-      expect(pairing.cut_decks_visible_to(nil)).to be(false)
-    end
-
-    it 'allows the TO to see decks' do
-      expect(pairing.cut_decks_visible_to(tournament.user)).to be(true)
+      it 'does not let you see decks in your pairing' do
+        expect(pairing.cut_decks_visible_to(jack.user)).to be(false)
+      end
     end
   end
 
-  describe 'public list cut' do
-    before { tournament.update(public_list_cut: true) }
+  context 'a pairing with sides not chosen yet' do
+    let(:pairing) { create(:pairing,
+                           round: create(:round, stage: cut),
+                           player1: jack, player2: jill) }
 
-    it 'allows you to see decks in your pairing' do
-      expect(pairing.cut_decks_visible_to(jack.user)).to be(true)
-    end
+    describe 'public list cut' do
+      before { tournament.update(public_list_cut: true) }
 
-    it 'allows you to see decks in a pairing of other players' do
-      expect(pairing.cut_decks_visible_to(alice.user)).to be(true)
-    end
-
-    it 'allows you to see decks when not in cut' do
-      expect(pairing.cut_decks_visible_to(bubble_boy.user)).to be(true)
-    end
-
-    it 'allows you to see decks when unregistered' do
-      expect(pairing.cut_decks_visible_to(unregistered_user)).to be(true)
-    end
-
-    it 'allows you to see decks when unauthenticated' do
-      expect(pairing.cut_decks_visible_to(nil)).to be(true)
-    end
-
-    it 'allows the TO to see decks' do
-      expect(pairing.cut_decks_visible_to(tournament.user)).to be(true)
+      it 'does not show decks in your pairing' do
+        # TODO could show your opponent's decks
+        expect(pairing.cut_decks_visible_to(jack.user)).to be(false)
+      end
     end
   end
 end
