@@ -2,7 +2,7 @@
 #= require nrdb_cards
 
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('display_decks')? || document.getElementById('display_pairing_decks')?
+  if deckDisplayEnabled()
 
     window.renderDecksDisplay = (decks) =>
       $('#display_decks').empty().append(
@@ -29,12 +29,11 @@ $(document).on 'turbolinks:load', ->
       decks
 
     renderDeck = (decks) =>
-      $container = $('<div/>', {class: 'col-md-6'})
+      $container = $('<div/>', {class: 'col-md-6'}).append(deckSummaryTable(decks))
       if decks.before.unset && decks.after.unset
         return $container
       deck = decks.after
       $container.append(
-        deckSummaryTable(decks),
         deckDiffTable(decks.diff),
         identityTable(deck),
         cardsTable(decks),
@@ -298,5 +297,13 @@ $(document).on 'turbolinks:load', ->
         decks = readPairingDecksFromInputs()
         $('#display_pairing_decks').append(
           renderDecksDisplayLeftRight({left: decks.player1, right: decks.player2}))
+      catch e
+        console.log(e)
+
+    if document.getElementById('display_player_decks')?
+      try
+        decks = readPlayerDecksFromInputs()
+        $('#display_player_decks').append(
+          renderDecksDisplayLeftRight({left: decks.corp, right: decks.runner}))
       catch e
         console.log(e)

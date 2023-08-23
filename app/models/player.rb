@@ -73,13 +73,7 @@ class Player < ApplicationRecord
   end
 
   def decks_visible_to(user)
-    registrations.any? do |r|
-      if tournament.stage_decks_open?(r.stage) && (user == tournament.user || r.stage.users.exists?(user&.id))
-        true
-      else
-        tournament.stage_decks_public?(r.stage)
-      end
-    end
+    registrations.any? { |r| r.stage.decks_visible_to(user) }
   end
 
   def name_with_pronouns

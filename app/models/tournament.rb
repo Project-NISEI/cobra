@@ -149,10 +149,24 @@ class Tournament < ApplicationRecord
   end
 
   def decks_visibility_description
-    if public_list_cut?
-      'cut public, swiss private'
-    elsif open_list_cut?
-      'cut open, swiss private'
+    "swiss #{swiss_decks_visibility_desc}, cut #{cut_decks_visibility_desc}"
+  end
+
+  def swiss_decks_visibility_desc
+    if swiss_decks_public?
+      'public'
+    elsif swiss_decks_open?
+      'open'
+    else
+      'private'
+    end
+  end
+
+  def cut_decks_visibility_desc
+    if cut_decks_public?
+      'public'
+    elsif cut_decks_open?
+      'open'
     else
       'private'
     end

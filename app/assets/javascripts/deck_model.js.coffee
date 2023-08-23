@@ -1,5 +1,8 @@
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('player_corp_deck')? || document.getElementById('display_pairing_decks')?
+  window.deckDisplayEnabled = () =>
+    document.getElementById('display_decks')? || document.getElementById('display_pairing_decks')? || document.getElementById('display_player_decks')?
+
+  if deckDisplayEnabled()
     window.readDecksFromInputs = () =>
       {
         corp: readSideDecks(
@@ -14,11 +17,17 @@ $(document).on 'turbolinks:load', ->
 
     window.readPairingDecksFromInputs = () =>
       {
-        player1: markPairingDeck(readSideDecks($('#player1_name').val(), [], $('#player1_deck'))),
-        player2: markPairingDeck(readSideDecks($('#player2_name').val(), [], $('#player2_deck')))
+        player1: markViewOnlyDeck(readSideDecks($('#player1_name').val(), [], $('#player1_deck'))),
+        player2: markViewOnlyDeck(readSideDecks($('#player2_name').val(), [], $('#player2_deck')))
       }
 
-    markPairingDeck = (decks) =>
+    window.readPlayerDecksFromInputs = () =>
+      {
+        corp: markViewOnlyDeck(readSideDecks('Corp Deck', [], $('#corp_deck'))),
+        runner: markViewOnlyDeck(readSideDecks('Runner Deck', [], $('#runner_deck')))
+      }
+
+    markViewOnlyDeck = (decks) =>
       decks.viewOnly = true
       decks
 
@@ -53,10 +62,16 @@ $(document).on 'turbolinks:load', ->
       deckStr = $input.val()
       if deckStr.length > 0
         deck = JSON.parse(deckStr)
-        sortCards(deck.cards)
-        deck
+        if !deck
+          unsetDeck()
+        else
+          sortCards(deck.cards)
+          deck
       else
-        {details: {}, cards: [], unset: true}
+        unsetDeck()
+
+    unsetDeck = () =>
+      {details: {}, cards: [], unset: true}
 
     diffDecks = (before, after) =>
       if before.unset || after.unset || before.details.nrdb_uuid != after.details.nrdb_uuid

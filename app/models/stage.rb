@@ -58,4 +58,20 @@ class Stage < ApplicationRecord
       )
     end
   end
+
+  def decks_open?
+    tournament.stage_decks_open?(self)
+  end
+
+  def decks_public?
+    tournament.stage_decks_public?(self)
+  end
+
+  def decks_visible_to(user)
+    if decks_open?
+      user == tournament.user || users.exists?(user&.id)
+    else
+      decks_public?
+    end
+  end
 end
