@@ -10,14 +10,14 @@ class PairingsController < ApplicationController
         table_number: p.table_number,
         player1_name: p.player1.name_with_pronouns,
         player2_name: p.player2.name_with_pronouns,
-        view_decks: p.cut_decks_visible_to(current_user),
+        view_decks: p.decks_visible_to(current_user),
         pairing: p
       }
       pairings << {
         table_number: p.table_number,
         player1_name: p.player2.name_with_pronouns,
         player2_name: p.player1.name_with_pronouns,
-        view_decks: p.cut_decks_visible_to(current_user),
+        view_decks: p.decks_visible_to(current_user),
         pairing: p
       }
     end.sort_by { |p| p[:player1_name] }

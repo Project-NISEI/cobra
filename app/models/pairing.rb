@@ -76,14 +76,14 @@ class Pairing < ApplicationRecord
     player1_is_corp? ? :runner : :corp
   end
 
-  def cut_decks_visible_to(user)
-    unless stage.double_elim? && !side.nil?
+  def decks_visible_to(user)
+    if stage.single_sided? && side.nil?
       return false
     end
-    if tournament.open_list_cut? && (user == tournament.user || stage.users.exists?(user&.id))
+    if tournament.stage_decks_open?(stage) && (user == tournament.user || stage.users.exists?(user&.id))
       true
     else
-      tournament.public_list_cut?
+      tournament.stage_decks_public?(stage)
     end
   end
 

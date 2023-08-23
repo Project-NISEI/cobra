@@ -9,6 +9,18 @@ class Tournament < ApplicationRecord
     double_elim: 1
   }
 
+  enum cut_deck_visibility: {
+    cut_decks_private: 0,
+    cut_decks_open: 1,
+    cut_decks_public: 2
+  }
+
+  enum swiss_deck_visibility: {
+    swiss_decks_private: 0,
+    swiss_decks_open: 1,
+    swiss_decks_public: 2
+  }
+
   delegate :pair_new_round!, to: :current_stage
 
   validates :name, :slug, presence: true
@@ -55,6 +67,26 @@ class Tournament < ApplicationRecord
 
   def registration_open?
     self_registration? && !registration_closed?
+  end
+
+  def stage_decks_open?(stage)
+    if stage.double_elim?
+      cut_decks_open?
+    elsif stage.swiss?
+      swiss_decks_open?
+    else
+      false
+    end
+  end
+
+  def stage_decks_public?(stage)
+    if stage.double_elim?
+      cut_decks_public?
+    elsif stage.swiss?
+      swiss_decks_public?
+    else
+      false
+    end
   end
 
   def corp_counts

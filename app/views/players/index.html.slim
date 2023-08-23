@@ -43,15 +43,15 @@
           button.btn.btn-sm.dropdown-toggle.btn-light.text-muted.font-weight-bold.ml-2 data-toggle='dropdown'
             | Decks: #{@tournament.decks_visibility_description}
           .dropdown-menu
-            => link_to tournament_path(@tournament, {tournament: {public_list_cut: false, open_list_cut: false}}), method: :patch,
+            => link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_private}}), method: :patch,
                     class: ['dropdown-item', *('disabled' unless @tournament.public_list_cut? || @tournament.open_list_cut?)] do
               => fa_icon 'lock'
               | Make all decks private
-            => link_to tournament_path(@tournament, {tournament: {public_list_cut: false, open_list_cut: true}}), method: :patch,
+            => link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_open}}), method: :patch,
                     class: ['dropdown-item', *('disabled' if @tournament.open_list_cut?)] do
               => fa_icon 'lock'
               | Make decks in cut open, visible to participants
-            => link_to tournament_path(@tournament, {tournament: {public_list_cut: true, open_list_cut: false}}), method: :patch,
+            => link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_public}}), method: :patch,
                     class: ['dropdown-item', *('disabled' if @tournament.public_list_cut?)] do
               => fa_icon 'lock'
               | Make decks in cut public, visible to anyone
