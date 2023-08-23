@@ -102,6 +102,30 @@ RSpec.describe 'deck visibility' do
         expect(bubble_boy.decks_visible_to(tournament.user)).to be(false)
       end
     end
+
+    describe 'open list swiss' do
+      before { tournament.update(swiss_deck_visibility: :swiss_decks_open) }
+
+      it 'shows decks of a player in swiss to another player in swiss' do
+        expect(jack.decks_visible_to(alice.user)).to be(true)
+      end
+
+      it 'does not show decks of a player in swiss to an unauthenticated user' do
+        expect(jack.decks_visible_to(nil)).to be(false)
+      end
+    end
+
+    describe 'public list swiss' do
+      before { tournament.update(swiss_deck_visibility: :swiss_decks_public) }
+
+      it 'shows decks of a player in swiss to another player in swiss' do
+        expect(jack.decks_visible_to(alice.user)).to be(true)
+      end
+
+      it 'shows decks of a player in swiss to an unauthenticated user' do
+        expect(jack.decks_visible_to(nil)).to be(true)
+      end
+    end
   end
 
   context 'a pairing in the cut' do
@@ -201,6 +225,12 @@ RSpec.describe 'deck visibility' do
       before { tournament.update(cut_deck_visibility: :cut_decks_public) }
 
       it 'does not let you see decks in your pairing' do
+        expect(pairing.decks_visible_to(jack.user)).to be(false)
+      end
+    end
+
+    describe 'open list swiss' do
+      it 'does not show decks for a pairing as 4 decks is too many for one screen' do
         expect(pairing.decks_visible_to(jack.user)).to be(false)
       end
     end

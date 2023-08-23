@@ -77,7 +77,7 @@ class Pairing < ApplicationRecord
   end
 
   def decks_visible_to(user)
-    if stage.single_sided? && side.nil?
+    if !stage.single_sided? || side.nil?
       return false
     end
     if tournament.stage_decks_open?(stage) && (user == tournament.user || stage.users.exists?(user&.id))
