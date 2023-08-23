@@ -84,6 +84,10 @@ class Tournament < ApplicationRecord
     stages.last
   end
 
+  def double_elim_stage
+    stages.find_by format: :double_elim
+  end
+
   def unlocked_deck_players
     players.active.where('registration_locked IS NOT TRUE')
   end

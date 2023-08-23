@@ -72,6 +72,18 @@ class Player < ApplicationRecord
     decks.find_by side_id: 'runner'
   end
 
+  def cut_decks_visible_to(user)
+    stage = tournament.double_elim_stage
+    unless registrations.find_by(stage: stage)
+      return false
+    end
+    if tournament.open_list_cut? && (user == tournament.user || stage.users.exists?(user&.id))
+      true
+    else
+      tournament.public_list_cut?
+    end
+  end
+
   def name_with_pronouns
     if pronouns?
       "#{name} (#{pronouns})"

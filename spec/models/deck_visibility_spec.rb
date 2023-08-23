@@ -1,12 +1,12 @@
-RSpec.describe 'pairing deck visibility' do
+RSpec.describe 'deck visibility' do
   let(:tournament) { create(:tournament) }
   let(:unregistered_user) { create(:user) }
 
-  let(:jack) { create(:player, user: create(:user)) }
-  let(:jill) { create(:player) }
-  let(:alice) { create(:player, user: create(:user)) }
-  let(:bob) { create(:player) }
-  let(:bubble_boy) { create(:player, user: create(:user)) }
+  let(:jack) { create(:player, tournament: tournament, user: create(:user)) }
+  let(:jill) { create(:player, tournament: tournament) }
+  let(:alice) { create(:player, tournament: tournament, user: create(:user)) }
+  let(:bob) { create(:player, tournament: tournament) }
+  let(:bubble_boy) { create(:player, tournament: tournament, user: create(:user)) }
 
   let(:swiss) { tournament.stages.find_by!(format: :swiss) }
   let(:cut) { create(:stage, tournament: tournament, format: :double_elim) }
@@ -21,6 +21,87 @@ RSpec.describe 'pairing deck visibility' do
     create(:registration, player: jill, stage: cut)
     create(:registration, player: alice, stage: cut)
     create(:registration, player: bob, stage: cut)
+  end
+
+  describe 'view decks of players' do
+
+    describe 'private lists' do
+      it 'does not show decks of your opponent' do
+        expect(jill.cut_decks_visible_to(jack.user)).to be(false)
+      end
+
+      it 'does not show your own deck as visible' do
+        expect(jack.cut_decks_visible_to(jack.user)).to be(false)
+      end
+    end
+
+    describe 'open lists' do
+      before { tournament.update(open_list_cut: true) }
+
+      it 'shows decks of your opponent' do
+        expect(jill.cut_decks_visible_to(jack.user)).to be(true)
+      end
+
+      it 'shows decks of a player in another cut pairing' do
+        expect(jill.cut_decks_visible_to(alice.user)).to be(true)
+      end
+
+      it 'shows your own deck is visible' do
+        expect(jack.cut_decks_visible_to(jack.user)).to be(true)
+      end
+
+      it 'shows decks of a cut player to the TO' do
+        expect(jack.cut_decks_visible_to(tournament.user)).to be(true)
+      end
+
+      it 'does not show decks to a player not in the cut' do
+        expect(jill.cut_decks_visible_to(bubble_boy.user)).to be(false)
+      end
+
+      it 'does not show decks of a player not in the cut' do
+        expect(bubble_boy.cut_decks_visible_to(jill.user)).to be(false)
+      end
+
+      it 'does not show decks to the TO when player is not in the cut' do
+        expect(bubble_boy.cut_decks_visible_to(tournament.user)).to be(false)
+      end
+    end
+
+    describe 'public lists' do
+      before { tournament.update(public_list_cut: true) }
+
+      it 'shows decks of your opponent' do
+        expect(jill.cut_decks_visible_to(jack.user)).to be(true)
+      end
+
+      it 'shows decks of a player in another cut pairing' do
+        expect(jill.cut_decks_visible_to(alice.user)).to be(true)
+      end
+
+      it 'shows your own deck is visible' do
+        expect(jack.cut_decks_visible_to(jack.user)).to be(true)
+      end
+
+      it 'shows decks of a cut player to the TO' do
+        expect(jack.cut_decks_visible_to(tournament.user)).to be(true)
+      end
+
+      it 'shows decks to a player not in the cut' do
+        expect(jill.cut_decks_visible_to(bubble_boy.user)).to be(true)
+      end
+
+      it 'shows decks to an unauthenticated user' do
+        expect(jill.cut_decks_visible_to(nil)).to be(true)
+      end
+
+      it 'does not show decks of a player not in the cut' do
+        expect(bubble_boy.cut_decks_visible_to(jill.user)).to be(false)
+      end
+
+      it 'does not show decks of a player not in the cut to the TO' do
+        expect(bubble_boy.cut_decks_visible_to(tournament.user)).to be(false)
+      end
+    end
   end
 
   context 'a pairing in the cut' do
