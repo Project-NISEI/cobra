@@ -133,8 +133,7 @@ RSpec.describe 'pairing deck visibility' do
     describe 'public list cut' do
       before { tournament.update(public_list_cut: true) }
 
-      it 'does not show decks in your pairing' do
-        # TODO could show your opponent's decks
+      it 'does not show decks as they have not been set for the pairing' do
         expect(pairing.cut_decks_visible_to(jack.user)).to be(false)
       end
     end
