@@ -35,11 +35,15 @@ ruby:
                         placeholder: 'Example: they/them',
                         class: 'form-control',
                         readonly: @current_user_player.registration_locked?
-              - unless @current_user_player.registration_locked?
+              - unless @current_user_player.registration_locked? && !@tournament.allow_streaming_opt_out?
                 = button_tag type: :submit, class: 'btn btn-primary dontprint' do
                   => fa_icon 'check'
                   | Submit
               span.badge.badge-warning.ml-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+              - if @tournament.allow_streaming_opt_out?
+                = f.input :streaming_opt_out, as: :boolean,
+                        class: 'form-check-input', input_html: { class: 'mr-2' }, wrapper_html: { class: 'mt-3' },
+                        inline_label: Tournament.streaming_opt_out_notice
               - if @current_user_player.registration_locked?
                 div.mt-3 Registration is locked, talk to a Tournament Organiser to change your decks or details.
         - unless @current_user_player.registration_locked?
@@ -64,7 +68,7 @@ ruby:
               = render 'players/form', f: f
               - if @current_user_player.registration_locked?
                 div.mt-3 Registration is locked, talk to a Tournament Organiser to change your details.
-              - else
+              - unless @current_user_player.registration_locked? && !@tournament.allow_streaming_opt_out?
                 .text-right.dontprint
                   = button_tag type: :submit, class: 'btn btn-primary' do
                     => fa_icon 'check'
