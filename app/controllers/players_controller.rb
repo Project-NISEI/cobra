@@ -160,7 +160,7 @@ class PlayersController < ApplicationController
   def player_params
     params.require(:player)
           .permit(:name, :pronouns, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-                  :first_round_bye, :manual_seed)
+                  :first_round_bye, :manual_seed, :consented_to_be_streamed)
   end
 
   def is_organiser_view

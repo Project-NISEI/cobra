@@ -49,6 +49,10 @@ ruby:
       .form-group
         label.d-block for="player_manual_seed" Manual Seed
         => f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
+  - if not defined?(organiser_view) and @tournament.ask_for_streaming_consent?
+    = f.input :consented_to_be_streamed, as: :boolean,
+            class: 'form-check-input', input_html: { class: 'mr-1' },
+            inline_label: 'Optional: I agree for my games to be included in video coverage of this tournament.'
   - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
     = f.input :consent_data_sharing, as: :boolean,
             class: 'form-check-input', input_html: { class: 'mr-1' },

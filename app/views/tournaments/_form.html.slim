@@ -7,7 +7,7 @@
 .form-group
   = f.input :self_registration, as: :boolean, inline_label: 'Self-Registration: Allow players to use a link to register themselves'
 .form-group
-  = f.input :ask_for_streaming_consent, input_html: { class: 'form-control' }, label: 'Streaming consent: When self registration is on, ask players for consent to include them in a stream - if this is turned on after a player registers, they will not see it'
+  = f.input :ask_for_streaming_consent, as: :boolean, inline_label: 'Streaming consent: When self registration is on, ask players for consent to include them in a stream - if this is turned on after a player registers, they will not see it'
 - if Flipper.enabled? :nrdb_deck_registration
   .form-group
     = f.input :nrdb_deck_registration, as: :boolean, inline_label: 'Deck registration: Upload decks from NetrunnerDB'
