@@ -201,7 +201,7 @@ class TournamentsController < ApplicationController
 
   def tournament_params
     params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed,
-                                       :self_registration, :nrdb_deck_registration,
+                                       :self_registration, :ask_for_streaming_consent, :nrdb_deck_registration,
                                        :cut_deck_visibility, :swiss_deck_visibility)
   end
 
