@@ -1,3 +1,5 @@
+ruby:
+  @decks_visible = @round.stage.decks_visible_to(current_user)
 .col-12
   p.dontprint= link_to tournament_rounds_path(@tournament), class: 'btn btn-primary' do
     => fa_icon 'arrow-left'
@@ -9,16 +11,17 @@
     thead
       tr
         th Table
+        - if @decks_visible
+          th Decks
         th Player Name
         th Opponent
     tbody
       - @pairings.each do |p|
         tr
-          td
-            | #{p[:table_number]}
-            - if p[:view_decks]
-              =< link_to view_decks_tournament_round_pairing_path(@tournament, @round, p[:pairing]), class: 'ml-2' do
-                => fa_icon 'eye'
-                | View decks
+          td= p[:table_number]
+          - if @decks_visible
+            td= link_to view_decks_tournament_round_pairing_path(@tournament, @round, p[:pairing]), class: 'ml-2' do
+              => fa_icon 'eye'
+              | View decks
           td= p[:player1_name]
           td= p[:player2_name]
