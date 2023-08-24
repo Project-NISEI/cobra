@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       get :standings, on: :collection
       get :meeting, on: :collection
       get :download_decks, on: :collection
+      get :download_streaming, on: :collection
       patch :drop, on: :member
       patch :reinstate, on: :member
       patch :lock_registration, on: :member

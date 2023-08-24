@@ -15,6 +15,17 @@ class PlayersController < ApplicationController
     render json: @tournament.players.active.flat_map { |p| p.decks }.map { |d| d.as_view(current_user) }
   end
 
+  def download_streaming
+    authorize @tournament, :update?
+    render json: @tournament.players.active
+                            .sort_by { |p| p.name }
+                            .map { |p| {
+                              name: p.name,
+                              pronouns: p.pronouns,
+                              streaming_opt_out: p.streaming_opt_out?
+                            } }
+  end
+
   def create
     authorize Player
     if @tournament.registration_open?

@@ -45,6 +45,17 @@ $(document).on 'turbolinks:load', ->
     addCardInfluence = (total, card) =>
       total + card.influence
 
+    renderStreamingCsv = (players) =>
+      'Player,Streaming Opt Out\n' +
+        players.map((player) => quoteCsvValue(player.name) + ',' + renderOptOut(player))
+          .join('\n')
+
+    renderOptOut = (player) =>
+      if player.streaming_opt_out
+        'Opted Out'
+      else
+        ''
+
     downloadCsv = (filename, csv) =>
       csvData = new Blob(["\ufeff" + csv], {type: "text/csv"}) # "\ufeff" lets Excel know it's Unicode encoded
       a = document.createElement('a')
@@ -70,7 +81,21 @@ $(document).on 'turbolinks:load', ->
         e.preventDefault()
         downloadDecksSpinner(true)
         $.get($('#download_decks_path').val()).done((response) =>
-          downloadCsv('Decks for ' + $('#download_decks_tournament').val() + '.csv',
+          downloadCsv('Decks for ' + $('#download_tournament').val() + '.csv',
             renderDecksCsv(response))
         ).always(() => downloadDecksSpinner(false))
+      )
+
+    downloadStreamingSpinner = (spin) =>
+      $('#download_streaming_spinner').toggleClass('d-none', !spin)
+      $('#download_streaming_icon').toggleClass('d-none', spin)
+
+    if document.getElementById('download_streaming_button')?
+      $('#download_streaming_button').on('click', (e) =>
+        e.preventDefault()
+        downloadStreamingSpinner(true)
+        $.get($('#download_streaming_path').val()).done((response) =>
+          downloadCsv('Streaming information for ' + $('#download_tournament').val() + '.csv',
+            renderStreamingCsv(response))
+        ).always(() => downloadStreamingSpinner(false))
       )
