@@ -304,6 +304,26 @@ RSpec.describe PlayersController do
       expect(tournament.reload.all_players_unlocked?).to be(false)
       expect(tournament.any_player_unlocked?).to be(true)
     end
+
+    it 'shows all players locked when only unlocked player is deleted' do
+      sign_in tournament.user
+      patch lock_player_registrations_tournament_path(tournament)
+      patch unlock_registration_tournament_player_path(tournament, @player2)
+      delete tournament_player_path(tournament, @player2)
+
+      expect(tournament.reload.all_players_unlocked?).to be(false)
+      expect(tournament.any_player_unlocked?).to be(false)
+    end
+
+    it 'shows all players unlocked when only locked player is deleted' do
+      sign_in tournament.user
+      patch lock_player_registrations_tournament_path(tournament)
+      patch unlock_registration_tournament_player_path(tournament, @player1)
+      delete tournament_player_path(tournament, @player2)
+
+      expect(tournament.reload.all_players_unlocked?).to be(true)
+      expect(tournament.any_player_unlocked?).to be(true)
+    end
   end
 
   def expect_unauthorized
