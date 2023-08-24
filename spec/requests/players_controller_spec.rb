@@ -292,15 +292,15 @@ RSpec.describe PlayersController do
       expect(tournament.any_player_unlocked?).to be(true)
     end
 
-    it 'locks decks for a new player when only one player is locked' do
+    it 'does not lock decks for a new player even when all other players are locked' do
       sign_in tournament.user
-      patch lock_registration_tournament_player_path(tournament, @player1)
+      patch lock_player_registrations_tournament_path(tournament)
       sign_in user3
       post tournament_players_path(tournament), params: { player: { name: 'Player 3' } }
       @player3 = Player.find_by! user_id: user3.id
       sign_in tournament.user
 
-      expect(@player3.reload.registration_locked?).to be(true)
+      expect(@player3.reload.registration_locked?).to be(false)
       expect(tournament.reload.all_players_unlocked?).to be(false)
       expect(tournament.any_player_unlocked?).to be(true)
     end
