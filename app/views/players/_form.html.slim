@@ -1,7 +1,3 @@
-ruby:
-  @consent_notice = 'I agree my name, pronouns and Netrunner deck identities will be publicly visible on this ' \
-          'website. If I submit decklists they will be shared with the organiser. If I enter a round with open ' \
-          'decklists, they may be publicly visible.'
 .identities_form.d-block
   - if defined?(organiser_view)
     = f.input_field :organiser_view, value: true, hidden: true
@@ -52,8 +48,8 @@ ruby:
   - if not defined?(organiser_view) and @tournament.ask_for_streaming_consent?
     = f.input :consented_to_be_streamed, as: :boolean,
             class: 'form-check-input', input_html: { class: 'mr-1' },
-            inline_label: 'Optional: I agree for my games to be included in video coverage of this tournament.'
+            inline_label: Tournament.streaming_consent_notice
   - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
     = f.input :consent_data_sharing, as: :boolean,
             class: 'form-check-input', input_html: { class: 'mr-1' },
-            inline_label: @consent_notice
+            inline_label: Tournament.registration_consent_notice

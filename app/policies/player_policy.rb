@@ -4,7 +4,7 @@ class PlayerPolicy < ApplicationPolicy
   end
 
   def update?
-    user && ((record.user_id == user.id && !record.registration_locked?) || record.tournament.user == user)
+    user && (record.user == user || record.tournament.user == user)
   end
 
   def view_decks?

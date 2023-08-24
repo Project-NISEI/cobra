@@ -191,6 +191,17 @@ class Tournament < ApplicationRecord
     end
   end
 
+  def self.streaming_consent_notice
+    'Optional: I consent for my swiss games to potentially be included in video coverage of this event. ' \
+      'Note: During cuts we may not be able to respect do-not stream requests.'
+  end
+
+  def self.registration_consent_notice
+    'I agree my name, pronouns and Netrunner deck identities will be publicly visible on this ' \
+      'website. If I submit decklists they will be shared with the organiser. If I enter a round with open ' \
+      'decklists, they may be publicly visible.'
+  end
+
   private
 
   def default_date

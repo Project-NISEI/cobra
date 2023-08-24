@@ -53,18 +53,22 @@ class PlayersController < ApplicationController
   def update
     authorize @player
 
-    params = player_params
+    if @player.registration_locked?
+      update = params.require(:player).permit(:consented_to_be_streamed)
+    else
+      update = player_params
+    end
     if is_organiser_view
       redirect_to tournament_players_path(@tournament)
     else
       redirect_to tournament_path(@tournament)
-      params[:user_id] = current_user.id
+      update[:user_id] = current_user.id
     end
 
-    @player.update(params.except(:corp_deck, :runner_deck))
+    @player.update(update.except(:corp_deck, :runner_deck))
     if @tournament.nrdb_deck_registration?
-      save_deck(params, :corp_deck, 'corp')
-      save_deck(params, :runner_deck, 'runner')
+      save_deck(update, :corp_deck, 'corp')
+      save_deck(update, :runner_deck, 'runner')
     end
   end
 
