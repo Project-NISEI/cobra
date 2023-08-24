@@ -92,6 +92,8 @@ class PlayersController < ApplicationController
     authorize @tournament, :update?
 
     @player.destroy
+    @tournament.update(any_player_unlocked: @tournament.unlocked_players.count > 0,
+                       all_players_unlocked: @tournament.locked_players.count == 0)
 
     redirect_to tournament_players_path(@tournament)
   end
