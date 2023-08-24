@@ -62,7 +62,6 @@ class Tournament < ApplicationRecord
 
   def open_registration!
     update(registration_closed: false)
-    unlock_player_registrations!
   end
 
   def registration_open?
