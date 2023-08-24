@@ -172,6 +172,26 @@ class Tournament < ApplicationRecord
     end
   end
 
+  def self.min_visibility_swiss_or_cut(swiss, cut)
+    swiss_visibility = Tournament.swiss_deck_visibilities[swiss]
+    cut_visibility = Tournament.cut_deck_visibilities[cut]
+    if cut_visibility < swiss_visibility
+      Tournament.swiss_deck_visibilities.invert[cut_visibility]
+    else
+      swiss
+    end
+  end
+
+  def self.max_visibility_cut_or_swiss(cut, swiss)
+    cut_visibility = Tournament.cut_deck_visibilities[cut]
+    swiss_visibility = Tournament.swiss_deck_visibilities[swiss]
+    if swiss_visibility > cut_visibility
+      Tournament.cut_deck_visibilities.invert[swiss_visibility]
+    else
+      cut
+    end
+  end
+
   private
 
   def default_date

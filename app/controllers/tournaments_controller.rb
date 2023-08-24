@@ -86,7 +86,17 @@ class TournamentsController < ApplicationController
   def update
     authorize @tournament
 
-    @tournament.update(tournament_params)
+    params = tournament_params
+    if params[:swiss_deck_visibility]
+      unless params[:cut_deck_visibility]
+        params[:cut_deck_visibility] = Tournament.max_visibility_cut_or_swiss(
+          @tournament.cut_deck_visibility, params[:swiss_deck_visibility])
+      end
+    elsif params[:cut_deck_visibility]
+      params[:swiss_deck_visibility] = Tournament.min_visibility_swiss_or_cut(
+        @tournament.swiss_deck_visibility, params[:cut_deck_visibility])
+    end
+    @tournament.update(params)
 
     redirect_back_or_to edit_tournament_path(@tournament)
   end
