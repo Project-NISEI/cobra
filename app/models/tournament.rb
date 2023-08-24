@@ -191,9 +191,9 @@ class Tournament < ApplicationRecord
     end
   end
 
-  def self.streaming_consent_notice
-    'Optional: I consent for my swiss games to potentially be included in video coverage of this event. ' \
-      'Note: During cuts we may not be able to respect do-not stream requests.'
+  def self.streaming_opt_out_notice
+    'I opt out of my swiss games being in video coverage of this event. ' \
+      'Note: During cuts we may not be able to respect this request.'
   end
 
   def self.registration_consent_notice

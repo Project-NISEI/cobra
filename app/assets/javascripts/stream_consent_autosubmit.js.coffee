@@ -1,4 +1,4 @@
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('player_stream_consent_form')?
-    $('#player_consented_to_be_streamed').on 'change', ->
-      $('#player_consented_to_be_streamed').closest("form").submit()
+  if document.getElementById('player_streaming_opt_out_form')?
+    $('#player_streaming_opt_out').on 'change', ->
+      $('#player_streaming_opt_out').closest("form").submit()

@@ -31,10 +31,10 @@
               = link_to qr_tournament_path(@tournament), :target => '_blank' do
                 => fa_icon 'qrcode'
                 | Open Printable QR Code
-      - if @tournament.ask_for_streaming_consent? && @current_user_player
+      - if @tournament.allow_streaming_opt_out? && @current_user_player
         li.list-group-item
           = simple_form_for @current_user_player, url: tournament_player_path(@tournament, @current_user_player) do |f|
-            = f.input_field :stream_consent_form, value: true, hidden: true
-            = f.input :consented_to_be_streamed, as: :boolean,
+            = f.input_field :streaming_opt_out_form, value: true, hidden: true
+            = f.input :streaming_opt_out, as: :boolean,
                     class: 'form-check-input', input_html: { class: 'mr-1' },
-                    inline_label: Tournament.streaming_consent_notice
+                    inline_label: Tournament.streaming_opt_out_notice

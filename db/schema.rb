@@ -133,7 +133,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_24_192759) do
     t.bigint "user_id"
     t.boolean "registration_locked"
     t.string "pronouns"
-    t.boolean "consented_to_be_streamed"
+    t.boolean "streaming_opt_out"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end
@@ -210,7 +210,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_24_192759) do
     t.boolean "registration_closed"
     t.integer "swiss_deck_visibility", default: 0, null: false
     t.integer "cut_deck_visibility", default: 0, null: false
-    t.boolean "ask_for_streaming_consent"
+    t.boolean "allow_streaming_opt_out"
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 
