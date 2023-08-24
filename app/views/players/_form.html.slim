@@ -5,12 +5,18 @@
     - if defined?(player) && @tournament.self_registration?
       span.text-info.float-left.mr-2 style='width: 12px'
         - if player.registration_locked?
-          => fa_icon 'lock', class: 'player-locked', title: 'Registration locked'
+          => fa_icon 'lock', class: 'player-tooltip', title: 'Registration locked'
         - else
-          => fa_icon 'unlock', class: 'player-unlocked', title: 'Registration unlocked'
+          => fa_icon 'unlock', class: 'player-tooltip', title: 'Registration unlocked'
+      - if @tournament.allow_streaming_opt_out?
+        - if player.streaming_opt_out?
+          span.text-warning.float-left.mr-2
+            = fa_icon 'video-camera', class: 'player-tooltip', title: 'Opted out of swiss streaming'
+        - else
+          span.text-success.float-left.mr-2
+            => fa_icon 'video-camera', class: 'player-tooltip', title: 'Did not opt out of swiss streaming'
     javascript:
-        $('.player-locked').tooltip()
-        $('.player-unlocked').tooltip()
+        $('.player-tooltip').tooltip()
     label.d-block for="player_name" Name
     - if defined?(default_name)
       = f.input_field :name,
