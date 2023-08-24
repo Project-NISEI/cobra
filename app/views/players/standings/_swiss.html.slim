@@ -1,5 +1,5 @@
 ruby:
-  @decks_visible = stage.decks_visible_to(current_user)
+  @decks_visible = stage.decks_visible_to(current_user) || stage.tournament.double_elim_stage&.decks_visible_to(current_user)
 p After #{pluralize(stage.rounds.complete.count, 'round')}
 table.table.table-striped.standings
   thead
@@ -21,9 +21,11 @@ table.table.table-striped.standings
           td= row.position
           td= row.name_with_pronouns
           - if @decks_visible
-            td= link_to view_decks_tournament_player_path(@tournament, row.player) do
-              => fa_icon 'eye'
-              | View decks
+            td
+              - if row.player.decks_visible_to(current_user)
+                = link_to view_decks_tournament_player_path(@tournament, row.player) do
+                  => fa_icon 'eye'
+                  | View decks
           td.ids
             = render row.corp_identity, points: row.corp_points, side: 'Corp'
             = render row.runner_identity, points: row.runner_points, side: 'Runner'
@@ -38,9 +40,11 @@ table.table.table-striped.standings
           td= i+1
           td= player.name_with_pronouns
           - if @decks_visible
-            td= link_to view_decks_tournament_player_path(@tournament, player) do
-              => fa_icon 'eye'
-              | View decks
+            td
+              - if player.decks_visible_to(current_user)
+                = link_to view_decks_tournament_player_path(@tournament, player) do
+                  => fa_icon 'eye'
+                  | View decks
           td.ids -
           td= 0
           - if @tournament.manual_seed?
