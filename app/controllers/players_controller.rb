@@ -27,12 +27,13 @@ class PlayersController < ApplicationController
     unless is_organiser_view
       params[:user_id] = current_user.id
     end
-    params[:registration_locked] = !@tournament[:all_players_unlocked]
 
     player = @tournament.players.create(params.except(:corp_deck, :runner_deck))
     unless @tournament.current_stage.nil?
       @tournament.current_stage.players << player
     end
+    @tournament.update(any_player_unlocked: true,
+                       all_players_unlocked: @tournament.locked_players.count == 0)
 
     if player.user_id
       if @tournament.nrdb_deck_registration?
@@ -112,7 +113,7 @@ class PlayersController < ApplicationController
 
     @player.update(registration_locked: true)
     @tournament.update(all_players_unlocked: false,
-                       any_player_unlocked: @tournament.unlocked_deck_players.count > 0)
+                       any_player_unlocked: @tournament.unlocked_players.count > 0)
 
     redirect_to tournament_players_path(@tournament)
   end
@@ -122,7 +123,7 @@ class PlayersController < ApplicationController
 
     @player.update(registration_locked: false)
     @tournament.update(any_player_unlocked: true,
-                       all_players_unlocked: @tournament.locked_deck_players.count == 0)
+                       all_players_unlocked: @tournament.locked_players.count == 0)
 
     redirect_to tournament_players_path(@tournament)
   end
