@@ -18,12 +18,13 @@ Rails.application.routes.draw do
       patch :lock_registration, on: :member
       patch :unlock_registration, on: :member
       get :registration, on: :member
+      get :view_decks, on: :member
     end
     resources :rounds, only: [:index, :show, :create, :edit, :update, :destroy] do
       resources :pairings, only: [:index, :create, :destroy] do
         post :report, on: :member
         get :match_slips, on: :collection
-        get :view_opponent_deck, on: :member
+        get :view_decks, on: :member
       end
       patch :repair, on: :member
       patch :complete, on: :member
@@ -38,6 +39,8 @@ Rails.application.routes.draw do
     get :timer, on: :member
     patch :open_registration, on: :member
     patch :close_registration, on: :member
+    patch :lock_player_registrations, on: :member
+    patch :unlock_player_registrations, on: :member
     get :shortlink, on: :collection
     get :not_found, on: :collection
     get :my, on: :collection

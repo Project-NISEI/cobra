@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_19_205733) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_23_204832) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -206,8 +206,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_19_205733) do
     t.boolean "nrdb_deck_registration", default: false
     t.boolean "all_players_unlocked", default: true
     t.boolean "any_player_unlocked", default: true
-    t.boolean "open_list_cut", default: false
     t.boolean "registration_closed"
+    t.integer "swiss_deck_visibility", default: 0, null: false
+    t.integer "cut_deck_visibility", default: 0, null: false
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 

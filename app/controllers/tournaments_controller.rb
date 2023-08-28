@@ -1,7 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [
     :show, :edit, :update, :destroy,
-    :upload_to_abr, :save_json, :cut, :qr, :registration, :timer, :close_registration, :open_registration
+    :upload_to_abr, :save_json, :cut, :qr, :registration, :timer,
+    :close_registration, :open_registration, :lock_player_registrations, :unlock_player_registrations
   ]
 
   def index
@@ -85,9 +86,19 @@ class TournamentsController < ApplicationController
   def update
     authorize @tournament
 
-    @tournament.update(tournament_params)
+    params = tournament_params
+    if params[:swiss_deck_visibility]
+      unless params[:cut_deck_visibility]
+        params[:cut_deck_visibility] = Tournament.max_visibility_cut_or_swiss(
+          @tournament.cut_deck_visibility, params[:swiss_deck_visibility])
+      end
+    elsif params[:cut_deck_visibility]
+      params[:swiss_deck_visibility] = Tournament.min_visibility_swiss_or_cut(
+        @tournament.swiss_deck_visibility, params[:cut_deck_visibility])
+    end
+    @tournament.update(params)
 
-    redirect_to edit_tournament_path(@tournament)
+    redirect_back_or_to edit_tournament_path(@tournament)
   end
 
   def destroy
@@ -168,6 +179,20 @@ class TournamentsController < ApplicationController
     redirect_back(fallback_location: tournament_rounds_path(@tournament))
   end
 
+  def lock_player_registrations
+    authorize @tournament, :edit?
+
+    @tournament.lock_player_registrations!
+    redirect_back(fallback_location: tournament_rounds_path(@tournament))
+  end
+
+  def unlock_player_registrations
+    authorize @tournament, :edit?
+
+    @tournament.unlock_player_registrations!
+    redirect_back(fallback_location: tournament_rounds_path(@tournament))
+  end
+
   private
 
   def set_tournament
@@ -176,7 +201,8 @@ class TournamentsController < ApplicationController
 
   def tournament_params
     params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed,
-                                       :self_registration, :nrdb_deck_registration, :open_list_cut)
+                                       :self_registration, :nrdb_deck_registration,
+                                       :cut_deck_visibility, :swiss_deck_visibility)
   end
 
   def set_tournament_view_data

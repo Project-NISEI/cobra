@@ -2,43 +2,44 @@
 #= require nrdb_cards
 
 $(document).on 'turbolinks:load', ->
-  if document.getElementById('display_decks')? || document.getElementById('display_opponent_deck')?
+  if deckDisplayEnabled()
 
     window.renderDecksDisplay = (decks) =>
-      normaliseCardTables(decks)
       $('#display_decks').empty().append(
-        renderDeck(decks.corp),
-        renderDeck(decks.runner))
+        renderDecksDisplayLeftRight({left: decks.corp, right: decks.runner}))
       any_changes = decks.corp.change_type != 'none' || decks.runner.change_type != 'none'
       $('#deck_changes_not_submitted_warning').toggleClass('d-none', !any_changes)
 
+    renderDecksDisplayLeftRight = (decks) =>
+      normaliseCardTables(decks)
+      [
+        renderDeck(decks.left),
+        renderDeck(decks.right)
+      ]
+
     normaliseCardTables = (decks) =>
-      decks.corp.pad_cards = 0
-      decks.runner.pad_cards = 0
-      if decks.corp.change_type != decks.runner.change_type
+      decks.left.pad_cards = 0
+      decks.right.pad_cards = 0
+      if decks.left.change_type != decks.right.change_type
         return decks
-      if decks.corp.change_type != 'change_cards'
-        max_cards = Math.max(decks.runner.after.cards.length, decks.corp.after.cards.length)
-        decks.corp.pad_cards = max_cards - decks.corp.after.cards.length
-        decks.runner.pad_cards = max_cards - decks.runner.after.cards.length
+      if decks.left.change_type != 'change_cards'
+        max_cards = Math.max(decks.right.after.cards.length, decks.left.after.cards.length)
+        decks.left.pad_cards = max_cards - decks.left.after.cards.length
+        decks.right.pad_cards = max_cards - decks.right.after.cards.length
       decks
 
-    renderOpponentDeck = (decks) =>
-      renderDeck(decks, true)
-
-    renderDeck = (decks, opponent) =>
-      $container = $('<div/>', {class: 'col-md-6'})
+    renderDeck = (decks) =>
+      $container = $('<div/>', {class: 'col-md-6'}).append(deckSummaryTable(decks))
       if decks.before.unset && decks.after.unset
         return $container
       deck = decks.after
       $container.append(
-        deckSummaryTable(decks, opponent),
         deckDiffTable(decks.diff),
         identityTable(deck),
         cardsTable(decks),
         totalsTable(deck))
 
-    deckSummaryTable = (decks, opponent) =>
+    deckSummaryTable = (decks) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -46,20 +47,20 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after, opponent))
+          .append(deckNameRow(decks.after, decks.viewOnly))
           .append(deckChangesRow(decks)))
 
-    deckNameRow = (deck, opponent) =>
+    deckNameRow = (deck, viewOnly) =>
       if deck.details.name
         $('<tr/>').append($('<td/>')
-          .append(deckNameButtons(deck, opponent))
+          .append(deckNameButtons(deck, viewOnly))
           .append(document.createTextNode(deck.details.name)))
       else
         $('<tr/>').append($('<td/>')
           .append('None selected'))
 
-    deckNameButtons = (deck, opponent) =>
-      if opponent
+    deckNameButtons = (deck, viewOnly) =>
+      if viewOnly
         []
       else if deck.details.mine
         $('<a/>', {
@@ -291,6 +292,18 @@ $(document).on 'turbolinks:load', ->
       catch e
         console.log(e)
 
-    if document.getElementById('display_opponent_deck')?
-      $('#display_opponent_deck').append(
-        renderOpponentDeck(readOpponentDeckFromInputs()))
+    if document.getElementById('display_pairing_decks')?
+      try
+        decks = readPairingDecksFromInputs()
+        $('#display_pairing_decks').append(
+          renderDecksDisplayLeftRight({left: decks.player1, right: decks.player2}))
+      catch e
+        console.log(e)
+
+    if document.getElementById('display_player_decks')?
+      try
+        decks = readPlayerDecksFromInputs()
+        $('#display_player_decks').append(
+          renderDecksDisplayLeftRight({left: decks.corp, right: decks.runner}))
+      catch e
+        console.log(e)

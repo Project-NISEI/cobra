@@ -76,20 +76,33 @@ class Pairing < ApplicationRecord
     player1_is_corp? ? :runner : :corp
   end
 
+  def decks_visible_to(user)
+    if !stage.single_sided? || side.nil?
+      return false
+    end
+    stage.decks_visible_to(user)
+  end
+
+  def player1_deck
+    if side.nil?
+      nil
+    else
+      player1_is_corp? ? player1.corp_deck : player1.runner_deck
+    end
+  end
+
+  def player2_deck
+    if side.nil?
+      nil
+    else
+      player1_is_runner? ? player2.corp_deck : player2.runner_deck
+    end
+  end
+
   def side_for(player)
     return unless players.include? player
 
     player1 == player ? player1_side : player2_side
-  end
-
-  def user_opponent(user)
-    if player1.user_id == user.id
-      player2
-    elsif player2.user_id == user.id
-      player1
-    else
-      nil
-    end
   end
 
   private
@@ -102,8 +115,7 @@ class Pairing < ApplicationRecord
   end
 
   def combine_separate_side_scores
-    return unless
-      (score1_corp.present? && score1_corp > 0) ||
+    return unless (score1_corp.present? && score1_corp > 0) ||
       (score1_runner.present? && score1_runner > 0) ||
       (score2_corp.present? && score2_corp > 0) ||
       (score2_runner.present? && score2_runner > 0)
@@ -113,8 +125,7 @@ class Pairing < ApplicationRecord
   end
 
   def ensure_custom_scores_complete
-    return unless
-      score1.present? || score2.present?
+    return unless score1.present? || score2.present?
 
     self.score1 = score1 || 0
     self.score2 = score2 || 0

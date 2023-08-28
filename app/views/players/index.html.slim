@@ -16,25 +16,58 @@
   h3.mt-4
     | Players
     - if @tournament.self_registration?
-      span.badge.badge-pill.badge-light.text-muted.ml-2<> style='font-size:1rem; vertical-align: middle'
-        | Registration: #{@tournament.registration_lock_description}
-      - if @tournament.registration_closed?
-        - if @tournament.any_player_unlocked?
-          => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-            => fa_icon 'lock'
-            | Lock all players
-        => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-          => fa_icon 'unlock'
-          | Open registration
-      - else
-        - unless @tournament.all_players_unlocked?
-          => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-            => fa_icon 'unlock'
-            | Unlock all players
-        => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-link text-info' do
-          => fa_icon 'lock'
-          | Close registration
+      span.dropdown
+        button.btn.btn-sm.dropdown-toggle.btn-light.text-muted.font-weight-bold.ml-3 data-toggle='dropdown'
+          | Registration: #{@tournament.registration_lock_description}
+        .dropdown-menu
+          => link_to lock_player_registrations_tournament_path(@tournament), method: :patch,
+                  class: ['dropdown-item', *('disabled' unless @tournament.any_player_unlocked?)] do
+            => fa_icon 'lock', style: 'width: 16px'
+            | Lock all players, prevent editing
+          => link_to unlock_player_registrations_tournament_path(@tournament), method: :patch,
+                  class: ['dropdown-item', *('disabled' if @tournament.all_players_unlocked?)] do
+            => fa_icon 'unlock', style: 'width: 16px'
+            | Unlock all players, allow editing
+          .dropdown-divider
+          => link_to close_registration_tournament_path(@tournament), method: :patch,
+                  class: ['dropdown-item', *('disabled' if @tournament.registration_closed?)] do
+            => fa_icon 'lock', style: 'width: 16px'
+            | Close registration, prevent new players
+          => link_to open_registration_tournament_path(@tournament), method: :patch,
+                  class: ['dropdown-item', *('disabled' unless @tournament.registration_closed?)] do
+            => fa_icon 'unlock', style: 'width: 16px'
+            | Open registration, allow new players
     - if @tournament.nrdb_deck_registration?
+      - if Flipper.enabled? :open_list_cut
+        span.dropdown
+          button.btn.btn-sm.dropdown-toggle.btn-light.text-muted.font-weight-bold.ml-2 data-toggle='dropdown'
+            | Decks: #{@tournament.decks_visibility_description}
+          .dropdown-menu
+            => link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_private}}), method: :patch,
+                    class: ['dropdown-item', *('disabled' if @tournament.swiss_decks_private?)] do
+              => fa_icon 'eye-slash'
+              | Make decks in swiss private
+            => link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_open}}), method: :patch,
+                    class: ['dropdown-item', *('disabled' if @tournament.swiss_decks_open?)] do
+              => fa_icon 'eye'
+              | Make decks in swiss open, visible to participants
+            => link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_public}}), method: :patch,
+                    class: ['dropdown-item', *('disabled' if @tournament.swiss_decks_public?)] do
+              => fa_icon 'eye'
+              | Make decks in swiss public, visible to anyone
+            .dropdown-divider
+            => link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_private}}), method: :patch,
+                    class: ['dropdown-item', *('disabled' if @tournament.cut_decks_private?)] do
+              => fa_icon 'eye-slash'
+              | Make decks in cut private
+            => link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_open}}), method: :patch,
+                    class: ['dropdown-item', *('disabled' if @tournament.cut_decks_open?)] do
+              => fa_icon 'eye'
+              | Make decks in cut open, visible to participants
+            => link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_public}}), method: :patch,
+                    class: ['dropdown-item', *('disabled' if @tournament.cut_decks_public?)] do
+              => fa_icon 'eye'
+              | Make decks in cut public, visible to anyone
       input#download_decks_tournament type='hidden' value='#{@tournament.name}'
       input#download_decks_path type='hidden' value='#{download_decks_tournament_players_path(@tournament)}'
       a.btn.btn-link.text-info#download_decks_button href='#'

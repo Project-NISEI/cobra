@@ -3,6 +3,7 @@ class Stage < ApplicationRecord
   has_many :rounds, dependent: :destroy
   has_many :registrations, dependent: :destroy
   has_many :players, through: :registrations
+  has_many :users, through: :players
   has_many :standing_rows, dependent: :destroy
 
   delegate :top, to: :standings
@@ -47,7 +48,7 @@ class Stage < ApplicationRecord
     standing_rows.destroy_all
     standings.each_with_index do |standing, i|
       standing_rows.create(
-        position: i+1,
+        position: i + 1,
         player: standing.player,
         points: standing.points,
         sos: standing.sos,
@@ -55,6 +56,22 @@ class Stage < ApplicationRecord
         corp_points: standing.corp_points,
         runner_points: standing.runner_points
       )
+    end
+  end
+
+  def decks_open?
+    tournament.stage_decks_open?(self)
+  end
+
+  def decks_public?
+    tournament.stage_decks_public?(self)
+  end
+
+  def decks_visible_to(user)
+    if decks_open?
+      user == tournament.user || users.exists?(user&.id)
+    else
+      decks_public?
     end
   end
 end

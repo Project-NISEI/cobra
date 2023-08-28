@@ -1,0 +1,14 @@
+.col-12
+  p.dontprint= link_to standings_tournament_players_path(@tournament), class: 'btn btn-primary' do
+    => fa_icon 'arrow-left'
+    | Back to standings
+
+input#corp_deck_name type='hidden' value='#{@player.corp_deck&.name}'
+input#runner_deck_name type='hidden' value='#{@player.runner_deck&.name}'
+input#corp_deck type='hidden' value='#{@player.corp_deck&.as_view(current_user).to_json}'
+input#runner_deck type='hidden' value='#{@player.runner_deck&.as_view(current_user).to_json}'
+.container
+  .row.mb-2
+    .col
+      h4 #{@player.name}
+  .row#display_player_decks

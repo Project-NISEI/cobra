@@ -9,6 +9,18 @@ class Tournament < ApplicationRecord
     double_elim: 1
   }
 
+  enum cut_deck_visibility: {
+    cut_decks_private: 0,
+    cut_decks_open: 1,
+    cut_decks_public: 2
+  }
+
+  enum swiss_deck_visibility: {
+    swiss_decks_private: 0,
+    swiss_decks_open: 1,
+    swiss_decks_public: 2
+  }
+
   delegate :pair_new_round!, to: :current_stage
 
   validates :name, :slug, presence: true
@@ -33,18 +45,47 @@ class Tournament < ApplicationRecord
     end
   end
 
-  def close_registration!
+  def lock_player_registrations!
     players.active.update(registration_locked: true)
-    update(all_players_unlocked: false, any_player_unlocked: false, registration_closed: true)
+    update(all_players_unlocked: false, any_player_unlocked: false)
+  end
+
+  def unlock_player_registrations!
+    players.active.update(registration_locked: false)
+    update(all_players_unlocked: true, any_player_unlocked: true)
+  end
+
+  def close_registration!
+    update(registration_closed: true)
+    lock_player_registrations!
   end
 
   def open_registration!
-    players.active.update(registration_locked: false)
-    update(all_players_unlocked: true, any_player_unlocked: true, registration_closed: false)
+    update(registration_closed: false)
   end
 
   def registration_open?
     self_registration? && !registration_closed?
+  end
+
+  def stage_decks_open?(stage)
+    if stage.double_elim?
+      cut_decks_open?
+    elsif stage.swiss?
+      swiss_decks_open?
+    else
+      false
+    end
+  end
+
+  def stage_decks_public?(stage)
+    if stage.double_elim?
+      cut_decks_public?
+    elsif stage.swiss?
+      swiss_decks_public?
+    else
+      false
+    end
   end
 
   def corp_counts
@@ -74,27 +115,79 @@ class Tournament < ApplicationRecord
     stages.last
   end
 
-  def unlocked_deck_players
+  def double_elim_stage
+    stages.find_by format: :double_elim
+  end
+
+  def unlocked_players
     players.active.where('registration_locked IS NOT TRUE')
   end
 
-  def locked_deck_players
+  def locked_players
     players.active.where('registration_locked IS TRUE')
   end
 
   def registration_lock_description
     if registration_closed?
-      if any_player_unlocked?
-        'partially unlocked'
+      if all_players_unlocked?
+        'closed, unlocked'
+      elsif any_player_unlocked?
+        'closed, part unlocked'
       else
         'closed'
       end
     else
       if all_players_unlocked?
         'open'
+      elsif any_player_unlocked?
+        'open, part locked'
       else
-        'partially locked'
+        'open, all locked'
       end
+    end
+  end
+
+  def decks_visibility_description
+    "swiss #{swiss_decks_visibility_desc}, cut #{cut_decks_visibility_desc}"
+  end
+
+  def swiss_decks_visibility_desc
+    if swiss_decks_public?
+      'public'
+    elsif swiss_decks_open?
+      'open'
+    else
+      'private'
+    end
+  end
+
+  def cut_decks_visibility_desc
+    if cut_decks_public?
+      'public'
+    elsif cut_decks_open?
+      'open'
+    else
+      'private'
+    end
+  end
+
+  def self.min_visibility_swiss_or_cut(swiss, cut)
+    swiss_visibility = Tournament.swiss_deck_visibilities[swiss]
+    cut_visibility = Tournament.cut_deck_visibilities[cut]
+    if cut_visibility < swiss_visibility
+      Tournament.swiss_deck_visibilities.invert[cut_visibility]
+    else
+      swiss
+    end
+  end
+
+  def self.max_visibility_cut_or_swiss(cut, swiss)
+    cut_visibility = Tournament.cut_deck_visibilities[cut]
+    swiss_visibility = Tournament.swiss_deck_visibilities[swiss]
+    if swiss_visibility > cut_visibility
+      Tournament.cut_deck_visibilities.invert[swiss_visibility]
+    else
+      cut
     end
   end
 

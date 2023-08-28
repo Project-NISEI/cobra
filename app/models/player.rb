@@ -2,6 +2,7 @@ class Player < ApplicationRecord
   include Pairable
 
   belongs_to :tournament
+  belongs_to :user, optional: true
   belongs_to :previous, class_name: 'Player', optional: true
   has_one :next, class_name: 'Player', foreign_key: :previous_id
   has_many :registrations, dependent: :destroy
@@ -69,6 +70,10 @@ class Player < ApplicationRecord
 
   def runner_deck
     decks.find_by side_id: 'runner'
+  end
+
+  def decks_visible_to(user)
+    registrations.any? { |r| r.stage.decks_visible_to(user) }
   end
 
   def name_with_pronouns
