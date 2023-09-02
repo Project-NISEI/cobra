@@ -10,11 +10,11 @@
           => fa_icon 'unlock', class: 'player-tooltip', title: 'Registration unlocked'
       - if @tournament.allow_streaming_opt_out?
         - if player.stream_swiss_games?
-          span.text-warning.float-left.mr-2
-            = fa_icon 'video-camera', class: 'player-tooltip', title: 'Opted out of swiss streaming'
-        - else
           span.text-success.float-left.mr-2
             => fa_icon 'video-camera', class: 'player-tooltip', title: 'Did not opt out of swiss streaming'
+        - else
+          span.text-warning.float-left.mr-2
+            = fa_icon 'video-camera', class: 'player-tooltip', title: 'Opted out of swiss streaming'
     javascript:
         $('.player-tooltip').tooltip()
     label.d-block for="player_name" Name
