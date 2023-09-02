@@ -46,7 +46,7 @@ $(document).on 'turbolinks:load', ->
       total + card.influence
 
     renderStreamingCsv = (players) =>
-      'Player,Streaming Opt Out\n' +
+      'Player,"Streaming Opt Out"\n' +
         players.map((player) => quoteCsvValue(player.name) + ',' + renderOptOut(player))
           .join('\n')
 
@@ -54,7 +54,7 @@ $(document).on 'turbolinks:load', ->
       if player.stream_swiss_games
         ''
       else
-        'Opted Out'
+        '"Opted Out"'
 
     downloadCsv = (filename, csv) =>
       csvData = new Blob(["\ufeff" + csv], {type: "text/csv"}) # "\ufeff" lets Excel know it's Unicode encoded
