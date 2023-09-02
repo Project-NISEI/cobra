@@ -192,8 +192,8 @@ class Tournament < ApplicationRecord
   end
 
   def self.streaming_opt_out_notice
-    'Should we include your Swiss games in video coverage of this event? ' \
-      'Note: During a top cut your games may be included in video coverage.'
+    'Should we include your games in video coverage of this event? ' \
+      'Note: During a top cut it may not be possible to exclude you from coverage.'
   end
 
   def self.registration_consent_notice
