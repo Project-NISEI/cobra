@@ -46,8 +46,8 @@
         => f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
   - if @tournament.allow_streaming_opt_out?
     - if defined?(organiser_view)
-      = f.input :include_in_stream, as: :boolean, inline_label: 'Stream games?',
-                class: 'form-check-input', input_html: { class: 'mr-1' }
+      = f.input :include_in_stream, as: :boolean, inline_label: 'Stream games?', class: 'form-check-input',
+              input_html: { class: 'mr-1', checked: (true if defined?(new_registration)) }.compact
     - else
       .form-group
         = f.input :include_in_stream, as: :select, selected: true, required: false,
