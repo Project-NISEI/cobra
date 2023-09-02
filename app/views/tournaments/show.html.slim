@@ -36,7 +36,7 @@
                   .badge.badge-secondary NO
               - if @tournament.allow_streaming_opt_out?
                 li.list-group-item
-                  .small.text-secondary Swiss games can be streamed:
+                  .small.text-secondary Stream swiss games:
                   - if @current_user_player.stream_swiss_games?
                     .badge.badge-success YES
                   - else
