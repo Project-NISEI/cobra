@@ -192,13 +192,13 @@ class Tournament < ApplicationRecord
   end
 
   def self.streaming_opt_out_notice
-    'I opt out of my swiss games being in video coverage of this event. ' \
+    'Should we include your swiss games in video coverage of this event? ' \
       'Note: During a top cut your games may be included in video coverage.'
   end
 
   def self.registration_consent_notice
-    'I agree my name, pronouns and Netrunner deck identities will be publicly visible on this ' \
-      'website. If I submit decklists they will be shared with the organiser. If I enter a round with open ' \
+    'Your name, pronouns and Netrunner deck identities will be publicly visible on this ' \
+      'website. If you submit decklists they will be shared with the organiser. If you enter a round with open ' \
       'decklists, they may be publicly visible.'
   end
 
