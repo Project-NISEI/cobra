@@ -42,7 +42,7 @@ ruby:
               span.badge.badge-warning.ml-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
               - if @tournament.allow_streaming_opt_out?
                 .form-group.mt-3
-                  = f.input :streaming_opt_out, as: :select, prompt: false, label: Tournament.streaming_opt_out_notice
+                  = f.input :stream_swiss_games, as: :select, prompt: false, label: Tournament.streaming_opt_out_notice
               - if @current_user_player.registration_locked?
                 div.mt-3 Registration is locked, talk to a Tournament Organiser to change your decks or details.
         - unless @current_user_player.registration_locked?

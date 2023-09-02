@@ -133,7 +133,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_24_192759) do
     t.bigint "user_id"
     t.boolean "registration_locked"
     t.string "pronouns"
-    t.boolean "streaming_opt_out"
+    t.boolean "stream_swiss_games", default: true
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end

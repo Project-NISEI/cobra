@@ -51,10 +51,10 @@ $(document).on 'turbolinks:load', ->
           .join('\n')
 
     renderOptOut = (player) =>
-      if player.streaming_opt_out
-        'Opted Out'
-      else
+      if player.stream_swiss_games
         ''
+      else
+        'Opted Out'
 
     downloadCsv = (filename, csv) =>
       csvData = new Blob(["\ufeff" + csv], {type: "text/csv"}) # "\ufeff" lets Excel know it's Unicode encoded
