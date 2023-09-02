@@ -22,7 +22,7 @@ class PlayersController < ApplicationController
                             .map { |p| {
                               name: p.name,
                               pronouns: p.pronouns,
-                              stream_swiss_games: p.stream_swiss_games?
+                              include_in_stream: p.include_in_stream?
                             } }
   end
 
@@ -65,7 +65,7 @@ class PlayersController < ApplicationController
     authorize @player
 
     if @player.registration_locked?
-      update = params.require(:player).permit(:stream_swiss_games)
+      update = params.require(:player).permit(:include_in_stream)
     else
       update = player_params
     end
@@ -178,7 +178,7 @@ class PlayersController < ApplicationController
   def player_params
     params.require(:player)
           .permit(:name, :pronouns, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-                  :first_round_bye, :manual_seed, :stream_swiss_games)
+                  :first_round_bye, :manual_seed, :include_in_stream)
   end
 
   def is_organiser_view

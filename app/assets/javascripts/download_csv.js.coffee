@@ -51,7 +51,7 @@ $(document).on 'turbolinks:load', ->
           .join('\n')
 
     renderOptOut = (player) =>
-      if player.stream_swiss_games
+      if player.include_in_stream
         'Yes'
       else
         'No'
