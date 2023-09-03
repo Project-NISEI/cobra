@@ -43,13 +43,14 @@ $(document).on 'turbolinks:load', ->
       else
         before = readDeck($beforeInput)
 
-      addDiff({
+      addDeckDiff({
         description: description,
         before: before,
-        after: after
+        after: after,
+        input: $afterInput
       })
 
-    addDiff = (decks) =>
+    window.addDeckDiff = (decks) =>
       decks.diff = diffDecks(decks.before, decks.after)
 
       if decks.before.unset && !decks.after.unset

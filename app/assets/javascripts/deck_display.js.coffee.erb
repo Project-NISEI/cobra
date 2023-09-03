@@ -109,6 +109,12 @@ $(document).on 'turbolinks:load', ->
 
     editDeckInPlace = (deck, decks) =>
       deck.editInPlace = !deck.editInPlace
+      if deck.editInPlace
+        deck.editInPlaceInput = createEditInPlaceInput(deck)
+      else
+        updateDeckFromText(deck.after, deck.editInPlaceInput.val())
+        addDeckDiff(deck)
+        deck.input.val(JSON.stringify(deck.after))
       renderDecksDisplayLeftRight(decks)
 
     copyDeckToClipboard = (deck) =>
@@ -309,12 +315,13 @@ $(document).on 'turbolinks:load', ->
     editInPlaceForm = (deck, decks) =>
       $('<div/>', {class: 'card'}).append(
         $('<div/>', {class: 'card-body'}).append(
-          $('<form/>').append(
-            $('<textarea/>', {
-              class: 'form-control',
-              rows: deck.after.cards.length + 2
-            }).append(cardsAsText(deck.after))
-          )))
+          $('<form/>').append(deck.editInPlaceInput)))
+
+    createEditInPlaceInput = (deck) =>
+      $('<textarea/>', {
+        class: 'form-control',
+        rows: deck.after.cards.length + 2
+      }).append(cardsAsText(deck.after))
 
     cardsAsText = (deck) =>
       sortCards(deck)
@@ -322,6 +329,9 @@ $(document).on 'turbolinks:load', ->
       for card from deck.cards
         text += card.quantity + ' ' + card.title + '\n'
       text
+
+    updateDeckFromText = (deck, text) =>
+      deck.cards = []
 
     renderChangesNotSubmitted = (decks) =>
       $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
