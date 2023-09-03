@@ -4,15 +4,16 @@ $(document).on 'turbolinks:load', ->
 
   if deckDisplayEnabled()
     window.readDecksFromInputs = () =>
+      organiserView = document.getElementById('player_organiser_view')?
       {
-        corp: readSideDecks(
+        corp: markEditInPlaceDeckIf(organiserView, readSideDecks(
           'Corp Deck',
           $('#player_corp_deck_before'),
-          $('#player_corp_deck')),
-        runner: readSideDecks(
+          $('#player_corp_deck'))),
+        runner: markEditInPlaceDeckIf(organiserView, readSideDecks(
           'Runner Deck',
           $('#player_runner_deck_before'),
-          $('#player_runner_deck'))
+          $('#player_runner_deck')))
       }
 
     window.readPairingDecksFromInputs = () =>
@@ -29,6 +30,10 @@ $(document).on 'turbolinks:load', ->
 
     markViewOnlyDeck = (decks) =>
       decks.viewOnly = true
+      decks
+
+    markEditInPlaceDeckIf = (canEditInPlace, decks) =>
+      decks.canEditInPlace = canEditInPlace
       decks
 
     readSideDecks = (description, $beforeInput, $afterInput) =>

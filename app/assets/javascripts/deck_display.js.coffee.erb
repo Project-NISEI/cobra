@@ -5,17 +5,19 @@ $(document).on 'turbolinks:load', ->
   if deckDisplayEnabled()
 
     window.renderDecksDisplay = (decks) =>
-      $('#display_decks').empty().append(
-        renderDecksDisplayLeftRight({left: decks.corp, right: decks.runner}))
-      any_changes = decks.corp.change_type != 'none' || decks.runner.change_type != 'none'
-      $('#deck_changes_not_submitted_warning').toggleClass('d-none', !any_changes)
+      renderDecksDisplayLeftRight({
+        left: decks.corp,
+        right: decks.runner,
+        anchor: $('#display_decks')
+      })
 
     renderDecksDisplayLeftRight = (decks) =>
       normaliseCardTables(decks)
-      [
-        renderDeck(decks.left),
-        renderDeck(decks.right)
-      ]
+      renderChangesNotSubmitted(decks)
+      decks.anchor.empty().append(
+        renderDeck(decks.left, decks),
+        renderDeck(decks.right, decks)
+      )
 
     normaliseCardTables = (decks) =>
       decks.left.pad_cards = 0
@@ -28,68 +30,86 @@ $(document).on 'turbolinks:load', ->
         decks.right.pad_cards = max_cards - decks.right.after.cards.length
       decks
 
-    renderDeck = (decks) =>
-      $container = $('<div/>', {class: 'col-md-6'}).append(deckSummaryTable(decks))
-      if decks.before.unset && decks.after.unset
+    renderDeck = (deck, decks) =>
+      $container = $('<div/>', {class: 'col-md-6'}).append(deckSummaryTable(deck, decks))
+      if deck.editInPlace
+        return $container.append(editInPlaceForm(deck, decks))
+      if deck.before.unset && deck.after.unset
         return $container
-      deck = decks.after
+      deckAfter = deck.after
       $container.append(
-        deckDiffTable(decks.diff),
-        identityTable(deck),
-        cardsTable(decks),
-        totalsTable(deck))
+        deckDiffTable(deck.diff),
+        identityTable(deckAfter),
+        cardsTable(deck),
+        totalsTable(deckAfter))
 
-    deckSummaryTable = (decks) =>
+    deckSummaryTable = (deck, decks) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
         $('<thead/>', {class: 'thead-dark'}).append(
           $('<tr/>').append(
-            $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
+            $('<th/>', {class: 'text-center deck-name-header', text: deck.description}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after, decks.viewOnly))
-          .append(deckChangesRow(decks)))
+          .append(deckNameRow(deck, decks))
+          .append(deckChangesRow(deck)))
 
-    deckNameRow = (deck, viewOnly) =>
-      if deck.details.name
+    deckNameRow = (deck, decks) =>
+      if deck.after.details.name
         $('<tr/>').append($('<td/>')
-          .append(deckNameButtons(deck, viewOnly))
-          .append(document.createTextNode(deck.details.name)))
+          .append(deckNameButtons(deck, decks))
+          .append(document.createTextNode(deck.after.details.name)))
       else
         $('<tr/>').append($('<td/>')
           .append('None selected'))
 
-    deckNameButtons = (deck, viewOnly) =>
-      if viewOnly
+    deckNameButtons = (deck, decks) =>
+      deckAfter = deck.after
+      if deck.viewOnly
         []
-      else if deck.details.mine
+      else if deckAfter.details.mine
         $('<a/>', {
           class: 'float-right dontprint',
           title: 'Edit Deck',
-          href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
+          href: 'https://netrunnerdb.com/en/deck/edit/' + deckAfter.details.nrdb_uuid,
           target: '_blank'
         }).append(
           $('<i/>', {class: 'fa fa-external-link'})
         )
       else
-        $('<div/>', {class: 'dropdown float-right dontprint'}).append(
-          $('<a/>', {
-            title: 'Export deck',
-            href: '#',
-            'data-toggle': 'dropdown',
-            'aria-expanded': false
-          }).append(
-            $('<i/>', {class: 'fa fa-download'})
-          ),
-          $('<div/>', {class: 'dropdown-menu'}).append(
-            $('<a/>', {class: 'dropdown-item', href: '#'})
-              .append('Copy to clipboard in NetrunnerDB format')
-              .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deck)),
-            $('<a/>', {class: 'dropdown-item', href: '#'})
-              .append('Download as a CSV spreadsheet')
-              .on('click', (e) => e.preventDefault(); downloadDeckCsv(deck))
+        buttons = [
+          $('<div/>', {class: 'dropdown float-right dontprint'}).append(
+            $('<a/>', {
+              title: 'Export deck',
+              href: '#',
+              'data-toggle': 'dropdown',
+              'aria-expanded': false
+            }).append(
+              $('<i/>', {class: 'fa fa-download'})
+            ),
+            $('<div/>', {class: 'dropdown-menu'}).append(
+              $('<a/>', {class: 'dropdown-item', href: '#'})
+                .append('Copy to clipboard in NetrunnerDB format')
+                .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deckAfter)),
+              $('<a/>', {class: 'dropdown-item', href: '#'})
+                .append('Download as a CSV spreadsheet')
+                .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
+            )
           )
-        )
+        ]
+        if deck.canEditInPlace
+          buttons.push($('<a/>', {
+            class: 'float-right dontprint mr-1',
+            title: 'Edit in place'
+            href: '#'
+          }).append(
+            $('<i/>', {class: 'fa fa-edit'})
+          ).on('click', (e) => e.preventDefault(); editDeckInPlace(deck, decks)))
+        buttons
+
+    editDeckInPlace = (deck, decks) =>
+      deck.editInPlace = !deck.editInPlace
+      renderDecksDisplayLeftRight(decks)
 
     copyDeckToClipboard = (deck) =>
       msg = ""
@@ -162,12 +182,12 @@ $(document).on 'turbolinks:load', ->
               })),
             $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
 
-    cardsTable = (decks) =>
-      deck = decks.after
-      cards = deck.cards
+    cardsTable = (deck) =>
+      deckAfter = deck.after
+      cards = deckAfter.cards
       if not cards || cards.length < 1
         return []
-      sortCards(deck)
+      sortCards(deckAfter)
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -186,7 +206,7 @@ $(document).on 'turbolinks:load', ->
               $('<td/>', {class: 'text-center', text: card.quantity}),
               $('<td/>').append(cardDisplay(card)),
               $('<td/>', {class: 'text-center', text: influence}))),
-          emptyCardRows(decks.pad_cards)))
+          emptyCardRows(deck.pad_cards)))
 
     cardDisplay = (card) =>
       nodes = []
@@ -286,6 +306,16 @@ $(document).on 'turbolinks:load', ->
       else
         return ''
 
+    editInPlaceForm = (deck, decks) =>
+      $('<div/>', {class: 'card'}).append(
+        $('<div/>', {class: 'card-body'}).append('Edit in place placeholder'))
+
+    renderChangesNotSubmitted = (decks) =>
+      $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
+      if $changesNotSubmitted.length > 0
+        any_changes = decks.left.change_type != 'none' || decks.right.change_type != 'none'
+        $changesNotSubmitted.toggleClass('d-none', !any_changes)
+
     if document.getElementById('display_decks')?
       try
         renderDecksDisplay(readDecksFromInputs())
@@ -295,15 +325,21 @@ $(document).on 'turbolinks:load', ->
     if document.getElementById('display_pairing_decks')?
       try
         decks = readPairingDecksFromInputs()
-        $('#display_pairing_decks').append(
-          renderDecksDisplayLeftRight({left: decks.player1, right: decks.player2}))
+        renderDecksDisplayLeftRight({
+          left: decks.player1,
+          right: decks.player2,
+          anchor: $('#display_pairing_decks')
+        })
       catch e
         console.log(e)
 
     if document.getElementById('display_player_decks')?
       try
         decks = readPlayerDecksFromInputs()
-        $('#display_player_decks').append(
-          renderDecksDisplayLeftRight({left: decks.corp, right: decks.runner}))
+        renderDecksDisplayLeftRight({
+          left: decks.corp,
+          right: decks.runner,
+          anchor: $('#display_player_decks')
+        })
       catch e
         console.log(e)
