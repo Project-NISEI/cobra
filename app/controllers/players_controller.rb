@@ -20,8 +20,7 @@ class PlayersController < ApplicationController
     render json: @tournament.players.active
                             .sort_by { |p| p.name }
                             .map { |p| {
-                              name: p.name,
-                              pronouns: p.pronouns,
+                              name: p.name_with_pronouns,
                               include_in_stream: p.include_in_stream?
                             } }
   end
