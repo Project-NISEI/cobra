@@ -308,7 +308,20 @@ $(document).on 'turbolinks:load', ->
 
     editInPlaceForm = (deck, decks) =>
       $('<div/>', {class: 'card'}).append(
-        $('<div/>', {class: 'card-body'}).append('Edit in place placeholder'))
+        $('<div/>', {class: 'card-body'}).append(
+          $('<form/>').append(
+            $('<textarea/>', {
+              class: 'form-control',
+              rows: deck.after.cards.length + 2
+            }).append(cardsAsText(deck.after))
+          )))
+
+    cardsAsText = (deck) =>
+      sortCards(deck)
+      text = '1 ' + deck.details.identity_title + '\n'
+      for card from deck.cards
+        text += card.quantity + ' ' + card.title + '\n'
+      text
 
     renderChangesNotSubmitted = (decks) =>
       $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
