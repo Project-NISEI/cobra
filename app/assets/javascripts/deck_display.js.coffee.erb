@@ -160,6 +160,12 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {text: change.added}),
             $('<td/>', {text: change.removed})))))
 
+    changeStr = (change) =>
+      if change
+        return change.quantity + ' ' + change.title
+      else
+        return ''
+
     identityTable = (deck) =>
       if not deck.details.identity_title
         return []
@@ -299,12 +305,6 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {class: 'text-center deck-side-column', text: qty}),
             $('<td/>', {class: 'text-center', text: 'Totals'}),
             $('<td/>', {class: 'text-center deck-side-column', text: influence}))))
-
-    changeStr = (change) =>
-      if change
-        return change.quantity + ' ' + change.title
-      else
-        return ''
 
     editInPlaceForm = (deck, decks) =>
       $('<div/>', {class: 'card'}).append(
