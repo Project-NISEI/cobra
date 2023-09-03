@@ -46,7 +46,7 @@ $(document).on 'turbolinks:load', ->
       total + card.influence
 
     renderStreamingCsv = (players) =>
-      'Player,"Include in coverage? (players were notified this may be necessary in the cut)"\n' +
+      'Player,"Include in coverage? (players were notified that in the cut it may not be possible to exclude them)"\n' +
         players.map((player) => quoteCsvValue(player.name) + ',' + renderOptOut(player))
           .join('\n')
 
