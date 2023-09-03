@@ -28,6 +28,10 @@ $(document).on 'turbolinks:load', ->
         max_cards = Math.max(decks.right.after.cards.length, decks.left.after.cards.length)
         decks.left.pad_cards = max_cards - decks.left.after.cards.length
         decks.right.pad_cards = max_cards - decks.right.after.cards.length
+      sortCards(decks.left.before)
+      sortCards(decks.left.after)
+      sortCards(decks.right.before)
+      sortCards(decks.right.after)
       decks
 
     renderDeck = (deck, decks) =>
@@ -110,7 +114,7 @@ $(document).on 'turbolinks:load', ->
     editDeckInPlace = (deck, decks) =>
       deck.editInPlace = !deck.editInPlace
       if deck.editInPlace
-        deck.editInPlaceInput = createEditInPlaceInput(deck)
+        createEditInPlaceInput(deck)
       else
         updateDeckFromEditInPlaceInput(deck)
         addDeckDiff(deck)
@@ -199,7 +203,6 @@ $(document).on 'turbolinks:load', ->
       cards = deckAfter.cards
       if not cards || cards.length < 1
         return []
-      sortCards(deckAfter)
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -318,13 +321,12 @@ $(document).on 'turbolinks:load', ->
           $('<form/>').append(deck.editInPlaceInput)))
 
     createEditInPlaceInput = (deck) =>
-      $('<textarea/>', {
+      deck.editInPlaceInput = $('<textarea/>', {
         class: 'form-control',
         rows: deck.after.cards.length + 2
       }).append(cardsAsText(deck.after))
 
     cardsAsText = (deck) =>
-      sortCards(deck)
       text = '1 ' + deck.details.identity_title + '\n'
       for card from deck.cards
         text += card.quantity + ' ' + card.title + '\n'
