@@ -112,7 +112,7 @@ $(document).on 'turbolinks:load', ->
       if deck.editInPlace
         deck.editInPlaceInput = createEditInPlaceInput(deck)
       else
-        updateDeckFromText(deck.after, deck.editInPlaceInput.val())
+        updateDeckFromEditInPlaceInput(deck)
         addDeckDiff(deck)
         deck.input.val(JSON.stringify(deck.after))
       renderDecksDisplayLeftRight(decks)
@@ -330,8 +330,9 @@ $(document).on 'turbolinks:load', ->
         text += card.quantity + ' ' + card.title + '\n'
       text
 
-    updateDeckFromText = (deck, text) =>
-      deck.cards = []
+    updateDeckFromEditInPlaceInput = (deck) =>
+      text = deck.editInPlaceInput.val()
+      deck.after.cards = []
 
     renderChangesNotSubmitted = (decks) =>
       $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
