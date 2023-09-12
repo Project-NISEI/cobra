@@ -40,7 +40,7 @@ ruby:
             - if !@edit_decks
               = link_to registration_tournament_player_path(@tournament, @player, {edit_decks: true}), class: 'btn btn-link text-info mr-2 dontprint' do
                 => fa_icon 'edit'
-                | Edit decks
+                | Choose decks from NetrunnerDB
             - else
               = link_to registration_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info mr-2 dontprint' do
                 => fa_icon 'undo'
