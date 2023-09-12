@@ -68,12 +68,18 @@
                     class: ['dropdown-item', *('disabled' if @tournament.cut_decks_public?)] do
               => fa_icon 'eye'
               | Make decks in cut public, visible to anyone
-      input#download_decks_tournament type='hidden' value='#{@tournament.name}'
+      input#download_tournament type='hidden' value='#{@tournament.name}'
       input#download_decks_path type='hidden' value='#{download_decks_tournament_players_path(@tournament)}'
+      input#download_streaming_path type='hidden' value='#{download_streaming_tournament_players_path(@tournament)}'
       a.btn.btn-link.text-info#download_decks_button href='#'
         .spinner-border.spinner-border-sm.d-none#download_decks_spinner style='width: 15px'
         => fa_icon 'download', id: 'download_decks_icon'
-        | Download decks spreadsheet
+        | Decks spreadsheet
+    - if @tournament.allow_streaming_opt_out?
+      a.btn.btn-link.text-info#download_streaming_button href='#'
+        .spinner-border.spinner-border-sm.d-none#download_streaming_spinner style='width: 15px'
+        => fa_icon 'download', id: 'download_streaming_icon'
+        | Streaming spreadsheet
   ul.list-group.list-group-flush
   - @players.each do |player|
     li.list-group-item

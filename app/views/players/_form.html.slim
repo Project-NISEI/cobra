@@ -1,7 +1,3 @@
-ruby:
-  @consent_notice = 'I agree my name, pronouns and Netrunner deck identities will be publicly visible on this ' \
-          'website. If I submit decklists they will be shared with the organiser. If I enter a round with open ' \
-          'decklists, they may be publicly visible.'
 .identities_form.d-block
   - if defined?(organiser_view)
     = f.input_field :organiser_view, value: true, hidden: true
@@ -9,12 +5,11 @@ ruby:
     - if defined?(player) && @tournament.self_registration?
       span.text-info.float-left.mr-2 style='width: 12px'
         - if player.registration_locked?
-          => fa_icon 'lock', class: 'player-locked', title: 'Registration locked'
+          => fa_icon 'lock', class: 'player-tooltip', title: 'Registration locked'
         - else
-          => fa_icon 'unlock', class: 'player-unlocked', title: 'Registration unlocked'
+          => fa_icon 'unlock', class: 'player-tooltip', title: 'Registration unlocked'
     javascript:
-        $('.player-locked').tooltip()
-        $('.player-unlocked').tooltip()
+        $('.player-tooltip').tooltip()
     label.d-block for="player_name" Name
     - if defined?(default_name)
       = f.input_field :name,
@@ -49,7 +44,16 @@ ruby:
       .form-group
         label.d-block for="player_manual_seed" Manual Seed
         => f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
+  - if @tournament.allow_streaming_opt_out?
+    - if defined?(organiser_view)
+      = f.input :include_in_stream, as: :boolean, inline_label: 'Stream games?', class: 'form-check-input',
+              input_html: { class: 'mr-1', checked: (true if defined?(new_registration)) }.compact
+    - else
+      .form-group
+        = f.input :include_in_stream, as: :select, selected: true, required: false,
+                label: Tournament.streaming_opt_out_notice
   - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
-    = f.input :consent_data_sharing, as: :boolean,
-            class: 'form-check-input', input_html: { class: 'mr-1' },
-            inline_label: @consent_notice
+    .form-group
+      label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
+      = f.input :consent_data_sharing, as: :boolean, inline_label: 'I agree to these terms',
+              class: 'form-check-input', input_html: { class: 'mr-1' }

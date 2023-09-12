@@ -81,7 +81,7 @@ RSpec.describe PlayersController do
         expect(player1.corp_deck).to be_nil
       end
 
-      it 'refuses player details change when player is locked' do
+      it 'ignores player details change when player is locked' do
         sign_in tournament.user
         patch lock_registration_tournament_player_path(tournament, player1)
         sign_in user1
@@ -97,7 +97,6 @@ RSpec.describe PlayersController do
         expect(player1.pronouns).to be_nil
         expect(player1.corp_identity).to be_nil
         expect(player1.runner_identity).to be_nil
-        expect_unauthorized
       end
 
       it 'allows TO updating another user' do

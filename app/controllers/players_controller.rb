@@ -15,6 +15,16 @@ class PlayersController < ApplicationController
     render json: @tournament.players.active.flat_map { |p| p.decks }.map { |d| d.as_view(current_user) }
   end
 
+  def download_streaming
+    authorize @tournament, :update?
+    render json: @tournament.players.active
+                            .sort_by { |p| p.name }
+                            .map { |p| {
+                              name: p.name_with_pronouns,
+                              include_in_stream: p.include_in_stream?
+                            } }
+  end
+
   def create
     authorize Player
     if @tournament.registration_open?
@@ -53,18 +63,22 @@ class PlayersController < ApplicationController
   def update
     authorize @player
 
-    params = player_params
+    if @player.registration_locked?
+      update = params.require(:player).permit(:include_in_stream)
+    else
+      update = player_params
+    end
     if is_organiser_view
       redirect_to tournament_players_path(@tournament)
     else
       redirect_to tournament_path(@tournament)
-      params[:user_id] = current_user.id
+      update[:user_id] = current_user.id
     end
 
-    @player.update(params.except(:corp_deck, :runner_deck))
+    @player.update(update.except(:corp_deck, :runner_deck))
     if @tournament.nrdb_deck_registration?
-      save_deck(params, :corp_deck, 'corp')
-      save_deck(params, :runner_deck, 'runner')
+      save_deck(update, :corp_deck, 'corp')
+      save_deck(update, :runner_deck, 'runner')
     end
   end
 
@@ -163,7 +177,7 @@ class PlayersController < ApplicationController
   def player_params
     params.require(:player)
           .permit(:name, :pronouns, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-                  :first_round_bye, :manual_seed)
+                  :first_round_bye, :manual_seed, :include_in_stream)
   end
 
   def is_organiser_view

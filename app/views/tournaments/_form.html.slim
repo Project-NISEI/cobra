@@ -6,6 +6,8 @@
   = f.input :stream_url, input_html: { class: 'form-control' }, label: 'Stream URL'
 .form-group
   = f.input :self_registration, as: :boolean, inline_label: 'Self-Registration: Allow players to use a link to register themselves'
+.form-group
+  = f.input :allow_streaming_opt_out, as: :boolean, inline_label: 'Streaming opt out: Allow players to choose whether their games should be included in video coverage (defaults to yes, and players are notified that in a top cut it may not be possible to exclude them)'
 - if Flipper.enabled? :nrdb_deck_registration
   .form-group
     = f.input :nrdb_deck_registration, as: :boolean, inline_label: 'Deck registration: Upload decks from NetrunnerDB'

@@ -34,6 +34,13 @@
                   .badge.badge-success YES
                 - else
                   .badge.badge-secondary NO
+              - if @tournament.allow_streaming_opt_out?
+                li.list-group-item
+                  .small.text-secondary Stream my games:
+                  - if @current_user_player.include_in_stream?
+                    .badge.badge-success YES
+                  - else
+                    .badge.badge-secondary NO
         - else
           - if current_user
             .card.alert.alert-secondary

@@ -191,6 +191,17 @@ class Tournament < ApplicationRecord
     end
   end
 
+  def self.streaming_opt_out_notice
+    'Should we include your games in video coverage of this event? ' \
+      'Note: During a top cut it may not be possible to exclude you from coverage.'
+  end
+
+  def self.registration_consent_notice
+    'Your name, pronouns and Netrunner deck identities will be publicly visible on this ' \
+      'website. If you submit decklists they will be shared with the organiser. If you enter a round with open ' \
+      'decklists, they may be publicly visible.'
+  end
+
   private
 
   def default_date
