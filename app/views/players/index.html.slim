@@ -90,11 +90,11 @@
             - if player.registration_locked?
               =< link_to unlock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
                 => fa_icon 'unlock'
-                | Unlock registration
+                | Unlock player
             - else
               =< link_to lock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
                 => fa_icon 'lock'
-                | Lock registration
+                | Lock player
           - if @tournament.nrdb_deck_registration?
             =< link_to registration_tournament_player_path(@tournament, player), class: 'btn btn-link text-info mr-2' do
               => fa_icon 'eye'
