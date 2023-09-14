@@ -44,6 +44,11 @@
       .form-group
         label.d-block for="player_manual_seed" Manual Seed
         => f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
+  - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
+    .form-group
+      label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
+      = f.input :consent_data_sharing, as: :boolean, inline_label: 'I agree to these terms',
+              class: 'form-check-input', input_html: { class: 'mr-1' }
   - if @tournament.allow_streaming_opt_out?
     - if defined?(organiser_view)
       = f.input :include_in_stream, as: :select,
@@ -59,8 +64,3 @@
                 label: Tournament.streaming_opt_out_notice,
                 wrapper_html: { class: 'form-group my-2' },
                 input_html: { class: 'form-control' }
-  - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
-    .form-group
-      label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
-      = f.input :consent_data_sharing, as: :boolean, inline_label: 'I agree to these terms',
-              class: 'form-check-input', input_html: { class: 'mr-1' }
