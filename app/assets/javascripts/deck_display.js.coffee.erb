@@ -61,17 +61,18 @@ $(document).on 'turbolinks:load', ->
 
     deckNameButtons = (deck, viewOnly) =>
       if viewOnly
-        []
-      else if deck.details.mine
-        $('<a/>', {
-          class: 'float-right dontprint',
+        return []
+      buttons = []
+      if deck.details.mine
+        buttons.push($('<a/>', {
+          class: 'float-right dontprint ml-2',
           title: 'Edit Deck',
           href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
           target: '_blank'
         }).append(
           $('<i/>', {class: 'fa fa-external-link'})
-        )
-      else
+        ))
+      buttons.push(
         $('<div/>', {class: 'dropdown float-right dontprint'}).append(
           $('<a/>', {
             title: 'Export deck',
@@ -89,7 +90,8 @@ $(document).on 'turbolinks:load', ->
               .append('Download as a CSV spreadsheet')
               .on('click', (e) => e.preventDefault(); downloadDeckCsv(deck))
           )
-        )
+        ))
+      buttons
 
     copyDeckToClipboard = (deck) =>
       msg = ""

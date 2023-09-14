@@ -46,12 +46,19 @@
         => f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
   - if @tournament.allow_streaming_opt_out?
     - if defined?(organiser_view)
-      = f.input :include_in_stream, as: :boolean, inline_label: 'Stream games?', class: 'form-check-input',
-              input_html: { class: 'mr-1', checked: (true if defined?(new_registration)) }.compact
+      = f.input :include_in_stream, as: :select,
+              collection: [['No', true], ['Yes', false]],
+              prompt: false, required: false,
+              label: 'Opted out of video coverage?',
+              wrapper_html: { class: 'form-group my-2' },
+              input_html: { class: 'ml-1 form-control' },
+              label_html: { style: 'display: inline-block; vertical-align: middle' }
     - else
       .form-group
-        = f.input :include_in_stream, as: :select, selected: true, required: false,
-                label: Tournament.streaming_opt_out_notice
+        = f.input :include_in_stream, as: :select, prompt: false, required: false,
+                label: Tournament.streaming_opt_out_notice,
+                wrapper_html: { class: 'form-group my-2' },
+                input_html: { class: 'form-control' }
   - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
     .form-group
       label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
