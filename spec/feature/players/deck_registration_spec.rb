@@ -29,7 +29,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     expect do
       create_player_as_organizer
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(registration_tournament_player_path(Tournament.last, Player.last))
+    expect(page.current_path).to eq(tournament_players_path(Tournament.last))
   end
 
   it 'displays a deck in the list' do

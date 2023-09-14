@@ -55,11 +55,7 @@ class PlayersController < ApplicationController
         redirect_to tournament_path(@tournament)
       end
     else
-      if @tournament.nrdb_deck_registration?
-        redirect_to registration_tournament_player_path(@tournament, player, { edit_decks: true })
-      else
-        redirect_to tournament_players_path(@tournament)
-      end
+      redirect_to tournament_players_path(@tournament)
     end
   end
 
