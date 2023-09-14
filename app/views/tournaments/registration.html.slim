@@ -35,15 +35,16 @@ ruby:
                         placeholder: 'Example: they/them',
                         class: 'form-control',
                         readonly: @current_user_player.registration_locked?
+              - if @tournament.allow_streaming_opt_out?
+                = f.input :include_in_stream, as: :select, prompt: false, label: Tournament.streaming_opt_out_notice,
+                        wrapper_html: { class: 'mt-1 mb-3' },
+                        input_html: { class: 'form-control' },
+                        label_html: { class: 'mr-2', style: 'display: inline-block; vertical-align: middle' }
               - unless @current_user_player.registration_locked? && !@tournament.allow_streaming_opt_out?
                 = button_tag type: :submit, class: 'btn btn-primary dontprint' do
                   => fa_icon 'check'
                   | Submit
               span.badge.badge-warning.ml-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
-              - if @tournament.allow_streaming_opt_out?
-                = f.input :include_in_stream, as: :select, prompt: false, label: Tournament.streaming_opt_out_notice,
-                        wrapper_html: { class: 'my-2' },
-                        input_html: { class: 'form-control' }
               - if @current_user_player.registration_locked?
                 .mt-3 Registration is locked, talk to a Tournament Organiser to change your decks or details.
                 - if @tournament.allow_streaming_opt_out?
