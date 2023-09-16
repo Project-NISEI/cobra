@@ -30,6 +30,8 @@ $(document).on 'turbolinks:load', ->
         max_cards = Math.max(decks.right.after.cards.length, decks.left.after.cards.length)
         decks.left.pad_cards = max_cards - decks.left.after.cards.length
         decks.right.pad_cards = max_cards - decks.right.after.cards.length
+      normaliseEditInPlace(decks.left)
+      normaliseEditInPlace(decks.right)
       decks
 
     shouldPadCards = (decks) =>
@@ -38,6 +40,13 @@ $(document).on 'turbolinks:load', ->
       if decks.left.change_type != decks.right.change_type
         return false
       decks.left.change_type != 'change_cards'
+
+    normaliseEditInPlace = (deck) =>
+      if deck.editInPlace
+        deck.after.cards = [emptyCard()].concat(deck.after.cards, [emptyCard()])
+
+    emptyCard = () =>
+      {title: '', quantity: 0, influence: 0}
 
     renderDeck = (deck, decks) =>
       $container = $('<div/>', {class: 'col-md-6'})
@@ -219,6 +228,7 @@ $(document).on 'turbolinks:load', ->
       cards = deckAfter.cards
       if not cards || cards.length < 1
         return []
+      tableBody = $('<tbody/>')
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -227,15 +237,18 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'}),
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
-        $('<tbody/>').append(
-          cards.map((card) =>
-            $('<tr/>').append(
-              $('<td/>', {class: 'text-center align-middle'}).append(quantityDisplay(card, deck)),
-              $('<td/>').append(cardDisplay(card, deck)),
-              $('<td/>', {class: 'text-center align-middle'}).append(influenceDisplay(card, deck)))),
+        tableBody.append(
+          cards.map((card) => cardRow(card, deck, tableBody)),
           emptyCardRows(deck.pad_cards)))
 
-    quantityDisplay = (card, deck) =>
+    cardRow = (card, deck, tableBody) =>
+      tableRow = $('<tr/>')
+      tableRow.append(
+        $('<td/>', {class: 'text-center align-middle'}).append(quantityDisplay(card, deck, tableBody, tableRow)),
+        $('<td/>').append(cardDisplay(card, deck)),
+        $('<td/>', {class: 'text-center align-middle'}).append(influenceDisplay(card, deck)))
+
+    quantityDisplay = (card, deck, tableBody, tableRow) =>
       if deck.editInPlace
         displayNode = document.createTextNode(card.quantity)
         [
@@ -249,7 +262,8 @@ $(document).on 'turbolinks:load', ->
             e.preventDefault()
             if card.quantity > 0
               card.quantity--
-              displayNode.nodeValue = card.quantity)),
+              displayNode.nodeValue = card.quantity
+              removeCardIfNeeded(card, deck, tableRow))),
           displayNode,
           $('<a/>', {
             title: 'Add'
@@ -261,10 +275,33 @@ $(document).on 'turbolinks:load', ->
             e.preventDefault()
             if card.quantity < 3
               card.quantity++
-              displayNode.nodeValue = card.quantity))
+              displayNode.nodeValue = card.quantity
+              addNewCardIfNeeded(card, deck, tableBody)))
         ]
       else
         '' + card.quantity
+
+    addNewCardIfNeeded = (editedCard, deck, tableBody) =>
+      cards = deck.after.cards
+      index = cards.indexOf(editedCard)
+      if index == 0
+        card = emptyCard()
+        deck.after.cards = [card].concat(cards)
+        tableBody.prepend(cardRow(card, deck, tableBody))
+      else if index == cards.length - 1
+        card = emptyCard()
+        deck.after.cards = cards.concat([card])
+        tableBody.append(cardRow(card, deck, tableBody))
+
+    removeCardIfNeeded = (editedCard, deck, tableRow) =>
+      if editedCard.quantity != 0
+        return
+      cards = deck.after.cards
+      index = cards.indexOf(editedCard)
+      if index == 0 or index == cards.length - 1
+        return
+      cards.splice(index, 1)
+      tableRow.remove()
 
     influenceDisplay = (card, deck) =>
       if card.influence > 0
@@ -327,6 +364,10 @@ $(document).on 'turbolinks:load', ->
           compareType = a.card_type_id.localeCompare(b.card_type_id)
           if compareType != 0
             return compareType
+        else if a.card_type_id
+          return 1
+        else if b.card_type_id
+          return -1
         factionA = a.faction_id
         factionB = b.faction_id
         if factionA && factionB
@@ -341,6 +382,10 @@ $(document).on 'turbolinks:load', ->
             if factionB.startsWith('neutral')
               return 1
             return compareFaction
+        else if factionA
+          return 1
+        else if factionB
+          return -1
         a.title.localeCompare(b.title))
 
     emptyCardRows = (numRows) =>
