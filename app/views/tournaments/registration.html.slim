@@ -37,7 +37,7 @@ ruby:
                         readonly: @current_user_player.registration_locked?
               - if @tournament.allow_streaming_opt_out?
                 = f.input :include_in_stream, as: :select, prompt: false, label: Tournament.streaming_opt_out_notice,
-                        wrapper_html: { class: 'mt-1 mb-3' },
+                        wrapper_html: { class: 'mt-1 mb-2' },
                         input_html: { class: 'form-control' },
                         label_html: { class: 'mr-2', style: 'display: inline-block; vertical-align: middle' }
               - unless @current_user_player.registration_locked? && !@tournament.allow_streaming_opt_out?
@@ -45,10 +45,10 @@ ruby:
                   => fa_icon 'check'
                   | Submit
               span.badge.badge-warning.ml-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
-              - if @current_user_player.registration_locked?
-                .mt-3 Registration is locked, talk to a Tournament Organiser to change your decks or details.
-                - if @tournament.allow_streaming_opt_out?
-                  .mt-2 Your video coverage preference may still be changed here, but please tell the TO as well.
+            - if @current_user_player.registration_locked?
+              .mt-3 Registration is locked, talk to a Tournament Organiser to change your decks or details.
+              - if @tournament.allow_streaming_opt_out?
+                .mt-2 Your video coverage preference may still be changed here, but please tell the TO as well.
         - unless @current_user_player.registration_locked?
           .alert.alert-danger.mt-3.mb-0.dontprint role=alert
             => fa_icon 'exclamation-triangle', class: 'mr-2'
