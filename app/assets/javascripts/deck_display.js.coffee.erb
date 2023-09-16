@@ -123,6 +123,7 @@ $(document).on 'turbolinks:load', ->
 
     saveEditInPlace = (deck, decks) =>
       deck.editInPlace = false
+      deck.after.cards = deck.after.cards.filter((card) => card.quantity > 0)
       addDeckDiff(deck)
       deck.input.val(JSON.stringify(deck.after))
       renderDecksDisplayLeftRight(decks)
