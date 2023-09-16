@@ -39,12 +39,11 @@ $(document).on 'turbolinks:load', ->
         .append(deckSummaryTable(deck, decks))
       if deck.before.unset && deck.after.unset
         return $container
-      deckAfter = deck.after
       $container.append(
         deckDiffTable(deck.diff),
-        identityTable(deckAfter),
+        identityTable(deck),
         cardsTable(deck),
-        totalsTable(deckAfter))
+        totalsTable(deck.after))
 
     deckSummaryTable = (deck, decks) =>
       return $('<table/>', {
@@ -103,7 +102,7 @@ $(document).on 'turbolinks:load', ->
         if deck.editInPlace
           buttons.push($('<a/>', {
             class: 'float-right dontprint mr-2',
-            title: 'Save edits'
+            title: 'Save changes'
             href: '#'
           }).append(
             $('<i/>', {class: 'fa fa-floppy-o'})
@@ -184,7 +183,8 @@ $(document).on 'turbolinks:load', ->
         return ''
 
     identityTable = (deck) =>
-      if not deck.details.identity_title
+      details = deck.after.details
+      if not details.identity_title
         return []
 
       return $('<table/>', {
@@ -197,13 +197,16 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Max'}))),
         $('<tbody/>').append(
           $('<tr/>').append(
-            $('<td/>', {class: 'text-center', text: deck.details.min_deck_size}),
+            $('<td/>', {class: 'text-center', text: details.min_deck_size}),
             $('<td/>').append(
               cardDisplay({
-                title: deck.details.identity_title,
-                faction_id: deck.details.faction_id
-              })),
-            $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
+                title: details.identity_title,
+                faction_id: details.faction_id
+              }, deck, (card) => updateIdentity(card, details))),
+            $('<td/>', {class: 'text-center', text: details.max_influence}))))
+
+    updateIdentity = (card, details) =>
+      details.identity_title = card.title
 
     cardsTable = (deck) =>
       deckAfter = deck.after
@@ -242,9 +245,12 @@ $(document).on 'turbolinks:load', ->
         influence = ''
       return influence
 
-    cardDisplay = (card, deck) =>
-      if deck and deck.editInPlace
-        return $('<input/>', {class: 'w-100'}).val(card.title)
+    cardDisplay = (card, deck, update) =>
+      if deck.editInPlace
+        return $('<input/>', {class: 'w-100'}).val(card.title).on 'change', ->
+          card.title = $(this).val()
+          if update
+            update(card)
       nodes = []
       if card.card_type_id
         nodes.push($('<img/>', {src: cardTypeImage(card.card_type_id)}))
