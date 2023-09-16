@@ -29,6 +29,10 @@
           => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
             => fa_icon 'lock'
             | Close registration
+        - elsif @tournament.self_registration? and @tournament.rounds.empty?
+          => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-secondary' do
+            => fa_icon 'unlock'
+            | Reopen registration
         - if @tournament.rounds.all?(&:completed?)
           => link_to tournament_rounds_path(@tournament), method: :post, class: 'btn btn-success',
                   data: { confirm: @tournament.registration_open? ? 'Registration is still open, pair new round anyway?' : nil } do
