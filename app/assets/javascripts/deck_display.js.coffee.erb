@@ -35,9 +35,8 @@ $(document).on 'turbolinks:load', ->
       decks
 
     renderDeck = (deck, decks) =>
-      $container = $('<div/>', {class: 'col-md-6'}).append(deckSummaryTable(deck, decks))
-      if deck.editInPlace
-        return $container.append(editInPlaceForm(deck, decks))
+      $container = $('<div/>', {class: 'col-md-6'})
+        .append(deckSummaryTable(deck, decks))
       if deck.before.unset && deck.after.unset
         return $container
       deckAfter = deck.after
@@ -101,23 +100,32 @@ $(document).on 'turbolinks:load', ->
           )
         ))
       if deck.canEditInPlace
-        buttons.push($('<a/>', {
-          class: 'float-right dontprint mr-1',
-          title: 'Edit in place'
-          href: '#'
-        }).append(
-          $('<i/>', {class: 'fa fa-edit'})
-        ).on('click', (e) => e.preventDefault(); editDeckInPlace(deck, decks)))
+        if deck.editInPlace
+          buttons.push($('<a/>', {
+            class: 'float-right dontprint mr-2',
+            title: 'Save edits'
+            href: '#'
+          }).append(
+            $('<i/>', {class: 'fa fa-floppy-o'})
+          ).on('click', (e) => e.preventDefault(); saveEditInPlace(deck, decks)))
+        else
+          buttons.push($('<a/>', {
+            class: 'float-right dontprint mr-2',
+            title: 'Edit in place'
+            href: '#'
+          }).append(
+            $('<i/>', {class: 'fa fa-edit'})
+          ).on('click', (e) => e.preventDefault(); editDeckInPlace(deck, decks)))
       buttons
 
     editDeckInPlace = (deck, decks) =>
-      deck.editInPlace = !deck.editInPlace
-      if deck.editInPlace
-        createEditInPlaceInput(deck)
-      else
-        updateDeckFromEditInPlaceInput(deck)
-        addDeckDiff(deck)
-        deck.input.val(JSON.stringify(deck.after))
+      deck.editInPlace = true
+      renderDecksDisplayLeftRight(decks)
+
+    saveEditInPlace = (deck, decks) =>
+      deck.editInPlace = false
+      addDeckDiff(deck)
+      deck.input.val(JSON.stringify(deck.after))
       renderDecksDisplayLeftRight(decks)
 
     copyDeckToClipboard = (deck) =>
@@ -212,17 +220,31 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
         $('<tbody/>').append(
           cards.map((card) =>
-            if card.influence > 0
-              influence = card.influence
-            else
-              influence = ''
             $('<tr/>').append(
-              $('<td/>', {class: 'text-center', text: card.quantity}),
-              $('<td/>').append(cardDisplay(card)),
-              $('<td/>', {class: 'text-center', text: influence}))),
+              $('<td/>', {class: 'text-center'}).append(quantityDisplay(card, deck)),
+              $('<td/>').append(cardDisplay(card, deck)),
+              $('<td/>', {class: 'text-center'}).append(influenceDisplay(card, deck)))),
           emptyCardRows(deck.pad_cards)))
 
-    cardDisplay = (card) =>
+    quantityDisplay = (card, deck) =>
+      if deck.editInPlace
+        return $('<input/>', {class: 'w-100'}).val(card.quantity).on 'change', ->
+          value = parseInt($(this).val())
+          if !isNaN(value)
+            card.quantity = value
+      else
+        return '' + card.quantity
+
+    influenceDisplay = (card, deck) =>
+      if card.influence > 0
+        influence = '' + card.influence
+      else
+        influence = ''
+      return influence
+
+    cardDisplay = (card, deck) =>
+      if deck and deck.editInPlace
+        return $('<input/>', {class: 'w-100'}).val(card.title)
       nodes = []
       if card.card_type_id
         nodes.push($('<img/>', {src: cardTypeImage(card.card_type_id)}))
@@ -313,27 +335,6 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {class: 'text-center deck-side-column', text: qty}),
             $('<td/>', {class: 'text-center', text: 'Totals'}),
             $('<td/>', {class: 'text-center deck-side-column', text: influence}))))
-
-    editInPlaceForm = (deck, decks) =>
-      $('<div/>', {class: 'card'}).append(
-        $('<div/>', {class: 'card-body'}).append(
-          $('<form/>').append(deck.editInPlaceInput)))
-
-    createEditInPlaceInput = (deck) =>
-      deck.editInPlaceInput = $('<textarea/>', {
-        class: 'form-control',
-        rows: deck.after.cards.length + 2
-      }).append(cardsAsText(deck.after))
-
-    cardsAsText = (deck) =>
-      text = '1 ' + deck.details.identity_title + '\n'
-      for card from deck.cards
-        text += card.quantity + ' ' + card.title + '\n'
-      text
-
-    updateDeckFromEditInPlaceInput = (deck) =>
-      text = deck.editInPlaceInput.val()
-      deck.after.cards = []
 
     renderChangesNotSubmitted = (decks) =>
       $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
