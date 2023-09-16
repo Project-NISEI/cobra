@@ -39,21 +39,31 @@
               placeholder: (@tournament.nrdb_deck_registration? ? '' : 'Search for runner ID'),
               class: 'form-control runner_identities'
   - if policy(@tournament).edit?
-    => f.input :first_round_bye, as: :boolean, class: 'form-check-input', input_html: { class: 'mr-1' }, inline_label: 'First Round Bye'
+    => f.input :first_round_bye, as: :boolean, inline_label: 'First Round Bye',
+            input_html: { class: 'mr-1' },
+            wrapper_html: { class: 'align-middle' }
     - if @tournament.manual_seed
-      .form-group
-        label.d-block for="player_manual_seed" Manual Seed
-        => f.text_field :manual_seed, placeholder: 'Set seed', class: 'manual_seed form-control'
-  - if @tournament.allow_streaming_opt_out?
-    - if defined?(organiser_view)
-      = f.input :include_in_stream, as: :boolean, inline_label: 'Stream games?', class: 'form-check-input',
-              input_html: { class: 'mr-1', checked: (true if defined?(new_registration)) }.compact
-    - else
-      .form-group
-        = f.input :include_in_stream, as: :select, selected: true, required: false,
-                label: Tournament.streaming_opt_out_notice
+      = f.input :manual_seed, placeholder: 'Set seed', inline_label: 'Manual Seed', required: false, as: :string,
+              wrapper_html: { class: 'form-group my-2' },
+              input_html: { class: 'form-control manual_seed' },
+              label_html: { class: 'align-middle d-inline-block mr-1' }
   - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
     .form-group
       label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
       = f.input :consent_data_sharing, as: :boolean, inline_label: 'I agree to these terms',
-              class: 'form-check-input', input_html: { class: 'mr-1' }
+              input_html: { class: 'mr-1' }
+  - if @tournament.allow_streaming_opt_out?
+    - if defined?(organiser_view)
+      = f.input :include_in_stream, as: :select,
+              collection: [['No', true], ['Yes', false]],
+              prompt: false, required: false,
+              label: 'Opted out of video coverage?',
+              wrapper_html: { class: 'form-group my-2' },
+              input_html: { class: 'form-control' },
+              label_html: { class: 'align-middle d-inline-block mr-1' }
+    - else
+      .form-group
+        = f.input :include_in_stream, as: :select, prompt: false, required: false,
+                label: Tournament.streaming_opt_out_notice,
+                wrapper_html: { class: 'form-group my-2' },
+                input_html: { class: 'form-control' }

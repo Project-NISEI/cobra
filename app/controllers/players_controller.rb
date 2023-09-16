@@ -12,7 +12,10 @@ class PlayersController < ApplicationController
 
   def download_decks
     authorize @tournament, :update?
-    render json: @tournament.players.active.flat_map { |p| p.decks }.map { |d| d.as_view(current_user) }
+    render json: @tournament.players.active
+                            .sort_by { |p| p.name }
+                            .flat_map { |p| p.decks.sort_by { |d| d.side_id } }
+                            .map { |d| d.as_view(current_user) }
   end
 
   def download_streaming
@@ -52,26 +55,23 @@ class PlayersController < ApplicationController
         redirect_to tournament_path(@tournament)
       end
     else
-      if @tournament.nrdb_deck_registration?
-        redirect_to registration_tournament_player_path(@tournament, player, { edit_decks: true })
-      else
-        redirect_to tournament_players_path(@tournament)
-      end
+      redirect_to tournament_players_path(@tournament)
     end
   end
 
   def update
     authorize @player
 
-    if @player.registration_locked?
-      update = params.require(:player).permit(:include_in_stream)
-    else
-      update = player_params
-    end
     if is_organiser_view
       redirect_to tournament_players_path(@tournament)
+      update = player_params
     else
       redirect_to tournament_path(@tournament)
+      if @player.registration_locked?
+        update = params.require(:player).permit(:include_in_stream)
+      else
+        update = player_params
+      end
       update[:user_id] = current_user.id
     end
 

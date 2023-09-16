@@ -29,8 +29,21 @@
           => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
             => fa_icon 'lock'
             | Close registration
+        - elsif @tournament.self_registration? and @tournament.rounds.empty?
+          => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-secondary' do
+            => fa_icon 'folder-open'
+            | Open registration
+          - if @tournament.unlocked_players.count > 0
+            => link_to lock_player_registrations_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
+              => fa_icon 'lock'
+              | Lock all players
+          - if @tournament.locked_players.count > 0
+            => link_to unlock_player_registrations_tournament_path(@tournament), method: :patch, class: 'btn btn-secondary' do
+              => fa_icon 'unlock'
+              | Unlock all players
         - if @tournament.rounds.all?(&:completed?)
-          => link_to tournament_rounds_path(@tournament), method: :post, class: 'btn btn-success' do
+          => link_to tournament_rounds_path(@tournament), method: :post, class: 'btn btn-success',
+                  data: { confirm: @tournament.registration_unlocked? ? 'Registration is still open or some players are unlocked, pair new round anyway?' : nil } do
             => fa_icon 'plus'
             | Pair new round!
         - else

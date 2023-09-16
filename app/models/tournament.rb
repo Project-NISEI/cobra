@@ -68,6 +68,10 @@ class Tournament < ApplicationRecord
     self_registration? && !registration_closed?
   end
 
+  def registration_unlocked?
+    self_registration? && (!registration_closed? || unlocked_players.count > 0)
+  end
+
   def stage_decks_open?(stage)
     if stage.double_elim?
       cut_decks_open?

@@ -70,46 +70,45 @@ $(document).on 'turbolinks:load', ->
     deckNameButtons = (deck, decks) =>
       deckAfter = deck.after
       if deck.viewOnly
-        []
-      else if deckAfter.details.mine
-        $('<a/>', {
-          class: 'float-right dontprint',
+        return []
+      buttons = []
+      if deckAfter.details.mine
+        buttons.push($('<a/>', {
+          class: 'float-right dontprint ml-2',
           title: 'Edit Deck',
           href: 'https://netrunnerdb.com/en/deck/edit/' + deckAfter.details.nrdb_uuid,
           target: '_blank'
         }).append(
           $('<i/>', {class: 'fa fa-external-link'})
-        )
-      else
-        buttons = [
-          $('<div/>', {class: 'dropdown float-right dontprint'}).append(
-            $('<a/>', {
-              title: 'Export deck',
-              href: '#',
-              'data-toggle': 'dropdown',
-              'aria-expanded': false
-            }).append(
-              $('<i/>', {class: 'fa fa-download'})
-            ),
-            $('<div/>', {class: 'dropdown-menu'}).append(
-              $('<a/>', {class: 'dropdown-item', href: '#'})
-                .append('Copy to clipboard in NetrunnerDB format')
-                .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deckAfter)),
-              $('<a/>', {class: 'dropdown-item', href: '#'})
-                .append('Download as a CSV spreadsheet')
-                .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
-            )
-          )
-        ]
-        if deck.canEditInPlace
-          buttons.push($('<a/>', {
-            class: 'float-right dontprint mr-1',
-            title: 'Edit in place'
-            href: '#'
+        ))
+      buttons.push(
+        $('<div/>', {class: 'dropdown float-right dontprint'}).append(
+          $('<a/>', {
+            title: 'Export deck',
+            href: '#',
+            'data-toggle': 'dropdown',
+            'aria-expanded': false
           }).append(
-            $('<i/>', {class: 'fa fa-edit'})
-          ).on('click', (e) => e.preventDefault(); editDeckInPlace(deck, decks)))
-        buttons
+            $('<i/>', {class: 'fa fa-download'})
+          ),
+          $('<div/>', {class: 'dropdown-menu'}).append(
+            $('<a/>', {class: 'dropdown-item', href: '#'})
+              .append('Copy to clipboard in NetrunnerDB format')
+              .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deckAfter)),
+            $('<a/>', {class: 'dropdown-item', href: '#'})
+              .append('Download as a CSV spreadsheet')
+              .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
+          )
+        ))
+      if deck.canEditInPlace
+        buttons.push($('<a/>', {
+          class: 'float-right dontprint mr-1',
+          title: 'Edit in place'
+          href: '#'
+        }).append(
+          $('<i/>', {class: 'fa fa-edit'})
+        ).on('click', (e) => e.preventDefault(); editDeckInPlace(deck, decks)))
+      buttons
 
     editDeckInPlace = (deck, decks) =>
       deck.editInPlace = !deck.editInPlace

@@ -101,7 +101,16 @@ RSpec.describe PlayersController do
 
       it 'allows TO updating another user' do
         sign_in tournament.user
-        put tournament_player_path(tournament, player1), params: { player: { name: 'Changed Name' } }
+        put tournament_player_path(tournament, player1), params: { player: { name: 'Changed Name', organiser_view: true } }
+
+        player1.reload
+        expect(player1.name).to eq('Changed Name')
+      end
+
+      it 'allows TO updating another user when locked' do
+        sign_in tournament.user
+        player1.update(registration_locked: true)
+        put tournament_player_path(tournament, player1), params: { player: { name: 'Changed Name', organiser_view: true } }
 
         player1.reload
         expect(player1.name).to eq('Changed Name')

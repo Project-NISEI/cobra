@@ -9,15 +9,9 @@
             .card-header
               .d-flex.justify-content-between
                 h5.mb-0 My Registration Information
-                - if @current_user_player.registration_locked?
-                  - if @tournament.nrdb_deck_registration?
-                    = link_to registration_tournament_path(@tournament), title: 'View', class: 'float-right' do
-                      => fa_icon 'eye'
-                      span.d-none View my registration information
-                - else
-                  = link_to registration_tournament_path(@tournament), title: 'Edit', class: 'float-right' do
-                    => fa_icon 'pencil'
-                    span.d-none Edit my registration information
+                = link_to registration_tournament_path(@tournament), title: 'Edit', class: 'float-right' do
+                  => fa_icon 'edit'
+                  | Edit
             ul.list-group.list-group-flush
               li.list-group-item
                 .small.text-secondary Name:
