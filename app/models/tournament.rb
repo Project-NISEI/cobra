@@ -203,7 +203,7 @@ class Tournament < ApplicationRecord
   def self.registration_consent_notice
     'Your name, pronouns and Netrunner deck identities will be publicly visible on this ' \
       'website. If you submit decklists they will be shared with the organiser. If you enter a round with open ' \
-      'decklists, they may be publicly visible.'
+      'decklists, they may be shared with participants or made public.'
   end
 
   private

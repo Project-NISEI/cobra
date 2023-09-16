@@ -25,6 +25,7 @@ class TournamentsController < ApplicationController
     respond_to do |format|
       format.html do
         set_tournament_view_data
+        set_overview_notices
       end
       format.json do
         headers['Access-Control-Allow-Origin'] = '*'
@@ -213,6 +214,27 @@ class TournamentsController < ApplicationController
       @current_user_is_running_tournament = @tournament.user_id == current_user.id
       @current_user_player = @players.find { |p| p.user_id == current_user.id }
       @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
+    end
+  end
+
+  def set_overview_notices
+    @overview_notices = [registration_notice].compact
+  end
+
+  def registration_notice
+    unless @tournament.nrdb_deck_registration?
+      return
+    end
+    if @tournament.registration_open?
+      unless @current_user_player && @current_user_player.registration_locked?
+        'Registration is open'
+      end
+    elsif @tournament.all_players_unlocked?
+      'Registration is editable'
+    elsif @current_user_player && !@current_user_player.registration_locked?
+      'Your registration is unlocked for editing'
+    elsif @current_user_is_running_tournament && @tournament.any_player_unlocked?
+      'One or more players are unlocked for editing'
     end
   end
 end
