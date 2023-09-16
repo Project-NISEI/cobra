@@ -20,19 +20,24 @@ $(document).on 'turbolinks:load', ->
       )
 
     normaliseCardTables = (decks) =>
-      decks.left.pad_cards = 0
-      decks.right.pad_cards = 0
-      if decks.left.change_type != decks.right.change_type
-        return decks
-      if decks.left.change_type != 'change_cards'
-        max_cards = Math.max(decks.right.after.cards.length, decks.left.after.cards.length)
-        decks.left.pad_cards = max_cards - decks.left.after.cards.length
-        decks.right.pad_cards = max_cards - decks.right.after.cards.length
       sortCards(decks.left.before)
       sortCards(decks.left.after)
       sortCards(decks.right.before)
       sortCards(decks.right.after)
+      decks.left.pad_cards = 0
+      decks.right.pad_cards = 0
+      if shouldPadCards(decks)
+        max_cards = Math.max(decks.right.after.cards.length, decks.left.after.cards.length)
+        decks.left.pad_cards = max_cards - decks.left.after.cards.length
+        decks.right.pad_cards = max_cards - decks.right.after.cards.length
       decks
+
+    shouldPadCards = (decks) =>
+      if decks.left.editInPlace || decks.right.editInPlace
+        return false
+      if decks.left.change_type != decks.right.change_type
+        return false
+      decks.left.change_type != 'change_cards'
 
     renderDeck = (deck, decks) =>
       $container = $('<div/>', {class: 'col-md-6'})
@@ -102,10 +107,10 @@ $(document).on 'turbolinks:load', ->
         if deck.editInPlace
           buttons.push($('<a/>', {
             class: 'float-right dontprint mr-2',
-            title: 'Save changes'
+            title: 'Apply changes'
             href: '#'
           }).append(
-            $('<i/>', {class: 'fa fa-floppy-o'})
+            $('<i/>', {class: 'fa fa-check'})
           ).on('click', (e) => e.preventDefault(); saveEditInPlace(deck, decks)))
         else
           buttons.push($('<a/>', {
@@ -198,13 +203,13 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Max'}))),
         $('<tbody/>').append(
           $('<tr/>').append(
-            $('<td/>', {class: 'text-center', text: details.min_deck_size}),
+            $('<td/>', {class: 'text-center align-middle', text: details.min_deck_size}),
             $('<td/>').append(
               cardDisplay({
                 title: details.identity_title,
                 faction_id: details.faction_id
               }, deck, (card) => updateIdentity(card, details))),
-            $('<td/>', {class: 'text-center', text: details.max_influence}))))
+            $('<td/>', {class: 'text-center align-middle', text: details.max_influence}))))
 
     updateIdentity = (card, details) =>
       details.identity_title = card.title
@@ -225,19 +230,41 @@ $(document).on 'turbolinks:load', ->
         $('<tbody/>').append(
           cards.map((card) =>
             $('<tr/>').append(
-              $('<td/>', {class: 'text-center'}).append(quantityDisplay(card, deck)),
+              $('<td/>', {class: 'text-center align-middle'}).append(quantityDisplay(card, deck)),
               $('<td/>').append(cardDisplay(card, deck)),
-              $('<td/>', {class: 'text-center'}).append(influenceDisplay(card, deck)))),
+              $('<td/>', {class: 'text-center align-middle'}).append(influenceDisplay(card, deck)))),
           emptyCardRows(deck.pad_cards)))
 
     quantityDisplay = (card, deck) =>
       if deck.editInPlace
-        return $('<input/>', {class: 'w-100'}).val(card.quantity).on 'change', ->
-          value = parseInt($(this).val())
-          if !isNaN(value)
-            card.quantity = value
+        displayNode = document.createTextNode(card.quantity)
+        [
+          $('<a/>', {
+            title: 'Remove'
+            href: '#'
+            class: 'mr-2'
+          }).append(
+            $('<i/>', {class: 'fa fa-minus'})
+          ).on('click', ((e) =>
+            e.preventDefault()
+            if card.quantity > 0
+              card.quantity--
+              displayNode.nodeValue = card.quantity)),
+          displayNode,
+          $('<a/>', {
+            title: 'Add'
+            href: '#'
+            class: 'ml-2'
+          }).append(
+            $('<i/>', {class: 'fa fa-plus'})
+          ).on('click', ((e) =>
+            e.preventDefault()
+            if card.quantity < 3
+              card.quantity++
+              displayNode.nodeValue = card.quantity))
+        ]
       else
-        return '' + card.quantity
+        '' + card.quantity
 
     influenceDisplay = (card, deck) =>
       if card.influence > 0
