@@ -1,9 +1,12 @@
 .col-md-6
   - if @tournament.nrdb_deck_registration?
-    - if @tournament.all_players_unlocked?
-      .alert.alert-info Registration is open
+    - if @tournament.registration_open?
+      - unless @current_user_player && @current_user_player.registration_locked?
+        .alert.alert-info Registration is open
+    - elsif @tournament.all_players_unlocked?
+      .alert.alert-info Registration is editable
     - elsif @current_user_is_running_tournament && @tournament.any_player_unlocked?
-      .alert.alert-info One or more players' registrations are unlocked for editing
+      .alert.alert-info One or more players are unlocked for editing
     - elsif @current_user_player && !@current_user_player.registration_locked?
       .alert.alert-info Your registration is unlocked for editing
   .card
