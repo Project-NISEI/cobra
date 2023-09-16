@@ -40,7 +40,7 @@
               class: 'form-control runner_identities'
   - if policy(@tournament).edit?
     => f.input :first_round_bye, as: :boolean, inline_label: 'First Round Bye',
-            input_html: { class: 'form-check-input' },
+            input_html: { class: 'mr-1' },
             wrapper_html: { class: 'align-middle' }
     - if @tournament.manual_seed
       = f.input :manual_seed, placeholder: 'Set seed', inline_label: 'Manual Seed', required: false, as: :string,
@@ -51,7 +51,7 @@
     .form-group
       label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
       = f.input :consent_data_sharing, as: :boolean, inline_label: 'I agree to these terms',
-              class: 'form-check-input', input_html: { class: 'mr-1' }
+              input_html: { class: 'mr-1' }
   - if @tournament.allow_streaming_opt_out?
     - if defined?(organiser_view)
       = f.input :include_in_stream, as: :select,
