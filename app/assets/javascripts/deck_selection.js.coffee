@@ -26,7 +26,7 @@ $(document).on 'turbolinks:load', ->
         $item.attr('data-side', side)
         $item.prepend($('<div/>', {
           class: 'deck-list-identity', css: {
-            'background-image': 'url(https://static.nrdbassets.com/v1/small/' + deck.details.identity_nrdb_printing_id + '.jpg)'
+            'background-image': 'url(https://card-images.netrunnerdb.com/v1/small/' + deck.details.identity_nrdb_printing_id + '.jpg)'
           }
         }))
         $item.append($('<small/>', text: deck.details.identity_title))
