@@ -229,10 +229,12 @@ class TournamentsController < ApplicationController
       unless @current_user_player && @current_user_player.registration_locked?
         'Registration is open'
       end
-    elsif @tournament.all_players_unlocked?
-      'Registration is editable'
-    elsif @current_user_player && !@current_user_player.registration_locked?
-      'Your registration is unlocked for editing'
+    elsif @current_user_player
+      if @tournament.all_players_unlocked?
+        'Registration is editable'
+      elsif !@current_user_player.registration_locked?
+        'Your registration is unlocked for editing'
+      end
     elsif @current_user_is_running_tournament && @tournament.any_player_unlocked?
       'One or more players are unlocked for editing'
     end
