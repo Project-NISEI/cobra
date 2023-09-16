@@ -62,15 +62,16 @@ class PlayersController < ApplicationController
   def update
     authorize @player
 
-    if @player.registration_locked?
-      update = params.require(:player).permit(:include_in_stream)
-    else
-      update = player_params
-    end
     if is_organiser_view
       redirect_to tournament_players_path(@tournament)
+      update = player_params
     else
       redirect_to tournament_path(@tournament)
+      if @player.registration_locked?
+        update = params.require(:player).permit(:include_in_stream)
+      else
+        update = player_params
+      end
       update[:user_id] = current_user.id
     end
 
