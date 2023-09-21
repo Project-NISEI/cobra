@@ -5,9 +5,9 @@
     - if defined?(player) && @tournament.self_registration?
       span.text-info.float-left.mr-2 style='width: 12px'
         - if player.registration_locked?
-          => fa_icon 'lock', class: 'player-tooltip', title: 'Registration locked'
+          => fa_icon 'lock', class: 'player-tooltip', title: 'Player is locked and cannot edit their registration'
         - else
-          => fa_icon 'unlock', class: 'player-tooltip', title: 'Registration unlocked'
+          => fa_icon 'unlock', class: 'player-tooltip', title: 'Player is unlocked and can edit their registration'
     javascript:
         $('.player-tooltip').tooltip()
     label.d-block for="player_name" Name
