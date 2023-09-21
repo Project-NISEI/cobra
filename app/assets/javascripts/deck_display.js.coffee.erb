@@ -74,63 +74,67 @@ $(document).on 'turbolinks:load', ->
     deckNameRow = (deck, decks) =>
       if deck.after.details.name
         $('<tr/>').append($('<td/>')
-          .append(deckNameButtons(deck, decks))
-          .append(document.createTextNode(deck.after.details.name)))
+          .append(deckNameDisplay(deck, decks)))
       else
         $('<tr/>').append($('<td/>')
           .append('None selected'))
 
-    deckNameButtons = (deck, decks) =>
+    deckNameDisplay = (deck, decks) =>
       deckAfter = deck.after
       if deck.viewOnly
-        return []
-      buttons = []
+        return document.createTextNode(deckAfter.details.name)
+      dropdownItems = []
+      if deck.canEditInPlace
+        if deck.editInPlace
+          disableItem = true
+        else
+          disableItem = false
+        dropdownItems.push($('<a/>', {
+          class: 'dropdown-item',
+          href: '#'
+        }).append('Edit in Cobra')
+          .toggleClass('disabled', disableItem)
+          .on('click', (e) => e.preventDefault(); editDeckInPlace(deck, decks)))
       if deckAfter.details.mine
-        buttons.push($('<a/>', {
-          class: 'float-right dontprint ml-2',
-          title: 'Edit Deck',
+        dropdownItems.push($('<a/>', {
+          class: 'dropdown-item',
           href: 'https://netrunnerdb.com/en/deck/edit/' + deckAfter.details.nrdb_uuid,
           target: '_blank'
-        }).append(
-          $('<i/>', {class: 'fa fa-external-link'})
-        ))
-      buttons.push(
-        $('<div/>', {class: 'dropdown float-right dontprint'}).append(
+        }).append('Open in NetrunnerDB'))
+      dropdownItems = dropdownItems.concat([
+        $('<a/>', {class: 'dropdown-item', href: '#'})
+          .append('Copy to clipboard in NetrunnerDB format')
+          .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deckAfter)),
+        $('<a/>', {class: 'dropdown-item', href: '#'})
+          .append('Download as a CSV spreadsheet')
+          .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
+      ])
+      buttons = []
+      if deck.editInPlace
+        buttons.push(
           $('<a/>', {
-            title: 'Export deck',
+            title: 'Undo changes',
+            class: 'mr-2',
+            href: '#'
+          })
+            .append('Undo ', $('<i/>', {class: 'fa fa-undo'}))
+            .on('click', (e) => e.preventDefault(); undoEditInPlace(deck, decks))
+        )
+      buttons.push(
+        $('<span/>', {class: 'dropdown'}).append(
+          $('<a/>', {
             href: '#',
             'data-toggle': 'dropdown',
             'aria-expanded': false
-          }).append(
-            $('<i/>', {class: 'fa fa-download'})
-          ),
-          $('<div/>', {class: 'dropdown-menu'}).append(
-            $('<a/>', {class: 'dropdown-item', href: '#'})
-              .append('Copy to clipboard in NetrunnerDB format')
-              .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deckAfter)),
-            $('<a/>', {class: 'dropdown-item', href: '#'})
-              .append('Download as a CSV spreadsheet')
-              .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
-          )
-        ))
-      if deck.canEditInPlace
-        if deck.editInPlace
-          buttons.push($('<a/>', {
-            class: 'float-right dontprint mr-2',
-            title: 'Undo changes'
-            href: '#'
-          }).append(
-            $('<i/>', {class: 'fa fa-undo'})
-          ).on('click', (e) => e.preventDefault(); undoEditInPlace(deck, decks)))
-        else
-          buttons.push($('<a/>', {
-            class: 'float-right dontprint mr-2',
-            title: 'Edit in place'
-            href: '#'
-          }).append(
-            $('<i/>', {class: 'fa fa-edit'})
-          ).on('click', (e) => e.preventDefault(); editDeckInPlace(deck, decks)))
-      buttons
+          }).append(' ', $('<i/>', {class: 'fa fa-cog'})),
+          $('<div/>', {class: 'dropdown-menu'}).append(dropdownItems)
+        )
+      )
+      display = [
+        document.createTextNode(deckAfter.details.name),
+        $('<div/>', {class: 'float-right'}).append(buttons)
+      ]
+      display
 
     editDeckInPlace = (deck, decks) =>
       deck.editInPlace = true
