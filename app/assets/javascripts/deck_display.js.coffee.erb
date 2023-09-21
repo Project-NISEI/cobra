@@ -160,7 +160,7 @@ $(document).on 'turbolinks:load', ->
             $('<span/>', {text: decks.before.details.name})
           ))
         when 'change_cards' then $('<tr/>', {class: 'alert-warning'}).append(
-          $('<td/>').append('Changes not yet submitted. See below for differences from NetrunnerDB.'))
+          $('<td/>').append('Changes not yet submitted. See below for differences from currently stored deck.'))
         else
           []
 
