@@ -209,7 +209,7 @@ $(document).on 'turbolinks:load', ->
         cardDisplay({
           title: details.identity_title,
           faction_id: details.faction_id
-        }, deck, (card) => updateIdentity(card, details, $minDeckSizeCell, $maxInfCell)))
+        }, deck, queryDeckIdentity, (card) => updateIdentity(card, details, $minDeckSizeCell, $maxInfCell)))
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -256,7 +256,7 @@ $(document).on 'turbolinks:load', ->
       $quantityCell = $('<td/>', {class: 'text-center align-middle'})
         .append(quantityDisplay(card, deck, $tableBody, $tableRow, $influenceCell, $totalsTable))
       $titleCell = $('<td/>')
-        .append(cardDisplay(card, deck, (card) => updateCardRow(card, deck, $influenceCell, $totalsTable)))
+        .append(cardDisplay(card, deck, queryCardInDeck, (card) => updateCardRow(card, deck, $influenceCell, $totalsTable)))
       $tableRow.append($quantityCell, $titleCell, $influenceCell)
 
     updateCardRow = (card, deck, $influenceCell, $totalsTable) =>
@@ -330,11 +330,11 @@ $(document).on 'turbolinks:load', ->
         influence = ''
       return influence
 
-    cardDisplay = (card, deck, update) =>
+    cardDisplay = (card, deck, query, update) =>
       if deck.editInPlace
         return $('<input/>', {class: 'w-100 form-control'}).val(card.title).on 'change', ->
           $input = $(this)
-          searchNrdbCards $input.val(), (results) ->
+          searchNrdbCards query(deck, $input.val()), (results) ->
             if results.length == 1
               result = results[0].attributes
               $input.val(result.title)
@@ -359,6 +359,15 @@ $(document).on 'turbolinks:load', ->
           [node, ' ']
         else
           node)
+
+    queryCardInDeck = (deck, query) =>
+      queryWithDeck deck, '!t:identity ' + query
+
+    queryDeckIdentity = (deck, query) =>
+      queryWithDeck deck, 't:identity ' + query
+
+    queryWithDeck = (deck, query) =>
+      'd:' + deck.after.details.side_id + ' ' + query
 
     cardTypeImage = (card_type_id) =>
       switch card_type_id
