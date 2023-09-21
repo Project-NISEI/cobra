@@ -43,7 +43,7 @@ $(document).on 'turbolinks:load', ->
 
     normaliseEditInPlace = (deck) =>
       if deck.editInPlace
-        deck.after.cards = [emptyCard()].concat(deck.after.cards, [emptyCard()])
+        deck.after.cards = deck.after.cards.concat([emptyCard()])
 
     emptyCard = () =>
       {title: '', quantity: 0, influence: 0}
