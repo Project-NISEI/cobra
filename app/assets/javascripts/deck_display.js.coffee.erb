@@ -227,7 +227,7 @@ $(document).on 'turbolinks:load', ->
     updateIdentity = (card, details, $minDeckSizeCell, $maxInfCell) =>
       details.identity_title = card.title
       details.min_deck_size = card.minimum_deck_size
-      details.max_influence = card.max_influence
+      details.max_influence = card.influence_limit
       $minDeckSizeCell.text(card.minimum_deck_size)
       $maxInfCell.text(card.influence_limit)
 
