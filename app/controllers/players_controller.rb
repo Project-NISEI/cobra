@@ -63,7 +63,7 @@ class PlayersController < ApplicationController
     authorize @player
 
     if is_organiser_view
-      redirect_to tournament_players_path(@tournament)
+      redirect_back_or_to tournament_players_path(@tournament)
       update = player_params
     else
       redirect_to tournament_path(@tournament)

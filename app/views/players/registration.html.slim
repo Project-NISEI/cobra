@@ -44,7 +44,7 @@ ruby:
             - else
               = link_to registration_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info mr-2 dontprint' do
                 => fa_icon 'undo'
-                | Cancel deck edits
+                | Close NetrunnerDB decks
             span.badge.badge-warning.p-2.my-1.d-none#deck_changes_not_submitted_warning Changes not yet submitted
       - if @tournament.nrdb_deck_registration?
         .alert.alert-danger.mt-3.mb-0.dontprint role=alert
