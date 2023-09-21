@@ -96,7 +96,7 @@ $(document).on 'turbolinks:load', ->
         countBefore = countsBefore[title]
         if !countBefore
           added.push({title: title, quantity: countAfter})
-        else if countsAfter > countBefore
+        else if countAfter > countBefore
           added.push({title: title, quantity: countAfter - countBefore})
       sortCards(added)
       sortCards(removed)
