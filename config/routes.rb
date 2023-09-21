@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   namespace :nrdb_public do
     get :printings
+    get :search
   end
 
   resources :tournaments do

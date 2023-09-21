@@ -53,11 +53,12 @@ $(document).on 'turbolinks:load', ->
         .append(deckSummaryTable(deck, decks))
       if deck.before.unset && deck.after.unset
         return $container
+      $totalsTable = totalsTable(deck)
       $container.append(
         deckDiffTable(deck.diff),
         identityTable(deck),
-        cardsTable(deck),
-        totalsTable(deck.after))
+        cardsTable(deck, $totalsTable),
+        $totalsTable)
 
     deckSummaryTable = (deck, decks) =>
       return $('<table/>', {
@@ -137,7 +138,7 @@ $(document).on 'turbolinks:load', ->
 
     saveEditInPlace = (deck, decks) =>
       deck.editInPlace = false
-      deck.after.cards = deck.after.cards.filter((card) => card.quantity > 0)
+      deck.after.cards = deck.after.cards.filter((card) => card.quantity > 0 && card.nrdb_card_id)
       addDeckDiff(deck)
       deck.input.val(JSON.stringify(deck.after))
       renderDecksDisplayLeftRight(decks)
@@ -202,6 +203,13 @@ $(document).on 'turbolinks:load', ->
       if not details.identity_title
         return []
 
+      $minDeckSizeCell = $('<td/>', {class: 'text-center align-middle', text: details.min_deck_size})
+      $maxInfCell = $('<td/>', {class: 'text-center align-middle', text: details.max_influence})
+      $identityDisplayCell = $('<td/>').append(
+        cardDisplay({
+          title: details.identity_title,
+          faction_id: details.faction_id
+        }, deck, (card) => updateIdentity(card, details, $minDeckSizeCell, $maxInfCell)))
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -212,23 +220,23 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Max'}))),
         $('<tbody/>').append(
           $('<tr/>').append(
-            $('<td/>', {class: 'text-center align-middle', text: details.min_deck_size}),
-            $('<td/>').append(
-              cardDisplay({
-                title: details.identity_title,
-                faction_id: details.faction_id
-              }, deck, (card) => updateIdentity(card, details))),
-            $('<td/>', {class: 'text-center align-middle', text: details.max_influence}))))
+            $minDeckSizeCell,
+            $identityDisplayCell,
+            $maxInfCell)))
 
-    updateIdentity = (card, details) =>
+    updateIdentity = (card, details, $minDeckSizeCell, $maxInfCell) =>
       details.identity_title = card.title
+      details.min_deck_size = card.minimum_deck_size
+      details.max_influence = card.max_influence
+      $minDeckSizeCell.text(card.minimum_deck_size)
+      $maxInfCell.text(card.influence_limit)
 
-    cardsTable = (deck) =>
+    cardsTable = (deck, $totalsTable) =>
       deckAfter = deck.after
       cards = deckAfter.cards
       if not cards || cards.length < 1
         return []
-      tableBody = $('<tbody/>')
+      $tableBody = $('<tbody/>')
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -237,18 +245,25 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'}),
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
-        tableBody.append(
-          cards.map((card) => cardRow(card, deck, tableBody)),
+        $tableBody.append(
+          cards.map((card) => cardRow(card, deck, $tableBody, $totalsTable)),
           emptyCardRows(deck.pad_cards)))
 
-    cardRow = (card, deck, tableBody) =>
-      tableRow = $('<tr/>')
-      tableRow.append(
-        $('<td/>', {class: 'text-center align-middle'}).append(quantityDisplay(card, deck, tableBody, tableRow)),
-        $('<td/>').append(cardDisplay(card, deck)),
-        $('<td/>', {class: 'text-center align-middle'}).append(influenceDisplay(card, deck)))
+    cardRow = (card, deck, $tableBody, $totalsTable) =>
+      $tableRow = $('<tr/>')
+      $influenceCell = $('<td/>', {class: 'text-center align-middle'})
+        .append(influenceDisplay(card, deck))
+      $quantityCell = $('<td/>', {class: 'text-center align-middle'})
+        .append(quantityDisplay(card, deck, $tableBody, $tableRow, $influenceCell, $totalsTable))
+      $titleCell = $('<td/>')
+        .append(cardDisplay(card, deck, (card) => updateCardRow(card, deck, $influenceCell, $totalsTable)))
+      $tableRow.append($quantityCell, $titleCell, $influenceCell)
 
-    quantityDisplay = (card, deck, tableBody, tableRow) =>
+    updateCardRow = (card, deck, $influenceCell, $totalsTable) =>
+      $influenceCell.empty().append(influenceDisplay(card, deck))
+      updateTotalsTable(deck, $totalsTable)
+
+    quantityDisplay = (card, deck, $tableBody, $tableRow, $influenceCell, $totalsTable) =>
       if deck.editInPlace
         displayNode = document.createTextNode(card.quantity)
         [
@@ -261,9 +276,10 @@ $(document).on 'turbolinks:load', ->
           ).on('click', ((e) =>
             e.preventDefault()
             if card.quantity > 0
-              card.quantity--
+              updateCardQuantity(card, card.quantity - 1)
               displayNode.nodeValue = card.quantity
-              removeCardIfNeeded(card, deck, tableRow))),
+              updateCardRow(card, deck, $influenceCell, $totalsTable)
+              removeCardIfNeeded(card, deck, $tableRow))),
           displayNode,
           $('<a/>', {
             title: 'Add'
@@ -274,26 +290,30 @@ $(document).on 'turbolinks:load', ->
           ).on('click', ((e) =>
             e.preventDefault()
             if card.quantity < 3
-              card.quantity++
+              updateCardQuantity(card, card.quantity + 1)
               displayNode.nodeValue = card.quantity
-              addNewCardIfNeeded(card, deck, tableBody)))
+              updateCardRow(card, deck, $influenceCell, $totalsTable)
+              addNewCardIfNeeded(card, deck, $tableBody, $totalsTable)))
         ]
       else
         '' + card.quantity
 
-    addNewCardIfNeeded = (editedCard, deck, tableBody) =>
+    updateCardQuantity = (card, quantity) =>
+      if card.influence_cost
+        influenceCost = card.influence_cost
+      else
+        influenceCost = card.influence / card.quantity
+      card.quantity = quantity
+      card.influence = influenceCost * quantity
+
+    addNewCardIfNeeded = (editedCard, deck, $tableBody, $totalsTable) =>
       cards = deck.after.cards
-      index = cards.indexOf(editedCard)
-      if index == 0
-        card = emptyCard()
-        deck.after.cards = [card].concat(cards)
-        tableBody.prepend(cardRow(card, deck, tableBody))
-      else if index == cards.length - 1
+      if cards.indexOf(editedCard) == cards.length - 1
         card = emptyCard()
         deck.after.cards = cards.concat([card])
-        tableBody.append(cardRow(card, deck, tableBody))
+        $tableBody.append(cardRow(card, deck, $tableBody, $totalsTable))
 
-    removeCardIfNeeded = (editedCard, deck, tableRow) =>
+    removeCardIfNeeded = (editedCard, deck, $tableRow) =>
       if editedCard.quantity != 0
         return
       cards = deck.after.cards
@@ -301,7 +321,7 @@ $(document).on 'turbolinks:load', ->
       if index == 0 or index == cards.length - 1
         return
       cards.splice(index, 1)
-      tableRow.remove()
+      $tableRow.remove()
 
     influenceDisplay = (card, deck) =>
       if card.influence > 0
@@ -312,10 +332,24 @@ $(document).on 'turbolinks:load', ->
 
     cardDisplay = (card, deck, update) =>
       if deck.editInPlace
-        return $('<input/>', {class: 'w-100'}).val(card.title).on 'change', ->
-          card.title = $(this).val()
-          if update
-            update(card)
+        return $('<input/>', {class: 'w-100 form-control'}).val(card.title).on 'change', ->
+          $input = $(this)
+          searchNrdbCards $input.val(), (results) ->
+            if results.length == 1
+              result = results[0].attributes
+              console.log('Found card')
+              console.log(result)
+              $input.val(result.title)
+              Object.assign(card, result)
+              card.nrdb_printing_id = result.id
+              card.nrdb_card_id = result.card_id
+              card.card_type_id = result.card_type_id
+              card.influence = result.influence_cost * card.quantity
+              $input.addClass('is-valid').removeClass('is-invalid')
+              if update
+                update(card)
+            else
+              $input.addClass('is-invalid').removeClass('is-valid')
       nodes = []
       if card.card_type_id
         nodes.push($('<img/>', {src: cardTypeImage(card.card_type_id)}))
@@ -399,16 +433,24 @@ $(document).on 'turbolinks:load', ->
       rows
 
     totalsTable = (deck) =>
-      cards = deck.cards
+      cards = deck.after.cards
       if not cards || cards.length < 1
         return []
-      qty = cards.map((card) => card.quantity)
-        .reduce(((partialSum, a) => partialSum + a), 0)
-      influence = cards.map((card) => card.influence)
-        .reduce(((partialSum, a) => partialSum + a), 0)
-      return $('<table/>', {
+      updateTotalsTable(deck, $('<table/>', {
         class: 'table table-bordered table-striped-horizontal'
-      }).append(
+      }))
+
+    updateTotalsTable = (deck, $totalsTable) =>
+      cards = deck.after.cards
+      qty = cards
+        .filter((card) => card.quantity)
+        .map((card) => card.quantity)
+        .reduce(((partialSum, a) => partialSum + a), 0)
+      influence = cards
+        .filter((card) => card.influence)
+        .map((card) => card.influence)
+        .reduce(((partialSum, a) => partialSum + a), 0)
+      $totalsTable.empty().append(
         $('<tbody/>').append(
           $('<tr/>').append(
             $('<td/>', {class: 'text-center deck-side-column', text: qty}),

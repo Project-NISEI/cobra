@@ -17,6 +17,18 @@ $(document).on 'turbolinks:load', ->
           if allPrintingIdsLoaded(printingIds)
             callback()
 
+    window.searchNrdbCards = (query, callback) =>
+      $.get({
+        url: '/nrdb_public/search',
+        data: {
+          query: query
+        },
+        success: (response) =>
+          for nrdbPrinting from response.data
+            nrdbPrintingsById.set(nrdbPrinting.id, nrdbPrinting)
+          callback(response.data)
+      })
+
     printingIdsNotInMap = (printingIds) =>
       set = new Set(printingIds)
       for printingId from set
