@@ -7,34 +7,38 @@ $(document).on 'turbolinks:load', ->
       nrdbPrintingsById.get(printingId)
 
     window.loadNrdbPrintings = (printingIds, callback) =>
-      printingIds = new Set(printingIds)
-      for printingId from printingIds
-        if nrdbPrintingsById.has(printingId)
-          printingIds.delete(printingId)
-      if printingIds.size == 0
+      printingIds = printingIdsNotInMap(printingIds)
+      if printingIds.length == 0
         callback()
         return
-      printingIdsStr = Array.from(printingIds).join()
+
+      for i in [0..printingIds.length - 1] by 100
+        loadNrdbPrintingsChunk printingIds.slice(i, i + 100), ->
+          if allPrintingIdsLoaded(printingIds)
+            callback()
+
+    printingIdsNotInMap = (printingIds) =>
+      set = new Set(printingIds)
+      for printingId from set
+        if nrdbPrintingsById.has(printingId)
+          set.delete(printingId)
+      Array.from(set)
+
+    allPrintingIdsLoaded = (printingIds) =>
+      allLoaded = true
+      for id in printingIds
+        if !nrdbPrintingsById.has(id)
+          allLoaded = false
+      allLoaded
+
+    loadNrdbPrintingsChunk = (printingIds, callback) =>
       $.get({
-        url: 'https://api-preview.netrunnerdb.com/api/v3/public/printings',
+        url: '/nrdb_public/printings',
         data: {
-          'fields[printings]': 'card_id,card_type_id,title,side_id,faction_id,minimum_deck_size,influence_limit,influence_cost',
-          'filter[id]': printingIdsStr,
-          'page[limit]': 1000
+          ids: Array.from(printingIds).join()
         },
         success: (response) =>
-          loadMoreNrdbPrintings(new Array(), response, callback)
+          for nrdbPrinting from response.data
+            nrdbPrintingsById.set(nrdbPrinting.id, nrdbPrinting)
+          callback()
       })
-
-    loadMoreNrdbPrintings = (nrdbPrintingsBefore, response, callback) =>
-      nrdbPrintings = nrdbPrintingsBefore.concat(response.data)
-      if response.links.next?
-        $.get({
-          url: response.links.next,
-          success: (response) =>
-            loadMoreNrdbPrintings(nrdbPrintings, response, callback)
-        })
-      else
-        for nrdbPrinting from nrdbPrintings
-          nrdbPrintingsById.set(nrdbPrinting.id, nrdbPrinting)
-        callback()
