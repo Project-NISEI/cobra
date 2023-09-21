@@ -337,8 +337,6 @@ $(document).on 'turbolinks:load', ->
           searchNrdbCards $input.val(), (results) ->
             if results.length == 1
               result = results[0].attributes
-              console.log('Found card')
-              console.log(result)
               $input.val(result.title)
               Object.assign(card, result)
               card.nrdb_printing_id = result.id
