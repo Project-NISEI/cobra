@@ -55,7 +55,7 @@ $(document).on 'turbolinks:load', ->
         return $container
       $totalsTable = totalsTable(deck)
       $container.append(
-        deckDiffTable(deck.diff),
+        deckDiffTable(deck),
         identityTable(deck),
         cardsTable(deck, $totalsTable),
         $totalsTable)
@@ -117,11 +117,11 @@ $(document).on 'turbolinks:load', ->
         if deck.editInPlace
           buttons.push($('<a/>', {
             class: 'float-right dontprint mr-2',
-            title: 'Apply changes'
+            title: 'Undo changes'
             href: '#'
           }).append(
-            $('<i/>', {class: 'fa fa-check'})
-          ).on('click', (e) => e.preventDefault(); saveEditInPlace(deck, decks)))
+            $('<i/>', {class: 'fa fa-undo'})
+          ).on('click', (e) => e.preventDefault(); undoEditInPlace(deck, decks)))
         else
           buttons.push($('<a/>', {
             class: 'float-right dontprint mr-2',
@@ -134,14 +134,34 @@ $(document).on 'turbolinks:load', ->
 
     editDeckInPlace = (deck, decks) =>
       deck.editInPlace = true
+      deck.beforeEditInPlace = structuredClone(deck.after)
       renderDecksDisplayLeftRight(decks)
 
-    saveEditInPlace = (deck, decks) =>
+    undoEditInPlace = (deck, decks) =>
       deck.editInPlace = false
-      deck.after.cards = deck.after.cards.filter((card) => card.quantity > 0 && card.nrdb_card_id)
-      addDeckDiff(deck)
+      deck.after = structuredClone(deck.beforeEditInPlace)
+      delete deck.beforeEditInPlace
       deck.input.val(JSON.stringify(deck.after))
+      addDeckDiff(deck)
       renderDecksDisplayLeftRight(decks)
+
+    updateDeckInput = (deck) =>
+      clone = structuredClone(deck.after)
+      clone.cards = clone.cards
+        .filter((card) => card.quantity > 0 && card.nrdb_card_id)
+        .map(removeExtraCardFields)
+      deck.input.val(JSON.stringify(clone))
+
+    removeExtraCardFields = (card) =>
+      {
+        title: card.title,
+        quantity: card.quantity,
+        influence: card.influence,
+        nrdb_card_id: card.nrdb_card_id,
+        nrdb_printing_id: card.nrdb_printing_id,
+        card_type_id: card.card_type_id,
+        faction_id: card.faction_id
+      }
 
     copyDeckToClipboard = (deck) =>
       msg = ""
@@ -150,22 +170,27 @@ $(document).on 'turbolinks:load', ->
       navigator.clipboard.writeText(msg)
       alert("Copied to clipboard")
 
-    deckChangesRow = (decks) =>
-      switch decks.change_type
+    deckChangesRow = (deck) =>
+      if deck.editInPlace
+        return []
+      switch deck.change_type
         when 'choose_deck' then $('<tr/>', {class: 'alert-warning'}).append(
           $('<td/>').append('Not yet submitted'))
         when 'change_deck' then $('<tr/>', {class: 'alert-warning'}).append(
           $('<td/>').append(
             'Change not yet submitted. Previously submitted:',
             $('<br/>'),
-            $('<span/>', {text: decks.before.details.name})
+            $('<span/>', {text: deck.before.details.name})
           ))
         when 'change_cards' then $('<tr/>', {class: 'alert-warning'}).append(
           $('<td/>').append('Changes not yet submitted. See below for differences from currently stored deck.'))
         else
           []
 
-    deckDiffTable = (diff) =>
+    deckDiffTable = (deck) =>
+      if deck.editInPlace
+        return []
+      diff = deck.diff
       if not diff
         return []
 
@@ -209,7 +234,7 @@ $(document).on 'turbolinks:load', ->
         cardDisplay({
           title: details.identity_title,
           faction_id: details.faction_id
-        }, deck, queryDeckIdentity, (card) => updateIdentity(card, details, $minDeckSizeCell, $maxInfCell)))
+        }, deck, queryDeckIdentity, (card) => updateIdentity(deck, card, details, $minDeckSizeCell, $maxInfCell)))
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -224,12 +249,13 @@ $(document).on 'turbolinks:load', ->
             $identityDisplayCell,
             $maxInfCell)))
 
-    updateIdentity = (card, details, $minDeckSizeCell, $maxInfCell) =>
+    updateIdentity = (deck, card, details, $minDeckSizeCell, $maxInfCell) =>
       details.identity_title = card.title
       details.min_deck_size = card.minimum_deck_size
       details.max_influence = card.influence_limit
       $minDeckSizeCell.text(card.minimum_deck_size)
       $maxInfCell.text(card.influence_limit)
+      updateDeckInput(deck)
 
     cardsTable = (deck, $totalsTable) =>
       deckAfter = deck.after
@@ -262,6 +288,7 @@ $(document).on 'turbolinks:load', ->
     updateCardRow = (card, deck, $influenceCell, $totalsTable) =>
       $influenceCell.empty().append(influenceDisplay(card, deck))
       updateTotalsTable(deck, $totalsTable)
+      updateDeckInput(deck)
 
     quantityDisplay = (card, deck, $tableBody, $tableRow, $influenceCell, $totalsTable) =>
       if deck.editInPlace
@@ -289,11 +316,10 @@ $(document).on 'turbolinks:load', ->
             $('<i/>', {class: 'fa fa-plus'})
           ).on('click', ((e) =>
             e.preventDefault()
-            if card.quantity < 3
-              updateCardQuantity(card, card.quantity + 1)
-              displayNode.nodeValue = card.quantity
-              updateCardRow(card, deck, $influenceCell, $totalsTable)
-              addNewCardIfNeeded(card, deck, $tableBody, $totalsTable)))
+            updateCardQuantity(card, card.quantity + 1)
+            displayNode.nodeValue = card.quantity
+            updateCardRow(card, deck, $influenceCell, $totalsTable)
+            addNewCardIfNeeded(card, deck, $tableBody, $totalsTable)))
         ]
       else
         '' + card.quantity
@@ -318,7 +344,7 @@ $(document).on 'turbolinks:load', ->
         return
       cards = deck.after.cards
       index = cards.indexOf(editedCard)
-      if index == 0 or index == cards.length - 1
+      if index == cards.length - 1
         return
       cards.splice(index, 1)
       $tableRow.remove()
