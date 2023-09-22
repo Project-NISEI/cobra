@@ -81,6 +81,7 @@ $(document).on 'turbolinks:load', ->
             title: attributes.title,
             quantity: count,
             influence: influence_spent,
+            influence_cost: attributes.influence_cost,
             nrdb_card_id: attributes.card_id,
             nrdb_printing_id: code,
             faction_id: attributes.faction_id,

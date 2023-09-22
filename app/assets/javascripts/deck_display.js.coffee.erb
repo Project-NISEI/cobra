@@ -47,7 +47,7 @@ $(document).on 'turbolinks:load', ->
         deck.after.cards = deck.after.cards.concat([emptyCard()])
 
     emptyCard = () =>
-      {title: '', quantity: 0, influence: 0}
+      {title: '', quantity: 0, influence: 0, influence_cost: 0}
 
     renderChangesNotSubmitted = (decks) =>
       $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
@@ -74,11 +74,11 @@ $(document).on 'turbolinks:load', ->
 
     editDeckInPlace = (deck) =>
       deck.editInPlace = true
-      deck.beforeEditInPlace = structuredClone(deck.after)
+      deck.beforeEditInPlace = cloneDeck(deck.after)
 
     undoEditInPlace = (deck) =>
       deck.editInPlace = false
-      deck.after = structuredClone(deck.beforeEditInPlace)
+      deck.after = cloneDeck(deck.beforeEditInPlace)
       delete deck.beforeEditInPlace
       deck.input.val(JSON.stringify(deck.after))
       addDeckDiff(deck)
@@ -89,10 +89,11 @@ $(document).on 'turbolinks:load', ->
       if deck.before.unset && deck.after.unset
         return $container
       $totalsTable = totalsTable(deck)
+      deck.totalsTable = $totalsTable
       $container.append(
         deckDiffTable(deck),
         identityTable(deck),
-        cardsTable(deck, $totalsTable),
+        cardsTable(deck),
         $totalsTable)
 
     deckSummaryTable = (deck, decks) =>
@@ -154,17 +155,23 @@ $(document).on 'turbolinks:load', ->
       display
 
     updateDeckInput = (deck) =>
-      clone = structuredClone(deck.after)
-      clone.cards = clone.cards
+      deck.input.val(JSON.stringify(cloneDeck(deck.after)))
+
+    cloneDeck = (deck) =>
+      cards = deck.cards
         .filter((card) => card.quantity > 0 && card.nrdb_card_id)
         .map(removeExtraCardFields)
-      deck.input.val(JSON.stringify(clone))
+      {
+        details: structuredClone(deck.details),
+        cards: cards
+      }
 
     removeExtraCardFields = (card) =>
       {
         title: card.title,
         quantity: card.quantity,
         influence: card.influence,
+        influence_cost: card.influence_cost,
         nrdb_card_id: card.nrdb_card_id,
         nrdb_printing_id: card.nrdb_printing_id,
         card_type_id: card.card_type_id,
@@ -238,11 +245,13 @@ $(document).on 'turbolinks:load', ->
 
       $minDeckSizeCell = $('<td/>', {class: 'text-center align-middle', text: details.min_deck_size})
       $maxInfCell = $('<td/>', {class: 'text-center align-middle', text: details.max_influence})
+      deck.minDeckSizeCell = $minDeckSizeCell
+      deck.maxInfCell = $maxInfCell
       $identityDisplayCell = $('<td/>').append(
         cardDisplay({
           title: details.identity_title,
           faction_id: details.faction_id
-        }, deck, queryDeckIdentity, (card) => updateIdentity(deck, card, $minDeckSizeCell, $maxInfCell)))
+        }, deck, queryDeckIdentity, (card) => updateIdentity(deck, card)))
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -257,7 +266,7 @@ $(document).on 'turbolinks:load', ->
             $identityDisplayCell,
             $maxInfCell)))
 
-    updateIdentity = (deck, card, $minDeckSizeCell, $maxInfCell) =>
+    updateIdentity = (deck, card) =>
       details = deck.after.details
       details.identity_title = card.title
       details.min_deck_size = card.minimum_deck_size
@@ -265,16 +274,21 @@ $(document).on 'turbolinks:load', ->
       details.faction_id = card.faction_id
       details.identity_nrdb_card_id = card.nrdb_card_id
       details.identity_nrdb_printing_id = card.nrdb_printing_id
-      $minDeckSizeCell.text(card.minimum_deck_size)
-      $maxInfCell.text(card.influence_limit)
+      deck.minDeckSizeCell.text(card.minimum_deck_size)
+      deck.maxInfCell.text(card.influence_limit)
+      for card from deck.after.cards
+        updateCardQuantity(card, deck, card.quantity)
+        card.influenceCell.empty().append(influenceDisplay(card, deck))
+      updateTotalsTable(deck)
       updateDeckInput(deck)
 
-    cardsTable = (deck, $totalsTable) =>
+    cardsTable = (deck) =>
       deckAfter = deck.after
       cards = deckAfter.cards
       if not cards || cards.length < 1
         return []
       $tableBody = $('<tbody/>')
+      deck.tableBody = $tableBody
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -284,25 +298,27 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
         $tableBody.append(
-          cards.map((card) => cardRow(card, deck, $tableBody, $totalsTable)),
+          cards.map((card) => cardRow(card, deck)),
           emptyCardRows(deck.pad_cards)))
 
-    cardRow = (card, deck, $tableBody, $totalsTable) =>
+    cardRow = (card, deck) =>
       $tableRow = $('<tr/>')
       $influenceCell = $('<td/>', {class: 'text-center align-middle'})
         .append(influenceDisplay(card, deck))
+      card.tableRow = $tableRow
+      card.influenceCell = $influenceCell
       $quantityCell = $('<td/>', {class: 'text-center align-middle'})
-        .append(quantityDisplay(card, deck, $tableBody, $tableRow, $influenceCell, $totalsTable))
+        .append(quantityDisplay(card, deck))
       $titleCell = $('<td/>')
-        .append(cardDisplay(card, deck, queryCardInDeck, (card) => updateCardRow(card, deck, $influenceCell, $totalsTable)))
+        .append(cardDisplay(card, deck, queryCardInDeck, (card) => updateCardRow(card, deck)))
       $tableRow.append($quantityCell, $titleCell, $influenceCell)
 
-    updateCardRow = (card, deck, $influenceCell, $totalsTable) =>
-      $influenceCell.empty().append(influenceDisplay(card, deck))
-      updateTotalsTable(deck, $totalsTable)
+    updateCardRow = (card, deck) =>
+      card.influenceCell.empty().append(influenceDisplay(card, deck))
+      updateTotalsTable(deck)
       updateDeckInput(deck)
 
-    quantityDisplay = (card, deck, $tableBody, $tableRow, $influenceCell, $totalsTable) =>
+    quantityDisplay = (card, deck) =>
       if deck.editInPlace
         displayNode = document.createTextNode(card.quantity)
         [
@@ -317,8 +333,8 @@ $(document).on 'turbolinks:load', ->
             if card.quantity > 0
               updateCardQuantity(card, deck, card.quantity - 1)
               displayNode.nodeValue = card.quantity
-              updateCardRow(card, deck, $influenceCell, $totalsTable)
-              removeCardIfNeeded(card, deck, $tableRow))),
+              updateCardRow(card, deck)
+              removeCardIfNeeded(card, deck))),
           displayNode,
           $('<a/>', {
             title: 'Add'
@@ -330,20 +346,16 @@ $(document).on 'turbolinks:load', ->
             e.preventDefault()
             updateCardQuantity(card, deck, card.quantity + 1)
             displayNode.nodeValue = card.quantity
-            updateCardRow(card, deck, $influenceCell, $totalsTable)
-            addNewCardIfNeeded(card, deck, $tableBody, $totalsTable)))
+            updateCardRow(card, deck)
+            addNewCardIfNeeded(card, deck)))
         ]
       else
         '' + card.quantity
 
     updateCardQuantity = (card, deck, quantity) =>
-      if card.influence_cost
-        influenceCost = card.influence_cost
-      else
-        influenceCost = card.influence / card.quantity
       card.quantity = quantity
       if deck.after.details.faction_id != card.faction_id
-        card.influence = influenceCost * quantity
+        card.influence = card.influence_cost * quantity
       else
         card.influence = 0
 
@@ -484,11 +496,12 @@ $(document).on 'turbolinks:load', ->
       cards = deck.after.cards
       if not cards || cards.length < 1
         return []
-      updateTotalsTable(deck, $('<table/>', {
+      deck.totalsTable = $('<table/>', {
         class: 'table table-bordered table-striped-horizontal'
-      }))
+      })
+      updateTotalsTable(deck)
 
-    updateTotalsTable = (deck, $totalsTable) =>
+    updateTotalsTable = (deck) =>
       cards = deck.after.cards
       qty = cards
         .filter((card) => card.quantity)
@@ -498,7 +511,7 @@ $(document).on 'turbolinks:load', ->
         .filter((card) => card.influence)
         .map((card) => card.influence)
         .reduce(((partialSum, a) => partialSum + a), 0)
-      $totalsTable.empty().append(
+      deck.totalsTable.empty().append(
         $('<tbody/>').append(
           $('<tr/>').append(
             $('<td/>', {class: 'text-center deck-side-column', text: qty}),
