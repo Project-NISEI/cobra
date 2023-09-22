@@ -290,7 +290,7 @@ $(document).on 'turbolinks:load', ->
       if not cards || cards.length < 1
         return []
       $tableBody = $('<tbody/>')
-      deck.tableBody = $tableBody
+      deck.cardsTableBody = $tableBody
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -361,14 +361,14 @@ $(document).on 'turbolinks:load', ->
       else
         card.influence = 0
 
-    addNewCardIfNeeded = (editedCard, deck, $tableBody, $totalsTable) =>
+    addNewCardIfNeeded = (editedCard, deck) =>
       cards = deck.after.cards
       if cards.indexOf(editedCard) == cards.length - 1
         card = emptyCard()
         deck.after.cards = cards.concat([card])
-        $tableBody.append(cardRow(card, deck, $tableBody, $totalsTable))
+        deck.cardsTableBody.append(cardRow(card, deck))
 
-    removeCardIfNeeded = (editedCard, deck, $tableRow) =>
+    removeCardIfNeeded = (editedCard, deck) =>
       if editedCard.quantity != 0
         return
       cards = deck.after.cards
@@ -376,7 +376,7 @@ $(document).on 'turbolinks:load', ->
       if index == cards.length - 1
         return
       cards.splice(index, 1)
-      $tableRow.remove()
+      editedCard.tableRow.remove()
 
     influenceDisplay = (card, deck) =>
       if card.influence > 0
