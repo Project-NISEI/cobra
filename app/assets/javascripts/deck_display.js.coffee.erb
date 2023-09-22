@@ -65,10 +65,12 @@ $(document).on 'turbolinks:load', ->
         if decks.editBothInPlace
           editDeckInPlace(decks.left)
           editDeckInPlace(decks.right)
+          $('#choose_nrdb_decks_button').addClass('d-none')
           $button.empty().append($('<i/>', {class: 'fa fa-undo'}), ' Cancel edits')
         else
           undoEditInPlace(decks.left)
           undoEditInPlace(decks.right)
+          $('#choose_nrdb_decks_button').removeClass('d-none')
           $button.empty().append($('<i/>', {class: 'fa fa-edit'}), ' Edit decks in place')
         renderDecksDisplayLeftRight(decks)
 
