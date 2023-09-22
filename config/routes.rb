@@ -8,11 +8,6 @@ Rails.application.routes.draw do
     get :callback
   end
 
-  namespace :nrdb_public do
-    get :printings
-    get :search
-  end
-
   resources :tournaments do
     resources :players, only: [:index, :new, :create, :update, :destroy] do
       get :standings, on: :collection
