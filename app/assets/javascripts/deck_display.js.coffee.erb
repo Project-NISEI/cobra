@@ -242,7 +242,7 @@ $(document).on 'turbolinks:load', ->
         cardDisplay({
           title: details.identity_title,
           faction_id: details.faction_id
-        }, deck, queryDeckIdentity, (card) => updateIdentity(deck, card, details, $minDeckSizeCell, $maxInfCell)))
+        }, deck, queryDeckIdentity, (card) => updateIdentity(deck, card, $minDeckSizeCell, $maxInfCell)))
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -257,10 +257,14 @@ $(document).on 'turbolinks:load', ->
             $identityDisplayCell,
             $maxInfCell)))
 
-    updateIdentity = (deck, card, details, $minDeckSizeCell, $maxInfCell) =>
+    updateIdentity = (deck, card, $minDeckSizeCell, $maxInfCell) =>
+      details = deck.after.details
       details.identity_title = card.title
       details.min_deck_size = card.minimum_deck_size
       details.max_influence = card.influence_limit
+      details.faction_id = card.faction_id
+      details.identity_nrdb_card_id = card.nrdb_card_id
+      details.identity_nrdb_printing_id = card.nrdb_printing_id
       $minDeckSizeCell.text(card.minimum_deck_size)
       $maxInfCell.text(card.influence_limit)
       updateDeckInput(deck)
