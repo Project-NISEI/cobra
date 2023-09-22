@@ -12,10 +12,7 @@ $(document).on 'turbolinks:load', ->
         callback()
         return
 
-      for i in [0..printingIds.length - 1] by 100
-        loadNrdbPrintingsChunk printingIds.slice(i, i + 100), ->
-          if allPrintingIdsLoaded(printingIds)
-            callback()
+      loadNrdbPrintings callback
 
     printingIdsNotInMap = (printingIds) =>
       set = new Set(printingIds)
@@ -24,18 +21,12 @@ $(document).on 'turbolinks:load', ->
           set.delete(printingId)
       Array.from(set)
 
-    allPrintingIdsLoaded = (printingIds) =>
-      allLoaded = true
-      for id in printingIds
-        if !nrdbPrintingsById.has(id)
-          allLoaded = false
-      allLoaded
-
-    loadNrdbPrintingsChunk = (printingIds, callback) =>
+    loadNrdbPrintings = (callback) =>
       $.get({
-        url: '/nrdb_public/printings',
+        url: '<%= Rails.configuration.nrdb_api_host %>/api/v3/public/printings',
         data: {
-          ids: Array.from(printingIds).join()
+          'fields[printings]': 'card_id,card_type_id,title,side_id,faction_id,minimum_deck_size,influence_limit,influence_cost',
+          'page[limit]': 10000
         },
         success: (response) =>
           for nrdbPrinting from response.data
