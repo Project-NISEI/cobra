@@ -315,7 +315,7 @@ $(document).on 'turbolinks:load', ->
           ).on('click', ((e) =>
             e.preventDefault()
             if card.quantity > 0
-              updateCardQuantity(card, card.quantity - 1)
+              updateCardQuantity(card, deck, card.quantity - 1)
               displayNode.nodeValue = card.quantity
               updateCardRow(card, deck, $influenceCell, $totalsTable)
               removeCardIfNeeded(card, deck, $tableRow))),
@@ -328,7 +328,7 @@ $(document).on 'turbolinks:load', ->
             $('<i/>', {class: 'fa fa-plus'})
           ).on('click', ((e) =>
             e.preventDefault()
-            updateCardQuantity(card, card.quantity + 1)
+            updateCardQuantity(card, deck, card.quantity + 1)
             displayNode.nodeValue = card.quantity
             updateCardRow(card, deck, $influenceCell, $totalsTable)
             addNewCardIfNeeded(card, deck, $tableBody, $totalsTable)))
@@ -336,13 +336,16 @@ $(document).on 'turbolinks:load', ->
       else
         '' + card.quantity
 
-    updateCardQuantity = (card, quantity) =>
+    updateCardQuantity = (card, deck, quantity) =>
       if card.influence_cost
         influenceCost = card.influence_cost
       else
         influenceCost = card.influence / card.quantity
       card.quantity = quantity
-      card.influence = influenceCost * quantity
+      if deck.after.details.faction_id != card.faction_id
+        card.influence = influenceCost * quantity
+      else
+        card.influence = 0
 
     addNewCardIfNeeded = (editedCard, deck, $tableBody, $totalsTable) =>
       cards = deck.after.cards
