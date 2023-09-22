@@ -33,9 +33,11 @@ $(document).on 'turbolinks:load', ->
 
     loadNrdbPrintingsChunk = (printingIds, callback) =>
       $.get({
-        url: '/nrdb_public/printings',
+        url: '<%= Rails.configuration.nrdb_api_host %>/api/v3/public/printings',
         data: {
-          ids: Array.from(printingIds).join()
+          'fields[printings]': 'card_id,card_type_id,title,side_id,faction_id,minimum_deck_size,influence_limit,influence_cost',
+          'filter[id]': Array.from(printingIds).join(),
+          'page[limit]': 1000
         },
         success: (response) =>
           for nrdbPrinting from response.data

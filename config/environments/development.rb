@@ -53,6 +53,7 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.abr_host = 'https://alwaysberunning.net'
+  config.nrdb_api_host = 'http://localhost:9000'
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
