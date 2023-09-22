@@ -118,33 +118,38 @@ $(document).on 'turbolinks:load', ->
       deckAfter = deck.after
       if deck.viewOnly
         return document.createTextNode(deckAfter.details.name)
-      dropdownItems = []
-      if deckAfter.details.mine
-        dropdownItems.push($('<a/>', {
-          class: 'dropdown-item',
-          href: 'https://netrunnerdb.com/en/deck/edit/' + deckAfter.details.nrdb_uuid,
-          target: '_blank'
-        }).append('Open in NetrunnerDB'))
-      dropdownItems = dropdownItems.concat([
-        $('<a/>', {class: 'dropdown-item', href: '#'})
-          .append('Copy to clipboard in NetrunnerDB format')
-          .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deckAfter)),
-        $('<a/>', {class: 'dropdown-item', href: '#'})
-          .append('Download as a CSV spreadsheet')
-          .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
-      ])
-      display = [
-        document.createTextNode(deckAfter.details.name),
-        $('<div/>', {class: 'float-right'}).append(
-          $('<span/>', {class: 'dropdown'}).append(
-            $('<a/>', {
-              href: '#',
-              'data-toggle': 'dropdown',
-              'aria-expanded': false
-            }).append(' ', $('<i/>', {class: 'fa fa-cog'})),
-            $('<div/>', {class: 'dropdown-menu'}).append(dropdownItems)
+      buttons = [
+        $('<span/>', {class: 'dropdown'}).append(
+          $('<a/>', {
+            title: 'Export deck',
+            href: '#',
+            'data-toggle': 'dropdown',
+            'aria-expanded': false
+          }).append(
+            $('<i/>', {class: 'fa fa-download'})
+          ),
+          $('<div/>', {class: 'dropdown-menu'}).append(
+            $('<a/>', {class: 'dropdown-item', href: '#'})
+              .append('Copy to clipboard in NetrunnerDB format')
+              .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deckAfter)),
+            $('<a/>', {class: 'dropdown-item', href: '#'})
+              .append('Download as a CSV spreadsheet')
+              .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
           )
         )
+      ]
+      if deckAfter.details.mine
+        buttons.push($('<a/>', {
+          class: 'ml-2',
+          title: 'Edit Deck',
+          href: 'https://netrunnerdb.com/en/deck/edit/' + deckAfter.details.nrdb_uuid,
+          target: '_blank'
+        }).append(
+          $('<i/>', {class: 'fa fa-external-link'})
+        ))
+      display = [
+        document.createTextNode(deckAfter.details.name),
+        $('<div/>', {class: 'float-right dontprint'}).append(buttons)
       ]
       display
 
