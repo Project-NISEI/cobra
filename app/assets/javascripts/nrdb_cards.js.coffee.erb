@@ -16,9 +16,12 @@ $(document).on 'turbolinks:load', ->
 
     window.searchNrdbCards = (query, callback) =>
       $.get({
-        url: '/nrdb_public/search',
+        url: '<%= Rails.configuration.nrdb_api_host %>/api/v3/public/printings',
         data: {
-          query: query
+          'fields[printings]': 'card_id,card_type_id,title,side_id,faction_id,minimum_deck_size,influence_limit,influence_cost',
+          'filter[search]': query,
+          'filter[distinct_cards]': '',
+          'page[limit]': 10
         },
         success: (response) =>
           for nrdbPrinting from response.data
