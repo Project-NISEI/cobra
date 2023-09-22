@@ -14,6 +14,7 @@ $(document).on 'turbolinks:load', ->
     renderDecksDisplayLeftRight = (decks) =>
       normaliseCardTables(decks)
       renderChangesNotSubmitted(decks)
+      enableEditDecksButton(decks)
       decks.anchor.empty().append(
         renderDeck(decks.left, decks),
         renderDeck(decks.right, decks)
@@ -47,6 +48,40 @@ $(document).on 'turbolinks:load', ->
 
     emptyCard = () =>
       {title: '', quantity: 0, influence: 0}
+
+    renderChangesNotSubmitted = (decks) =>
+      $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
+      if $changesNotSubmitted.length > 0
+        any_changes = decks.editBothInPlace || decks.left.change_type != 'none' || decks.right.change_type != 'none'
+        $changesNotSubmitted.toggleClass('d-none', !any_changes)
+
+    enableEditDecksButton = (decks) =>
+      $button = $('#edit_decks_button')
+      if $button.length == 0
+        return
+      $button.one 'click', (e) ->
+        e.preventDefault()
+        decks.editBothInPlace = !decks.editBothInPlace
+        if decks.editBothInPlace
+          editDeckInPlace(decks.left)
+          editDeckInPlace(decks.right)
+          $button.empty().append($('<i/>', {class: 'fa fa-undo'}), ' Cancel edits')
+        else
+          undoEditInPlace(decks.left)
+          undoEditInPlace(decks.right)
+          $button.empty().append($('<i/>', {class: 'fa fa-edit'}), ' Edit decks in place')
+        renderDecksDisplayLeftRight(decks)
+
+    editDeckInPlace = (deck) =>
+      deck.editInPlace = true
+      deck.beforeEditInPlace = structuredClone(deck.after)
+
+    undoEditInPlace = (deck) =>
+      deck.editInPlace = false
+      deck.after = structuredClone(deck.beforeEditInPlace)
+      delete deck.beforeEditInPlace
+      deck.input.val(JSON.stringify(deck.after))
+      addDeckDiff(deck)
 
     renderDeck = (deck, decks) =>
       $container = $('<div/>', {class: 'col-md-6'})
@@ -84,17 +119,6 @@ $(document).on 'turbolinks:load', ->
       if deck.viewOnly
         return document.createTextNode(deckAfter.details.name)
       dropdownItems = []
-      if deck.canEditInPlace
-        if deck.editInPlace
-          disableItem = true
-        else
-          disableItem = false
-        dropdownItems.push($('<a/>', {
-          class: 'dropdown-item',
-          href: '#'
-        }).append('Edit in Cobra')
-          .toggleClass('disabled', disableItem)
-          .on('click', (e) => e.preventDefault(); editDeckInPlace(deck, decks)))
       if deckAfter.details.mine
         dropdownItems.push($('<a/>', {
           class: 'dropdown-item',
@@ -109,45 +133,20 @@ $(document).on 'turbolinks:load', ->
           .append('Download as a CSV spreadsheet')
           .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
       ])
-      buttons = []
-      if deck.editInPlace
-        buttons.push(
-          $('<a/>', {
-            title: 'Undo changes',
-            class: 'mr-2',
-            href: '#'
-          })
-            .append('Undo ', $('<i/>', {class: 'fa fa-undo'}))
-            .on('click', (e) => e.preventDefault(); undoEditInPlace(deck, decks))
-        )
-      buttons.push(
-        $('<span/>', {class: 'dropdown'}).append(
-          $('<a/>', {
-            href: '#',
-            'data-toggle': 'dropdown',
-            'aria-expanded': false
-          }).append(' ', $('<i/>', {class: 'fa fa-cog'})),
-          $('<div/>', {class: 'dropdown-menu'}).append(dropdownItems)
-        )
-      )
       display = [
         document.createTextNode(deckAfter.details.name),
-        $('<div/>', {class: 'float-right'}).append(buttons)
+        $('<div/>', {class: 'float-right'}).append(
+          $('<span/>', {class: 'dropdown'}).append(
+            $('<a/>', {
+              href: '#',
+              'data-toggle': 'dropdown',
+              'aria-expanded': false
+            }).append(' ', $('<i/>', {class: 'fa fa-cog'})),
+            $('<div/>', {class: 'dropdown-menu'}).append(dropdownItems)
+          )
+        )
       ]
       display
-
-    editDeckInPlace = (deck, decks) =>
-      deck.editInPlace = true
-      deck.beforeEditInPlace = structuredClone(deck.after)
-      renderDecksDisplayLeftRight(decks)
-
-    undoEditInPlace = (deck, decks) =>
-      deck.editInPlace = false
-      deck.after = structuredClone(deck.beforeEditInPlace)
-      delete deck.beforeEditInPlace
-      deck.input.val(JSON.stringify(deck.after))
-      addDeckDiff(deck)
-      renderDecksDisplayLeftRight(decks)
 
     updateDeckInput = (deck) =>
       clone = structuredClone(deck.after)
@@ -493,12 +492,6 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {class: 'text-center deck-side-column', text: qty}),
             $('<td/>', {class: 'text-center', text: 'Totals'}),
             $('<td/>', {class: 'text-center deck-side-column', text: influence}))))
-
-    renderChangesNotSubmitted = (decks) =>
-      $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
-      if $changesNotSubmitted.length > 0
-        any_changes = decks.left.change_type != 'none' || decks.right.change_type != 'none'
-        $changesNotSubmitted.toggleClass('d-none', !any_changes)
 
     if document.getElementById('display_decks')?
       try

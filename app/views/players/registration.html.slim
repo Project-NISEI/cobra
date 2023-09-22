@@ -37,15 +37,19 @@ ruby:
             = button_tag type: :submit, class: 'btn btn-primary dontprint mr-2' do
               => fa_icon 'check'
               | Submit
-            - if !@edit_decks
-              = link_to registration_tournament_player_path(@tournament, @player, {edit_decks: true}), class: 'btn btn-link text-info mr-2 dontprint' do
-                => fa_icon 'edit'
-                | Choose decks from your NetrunnerDB
-            - else
+            span.badge.badge-warning.p-2.my-1.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+            - if @edit_decks
               = link_to registration_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info mr-2 dontprint' do
                 => fa_icon 'undo'
-                | Close NetrunnerDB decks
-            span.badge.badge-warning.p-2.my-1.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+                | Cancel deck changes
+            - else
+              .mt-2
+                = link_to registration_tournament_player_path(@tournament, @player, {edit_decks: true}), class: 'btn btn-link text-info mr-2 dontprint' do
+                  => fa_icon 'edit'
+                  | Choose decks from your NetrunnerDB
+                = button_tag type: :button, id: 'edit_decks_button', class: 'btn btn-link text-info mr-2 dontprint' do
+                  => fa_icon 'edit'
+                  | Edit decks in place
       - if @tournament.nrdb_deck_registration?
         .alert.alert-danger.mt-3.mb-0.dontprint role=alert
           => fa_icon 'exclamation-triangle', class: 'mr-2'
