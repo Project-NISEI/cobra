@@ -296,14 +296,14 @@ $(document).on 'turbolinks:load', ->
       }).append(
         $('<thead/>', {'class': 'thead-dark'}).append(
           $('<tr/>').append(
-            applyQtyMinWidth(deck, $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'})),
+            applyQtyColWidth(deck, $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'})),
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
         $tableBody.append(
           cards.map((card) => cardRow(card, deck)),
           emptyCardRows(deck.pad_cards)))
 
-    applyQtyMinWidth = (deck, $tableHeader) =>
+    applyQtyColWidth = (deck, $tableHeader) =>
       if deck.editInPlace
         $tableHeader.css('width', '5em')
       else
