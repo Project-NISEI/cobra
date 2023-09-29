@@ -83,6 +83,7 @@ $(document).on 'turbolinks:load', ->
       deck.after = cloneDeck(deck.beforeEditInPlace)
       delete deck.beforeEditInPlace
       deck.input.val(JSON.stringify(deck.after))
+      deck.identityInput.val(deck.after.details.identity_title)
       addDeckDiff(deck)
 
     renderDeck = (deck) =>
@@ -161,6 +162,7 @@ $(document).on 'turbolinks:load', ->
 
     updateDeckInput = (deck) =>
       deck.input.val(JSON.stringify(cloneDeck(deck.after)))
+      deck.identityInput.val(deck.after.details.identity_title)
 
     cloneDeck = (deck) =>
       cards = deck.cards

@@ -8,11 +8,13 @@ $(document).on 'turbolinks:load', ->
         corp: readSideDecks(
           'Corp Deck', 'corp',
           $('#player_corp_deck_before'),
-          $('#player_corp_deck')),
+          $('#player_corp_deck'),
+          $('#player_corp_identity')),
         runner: readSideDecks(
           'Runner Deck', 'runner',
           $('#player_runner_deck_before'),
-          $('#player_runner_deck'))
+          $('#player_runner_deck'),
+          $('#player_runner_identity'))
       }
 
     window.readPairingDecksFromInputs = () =>
@@ -31,7 +33,7 @@ $(document).on 'turbolinks:load', ->
       decks.viewOnly = true
       decks
 
-    readSideDecks = (description, sideId, $beforeInput, $afterInput) =>
+    readSideDecks = (description, sideId, $beforeInput, $afterInput, $identityInput) =>
       after = readDeck($afterInput, sideId)
       if $beforeInput.length < 1
         before = after
@@ -42,7 +44,8 @@ $(document).on 'turbolinks:load', ->
         description: description,
         before: before,
         after: after,
-        input: $afterInput
+        input: $afterInput,
+        identityInput: $identityInput
       })
 
     window.addDeckDiff = (decks) =>
