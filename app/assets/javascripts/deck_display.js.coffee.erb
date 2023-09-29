@@ -251,8 +251,8 @@ $(document).on 'turbolinks:load', ->
       if not details.identity_title && not deck.editInPlace
         return []
 
-      $minDeckSizeCell = $('<td/>', {class: 'text-center align-middle', text: details.min_deck_size})
-      $maxInfCell = $('<td/>', {class: 'text-center align-middle', text: details.max_influence})
+      $minDeckSizeCell = $('<td/>', {class: 'text-center align-middle', text: orEmptyString(details.min_deck_size)})
+      $maxInfCell = $('<td/>', {class: 'text-center align-middle', text: orEmptyString(details.max_influence)})
       deck.minDeckSizeCell = $minDeckSizeCell
       deck.maxInfCell = $maxInfCell
       $identityDisplayCell = $('<td/>').append(
@@ -273,6 +273,12 @@ $(document).on 'turbolinks:load', ->
             $minDeckSizeCell,
             $identityDisplayCell,
             $maxInfCell)))
+
+    orEmptyString = (str) =>
+      if str
+        str
+      else
+        ''
 
     updateIdentity = (deck, card) =>
       details = deck.after.details
