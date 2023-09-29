@@ -6,37 +6,37 @@ $(document).on 'turbolinks:load', ->
     window.readDecksFromInputs = () =>
       {
         corp: readSideDecks(
-          'Corp Deck',
+          'Corp Deck', 'corp',
           $('#player_corp_deck_before'),
           $('#player_corp_deck')),
         runner: readSideDecks(
-          'Runner Deck',
+          'Runner Deck', 'runner',
           $('#player_runner_deck_before'),
           $('#player_runner_deck'))
       }
 
     window.readPairingDecksFromInputs = () =>
       {
-        player1: markViewOnlyDeck(readSideDecks($('#player1_name').val(), [], $('#player1_deck'))),
-        player2: markViewOnlyDeck(readSideDecks($('#player2_name').val(), [], $('#player2_deck')))
+        player1: markViewOnlyDeck(readSideDecks($('#player1_name').val(), null, [], $('#player1_deck'))),
+        player2: markViewOnlyDeck(readSideDecks($('#player2_name').val(), null, [], $('#player2_deck')))
       }
 
     window.readPlayerDecksFromInputs = () =>
       {
-        corp: markViewOnlyDeck(readSideDecks('Corp Deck', [], $('#corp_deck'))),
-        runner: markViewOnlyDeck(readSideDecks('Runner Deck', [], $('#runner_deck')))
+        corp: markViewOnlyDeck(readSideDecks('Corp Deck', 'corp', [], $('#corp_deck'))),
+        runner: markViewOnlyDeck(readSideDecks('Runner Deck', 'runner', [], $('#runner_deck')))
       }
 
     markViewOnlyDeck = (decks) =>
       decks.viewOnly = true
       decks
 
-    readSideDecks = (description, $beforeInput, $afterInput) =>
-      after = readDeck($afterInput)
+    readSideDecks = (description, sideId, $beforeInput, $afterInput) =>
+      after = readDeck($afterInput, sideId)
       if $beforeInput.length < 1
         before = after
       else
-        before = readDeck($beforeInput)
+        before = readDeck($beforeInput, sideId)
 
       addDeckDiff({
         description: description,
@@ -59,20 +59,20 @@ $(document).on 'turbolinks:load', ->
 
       decks
 
-    readDeck = ($input) =>
+    readDeck = ($input, sideId) =>
       deckStr = $input.val()
       if deckStr.length > 0
         deck = JSON.parse(deckStr)
         if !deck
-          unsetDeck()
+          unsetDeck(sideId)
         else
           sortCards(deck.cards)
           deck
       else
-        unsetDeck()
+        unsetDeck(sideId)
 
-    unsetDeck = () =>
-      {details: {}, cards: [], unset: true}
+    unsetDeck = (sideId) =>
+      {details: { side_id: sideId }, cards: [], unset: true}
 
     diffDecks = (before, after) =>
       if before.unset || after.unset || before.details.nrdb_uuid != after.details.nrdb_uuid

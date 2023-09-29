@@ -16,8 +16,8 @@ $(document).on 'turbolinks:load', ->
       renderChangesNotSubmitted(decks)
       enableEditDecksButton(decks)
       decks.anchor.empty().append(
-        renderDeck(decks.left, decks),
-        renderDeck(decks.right, decks)
+        renderDeck(decks.left),
+        renderDeck(decks.right)
       )
 
     normaliseCardTables = (decks) =>
@@ -85,10 +85,10 @@ $(document).on 'turbolinks:load', ->
       deck.input.val(JSON.stringify(deck.after))
       addDeckDiff(deck)
 
-    renderDeck = (deck, decks) =>
+    renderDeck = (deck) =>
       $container = $('<div/>', {class: 'col-md-6'})
-        .append(deckSummaryTable(deck, decks))
-      if deck.before.unset && deck.after.unset
+        .append(deckSummaryTable(deck))
+      if deck.before.unset && deck.after.unset && !deck.editInPlace
         return $container
       $totalsTable = totalsTable(deck)
       deck.totalsTable = $totalsTable
@@ -98,7 +98,7 @@ $(document).on 'turbolinks:load', ->
         cardsTable(deck),
         $totalsTable)
 
-    deckSummaryTable = (deck, decks) =>
+    deckSummaryTable = (deck) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -106,18 +106,21 @@ $(document).on 'turbolinks:load', ->
           $('<tr/>').append(
             $('<th/>', {class: 'text-center deck-name-header', text: deck.description}))),
         $('<tbody/>')
-          .append(deckNameRow(deck, decks))
+          .append(deckNameRow(deck))
           .append(deckChangesRow(deck)))
 
-    deckNameRow = (deck, decks) =>
+    deckNameRow = (deck) =>
       if deck.after.details.name
         $('<tr/>').append($('<td/>')
-          .append(deckNameDisplay(deck, decks)))
-      else
+          .append(deckNameDisplay(deck)))
+      else if deck.after.unset
         $('<tr/>').append($('<td/>')
           .append('None selected'))
+      else
+        $('<tr/>').append($('<td/>')
+          .append('Unnamed deck'))
 
-    deckNameDisplay = (deck, decks) =>
+    deckNameDisplay = (deck) =>
       deckAfter = deck.after
       if deck.viewOnly
         return document.createTextNode(deckAfter.details.name)
@@ -165,7 +168,8 @@ $(document).on 'turbolinks:load', ->
         .map(removeExtraCardFields)
       {
         details: structuredClone(deck.details),
-        cards: cards
+        cards: cards,
+        unset: cards.length == 0 && !deck.details.name
       }
 
     removeExtraCardFields = (card) =>
@@ -242,7 +246,7 @@ $(document).on 'turbolinks:load', ->
 
     identityTable = (deck) =>
       details = deck.after.details
-      if not details.identity_title
+      if not details.identity_title && not deck.editInPlace
         return []
 
       $minDeckSizeCell = $('<td/>', {class: 'text-center align-middle', text: details.min_deck_size})
