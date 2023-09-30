@@ -1,7 +1,24 @@
 - single_sided = round.stage.single_sided?
 - round.pairings.each do |pairing|
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user}"
-    .col-sm-2 Table #{pairing.table_number}
+    .col-sm-2
+      | Table #{pairing.table_number}
+      - if @tournament.allow_streaming_opt_out? && policy(round.tournament).edit?
+        - if pairing.players.all? { |player| player.include_in_stream? }
+          = fa_icon 'video-camera',
+                  class: 'text-success streaming-tooltip ml-2',
+                  title: 'May be included in video coverage'
+        - elsif round.stage.double_elim?
+          = fa_icon 'video-camera',
+                  class: 'text-warning streaming-tooltip ml-2',
+                  title: 'One or both players requested not to be included in video coverage,
+                  but were informed this may not be possible in the cut'
+        - else
+          span.text-nowrap.streaming-tooltip.ml-2 title='One or both players requested not to be included in video coverage'
+            = fa_icon 'video-camera', class: 'text-secondary'
+            =< fa_icon 'ban', class: 'text-danger'
+        javascript:
+            $('.streaming-tooltip').tooltip()
     - if pairing.decks_visible_to(current_user)
       =< link_to view_decks_tournament_round_pairing_path(@tournament, round, pairing) do
         => fa_icon 'eye'
