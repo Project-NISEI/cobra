@@ -61,6 +61,7 @@ Rails.application.configure do
     begin
       Flipper.enable :nrdb_deck_registration
       Flipper.enable :open_list_cut
+      Flipper.enable :streaming_opt_out
     rescue => e
       Rails.logger.warn "Failed setting Flipper features: #{e.class}"
     end
