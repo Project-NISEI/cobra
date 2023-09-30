@@ -10,7 +10,7 @@ namespace :ids do
             name: id[:title],
             side: id[:side_code],
             faction: id[:faction_code],
-            autocomplete: id[:title]
+            autocomplete: id[:stripped_title]
           )
       end
 
