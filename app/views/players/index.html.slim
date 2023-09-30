@@ -50,7 +50,7 @@
               | Make decks in swiss private
             => link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_open}}), method: :patch,
                     class: ['dropdown-item', *('disabled' if @tournament.swiss_decks_open?)],
-                    data: { confirm: 'This will make all decklists visible to all registered tournament participants. Are you sure?' } do
+                    data: { confirm: 'This will make all decklists visible to all registered players in the tournament. Are you sure?' } do
               => fa_icon 'eye'
               | Make decks in swiss open, visible to participants
             => link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_public}}), method: :patch,
