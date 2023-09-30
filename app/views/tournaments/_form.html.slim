@@ -13,5 +13,6 @@
   = f.input :private, as: :boolean, inline_label: 'Private: Only I will be able to view this tournament'
 .form-group
   = f.input :manual_seed, as: :boolean, inline_label: 'Use manual seeding for tiebreakers: Players can be assigned a "seed" value that will be used before all other tiebreakers (in ascending order; i.e. Seed 1 wins all ties)'
-.form-group
-  = f.input :allow_streaming_opt_out, as: :boolean, inline_label: 'Streaming opt out: Allow players to choose whether their games should be included in video coverage (defaults to yes, and players are notified that in a top cut it may not be possible to exclude them)'
+- if Flipper.enabled? :streaming_opt_out
+  .form-group
+    = f.input :allow_streaming_opt_out, as: :boolean, inline_label: 'Streaming opt out: Allow players to choose whether their games should be included in video coverage (defaults to yes, and players are notified that in a top cut it may not be possible to exclude them)'
