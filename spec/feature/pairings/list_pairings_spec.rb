@@ -35,6 +35,14 @@ RSpec.describe 'list pairings for a round' do
 
       expect(page).to have_content('6-0 3-3 (C) 3-3 (R) 0-6 ...')
     end
+
+    it 'displays bye with streaming opt out enabled' do
+      round.tournament.update(allow_streaming_opt_out: true)
+      sign_in round.tournament.user
+      visit tournament_rounds_path(round.tournament)
+
+      expect(page).to have_content('(Bye)')
+    end
   end
 
   context 'with double elim tournament' do
