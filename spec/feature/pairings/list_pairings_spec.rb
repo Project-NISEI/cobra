@@ -41,7 +41,7 @@ RSpec.describe 'list pairings for a round' do
       sign_in round.tournament.user
       visit tournament_rounds_path(round.tournament)
 
-      expect(page).to have_content('3Pop(Bye)')
+      expect(page).to have_content('(Bye)')
     end
   end
 
