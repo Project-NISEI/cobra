@@ -38,4 +38,8 @@ class NilPlayer
   def runner_identity_object
     nil
   end
+
+  def include_in_stream?
+    true
+  end
 end
