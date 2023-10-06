@@ -115,7 +115,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     sign_in player
     visit tournament_path(Tournament.last)
     with_nrdb_decks do
-      click_button 'Register'
+      click_button 'Deck Registration'
     end
   end
 
@@ -123,7 +123,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     visit tournament_path(Tournament.last)
     fill_in 'Name', with: 'Test Player'
     with_nrdb_decks do
-      click_button 'Register'
+      click_button 'Deck Registration'
     end
   end
 

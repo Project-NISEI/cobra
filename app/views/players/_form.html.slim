@@ -38,15 +38,6 @@
               readonly: @tournament.nrdb_deck_registration?,
               placeholder: (@tournament.nrdb_deck_registration? ? '' : 'Search for runner ID'),
               class: 'form-control runner_identities'
-  - if policy(@tournament).edit?
-    => f.input :first_round_bye, as: :boolean, inline_label: 'First Round Bye',
-            input_html: { class: 'mr-1' },
-            wrapper_html: { class: 'align-middle' }
-    - if @tournament.manual_seed
-      = f.input :manual_seed, placeholder: 'Set seed', inline_label: 'Manual Seed', required: false, as: :string,
-              wrapper_html: { class: 'form-group my-2' },
-              input_html: { class: 'form-control manual_seed' },
-              label_html: { class: 'align-middle d-inline-block mr-1' }
   - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
     .form-group
       label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
@@ -58,7 +49,7 @@
               collection: [['No', true], ['Yes', false]],
               prompt: false, required: false,
               label: 'Opted out of video coverage?',
-              wrapper_html: { class: 'form-group my-2' },
+              wrapper_html: { class: 'form-group my-2 mr-3' },
               input_html: { class: 'form-control' },
               label_html: { class: 'align-middle d-inline-block mr-1' }
     - else
@@ -67,3 +58,12 @@
                 label: Tournament.streaming_opt_out_notice,
                 wrapper_html: { class: 'form-group my-2' },
                 input_html: { class: 'form-control' }
+  - if policy(@tournament).edit?
+    = f.input :first_round_bye, as: :boolean, inline_label: 'First Round Bye',
+            input_html: { class: 'mr-1' },
+            wrapper_html: { class: 'align-middle mr-3' }
+    - if @tournament.manual_seed
+      = f.input :manual_seed, placeholder: 'Set seed', inline_label: 'Manual Seed', required: false, as: :string,
+              wrapper_html: { class: 'form-group my-2' },
+              input_html: { class: 'form-control manual_seed' },
+              label_html: { class: 'align-middle d-inline-block mr-1' }
