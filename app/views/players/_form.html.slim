@@ -49,7 +49,7 @@
               collection: [['No', true], ['Yes', false]],
               prompt: false, required: false,
               label: 'Opted out of video coverage?',
-              wrapper_html: { class: 'form-group my-2' },
+              wrapper_html: { class: 'form-group my-2 mr-3' },
               input_html: { class: 'form-control' },
               label_html: { class: 'align-middle d-inline-block mr-1' }
     - else
@@ -59,9 +59,9 @@
                 wrapper_html: { class: 'form-group my-2' },
                 input_html: { class: 'form-control' }
   - if policy(@tournament).edit?
-    => f.input :first_round_bye, as: :boolean, inline_label: 'First Round Bye',
+    = f.input :first_round_bye, as: :boolean, inline_label: 'First Round Bye',
             input_html: { class: 'mr-1' },
-            wrapper_html: { class: 'align-middle' }
+            wrapper_html: { class: 'align-middle mr-3' }
     - if @tournament.manual_seed
       = f.input :manual_seed, placeholder: 'Set seed', inline_label: 'Manual Seed', required: false, as: :string,
               wrapper_html: { class: 'form-group my-2' },
