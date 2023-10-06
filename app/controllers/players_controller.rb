@@ -63,7 +63,11 @@ class PlayersController < ApplicationController
     authorize @player
 
     if is_organiser_view
-      redirect_to tournament_players_path(@tournament)
+      if params.require(:player)[:registration_view]
+        redirect_to registration_tournament_player_path(@tournament, @player)
+      else
+        redirect_to tournament_players_path(@tournament)
+      end
       update = player_params
     else
       redirect_to tournament_path(@tournament)

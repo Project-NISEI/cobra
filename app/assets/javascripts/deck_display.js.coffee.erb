@@ -5,75 +5,128 @@ $(document).on 'turbolinks:load', ->
   if deckDisplayEnabled()
 
     window.renderDecksDisplay = (decks) =>
-      $('#display_decks').empty().append(
-        renderDecksDisplayLeftRight({left: decks.corp, right: decks.runner}))
-      any_changes = decks.corp.change_type != 'none' || decks.runner.change_type != 'none'
-      $('#deck_changes_not_submitted_warning').toggleClass('d-none', !any_changes)
+      renderDecksDisplayLeftRight({
+        left: decks.corp,
+        right: decks.runner,
+        anchor: $('#display_decks')
+      })
 
     renderDecksDisplayLeftRight = (decks) =>
       normaliseCardTables(decks)
-      [
+      renderChangesNotSubmitted(decks)
+      enableEditDecksButton(decks)
+      decks.anchor.empty().append(
         renderDeck(decks.left),
         renderDeck(decks.right)
-      ]
+      )
 
     normaliseCardTables = (decks) =>
+      sortCards(decks.left.before)
+      sortCards(decks.left.after)
+      sortCards(decks.right.before)
+      sortCards(decks.right.after)
       decks.left.pad_cards = 0
       decks.right.pad_cards = 0
-      if decks.left.change_type != decks.right.change_type
-        return decks
-      if decks.left.change_type != 'change_cards'
+      if shouldPadCards(decks)
         max_cards = Math.max(decks.right.after.cards.length, decks.left.after.cards.length)
         decks.left.pad_cards = max_cards - decks.left.after.cards.length
         decks.right.pad_cards = max_cards - decks.right.after.cards.length
+      normaliseEditInPlace(decks.left)
+      normaliseEditInPlace(decks.right)
       decks
 
-    renderDeck = (decks) =>
-      $container = $('<div/>', {class: 'col-md-6'}).append(deckSummaryTable(decks))
-      if decks.before.unset && decks.after.unset
-        return $container
-      deck = decks.after
-      $container.append(
-        deckDiffTable(decks.diff),
-        identityTable(deck),
-        cardsTable(decks),
-        totalsTable(deck))
+    shouldPadCards = (decks) =>
+      if decks.left.editInPlace || decks.right.editInPlace
+        return false
+      if decks.left.change_type != decks.right.change_type
+        return false
+      decks.left.change_type != 'change_cards'
 
-    deckSummaryTable = (decks) =>
+    normaliseEditInPlace = (deck) =>
+      if deck.editInPlace
+        deck.after.cards = deck.after.cards.concat([emptyCard()])
+
+    emptyCard = () =>
+      {title: '', quantity: 0, influence: 0, influence_cost: 0}
+
+    renderChangesNotSubmitted = (decks) =>
+      $changesNotSubmitted = $('#deck_changes_not_submitted_warning')
+      if $changesNotSubmitted.length > 0
+        any_changes = decks.editBothInPlace || decks.left.change_type != 'none' || decks.right.change_type != 'none'
+        $changesNotSubmitted.toggleClass('d-none', !any_changes)
+
+    enableEditDecksButton = (decks) =>
+      $button = $('#edit_decks_button')
+      if $button.length == 0
+        return
+      $button.one 'click', (e) ->
+        e.preventDefault()
+        decks.editBothInPlace = !decks.editBothInPlace
+        if decks.editBothInPlace
+          editDeckInPlace(decks.left)
+          editDeckInPlace(decks.right)
+          $('#choose_nrdb_decks_button').addClass('d-none')
+          $button.empty().append($('<i/>', {class: 'fa fa-undo'}), ' Cancel edits')
+        else
+          undoEditInPlace(decks.left)
+          undoEditInPlace(decks.right)
+          $('#choose_nrdb_decks_button').removeClass('d-none')
+          $button.empty().append($('<i/>', {class: 'fa fa-edit'}), ' Edit decks in place')
+        renderDecksDisplayLeftRight(decks)
+
+    editDeckInPlace = (deck) =>
+      deck.editInPlace = true
+      deck.beforeEditInPlace = cloneDeck(deck.after)
+
+    undoEditInPlace = (deck) =>
+      deck.editInPlace = false
+      deck.after = cloneDeck(deck.beforeEditInPlace)
+      delete deck.beforeEditInPlace
+      deck.input.val(JSON.stringify(deck.after))
+      deck.identityInput.val(deck.after.details.identity_title)
+      addDeckDiff(deck)
+
+    renderDeck = (deck) =>
+      $container = $('<div/>', {class: 'col-md-6'})
+        .append(deckSummaryTable(deck))
+      if deck.before.unset && deck.after.unset && !deck.editInPlace
+        return $container
+      $totalsTable = totalsTable(deck)
+      deck.totalsTable = $totalsTable
+      $container.append(
+        deckDiffTable(deck),
+        identityTable(deck),
+        cardsTable(deck),
+        $totalsTable)
+
+    deckSummaryTable = (deck) =>
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
         $('<thead/>', {class: 'thead-dark'}).append(
           $('<tr/>').append(
-            $('<th/>', {class: 'text-center deck-name-header', text: decks.description}))),
+            $('<th/>', {class: 'text-center deck-name-header', text: deck.description}))),
         $('<tbody/>')
-          .append(deckNameRow(decks.after, decks.viewOnly))
-          .append(deckChangesRow(decks)))
+          .append(deckNameRow(deck))
+          .append(deckChangesRow(deck)))
 
-    deckNameRow = (deck, viewOnly) =>
-      if deck.details.name
+    deckNameRow = (deck) =>
+      if deck.after.details.name
         $('<tr/>').append($('<td/>')
-          .append(deckNameButtons(deck, viewOnly))
-          .append(document.createTextNode(deck.details.name)))
-      else
+          .append(deckNameDisplay(deck)))
+      else if deck.after.unset
         $('<tr/>').append($('<td/>')
           .append('None selected'))
+      else
+        $('<tr/>').append($('<td/>')
+          .append('Unnamed deck'))
 
-    deckNameButtons = (deck, viewOnly) =>
-      if viewOnly
-        return []
-      buttons = []
-      if deck.details.mine
-        buttons.push($('<a/>', {
-          class: 'float-right dontprint ml-2',
-          title: 'Edit Deck',
-          href: 'https://netrunnerdb.com/en/deck/edit/' + deck.details.nrdb_uuid,
-          target: '_blank'
-        }).append(
-          $('<i/>', {class: 'fa fa-external-link'})
-        ))
-      buttons.push(
-        $('<div/>', {class: 'dropdown float-right dontprint'}).append(
+    deckNameDisplay = (deck) =>
+      deckAfter = deck.after
+      if deck.viewOnly
+        return document.createTextNode(deckAfter.details.name)
+      buttons = [
+        $('<span/>', {class: 'dropdown'}).append(
           $('<a/>', {
             title: 'Export deck',
             href: '#',
@@ -85,13 +138,53 @@ $(document).on 'turbolinks:load', ->
           $('<div/>', {class: 'dropdown-menu'}).append(
             $('<a/>', {class: 'dropdown-item', href: '#'})
               .append('Copy to clipboard in NetrunnerDB format')
-              .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deck)),
+              .on('click', (e) => e.preventDefault(); copyDeckToClipboard(deckAfter)),
             $('<a/>', {class: 'dropdown-item', href: '#'})
               .append('Download as a CSV spreadsheet')
-              .on('click', (e) => e.preventDefault(); downloadDeckCsv(deck))
+              .on('click', (e) => e.preventDefault(); downloadDeckCsv(deckAfter))
           )
+        )
+      ]
+      if deckAfter.details.mine
+        buttons.push($('<a/>', {
+          class: 'ml-2',
+          title: 'Edit Deck',
+          href: 'https://netrunnerdb.com/en/deck/edit/' + deckAfter.details.nrdb_uuid,
+          target: '_blank'
+        }).append(
+          $('<i/>', {class: 'fa fa-external-link'})
         ))
-      buttons
+      display = [
+        document.createTextNode(deckAfter.details.name),
+        $('<div/>', {class: 'float-right dontprint'}).append(buttons)
+      ]
+      display
+
+    updateDeckInput = (deck) =>
+      deck.input.val(JSON.stringify(cloneDeck(deck.after)))
+      deck.identityInput.val(deck.after.details.identity_title)
+
+    cloneDeck = (deck) =>
+      cards = deck.cards
+        .filter((card) => card.quantity > 0 && card.nrdb_card_id)
+        .map(removeExtraCardFields)
+      {
+        details: structuredClone(deck.details),
+        cards: cards,
+        unset: cards.length == 0 && !deck.details.name
+      }
+
+    removeExtraCardFields = (card) =>
+      {
+        title: card.title,
+        quantity: card.quantity,
+        influence: card.influence,
+        influence_cost: card.influence_cost,
+        nrdb_card_id: card.nrdb_card_id,
+        nrdb_printing_id: card.nrdb_printing_id,
+        card_type_id: card.card_type_id,
+        faction_id: card.faction_id
+      }
 
     copyDeckToClipboard = (deck) =>
       msg = ""
@@ -100,22 +193,27 @@ $(document).on 'turbolinks:load', ->
       navigator.clipboard.writeText(msg)
       alert("Copied to clipboard")
 
-    deckChangesRow = (decks) =>
-      switch decks.change_type
+    deckChangesRow = (deck) =>
+      if deck.editInPlace
+        return []
+      switch deck.change_type
         when 'choose_deck' then $('<tr/>', {class: 'alert-warning'}).append(
           $('<td/>').append('Not yet submitted'))
         when 'change_deck' then $('<tr/>', {class: 'alert-warning'}).append(
           $('<td/>').append(
             'Change not yet submitted. Previously submitted:',
             $('<br/>'),
-            $('<span/>', {text: decks.before.details.name})
+            $('<span/>', {text: deck.before.details.name})
           ))
         when 'change_cards' then $('<tr/>', {class: 'alert-warning'}).append(
-          $('<td/>').append('Changes not yet submitted. See below for differences from NetrunnerDB.'))
+          $('<td/>').append('Changes not yet submitted. See below for differences from currently stored deck.'))
         else
           []
 
-    deckDiffTable = (diff) =>
+    deckDiffTable = (deck) =>
+      if deck.editInPlace
+        return []
+      diff = deck.diff
       if not diff
         return []
 
@@ -142,10 +240,26 @@ $(document).on 'turbolinks:load', ->
             $('<td/>', {text: change.added}),
             $('<td/>', {text: change.removed})))))
 
+    changeStr = (change) =>
+      if change
+        return change.quantity + ' ' + change.title
+      else
+        return ''
+
     identityTable = (deck) =>
-      if not deck.details.identity_title
+      details = deck.after.details
+      if not details.identity_title && not deck.editInPlace
         return []
 
+      $minDeckSizeCell = $('<td/>', {class: 'text-center align-middle', text: orEmptyString(details.min_deck_size)})
+      $maxInfCell = $('<td/>', {class: 'text-center align-middle', text: orEmptyString(details.max_influence)})
+      deck.minDeckSizeCell = $minDeckSizeCell
+      deck.maxInfCell = $maxInfCell
+      $identityDisplayCell = $('<td/>').append(
+        cardDisplay({
+          title: details.identity_title,
+          faction_id: details.faction_id
+        }, deck, queryDeckIdentity, (card) => updateIdentity(deck, card)))
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
@@ -156,41 +270,157 @@ $(document).on 'turbolinks:load', ->
             $('<th/>', {class: 'text-center deck-side-column', text: 'Max'}))),
         $('<tbody/>').append(
           $('<tr/>').append(
-            $('<td/>', {class: 'text-center', text: deck.details.min_deck_size}),
-            $('<td/>').append(
-              cardDisplay({
-                title: deck.details.identity_title,
-                faction_id: deck.details.faction_id
-              })),
-            $('<td/>', {class: 'text-center', text: deck.details.max_influence}))))
+            $minDeckSizeCell,
+            $identityDisplayCell,
+            $maxInfCell)))
 
-    cardsTable = (decks) =>
-      deck = decks.after
-      cards = deck.cards
+    orEmptyString = (str) =>
+      if str
+        str
+      else
+        ''
+
+    updateIdentity = (deck, card) =>
+      details = deck.after.details
+      details.identity_title = card.title
+      details.min_deck_size = card.minimum_deck_size
+      details.max_influence = card.influence_limit
+      details.faction_id = card.faction_id
+      details.identity_nrdb_card_id = card.nrdb_card_id
+      details.identity_nrdb_printing_id = card.nrdb_printing_id
+      deck.minDeckSizeCell.text(card.minimum_deck_size)
+      deck.maxInfCell.text(card.influence_limit)
+      for card from deck.after.cards
+        updateCardQuantity(card, deck, card.quantity)
+        card.influenceCell.empty().append(influenceDisplay(card, deck))
+      updateTotalsTable(deck)
+      updateDeckInput(deck)
+
+    cardsTable = (deck) =>
+      deckAfter = deck.after
+      cards = deckAfter.cards
       if not cards || cards.length < 1
         return []
-      sortCards(deck)
+      $tableBody = $('<tbody/>')
+      deck.cardsTableBody = $tableBody
       return $('<table/>', {
         class: 'table table-bordered table-striped'
       }).append(
         $('<thead/>', {'class': 'thead-dark'}).append(
           $('<tr/>').append(
-            $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'}),
+            applyQtyColWidth(deck, $('<th/>', {class: 'text-center deck-side-column', text: 'Qty'})),
             $('<th/>', {class: 'text-center', text: 'Card Name'}),
             $('<th/>', {class: 'text-center deck-side-column', text: 'Inf'}))),
-        $('<tbody/>').append(
-          cards.map((card) =>
-            if card.influence > 0
-              influence = card.influence
-            else
-              influence = ''
-            $('<tr/>').append(
-              $('<td/>', {class: 'text-center', text: card.quantity}),
-              $('<td/>').append(cardDisplay(card)),
-              $('<td/>', {class: 'text-center', text: influence}))),
-          emptyCardRows(decks.pad_cards)))
+        $tableBody.append(
+          cards.map((card) => cardRow(card, deck)),
+          emptyCardRows(deck.pad_cards)))
 
-    cardDisplay = (card) =>
+    applyQtyColWidth = (deck, $tableHeader) =>
+      if deck.editInPlace
+        $tableHeader.css('width', '5em')
+      else
+        $tableHeader
+
+    cardRow = (card, deck) =>
+      $tableRow = $('<tr/>')
+      $influenceCell = $('<td/>', {class: 'text-center align-middle'})
+        .append(influenceDisplay(card, deck))
+      card.tableRow = $tableRow
+      card.influenceCell = $influenceCell
+      $quantityCell = $('<td/>', {class: 'text-center align-middle'})
+        .append(quantityDisplay(card, deck))
+      $titleCell = $('<td/>')
+        .append(cardDisplay(card, deck, queryCardInDeck, (card) => updateCardRow(card, deck)))
+      $tableRow.append($quantityCell, $titleCell, $influenceCell)
+
+    updateCardRow = (card, deck) =>
+      card.influenceCell.empty().append(influenceDisplay(card, deck))
+      updateTotalsTable(deck)
+      updateDeckInput(deck)
+
+    quantityDisplay = (card, deck) =>
+      if deck.editInPlace
+        displayNode = document.createTextNode(card.quantity)
+        [
+          $('<a/>', {
+            title: 'Remove'
+            href: '#'
+            class: 'mr-2'
+          }).append(
+            $('<i/>', {class: 'fa fa-minus'})
+          ).on('click', ((e) =>
+            e.preventDefault()
+            if card.quantity > 0
+              updateCardQuantity(card, deck, card.quantity - 1)
+              displayNode.nodeValue = card.quantity
+              updateCardRow(card, deck)
+              removeCardIfNeeded(card, deck))),
+          displayNode,
+          $('<a/>', {
+            title: 'Add'
+            href: '#'
+            class: 'ml-2'
+          }).append(
+            $('<i/>', {class: 'fa fa-plus'})
+          ).on('click', ((e) =>
+            e.preventDefault()
+            updateCardQuantity(card, deck, card.quantity + 1)
+            displayNode.nodeValue = card.quantity
+            updateCardRow(card, deck)
+            addNewCardIfNeeded(card, deck)))
+        ]
+      else
+        '' + card.quantity
+
+    updateCardQuantity = (card, deck, quantity) =>
+      card.quantity = quantity
+      if deck.after.details.faction_id != card.faction_id
+        card.influence = card.influence_cost * quantity
+      else
+        card.influence = 0
+
+    addNewCardIfNeeded = (editedCard, deck) =>
+      cards = deck.after.cards
+      if cards.indexOf(editedCard) == cards.length - 1
+        card = emptyCard()
+        deck.after.cards = cards.concat([card])
+        deck.cardsTableBody.append(cardRow(card, deck))
+
+    removeCardIfNeeded = (editedCard, deck) =>
+      if editedCard.quantity != 0
+        return
+      cards = deck.after.cards
+      index = cards.indexOf(editedCard)
+      if index == cards.length - 1
+        return
+      cards.splice(index, 1)
+      editedCard.tableRow.remove()
+
+    influenceDisplay = (card, deck) =>
+      if card.influence > 0
+        influence = '' + card.influence
+      else
+        influence = ''
+      return influence
+
+    cardDisplay = (card, deck, query, update) =>
+      if deck.editInPlace
+        return $('<input/>', {class: 'w-100 form-control'}).val(card.title).on 'change', ->
+          $input = $(this)
+          searchNrdbCards query(deck, sanitiseQuery($input.val())), (results) ->
+            if results.length == 1
+              result = results[0].attributes
+              $input.val(result.title)
+              Object.assign(card, result)
+              card.nrdb_printing_id = result.id
+              card.nrdb_card_id = result.card_id
+              card.card_type_id = result.card_type_id
+              card.influence = result.influence_cost * card.quantity
+              $input.addClass('is-valid').removeClass('is-invalid')
+              if update
+                update(card)
+            else
+              $input.addClass('is-invalid').removeClass('is-valid')
       nodes = []
       if card.card_type_id
         nodes.push($('<img/>', {src: cardTypeImage(card.card_type_id)}))
@@ -202,6 +432,18 @@ $(document).on 'turbolinks:load', ->
           [node, ' ']
         else
           node)
+
+    queryCardInDeck = (deck, query) =>
+      queryWithDeck deck, '!t:identity ' + query
+
+    queryDeckIdentity = (deck, query) =>
+      queryWithDeck deck, 't:identity ' + query
+
+    queryWithDeck = (deck, query) =>
+      'd:' + deck.after.details.side_id + ' ' + query
+
+    sanitiseQuery = (query) =>
+      query.replaceAll(':', '')
 
     cardTypeImage = (card_type_id) =>
       switch card_type_id
@@ -239,6 +481,10 @@ $(document).on 'turbolinks:load', ->
           compareType = a.card_type_id.localeCompare(b.card_type_id)
           if compareType != 0
             return compareType
+        else if a.card_type_id
+          return 1
+        else if b.card_type_id
+          return -1
         factionA = a.faction_id
         factionB = b.faction_id
         if factionA && factionB
@@ -253,6 +499,10 @@ $(document).on 'turbolinks:load', ->
             if factionB.startsWith('neutral')
               return 1
             return compareFaction
+        else if factionA
+          return 1
+        else if factionB
+          return -1
         a.title.localeCompare(b.title))
 
     emptyCardRows = (numRows) =>
@@ -266,27 +516,30 @@ $(document).on 'turbolinks:load', ->
       rows
 
     totalsTable = (deck) =>
-      cards = deck.cards
+      cards = deck.after.cards
       if not cards || cards.length < 1
         return []
-      qty = cards.map((card) => card.quantity)
-        .reduce(((partialSum, a) => partialSum + a), 0)
-      influence = cards.map((card) => card.influence)
-        .reduce(((partialSum, a) => partialSum + a), 0)
-      return $('<table/>', {
+      deck.totalsTable = $('<table/>', {
         class: 'table table-bordered table-striped-horizontal'
-      }).append(
+      })
+      updateTotalsTable(deck)
+
+    updateTotalsTable = (deck) =>
+      cards = deck.after.cards
+      qty = cards
+        .filter((card) => card.quantity)
+        .map((card) => card.quantity)
+        .reduce(((partialSum, a) => partialSum + a), 0)
+      influence = cards
+        .filter((card) => card.influence)
+        .map((card) => card.influence)
+        .reduce(((partialSum, a) => partialSum + a), 0)
+      deck.totalsTable.empty().append(
         $('<tbody/>').append(
           $('<tr/>').append(
             $('<td/>', {class: 'text-center deck-side-column', text: qty}),
             $('<td/>', {class: 'text-center', text: 'Totals'}),
             $('<td/>', {class: 'text-center deck-side-column', text: influence}))))
-
-    changeStr = (change) =>
-      if change
-        return change.quantity + ' ' + change.title
-      else
-        return ''
 
     if document.getElementById('display_decks')?
       try
@@ -297,15 +550,21 @@ $(document).on 'turbolinks:load', ->
     if document.getElementById('display_pairing_decks')?
       try
         decks = readPairingDecksFromInputs()
-        $('#display_pairing_decks').append(
-          renderDecksDisplayLeftRight({left: decks.player1, right: decks.player2}))
+        renderDecksDisplayLeftRight({
+          left: decks.player1,
+          right: decks.player2,
+          anchor: $('#display_pairing_decks')
+        })
       catch e
         console.log(e)
 
     if document.getElementById('display_player_decks')?
       try
         decks = readPlayerDecksFromInputs()
-        $('#display_player_decks').append(
-          renderDecksDisplayLeftRight({left: decks.corp, right: decks.runner}))
+        renderDecksDisplayLeftRight({
+          left: decks.corp,
+          right: decks.runner,
+          anchor: $('#display_player_decks')
+        })
       catch e
         console.log(e)
