@@ -45,7 +45,10 @@
                   .text-right
                     = button_tag type: :submit, class: 'btn btn-primary' do
                       => fa_icon 'user-plus'
-                      | Register
+                      - if @tournament.nrdb_deck_registration?
+                        | Deck Registration
+                      - else
+                        | Register
               - else
                 h5.card-title Rejoin this Event
                 - if @current_user_is_running_tournament
