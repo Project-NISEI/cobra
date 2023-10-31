@@ -12,7 +12,7 @@ class PlayersController < ApplicationController
 
   def download_decks
     authorize @tournament, :update?
-    render json: @tournament.players.active
+    render json: @tournament.players
                             .sort_by { |p| p.name }
                             .flat_map { |p| p.decks.sort_by { |d| d.side_id } }
                             .map { |d| d.as_view(current_user) }
