@@ -26,7 +26,7 @@ RSpec.describe 'listing rounds' do
 
     context 'with a lot of players' do
       before do
-        round1.stage.players == create_list(:player, 65)
+        round1.stage.players == create_list(:player, 120)
       end
 
       it 'lists only last round' do

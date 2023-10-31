@@ -1,4 +1,4 @@
-- if round.stage.players.count < 100 || round.current?
+- if round.stage.players.count < 100 || round.current? || policy(round.tournament).edit?
   - cache_unless user_signed_in?, [round, @tournament.stages.last] do
     .card
       .card-header role="tab"
