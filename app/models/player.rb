@@ -5,12 +5,14 @@ class Player < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :previous, class_name: 'Player', optional: true
   has_one :next, class_name: 'Player', foreign_key: :previous_id
+  belongs_to :corp_identity_ref, class_name: 'Identity', optional: true
+  belongs_to :runner_identity_ref, class_name: 'Identity', optional: true
   has_many :registrations, dependent: :destroy
   has_many :standing_rows, dependent: :destroy
   has_many :decks, dependent: :destroy
 
   before_destroy :destroy_pairings
-  before_save :handle_blank_identities
+  before_save :set_identities
 
   scope :active, -> { where(active: true) }
   scope :dropped, -> { where(active: false) }
@@ -57,11 +59,19 @@ class Player < ApplicationRecord
   end
 
   def corp_identity_object
-    Identity.find_or_initialize_by(name: corp_identity)
+    if corp_identity_ref
+      corp_identity_ref
+    else
+      Identity.new(name: corp_identity)
+    end
   end
 
   def runner_identity_object
-    Identity.find_or_initialize_by(name: runner_identity)
+    if runner_identity_ref
+      runner_identity_ref
+    else
+      Identity.new(name: runner_identity)
+    end
   end
 
   def corp_deck
@@ -90,12 +100,18 @@ class Player < ApplicationRecord
     pairings.destroy_all
   end
 
-  def handle_blank_identities
+  def set_identities
     if corp_identity == ''
       self.corp_identity = nil
     end
+    if corp_identity
+      self.corp_identity_ref = Identity.find_by(name: corp_identity)
+    end
     if runner_identity == ''
       self.runner_identity = nil
+    end
+    if runner_identity
+      self.runner_identity_ref = Identity.find_by(name: runner_identity)
     end
   end
 end
