@@ -62,7 +62,7 @@ class Player < ApplicationRecord
     if corp_identity_ref
       corp_identity_ref
     else
-      Identity.new(name: corp_identity)
+      Identity.find_or_initialize_by(name: corp_identity)
     end
   end
 
@@ -70,7 +70,7 @@ class Player < ApplicationRecord
     if runner_identity_ref
       runner_identity_ref
     else
-      Identity.new(name: runner_identity)
+      Identity.find_or_initialize_by(name: runner_identity)
     end
   end
 
