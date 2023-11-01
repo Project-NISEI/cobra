@@ -40,66 +40,48 @@ RSpec.describe Standing do
 
     it 'sorts by sos' do
       expect(
-        Standing.new(player,
-          points: 3,
-          sos: 2.0
-        ) <=> Standing.new(other,
-          points: 3,
-          sos: 1.8
+        Standing.new(
+          player, points: 3, sos: 2.0
+        ) <=> Standing.new(
+          other, points: 3, sos: 1.8
         )
       ).to eq(-1)
       expect(
-        Standing.new(player,
-          points: 3,
-          sos: 2.0
-        ) <=> Standing.new(other,
-          points: 3,
-          sos: 2.0
+        Standing.new(
+          player, points: 3, sos: 2.0
+        ) <=> Standing.new(
+          other, points: 3, sos: 2.0
         )
       ).to eq(0)
       expect(
-        Standing.new(player,
-          points: 3,
-          sos: 1.4
-        ) <=> Standing.new(other,
-          points: 3,
-          sos: 1.8
+        Standing.new(
+          player, points: 3, sos: 1.4
+        ) <=> Standing.new(
+          other, points: 3, sos: 1.8
         )
       ).to eq(1)
     end
 
     it 'sorts by extended sos' do
       expect(
-        Standing.new(player,
-          points: 3,
-          sos: 2.0,
-          extended_sos: 3.3
-        ) <=> Standing.new(other,
-          points: 3,
-          sos: 2.0,
-          extended_sos: 1.3
+        Standing.new(
+          player, points: 3, sos: 2.0, extended_sos: 3.3
+        ) <=> Standing.new(
+          other, points: 3, sos: 2.0, extended_sos: 1.3
         )
       ).to eq(-1)
       expect(
-        Standing.new(player,
-          points: 3,
-          sos: 2.0,
-          extended_sos: 3.3
-        ) <=> Standing.new(other,
-          points: 3,
-          sos: 2.0,
-          extended_sos: 3.3
+        Standing.new(
+          player, points: 3, sos: 2.0, extended_sos: 3.3
+        ) <=> Standing.new(
+          other, points: 3, sos: 2.0, extended_sos: 3.3
         )
       ).to eq(0)
       expect(
-        Standing.new(player,
-          points: 3,
-          sos: 2.0,
-          extended_sos: 0.3
-        ) <=> Standing.new(other,
-          points: 3,
-          sos: 2.0,
-          extended_sos: 1.3
+        Standing.new(
+          player, points: 3, sos: 2.0, extended_sos: 0.3
+        ) <=> Standing.new(
+          other, points: 3, sos: 2.0, extended_sos: 1.3
         )
       ).to eq(1)
     end
@@ -122,30 +104,24 @@ RSpec.describe Standing do
 
         it 'sorts by seed before sos' do
           expect(
-            Standing.new(player,
-              points: 3,
-              sos: 2.0
-            ) <=> Standing.new(other,
-              points: 3,
-              sos: 1.8
+            Standing.new(
+              player, points: 3, sos: 2.0
+            ) <=> Standing.new(
+              other, points: 3, sos: 1.8
             )
           ).to eq(-1)
           expect(
-            Standing.new(player,
-              points: 3,
-              sos: 2.0
-            ) <=> Standing.new(other,
-              points: 3,
-              sos: 2.0
+            Standing.new(
+              player, points: 3, sos: 2.0
+            ) <=> Standing.new(
+              other, points: 3, sos: 2.0
             )
           ).to eq(-1)
           expect(
-            Standing.new(player,
-              points: 3,
-              sos: 1.4
-            ) <=> Standing.new(other,
-              points: 3,
-              sos: 1.8
+            Standing.new(
+              player, points: 3, sos: 1.4
+            ) <=> Standing.new(
+              other, points: 3, sos: 1.8
             )
           ).to eq(-1)
         end
@@ -155,30 +131,24 @@ RSpec.describe Standing do
 
           it 'sorts by sos' do
             expect(
-              Standing.new(player,
-                points: 3,
-                sos: 2.0
-              ) <=> Standing.new(other,
-                points: 3,
-                sos: 1.8
+              Standing.new(
+                player, points: 3, sos: 2.0
+              ) <=> Standing.new(
+                other, points: 3, sos: 1.8
               )
             ).to eq(-1)
             expect(
-              Standing.new(player,
-                points: 3,
-                sos: 2.0
-              ) <=> Standing.new(other,
-                points: 3,
-                sos: 2.0
+              Standing.new(
+                player, points: 3, sos: 2.0
+              ) <=> Standing.new(
+                other, points: 3, sos: 2.0
               )
             ).to eq(0)
             expect(
-              Standing.new(player,
-                points: 3,
-                sos: 1.4
-              ) <=> Standing.new(other,
-                points: 3,
-                sos: 1.8
+              Standing.new(
+                player, points: 3, sos: 1.4
+              ) <=> Standing.new(
+                other, points: 3, sos: 1.8
               )
             ).to eq(1)
           end
@@ -199,30 +169,24 @@ RSpec.describe Standing do
 
         it 'sorts by seed before sos' do
           expect(
-            Standing.new(player,
-              points: 3,
-              sos: 2.0
-            ) <=> Standing.new(other,
-              points: 3,
-              sos: 1.8
+            Standing.new(
+              player, points: 3, sos: 2.0
+            ) <=> Standing.new(
+              other, points: 3, sos: 1.8
             )
           ).to eq(1)
           expect(
-            Standing.new(player,
-              points: 3,
-              sos: 2.0
-            ) <=> Standing.new(other,
-              points: 3,
-              sos: 2.0
+            Standing.new(
+              player, points: 3, sos: 2.0
+            ) <=> Standing.new(
+              other, points: 3, sos: 2.0
             )
           ).to eq(1)
           expect(
-            Standing.new(player,
-              points: 3,
-              sos: 1.4
-            ) <=> Standing.new(other,
-              points: 3,
-              sos: 1.8
+            Standing.new(
+              player, points: 3, sos: 1.4
+            ) <=> Standing.new(
+              other, points: 3, sos: 1.8
             )
           ).to eq(1)
         end
@@ -232,30 +196,24 @@ RSpec.describe Standing do
 
           it 'sorts by sos' do
             expect(
-              Standing.new(player,
-                points: 3,
-                sos: 2.0
-              ) <=> Standing.new(other,
-                points: 3,
-                sos: 1.8
+              Standing.new(
+                player, points: 3, sos: 2.0
+              ) <=> Standing.new(
+                other, points: 3, sos: 1.8
               )
             ).to eq(-1)
             expect(
-              Standing.new(player,
-                points: 3,
-                sos: 2.0
-              ) <=> Standing.new(other,
-                points: 3,
-                sos: 2.0
+              Standing.new(
+                player, points: 3, sos: 2.0
+              ) <=> Standing.new(
+                other, points: 3, sos: 2.0
               )
             ).to eq(0)
             expect(
-              Standing.new(player,
-                points: 3,
-                sos: 1.4
-              ) <=> Standing.new(other,
-                points: 3,
-                sos: 1.8
+              Standing.new(
+                player, points: 3, sos: 1.4
+              ) <=> Standing.new(
+                other, points: 3, sos: 1.8
               )
             ).to eq(1)
           end
