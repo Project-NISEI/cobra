@@ -28,6 +28,10 @@ class Pairing < ApplicationRecord
     [player1, player2]
   end
 
+  def player_ids
+    [player1_id, player2_id]
+  end
+
   def player1
     super || NilPlayer.new
   end
