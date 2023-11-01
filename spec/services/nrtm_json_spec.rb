@@ -25,28 +25,28 @@ RSpec.describe NrtmJson do
 
   describe '#data' do
     before do
-      allow(StandingStrategies::Swiss).to receive(:new)
-        .with(tournament.current_stage)
-        .and_return(
-          double(
-            :standings,
-            calculate!: [
-              Standing.new(jack, points: 6, sos: 1.6, extended_sos: 2.6),
-              Standing.new(hansel, points: 5, sos: 1.5, extended_sos: 2.5),
-              Standing.new(snap, points: 4, sos: 1.4, extended_sos: 2.4),
-              Standing.new(pop, points: 3, sos: 1.3, extended_sos: 2.3),
-              Standing.new(crackle, points: 2, sos: 1.2, extended_sos: 2.2),
-              Standing.new(gretel, points: 1, sos: 1.1, extended_sos: 2.1),
-              Standing.new(jill, points: 0, sos: 1.0, extended_sos: 2.0)
-            ]
-          )
-        )
+      allow(StandingStrategies::Swiss)
+        .to receive(:new)
+              .with(tournament.current_stage)
+              .and_return(
+                double(
+                  :standings,
+                  calculate!: [
+                    Standing.new(jack, points: 6, sos: 1.6, extended_sos: 2.6),
+                    Standing.new(hansel, points: 5, sos: 1.5, extended_sos: 2.5),
+                    Standing.new(snap, points: 4, sos: 1.4, extended_sos: 2.4),
+                    Standing.new(pop, points: 3, sos: 1.3, extended_sos: 2.3),
+                    Standing.new(crackle, points: 2, sos: 1.2, extended_sos: 2.2),
+                    Standing.new(gretel, points: 1, sos: 1.1, extended_sos: 2.1),
+                    Standing.new(jill, points: 0, sos: 1.0, extended_sos: 2.0)
+                  ]
+                )
+              )
     end
 
     it 'returns hash of data' do
-      expect(json.data('https://server/SLUG').with_indifferent_access).to eq(
-        JSON.parse(file_fixture('nrtm_json_swiss.json').read)
-      )
+      expect(json.data('https://server/SLUG').with_indifferent_access)
+        .to eq(JSON.parse(file_fixture('nrtm_json_swiss.json').read))
     end
 
     context 'with elimination bracket' do
@@ -68,9 +68,8 @@ RSpec.describe NrtmJson do
       end
 
       it 'returns hash of data' do
-        expect(JSON.parse(json.data('https://server/SLUG').to_json)).to eq(
-          JSON.parse(file_fixture('nrtm_json_cut.json').read)
-        )
+        expect(JSON.parse(json.data('https://server/SLUG').to_json))
+          .to eq(JSON.parse(file_fixture('nrtm_json_cut.json').read))
       end
     end
   end
