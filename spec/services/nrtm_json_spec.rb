@@ -13,14 +13,13 @@ RSpec.describe NrtmJson do
   let(:json) { described_class.new(tournament) }
 
   before do
+    %w(ETF Noise PE Gabe MN Kate BABW Whizzard ST RP Andromeda TWIY Reina).each do |id|
+      create(:identity, name: id)
+    end
     round.pairings << create(:pairing, player1: jack, player2: jill, table_number: 1, score1_runner: 3, score2_corp: 0, score1_corp: 3, score2_runner: 0, intentional_draw: true)
     round.pairings << create(:pairing, player1: hansel, player2: gretel, table_number: 2, score1_runner: 2, score2_corp: 1, score1_corp: 3, score2_runner: 0, two_for_one: true)
     round.pairings << create(:pairing, player1: snap, player2: crackle, table_number: 3, score1_runner: 3, score2_corp: 0, score1_corp: 1, score2_runner: 2)
     round.pairings << create(:pairing, player1: pop, player2: nil, table_number: 4, score1_runner: 0, score2_corp: 0, score1_corp: 3, score2_runner: 0)
-
-    %w(ETF Noise PE Gabe MN Kate BABW Whizzard ST RP Andromeda TWIY Reina).each do |id|
-      create(:identity, name: id)
-    end
   end
 
   describe '#data' do
