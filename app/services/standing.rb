@@ -1,7 +1,7 @@
 class Standing
   attr_reader :player, :points, :sos, :extended_sos, :corp_points, :runner_points
 
-  delegate :name, :pronouns, :name_with_pronouns, :corp_identity, :runner_identity, to: :player
+  delegate :name, :pronouns, :name_with_pronouns, to: :player
   delegate :tournament, :seed_in_stage, to: :player
 
   def initialize(player, values = {})
