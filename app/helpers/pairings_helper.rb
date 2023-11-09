@@ -1,23 +1,23 @@
 module PairingsHelper
   def pairing_player_select(form, label, round)
     form.input label,
-      collection: round.unpaired_players,
-      include_blank: '(Bye)',
-      label: false,
-      wrapper: false,
-      input_html: { class: 'form-control mx-2' }
+               collection: round.unpaired_players,
+               include_blank: '(Bye)',
+               label: false,
+               wrapper: false,
+               input_html: { class: 'form-control mx-2' }
   end
 
   def preset_score_button(pairing, data)
     link_to data[:label],
-      report_tournament_round_pairing_path(
-        pairing.tournament,
-        pairing.round,
-        pairing,
-        pairing: data
-      ),
-      method: :post,
-      class: 'btn btn-primary'
+            report_tournament_round_pairing_path(
+              pairing.tournament,
+              pairing.round,
+              pairing,
+              pairing: data
+            ),
+            method: :post,
+            class: 'btn btn-primary'
   end
 
   def side_value(player, side, pairing)
@@ -35,14 +35,14 @@ module PairingsHelper
     active = (pairing.side.try(:to_sym) == value)
 
     link_to side.capitalize,
-      report_tournament_round_pairing_path(
-        pairing.tournament,
-        pairing.round_id,
-        pairing,
-        pairing: { side: value }
-      ),
-      method: :post,
-      class: "btn btn-sm mr-1 #{active ? 'btn-dark' : 'btn-outline-dark'}"
+            report_tournament_round_pairing_path(
+              pairing.tournament,
+              pairing.round_id,
+              pairing,
+              pairing: { side: value }
+            ),
+            method: :post,
+            class: "btn btn-sm mr-1 #{active ? 'btn-dark' : 'btn-outline-dark'}"
   end
 
   def presets(pairing)
