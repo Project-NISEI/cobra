@@ -10,17 +10,38 @@ class RoundsController < ApplicationController
   def download_pairings
     authorize @tournament, :show?
     render json: {
-      stages: @tournament.stages.includes(rounds: [:pairings])
+      stages: @tournament.stages.includes(rounds: [pairings: [:player1, :player2]])
                          .map { |s| {
                            number: s.number,
                            name: s.format.titleize,
                            rounds: s.rounds.map { |r| {
                              number: r.number,
                              name: "Round #{r.number}",
-                             pairings: r.pairings
+                             pairings: r.pairings.map { |p| p.attributes.merge(
+                               {
+                                 player1: render_player_for_pairing(p.player1),
+                                 player2: render_player_for_pairing(p.player2)
+                               }
+                             ) }
                            } }
                          } }
     }
+  end
+
+  def render_player_for_pairing(player)
+    if player.class == NilPlayer
+      {
+        name: player.name
+      }
+    else
+      {
+        name: player.name,
+        pronouns: player.pronouns,
+        include_in_stream: player.include_in_stream?,
+        corp_identity: player.corp_identity,
+        runner_identity: player.runner_identity
+      }
+    end
   end
 
   def show
