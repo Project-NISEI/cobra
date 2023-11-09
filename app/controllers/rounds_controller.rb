@@ -7,6 +7,22 @@ class RoundsController < ApplicationController
     @players = @tournament.players.index_by(&:id).merge({ nil => NilPlayer.new })
   end
 
+  def download_pairings
+    authorize @tournament, :show?
+    render json: {
+      stages: @tournament.stages.includes(rounds: [:pairings])
+                         .map { |s| {
+                           number: s.number,
+                           name: s.format.titleize,
+                           rounds: s.rounds.map { |r| {
+                             number: r.number,
+                             name: "Round #{r.number}",
+                             pairings: r.pairings
+                           } }
+                         } }
+    }
+  end
+
   def show
     authorize @tournament, :update?
     @players = @tournament.players.index_by(&:id).merge({ nil => NilPlayer.new })
