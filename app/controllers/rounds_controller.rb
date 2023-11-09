@@ -4,6 +4,8 @@ class RoundsController < ApplicationController
 
   def index
     authorize @tournament, :show?
+    @stages = @tournament.stages.includes(
+      :tournament, rounds: [:tournament, :stage, pairings: [:tournament, :stage, :round]])
     @players = @tournament.players
                           .includes(:corp_identity_ref, :runner_identity_ref)
                           .index_by(&:id).merge({ nil => NilPlayer.new })
