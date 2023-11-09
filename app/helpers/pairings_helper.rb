@@ -24,7 +24,7 @@ module PairingsHelper
     return unless player_is_in_pairing(player, pairing)
 
     [:player1_is_corp, :player1_is_runner].tap do |options|
-      options.reverse! if (side == :runner) ^ (pairing.player2 == player)
+      options.reverse! if (side == :runner) ^ (pairing.player2_id == player.id)
     end.first
   end
 
