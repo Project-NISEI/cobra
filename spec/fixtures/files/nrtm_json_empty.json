@@ -1,0 +1,18 @@
+{
+  "name": "Empty Tournament",
+  "date": "2023-12-03",
+  "cutToTop": 0,
+  "preliminaryRounds": 0,
+  "tournamentOrganiser": {
+    "nrdbId": 123,
+    "nrdbUsername": "username"
+  },
+  "players": [],
+  "eliminationPlayers": [],
+  "rounds": [],
+  "uploadedFrom": "Cobra",
+  "links": [
+    { "rel": "schemaderivedfrom", "href": "http://steffens.org/nrtm/nrtm-schema.json" },
+    { "rel": "uploadedfrom", "href": "https://server/EMPT" }
+  ]
+}

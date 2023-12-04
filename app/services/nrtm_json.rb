@@ -6,16 +6,11 @@ class NrtmJson
   end
 
   def data(tournament_url)
-    {
-      name: tournament.name,
-      date: tournament.date.to_fs(:db),
-      cutToTop: cut_stage.players.count,
-      preliminaryRounds: swiss_stage.rounds.count,
-      tournamentOrganiser: {
-        nrdbId: tournament.user.nrdb_id,
-        nrdbUsername: tournament.user.nrdb_username
-      },
-      players: swiss_stage.standings.each_with_index.map do |standing, i|
+    preliminaryRounds = 0
+    players = []
+    if swiss_stage
+      preliminaryRounds = swiss_stage.rounds.count
+      players = swiss_stage.standings.each_with_index.map do |standing, i|
         {
           id: standing.player.id,
           name: standing.name,
@@ -26,7 +21,19 @@ class NrtmJson
           strengthOfSchedule: standing.sos,
           extendedStrengthOfSchedule: standing.extended_sos
         }
-      end,
+      end
+    end
+
+    {
+      name: tournament.name,
+      date: tournament.date.to_fs(:db),
+      cutToTop: cut_stage.players.count,
+      preliminaryRounds: preliminaryRounds,
+      tournamentOrganiser: {
+        nrdbId: tournament.user.nrdb_id,
+        nrdbUsername: tournament.user.nrdb_username
+      },
+      players: players,
       eliminationPlayers: cut_stage.standings.each_with_index.map do |standing, i|
         {
           id: standing.player&.id,
@@ -51,6 +58,9 @@ class NrtmJson
   end
 
   def swiss_pairing_data
+    if not swiss_stage
+      return []
+    end
     swiss_stage.rounds.map do |round|
       round.pairings.map do |pairing|
         {
