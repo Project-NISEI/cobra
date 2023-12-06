@@ -7,6 +7,10 @@ class RoundsController < ApplicationController
     @players = @tournament.players.index_by(&:id).merge({ nil => NilPlayer.new })
   end
 
+  def new_view
+    authorize @tournament, :show?
+  end
+
   def show
     authorize @tournament, :update?
     @players = @tournament.players.index_by(&:id).merge({ nil => NilPlayer.new })
