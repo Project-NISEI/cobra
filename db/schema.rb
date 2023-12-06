@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_22_003802) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_31_224248) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -135,6 +135,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_22_003802) do
     t.boolean "registration_locked"
     t.string "pronouns"
     t.boolean "include_in_stream", default: true
+    t.bigint "corp_identity_ref_id"
+    t.bigint "runner_identity_ref_id"
+    t.index ["corp_identity_ref_id"], name: "index_players_on_corp_identity_ref_id"
+    t.index ["runner_identity_ref_id"], name: "index_players_on_runner_identity_ref_id"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end
@@ -232,6 +236,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_22_003802) do
   add_foreign_key "pairings", "players", column: "player1_id"
   add_foreign_key "pairings", "players", column: "player2_id"
   add_foreign_key "pairings", "rounds"
+  add_foreign_key "players", "identities", column: "corp_identity_ref_id"
+  add_foreign_key "players", "identities", column: "runner_identity_ref_id"
   add_foreign_key "players", "tournaments"
   add_foreign_key "players", "users"
   add_foreign_key "registrations", "players"
