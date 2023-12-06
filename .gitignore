@@ -6,7 +6,8 @@
 /tmp/*
 !/log/.keep
 !/tmp/.keep
-npm-debug.log
+*.log
+*.log.*
 
 .env
 
@@ -17,8 +18,19 @@ config/secrets.yml
 cobra
 cobra_test
 
+# Ignore db dumps
+*.data
+*.data.gz
+
 public/scoop.png
 /public/assets/*
 
 /.idea
 *.iml
+
+# Vite Ruby
+/public/vite*
+node_modules
+# Vite uses dotenv and suggests to ignore local-only env files. See
+# https://vitejs.dev/guide/env-and-mode.html#env-files
+*.local
