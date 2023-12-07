@@ -1,6 +1,7 @@
 <script lang="ts">
     import type {Pairing} from "./PairingsData";
     import PlayerName from "./PlayerName.svelte";
+    import FontAwesomeIcon from "../FontAwesomeIcon.svelte";
 
     export let pairing: Pairing;
 </script>
@@ -11,7 +12,7 @@
     </div>
     {#if pairing.policy.view_decks}
         <a href="{pairing.round_id}/pairings/{pairing.id}/view_decks">
-            <i class="fa fa-eye"/>
+            <FontAwesomeIcon icon="eye"/>
             View decks
         </a>
     {/if}

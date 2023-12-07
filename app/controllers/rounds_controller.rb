@@ -139,7 +139,9 @@ class RoundsController < ApplicationController
   def pairing_player(stage, player, side)
     {
       name_with_pronouns: player.name_with_pronouns,
-      side_label: side_label_for(stage, side)
+      side_label: side_label_for(stage, side),
+      corp_id: pairing_identity(player.corp_identity_object),
+      runner_id: pairing_identity(player.runner_identity_object)
     }
   end
 
@@ -147,5 +149,13 @@ class RoundsController < ApplicationController
     return nil unless stage.single_sided? && side
 
     "(#{side.to_s.titleize})"
+  end
+
+  def pairing_identity(identity)
+    return nil unless identity
+    {
+      name: identity.name,
+      faction: identity.faction
+    }
   end
 end

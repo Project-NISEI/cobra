@@ -1,6 +1,7 @@
 <script lang="ts">
     import type {Round} from "./PairingsData";
     import Pairing from "./Pairing.svelte";
+    import FontAwesomeIcon from "../FontAwesomeIcon.svelte";
 
     export let round: Round;
     export let start_expanded: boolean;
@@ -23,7 +24,7 @@
          id="round{round.id}">
         <div class="col-12 my-3">
             <a class="btn btn-primary" href="{round.id}/pairings">
-                <i class="fa fa-list-ul"/>
+                <FontAwesomeIcon icon="list-ul"/>
                 Pairings by name
             </a>
             {#each round.pairings as pairing}
