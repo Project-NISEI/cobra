@@ -27,6 +27,9 @@ export type Pairing = {
     policy: PairingPolicies;
     player1: Player;
     player2: Player;
+    score_label: string;
+    intentional_draw: boolean;
+    two_for_one: boolean;
 }
 
 export type PairingPolicies = {

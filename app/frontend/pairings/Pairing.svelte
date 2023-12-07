@@ -17,5 +17,14 @@
         </a>
     {/if}
     <PlayerName player={pairing.player1} left_or_right="left"/>
+    <div class="col-sm-2 centre_score">
+        {pairing.score_label}
+        {#if pairing.intentional_draw}
+            <span class="badge badge-pill badge-secondary score-badge">ID</span>
+        {/if}
+        {#if pairing.two_for_one}
+            <span class="badge badge-pill badge-secondary score-badge">2 for 1</span>
+        {/if}
+    </div>
     <PlayerName player={pairing.player2} left_or_right="right"/>
 </div>
