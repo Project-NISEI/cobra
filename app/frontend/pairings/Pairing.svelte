@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Pairing} from "./pairings-data";
+    import type {Pairing} from "./PairingsData";
 
     export let pairing: Pairing;
 </script>

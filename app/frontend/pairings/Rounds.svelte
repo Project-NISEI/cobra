@@ -1,7 +1,7 @@
 <script lang="ts">
     import {onMount} from 'svelte';
     import Stage from "./Stage.svelte";
-    import type {PairingsData} from "./pairings-data";
+    import type {PairingsData} from "./PairingsData";
 
     export let tournamentId: String;
     let data: PairingsData;

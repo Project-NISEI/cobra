@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Round} from "./pairings-data";
+    import type {Round} from "./PairingsData";
     import Pairing from "./Pairing.svelte";
 
     export let round: Round;

@@ -1,6 +1,6 @@
 <script lang="ts">
     import Round from "./Round.svelte";
-    import type {Stage} from "./pairings-data";
+    import type {Stage} from "./PairingsData";
 
     export let stage: Stage;
     export let start_expanded: boolean;
