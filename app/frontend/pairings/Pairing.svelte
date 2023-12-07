@@ -10,7 +10,7 @@
         Table {pairing.details.table_number}
     </div>
     {#if stage.policy.view_decks}
-        <a href="tournaments/{tournament.details.id}/rounds/{round.details.id}/pairings/{pairing.details.id}">
+        <a href="{round.details.id}/pairings/{pairing.details.id}/view_decks">
             <i class="fa fa-eye"/>
             View decks
         </a>
