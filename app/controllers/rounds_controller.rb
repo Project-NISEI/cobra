@@ -24,7 +24,7 @@ class RoundsController < ApplicationController
       },
       stages: @tournament.stages.includes(
         rounds: [pairings: [:player1, :player2]],
-        registrations: [player: [:user]]
+        registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref]]
       ).map { |stage|
         view_decks = stage.decks_visible_to(current_user) ? true : false
         {
