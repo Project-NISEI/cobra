@@ -11,7 +11,7 @@ class RoundsController < ApplicationController
                           .index_by(&:id).merge({ nil => NilPlayer.new })
   end
 
-  def new_view
+  def view_pairings
     authorize @tournament, :show?
   end
 

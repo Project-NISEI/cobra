@@ -59,8 +59,12 @@ html
             li.nav-item= link_to tournament_players_path(@tournament), class: "nav-link #{'active' if controller_name == 'players' && action_name == 'index'}" do
               => fa_icon 'users'
               | Players
-          - if policy(@tournament).show?
+          - if policy(@tournament).edit?
             li.nav-item= link_to tournament_rounds_path(@tournament), class: "nav-link #{'active' if controller_name == 'rounds' || controller_name == 'pairings'}" do
+              => fa_icon 'calendar-check-o'
+              | Pairings
+          - elsif policy(@tournament).show?
+            li.nav-item= link_to view_pairings_tournament_rounds_path(@tournament), class: "nav-link #{'active' if controller_name == 'rounds' || controller_name == 'pairings'}" do
               => fa_icon 'calendar-check-o'
               | Pairings
           - if policy(@tournament).show?
