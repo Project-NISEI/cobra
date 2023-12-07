@@ -39,8 +39,8 @@ class RoundsController < ApplicationController
               policy: {
                 view_decks: view_decks
               },
-              player1: pairings_player(pairing.player1),
-              player2: pairings_player(pairing.player2)
+              player1: pairing_player1(stage, pairing),
+              player2: pairing_player2(stage, pairing)
             } },
             pairings_reported: round.pairings.reported.count,
           } }
@@ -128,9 +128,24 @@ class RoundsController < ApplicationController
     params.require(:round).permit(:weight)
   end
 
-  def pairings_player(player)
+  def pairing_player1(stage, pairing)
+    pairing_player(stage, pairing.player1, pairing.player1_side)
+  end
+
+  def pairing_player2(stage, pairing)
+    pairing_player(stage, pairing.player2, pairing.player2_side)
+  end
+
+  def pairing_player(stage, player, side)
     {
       name_with_pronouns: player.name_with_pronouns,
+      side_label: side_label_for(stage, side)
     }
+  end
+
+  def side_label_for(stage, side)
+    return nil unless stage.single_sided? && side
+
+    "(#{side.to_s.titleize})"
   end
 end

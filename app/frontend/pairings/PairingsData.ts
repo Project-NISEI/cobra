@@ -35,4 +35,5 @@ export type PairingPolicies = {
 
 export type Player = {
     name_with_pronouns: string;
+    side_label: string | null;
 }

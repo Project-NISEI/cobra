@@ -1,5 +1,6 @@
 <script lang="ts">
     import type {Pairing} from "./PairingsData";
+    import PlayerName from "./PlayerName.svelte";
 
     export let pairing: Pairing;
 </script>
@@ -14,10 +15,6 @@
             View decks
         </a>
     {/if}
-    <div class="col-sm left_player_name">
-        {pairing.player1.name_with_pronouns}
-    </div>
-    <div class="col-sm right_player_name">
-        {pairing.player2.name_with_pronouns}
-    </div>
+    <PlayerName player={pairing.player1} left_or_right="left"/>
+    <PlayerName player={pairing.player2} left_or_right="right"/>
 </div>
