@@ -45,7 +45,7 @@ class RoundsController < ApplicationController
               intentional_draw: pairing.intentional_draw,
               two_for_one: pairing.two_for_one
             } },
-            pairings_reported: round.pairings.reported.count,
+            pairings_reported: round.pairings.select { |p| p.score1 && p.score2 }.count,
           } }
         }
       }
