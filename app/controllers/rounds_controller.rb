@@ -22,7 +22,7 @@ class RoundsController < ApplicationController
       policy: {
         update: @tournament.user == current_user
       },
-      stages: @tournament.stages.includes(rounds: [:pairings]).map { |stage| {
+      stages: @tournament.stages.includes(rounds: [pairings: [:player1, :player2]]).map { |stage| {
         details: stage,
         name: stage.format.titleize,
         policy: {
