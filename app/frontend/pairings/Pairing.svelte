@@ -1,16 +1,15 @@
 <script lang="ts">
-    export let tournament: any;
-    export let stage: any;
-    export let round: any;
-    export let pairing: any;
+    import type {Pairing} from "./pairings-data";
+
+    export let pairing: Pairing;
 </script>
 
 <div class="row m-1 round_pairing align-items-center table_{pairing.details.table_number}">
     <div class="col-sm-2">
         Table {pairing.details.table_number}
     </div>
-    {#if stage.policy.view_decks}
-        <a href="{round.details.id}/pairings/{pairing.details.id}/view_decks">
+    {#if pairing.policy.view_decks}
+        <a href="{pairing.details.round_id}/pairings/{pairing.details.id}/view_decks">
             <i class="fa fa-eye"/>
             View decks
         </a>

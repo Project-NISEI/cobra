@@ -1,9 +1,9 @@
 <script lang="ts">
+    import type {Round} from "./pairings-data";
     import Pairing from "./Pairing.svelte";
 
-    export let tournament: any;
-    export let stage: any;
-    export let round: any;
+    export let round: Round;
+    export let start_expanded: boolean;
 </script>
 
 <div class="card">
@@ -19,16 +19,15 @@
             </div>
         </div>
     </div>
-    <div class="collapse{round.details.id === tournament.stages.at(-1).rounds.at(-1).details.id ? ' show' : ''}"
+    <div class="collapse{start_expanded ? ' show' : ''}"
          id="round{round.details.id}">
         <div class="col-12 my-3">
-            <a class="btn btn-primary"
-               href="tournaments/{tournament.details.id}/rounds/{round.details.id}/pairings">
+            <a class="btn btn-primary" href="{round.details.id}/pairings">
                 <i class="fa fa-list-ul"/>
                 Pairings by name
             </a>
             {#each round.pairings as pairing}
-                <Pairing tournament={tournament} stage={stage} round={round} pairing={pairing}/>
+                <Pairing pairing={pairing}/>
             {/each}
         </div>
     </div>

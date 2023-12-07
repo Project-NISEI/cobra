@@ -18,20 +18,20 @@ class RoundsController < ApplicationController
   def pairings_data
     authorize @tournament, :show?
     render json: {
-      details: @tournament,
+      tournament_id: @tournament.id,
       policy: {
         update: @tournament.user == current_user
       },
       stages: @tournament.stages.includes(rounds: [pairings: [:player1, :player2]]).map { |stage| {
         details: stage,
         name: stage.format.titleize,
-        policy: {
-          view_decks: stage.decks_visible_to(current_user) ? true : false
-        },
         rounds: stage.rounds.map { |round| {
           details: round,
           pairings: round.pairings.map { |pairing| {
             details: pairing,
+            policy: {
+              view_decks: stage.decks_visible_to(current_user) ? true : false
+            },
             player1: pairing.player1,
             player2: pairing.player2
           } },
