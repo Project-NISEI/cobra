@@ -15,6 +15,32 @@ class RoundsController < ApplicationController
     authorize @tournament, :show?
   end
 
+  def pairings_data
+    authorize @tournament, :show?
+    render json: {
+      details: @tournament,
+      policy: {
+        update: @tournament.user == current_user
+      },
+      stages: @tournament.stages.includes(rounds: [:pairings]).map { |stage| {
+        details: stage,
+        name: stage.format.titleize,
+        policy: {
+          view_decks: stage.decks_visible_to(current_user) ? true : false
+        },
+        rounds: stage.rounds.map { |round| {
+          details: round,
+          pairings: round.pairings.map { |pairing| {
+            details: pairing,
+            player1: pairing.player1,
+            player2: pairing.player2
+          } },
+          pairings_reported: round.pairings.reported.count,
+        } }
+      } }
+    }
+  end
+
   def show
     authorize @tournament, :update?
     @players = @tournament.players
