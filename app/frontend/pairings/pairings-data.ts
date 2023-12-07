@@ -9,42 +9,30 @@ export type TournamentPolicies = {
 }
 
 export type Stage = {
-    details: StageDetails;
     name: string;
     rounds: Round[];
 }
 
-export type StageDetails = {}
-
 export type Round = {
-    details: RoundDetails;
+    id: number;
+    number: number;
     pairings: Pairing[];
     pairings_reported: number;
 }
 
-export type RoundDetails = {
-    id: number;
-    number: number;
-}
-
 export type Pairing = {
-    details: PairingDetails;
-    policy: PairingPolicies;
-    player1: PlayerDetails;
-    player2: PlayerDetails;
-}
-
-export type PairingDetails = {
     id: number;
-    table_number: number;
     round_id: number;
+    table_number: number;
+    policy: PairingPolicies;
+    player1: Player;
+    player2: Player;
 }
 
 export type PairingPolicies = {
     view_decks: boolean;
 }
 
-export type PlayerDetails = {
-    name: string;
-    pronouns: string;
+export type Player = {
+    name_with_pronouns: string;
 }

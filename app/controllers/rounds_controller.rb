@@ -22,22 +22,30 @@ class RoundsController < ApplicationController
       policy: {
         update: @tournament.user == current_user
       },
-      stages: @tournament.stages.includes(rounds: [pairings: [:player1, :player2]]).map { |stage| {
-        details: stage,
-        name: stage.format.titleize,
-        rounds: stage.rounds.map { |round| {
-          details: round,
-          pairings: round.pairings.map { |pairing| {
-            details: pairing,
-            policy: {
-              view_decks: stage.decks_visible_to(current_user) ? true : false
-            },
-            player1: pairing.player1,
-            player2: pairing.player2
-          } },
-          pairings_reported: round.pairings.reported.count,
-        } }
-      } }
+      stages: @tournament.stages.includes(
+        rounds: [pairings: [:player1, :player2]],
+        registrations: [player: [:user]]
+      ).map { |stage|
+        view_decks = stage.decks_visible_to(current_user) ? true : false
+        {
+          name: stage.format.titleize,
+          rounds: stage.rounds.map { |round| {
+            id: round.id,
+            number: round.number,
+            pairings: round.pairings.map { |pairing| {
+              id: pairing.id,
+              round_id: pairing.round_id,
+              table_number: pairing.table_number,
+              policy: {
+                view_decks: view_decks
+              },
+              player1: pairings_player(pairing.player1),
+              player2: pairings_player(pairing.player2)
+            } },
+            pairings_reported: round.pairings.reported.count,
+          } }
+        }
+      }
     }
   end
 
@@ -118,5 +126,11 @@ class RoundsController < ApplicationController
 
   def round_params
     params.require(:round).permit(:weight)
+  end
+
+  def pairings_player(player)
+    {
+      name_with_pronouns: player.name_with_pronouns,
+    }
   end
 end
