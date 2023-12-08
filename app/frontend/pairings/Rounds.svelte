@@ -29,6 +29,12 @@
 </button>
 <p/>
 
-{#each data ? data.stages : [] as stage, index}
-    <Stage stage={stage} start_expanded={index === data.stages.length - 1}/>
-{/each}
+{#if data}
+    {#each data.stages as stage, index}
+        <Stage stage={stage} start_expanded={index === data.stages.length - 1}/>
+    {/each}
+{:else}
+    <div class="d-flex align-items-center m-2">
+        <div class="spinner-border m-auto"/>
+    </div>
+{/if}
