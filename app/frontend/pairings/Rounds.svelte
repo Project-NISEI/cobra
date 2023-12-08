@@ -2,7 +2,7 @@
     import {onMount} from 'svelte';
     import Stage from "./Stage.svelte";
     import type {PairingsData} from "./PairingsData";
-    import FontAwesomeIcon from "../FontAwesomeIcon.svelte";
+    import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
     export let tournamentId: String;
     let data: PairingsData;

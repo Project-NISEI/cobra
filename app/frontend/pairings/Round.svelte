@@ -1,7 +1,7 @@
 <script lang="ts">
     import type {Round} from "./PairingsData";
     import Pairing from "./Pairing.svelte";
-    import FontAwesomeIcon from "../FontAwesomeIcon.svelte";
+    import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
     export let round: Round;
     export let start_expanded: boolean;

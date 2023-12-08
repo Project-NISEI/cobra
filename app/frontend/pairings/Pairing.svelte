@@ -1,7 +1,7 @@
 <script lang="ts">
     import type {Pairing} from "./PairingsData";
     import PlayerName from "./PlayerName.svelte";
-    import FontAwesomeIcon from "../FontAwesomeIcon.svelte";
+    import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
     export let pairing: Pairing;
 </script>
