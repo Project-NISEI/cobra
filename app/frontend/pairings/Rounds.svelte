@@ -23,7 +23,7 @@
     }
 </script>
 
-<button id="toggle_identities" class="btn btn-primary" on:click={toggleIdentities}>
+<button class="btn btn-primary" on:click={toggleIdentities}>
     <FontAwesomeIcon icon="eye-slash"/>
     Show/hide identities
 </button>
