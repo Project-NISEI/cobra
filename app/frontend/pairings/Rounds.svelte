@@ -3,6 +3,7 @@
     import Stage from "./Stage.svelte";
     import type {PairingsData} from "./PairingsData";
     import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
+    import {showIdentities} from "./ShowIdentities"
 
     export let tournamentId: String;
     let data: PairingsData;
@@ -16,12 +17,16 @@
         );
         data = await response.json();
     });
+
+    function toggleIdentities() {
+        showIdentities.update(value => !value);
+    }
 </script>
 
-<div id="toggle_identities" class="btn btn-primary">
+<button id="toggle_identities" class="btn btn-primary" on:click={toggleIdentities}>
     <FontAwesomeIcon icon="eye-slash"/>
     Show/hide identities
-</div>
+</button>
 <p/>
 
 {#each data ? data.stages : [] as stage, index}
