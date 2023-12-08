@@ -9,8 +9,10 @@ RSpec.describe NrtmJson do
   let(:crackle) { create(:player, name: 'Crackle', corp_identity: 'RP', runner_identity: 'Andromeda', id: 1006) }
   let(:pop) { create(:player, name: 'Pop', corp_identity: 'TWIY', runner_identity: 'Reina', id: 1007) }
   let(:round) { create(:round, stage: tournament.current_stage) }
+  let(:empty_tournament) { create(:tournament, name: 'Empty Tournament', user: to, slug: 'EMPT', date: '2023-12-03') }
 
   let(:json) { described_class.new(tournament) }
+  let(:empty_tournament_json) { described_class.new(empty_tournament) }
 
   before do
     round.pairings << create(:pairing, player1: jack, player2: jill, table_number: 1, score1_runner: 3, score2_corp: 0, score1_corp: 3, score2_runner: 0, intentional_draw: true)
@@ -20,6 +22,15 @@ RSpec.describe NrtmJson do
 
     %w(ETF Noise PE Gabe MN Kate BABW Whizzard ST RP Andromeda TWIY Reina).each do |id|
       create(:identity, name: id)
+    end
+  end
+
+  describe '#empty' do
+    it 'empty tournament returns hash of data' do
+      empty_tournament.stages.delete_all
+      empty_tournament.save
+      expect(JSON.parse(empty_tournament_json.data('https://server/EMPT').to_json))
+        .to eq(JSON.parse(file_fixture('nrtm_json_empty.json').read))
     end
   end
 
@@ -42,6 +53,10 @@ RSpec.describe NrtmJson do
                   ]
                 )
               )
+      allow(StandingStrategies::Swiss)
+        .to receive(:new)
+              .with(empty_tournament.current_stage)
+              .and_return(nil)
     end
 
     it 'returns hash of data' do
