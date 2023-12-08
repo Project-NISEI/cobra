@@ -10,7 +10,7 @@
 
     onMount(async () => {
         const response = await fetch(
-            '/tournaments/' + tournamentId + "/rounds/pairings_data",
+            `/tournaments/${tournamentId}/rounds/pairings_data`,
             {
                 method: 'GET',
             }
