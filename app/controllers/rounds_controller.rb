@@ -17,15 +17,17 @@ class RoundsController < ApplicationController
 
   def pairings_data
     authorize @tournament, :show?
+    stages = @tournament.stages.includes(
+      rounds: [pairings: [:player1, :player2]],
+      registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref]]
+    )
     render json: {
       tournament_id: @tournament.id,
       policy: {
         update: @tournament.user == current_user
       },
-      stages: @tournament.stages.includes(
-        rounds: [pairings: [:player1, :player2]],
-        registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref]]
-      ).map { |stage|
+      is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
+      stages: stages.map { |stage|
         view_decks = stage.decks_visible_to(current_user) ? true : false
         {
           name: stage.format.titleize,

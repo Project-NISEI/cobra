@@ -30,6 +30,14 @@
 <p/>
 
 {#if data}
+    {#if data.is_player_meeting}
+        <p>
+            <a href="/tournaments/{tournamentId}/players/meeting" class="btn btn-primary">
+                <FontAwesomeIcon icon="list-ul"/>
+                Player meeting
+            </a>
+        </p>
+    {/if}
     {#each data.stages as stage, index}
         <Stage stage={stage} start_expanded={index === data.stages.length - 1}/>
     {/each}
