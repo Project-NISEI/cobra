@@ -4,7 +4,7 @@
     .col-sm-2
       | Table #{pairing.table_number}
       - if @tournament.allow_streaming_opt_out? && policy(round.tournament).edit?
-        - if pairing.players.all? { |player| player.include_in_stream? }
+        - if pairing.player_ids.all? { |player_id| @players[player_id].include_in_stream? }
           = fa_icon 'video-camera',
                   class: 'text-success streaming-tooltip ml-2',
                   title: 'May be included in video coverage'
