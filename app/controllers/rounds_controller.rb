@@ -4,7 +4,11 @@ class RoundsController < ApplicationController
 
   def index
     authorize @tournament, :show?
-    @players = @tournament.players.index_by(&:id).merge({ nil => NilPlayer.new })
+    @stages = @tournament.stages.includes(
+      :tournament, rounds: [:tournament, :stage, pairings: [:tournament, :stage, :round]])
+    @players = @tournament.players
+                          .includes(:corp_identity_ref, :runner_identity_ref)
+                          .index_by(&:id).merge({ nil => NilPlayer.new })
   end
 
   def new_view
@@ -13,7 +17,9 @@ class RoundsController < ApplicationController
 
   def show
     authorize @tournament, :update?
-    @players = @tournament.players.index_by(&:id).merge({ nil => NilPlayer.new })
+    @players = @tournament.players
+                          .includes(:corp_identity_ref, :runner_identity_ref)
+                          .index_by(&:id).merge({ nil => NilPlayer.new })
   end
 
   def create
