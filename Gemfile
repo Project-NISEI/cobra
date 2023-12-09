@@ -25,6 +25,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'unicorn'
 gem 'flipper'
 gem 'flipper-active_record'
+gem 'vite_rails'
 
 group :development, :test do
   gem 'pry'
