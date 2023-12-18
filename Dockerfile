@@ -2,11 +2,16 @@
 FROM ruby:3.2.2
 
 # Install essential Linux packages
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client curl
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client ca-certificates curl gnupg \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-        && apt-get install -y nodejs
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+    | gpg --dearmor --yes -o /etc/apt/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" \
+    | tee /etc/apt/sources.list.d/nodesource.list > /dev/null
+RUN apt-get update -qq && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
 # Define where our application will live inside the image
 ENV RAILS_ROOT /var/www/cobra
