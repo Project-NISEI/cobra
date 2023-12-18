@@ -21,14 +21,17 @@ WORKDIR $RAILS_ROOT
 # (the src likely changed and we don't want to invalidate Docker's cache too early)
 # http://ilikestuffblog.com/2014/01/06/how-to-skip-bundle-install-when-deploying-a-rails-app-to-docker/
 COPY Gemfile Gemfile
-
 COPY Gemfile.lock Gemfile.lock
+
+COPY package.json package.json
+COPY package-lock.json package-lock.json
 
 # Prevent bundler warnings; ensure that the bundler version executed is >= that which created Gemfile.lock
 RUN gem install bundler
 
 # Finish establishing our Ruby enviornment
 RUN bundle install
+RUN npm install
 
 # Define the script we want run once the container boots
 # Use the "exec" form of CMD so our script shuts down gracefully on SIGTERM (i.e. `docker stop`)
