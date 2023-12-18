@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :user_signed_in?
 
   def current_user
-    @current_user ||= User.find_by(id: session[:user_id])
+    @current_user ||= load_current_user
   end
 
   def user_signed_in?
@@ -31,5 +31,11 @@ class ApplicationController < ActionController::Base
 
   def error
     redirect_to error_path
+  end
+
+  def load_current_user
+    id = session[:user_id]
+    return nil unless id
+    User.find_by(id: id)
   end
 end

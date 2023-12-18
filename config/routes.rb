@@ -30,6 +30,8 @@ Rails.application.routes.draw do
       patch :repair, on: :member
       patch :complete, on: :member
       patch :update_timer, on: :member
+      get :view_pairings, on: :collection
+      get :pairings_data, on: :collection
     end
     resources :stages, only: [:create, :destroy]
     post :upload_to_abr, on: :member
