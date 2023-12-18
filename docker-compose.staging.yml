@@ -16,9 +16,9 @@ services:
   app:
     restart: unless-stopped
     environment:
-      VIRTUAL_HOST: staging.cobr.ai
+      VIRTUAL_HOST: $COBRA_DOMAIN
       VIRTUAL_PORT: 3000
-      LETSENCRYPT_HOST: staging.cobr.ai
+      LETSENCRYPT_HOST: $COBRA_DOMAIN
       LETSENCRYPT_EMAIL: website@nisei.net
 
     networks:
