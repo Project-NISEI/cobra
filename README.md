@@ -124,8 +124,7 @@ echo "RAILS_ENV=production" > .env
 echo "COMPOSE_FILE=prod" >> .env
 echo "POSTGRES_PASSWORD=some-good-password" >> .env
 echo "SECRET_KEY_BASE=random-64-bit-hex-key" >> .env
-echo "COBRA_DOMAIN=cobr.ai" >> .env
-echo "NISEI_DOMAIN=tournaments.nisei.net" >> .env
+echo "COBRA_DOMAIN=yourdomainhere.com" >> .env
 ```
 - Deploy
 ```shell
@@ -143,21 +142,19 @@ some steps for setting that up.
 3. In the deploy directory, log into Pulumi CLI and create a new stack.
 4. Run this in the deploy directory: `pulumi config set cobra:cobra_domain your_domain.com`. 
    Ensure you own the domain you want to use.
-5. Do the same for cobra:nisei_domain. If you don't like the defaults for cobra:region and cobra:size, you can set them
-   to slug values shown here: https://slugs.do-api.dev/.
-6. If you have NetrunnerDB client credentials, encrypt them with these commands:
+5. If you have NetrunnerDB client credentials, encrypt them with these commands:
    ```shell
    pulumi config set cobra:nrdb_client --secret
    pulumi config set cobra:nrdb_secret --secret
    ```
    If you don't have client credentials, you can still deploy but you won't be able to log in.
-7. Check in the resulting Pulumi.stackname.yaml file to Git, on a branch named `deploy/stackname` matching the name of
+6. Check in the resulting Pulumi.stackname.yaml file to Git, on a branch named `deploy/stackname` matching the name of
    your Pulumi stack.
-8. Push your branch to your fork on GitHub and watch the output in the Actions tab. This will fail to get an HTTPS
+7. Push your branch to your fork on GitHub and watch the output in the Actions tab. This will fail to get an HTTPS
    certificate for the domain as there's no DNS record pointing to the droplet yet. You might avoid that if you do the
    next step before it gets to it. If not, you may want to temporarily set the staging flag in `bin/init-certbot` to
    avoid hitting the rate limit for certificate requests to production Let's Encrypt.
-9. Configure your domain to point to the public IP listed in the Actions output, or configure your domain in
+8. Configure your domain to point to the public IP listed in the Actions output, or configure your domain in
    DigitalOcean. The generated public IP is a DigitalOcean reserved static IP. This is free while assigned to a droplet
    but costs money if it's left unassigned. After the DNS change has propagated, you'll need to re-run the Actions job.
    If you used the staging flag then you'll need to SSH to the droplet and delete the `data/certbot directory` in the
