@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   resources :tournaments do
     resources :players, only: [:index, :new, :create, :update, :destroy] do
       get :standings, on: :collection
+      get :view_standings, on: :collection
+      get :standings_data, on: :collection
       get :meeting, on: :collection
       get :download_decks, on: :collection
       get :download_streaming, on: :collection

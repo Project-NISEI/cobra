@@ -4,10 +4,11 @@ module Bracket
 
     attr_reader :stage
 
-    delegate :seed, to: :stage
-
     def initialize(stage)
       @stage = stage
+      @pairings = stage.rounds.select { |round| round.completed? }
+                       .map(&:pairings).flatten
+      @seed_by_player = stage.registrations.map { |r| [r.player_id, r.seed] }.to_h
     end
 
     def pair(number)
@@ -21,7 +22,7 @@ module Bracket
     end
 
     def winner(number)
-        pairing(number).try(:winner)
+      pairing(number).try(:winner)
     end
 
     def loser(number)
@@ -46,7 +47,7 @@ module Bracket
       end.tap do |players|
         return nil unless players.all?
       end.sort_by do |p|
-        p.seed_in_stage(stage)
+        @seed_by_player[p.id]
       end[pos - 1]
     end
 
@@ -63,10 +64,7 @@ module Bracket
     private
 
     def pairing(number)
-      stage.rounds
-        .complete
-        .map(&:pairings).flatten
-        .find{ |i| i.table_number == number }
+      @pairings.find { |i| i.table_number == number }
     end
   end
 end

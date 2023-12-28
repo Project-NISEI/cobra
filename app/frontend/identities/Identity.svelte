@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Identity} from "./PairingsData";
+    import type {Identity} from "./Identity";
 
     export let identity: Identity | null;
 </script>
