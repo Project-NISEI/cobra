@@ -128,9 +128,10 @@ class PlayersController < ApplicationController
     authorize @tournament, :show?
     stages = @tournament.stages.includes(
       rounds: [pairings: [:player1, :player2]],
-      registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref]],
-      standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref]]
+      registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, registrations: [:stage]]],
+      standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref, registrations: [:stage]]]
     )
+    double_elim = stages.select { |stage| stage.double_elim? }.first
     render json: {
       tournament_id: @tournament.id,
       is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
@@ -139,9 +140,7 @@ class PlayersController < ApplicationController
           format: stage.format,
           manual_seed: @tournament.manual_seed?,
           rounds_complete: stage.rounds.select { |round| round.completed? }.count,
-          policy: {
-            view_decks: stage.decks_visible_to(current_user) ? true : false
-          },
+          any_decks_viewable: stage.decks_visible_to(current_user) || double_elim&.decks_visible_to(current_user) ? true : false,
           standings: standing_rows(stage),
         }
       }
@@ -151,25 +150,29 @@ class PlayersController < ApplicationController
   def standing_rows(stage)
     seed_by_player = stage.registrations.map { |r| [r.player_id, r.seed] }.to_h
     if stage.double_elim?
-      stage.standings.map { |standing| {
+      stage.standings.each_with_index.map { |standing, i| {
         player: standings_player(standing.player),
+        policy: standings_policy(standing.player),
+        position: i + 1,
         seed: seed_by_player[standing.player.id]
       } }
     else
       if stage.rounds.select { |round| round.completed? }.any?
         stage.standing_rows.map { |row| {
           player: standings_player(row.player),
+          policy: standings_policy(row.player),
           position: row.position,
           points: row.points,
           sos: row.sos,
           extended_sos: row.extended_sos,
-          corp_points: row.corp_points,
-          runner_points: row.runner_points,
+          corp_points: row.corp_points || 0,
+          runner_points: row.runner_points || 0,
           manual_seed: row.manual_seed,
         } }
       else
-        stage.players.sort.each_with_index { |player, i| {
+        stage.players.sort.each_with_index.map { |player, i| {
           player: standings_player(player),
+          policy: standings_policy(player),
           position: i + 1,
           points: 0,
           sos: 0,
@@ -184,9 +187,16 @@ class PlayersController < ApplicationController
 
   def standings_player(player)
     {
+      id: player.id,
       name_with_pronouns: player.name_with_pronouns,
       corp_id: standings_identity(player.corp_identity_object),
       runner_id: standings_identity(player.runner_identity_object)
+    }
+  end
+
+  def standings_policy(player)
+    {
+      view_decks: player.decks_visible_to(current_user) ? true : false
     }
   end
 

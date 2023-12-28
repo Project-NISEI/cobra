@@ -1,6 +1,7 @@
 <script lang="ts">
     import type {Stage} from "./StandingsData";
     import Identity from "../identities/Identity.svelte";
+    import FontAwesomeIcon from "@/widgets/FontAwesomeIcon.svelte";
 
     export let stage: Stage;
 </script>
@@ -10,7 +11,7 @@
     <tr>
         <th>Rank</th>
         <th>Name</th>
-        {#if stage.policy.view_decks}
+        {#if stage.any_decks_viewable}
             <th>Decks</th>
         {/if}
         <th>IDs</th>
@@ -18,13 +19,18 @@
     </tr>
     </thead>
     <tbody>
-    {#each stage.standings as standing, index}
+    {#each stage.standings as standing}
         <tr>
-            <td>{index + 1}</td>
+            <td>{standing.position}</td>
             {#if standing.player}
                 <td>{standing.player.name_with_pronouns}</td>
-                {#if stage.policy.view_decks}
-                    <th>???</th>
+                {#if standing.policy.view_decks}
+                    <td>
+                        <a href="{standing.player.id}/view_decks">
+                            <FontAwesomeIcon icon="eye"/>
+                            View decks
+                        </a>
+                    </td>
                 {/if}
                 <td class="ids">
                     <Identity identity={standing.player.corp_id}/>
@@ -33,8 +39,8 @@
                 <td>{standing.seed}</td>
             {:else}
                 <td>???</td>
-                {#if stage.policy.view_decks}
-                    <th>???</th>
+                {#if standing.policy.view_decks}
+                    <td>???</td>
                 {/if}
                 <td class="ids">
                     <p>???</p>
