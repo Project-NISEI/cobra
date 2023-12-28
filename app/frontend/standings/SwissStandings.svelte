@@ -1,53 +1,62 @@
 <script lang="ts">
     import type {Stage} from "./StandingsData";
     import Identity from "../identities/Identity.svelte";
+    import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
     export let stage: Stage;
+
+    function printSOS(sos: string) {
+        return parseFloat(sos).toLocaleString(undefined, {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+        });
+    }
 </script>
+
+<p>After {stage.rounds_complete} rounds</p>
 
 <table class="table table-striped standings">
     <thead>
     <tr>
         <th>Rank</th>
         <th>Name</th>
-        {#if stage.policy.view_decks}
+        {#if stage.any_decks_viewable}
             <th>Decks</th>
         {/if}
         <th>IDs</th>
+        <th>Points</th>
         {#if stage.manual_seed}
             <th>Seed</th>
         {/if}
+        <th>SOS</th>
+        <th>Extended SOS</th>
     </tr>
     </thead>
     <tbody>
-    {#each stage.standings as standing, index}
+    {#each stage.standings as standing}
         <tr>
-            <td>{index + 1}</td>
-            {#if standing.player}
-                <td>{standing.player.name_with_pronouns}</td>
-                {#if stage.policy.view_decks}
-                    <th>???</th>
-                {/if}
-                <td class="ids">
-                    <Identity identity={standing.player.corp_id}/>
-                    <Identity identity={standing.player.runner_id}/>
+            <td>{standing.position}</td>
+            <td>{standing.player.name_with_pronouns}</td>
+            {#if stage.any_decks_viewable}
+                <td>
+                    {#if standing.policy.view_decks}
+                        <a href="{standing.player.id}/view_decks">
+                            <FontAwesomeIcon icon="eye"/>
+                            View decks
+                        </a>
+                    {/if}
                 </td>
-                {#if stage.manual_seed}
-                    <td>{standing.manual_seed}</td>
-                {/if}
-            {:else}
-                <td>???</td>
-                {#if stage.policy.view_decks}
-                    <th>???</th>
-                {/if}
-                <td class="ids">
-                    <p>???</p>
-                    <p>???</p>
-                </td>
-                {#if stage.manual_seed}
-                    <td>{standing.manual_seed}</td>
-                {/if}
             {/if}
+            <td class="ids">
+                <Identity identity={standing.player.corp_id} points="{standing.corp_points}"/>
+                <Identity identity={standing.player.runner_id} points="{standing.runner_points}"/>
+            </td>
+            <td>{standing.points}</td>
+            {#if stage.manual_seed}
+                <td>{standing.manual_seed}</td>
+            {/if}
+            <td>{printSOS(standing.sos)}</td>
+            <td>{printSOS(standing.extended_sos)}</td>
         </tr>
     {/each}
     </tbody>
