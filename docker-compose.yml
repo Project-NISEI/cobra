@@ -15,10 +15,6 @@ services:
       - POSTGRES_PASSWORD
       - RAILS_ENV
 
-    # makes the app container aware of the DB container
-    links:
-      - db
-
     volumes:
       - .:/var/www/cobra/
       - cobra-logs:/var/www/cobra/log
