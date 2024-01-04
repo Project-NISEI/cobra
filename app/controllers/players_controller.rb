@@ -171,7 +171,7 @@ class PlayersController < ApplicationController
         } }
       else
         stage.players.sort.each_with_index.map { |player, i| {
-          player: standings_player(player),
+          player: standings_player(player, show_ids=false),
           policy: standings_policy(player),
           position: i + 1,
           points: 0,
@@ -185,12 +185,12 @@ class PlayersController < ApplicationController
     end
   end
 
-  def standings_player(player)
+  def standings_player(player, show_ids=true)
     {
       id: player.id,
       name_with_pronouns: player.name_with_pronouns,
-      corp_id: standings_identity(player.corp_identity_object),
-      runner_id: standings_identity(player.runner_identity_object)
+      corp_id: show_ids ? standings_identity(player.corp_identity_object) : nil,
+      runner_id: show_ids ? standings_identity(player.runner_identity_object) : nil
     }
   end
 
