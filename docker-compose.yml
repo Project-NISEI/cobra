@@ -10,6 +10,11 @@ services:
     # sources environment variable configuration for our app
     env_file: .env
 
+    depends_on: 
+      - db
+
+    restart: always
+
     # rely on the RAILS_ENV value of the host machine
     environment:
       - POSTGRES_PASSWORD

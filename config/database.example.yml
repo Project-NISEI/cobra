@@ -4,7 +4,7 @@ default: &default
   pool: 5
   username: cobra
   password: cobra
-  host: localhost
+  host: db
   min_messages: warning
 
 development:
@@ -17,7 +17,6 @@ test:
 
 production:
   <<: *default
-  host: db
   port: 5432
   username: postgres
   password: <%= ENV['POSTGRES_PASSWORD'] %>
