@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.2.2'
+ruby '3.2.3'
 
 gem 'bootstrap', '~> 4.3'
 gem 'bootstrap-datepicker-rails'
