@@ -1,5 +1,5 @@
 # Base our image on an official, minimal image of our preferred Ruby
-FROM ruby:3.2.2-alpine3.19 AS build
+FROM ruby:3.2.3-alpine3.19 AS build
 
 # Install essential Linux packages and nodejs
 RUN apk -U upgrade && apk add --no-cache \
