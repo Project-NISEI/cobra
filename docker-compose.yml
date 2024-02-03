@@ -21,7 +21,7 @@ services:
       - RAILS_ENV
 
     volumes:
-      - .:/var/www/cobra/
+      - ./config/database.yml:/var/www/cobra/config/database.yml
       - cobra-logs:/var/www/cobra/log
       - cobra-assets:/var/www/cobra/public/assets
       - cobra-tmp:/var/www/cobra/tmp
