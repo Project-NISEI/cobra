@@ -2,6 +2,9 @@ source 'https://rubygems.org'
 
 ruby '3.2.3'
 
+# Gems that have trouble with native packages on alpine.
+gem 'nokogiri', force_ruby_platform: true
+
 gem 'bootstrap', '~> 4.3'
 gem 'bootstrap-datepicker-rails'
 gem 'coffee-rails'

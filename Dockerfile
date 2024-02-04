@@ -3,7 +3,7 @@ FROM ruby:3.2.3-alpine3.19 AS build
 
 # Install essential Linux packages and nodejs
 RUN apk -U upgrade && apk add --no-cache \
-  bash build-base libpq-dev postgresql-client ca-certificates tzdata nodejs npm \
+  bash build-base libpq-dev postgresql-client ca-certificates tzdata nodejs npm gcompat \
   && rm -rf /var/cache/apk/*
 
 # Define where our application will live inside the image
@@ -25,6 +25,7 @@ RUN gem install bundler
 
 # Finish establishing our Ruby enviornment
 RUN bundle config set --local path "vendor/bundle" && \
+  bundle config set force_ruby_platform true && \
   bundle install --jobs 4 --retry 3
 RUN npm install
 
@@ -34,7 +35,7 @@ COPY . $RAILS_ROOT/
 #####################################################################
 FROM ruby:3.2.3-alpine3.19 AS final
 
-RUN apk -U upgrade && apk add --no-cache postgresql-client tzdata nodejs \
+RUN apk -U upgrade && apk add --no-cache postgresql-client tzdata nodejs gcompat \
   && rm -rf /var/cache/apk/*
 
 ENV RAILS_ROOT /var/www/cobra
