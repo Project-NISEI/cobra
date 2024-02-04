@@ -102,8 +102,10 @@ echo "RAILS_ENV=development" >> .env
 - Deploy the app
 
 ```shell
-bin/deploy
+docker compose -f .\docker-compose.yml -f .\docker-compose.override.init.yml up -d
 ```
+After this initial docker compose which initializes the database, the next time, `docker compose up` should suffice.
+
 
 To run tests in your docker container, you will need to override the environment, like so:
 ```shell
