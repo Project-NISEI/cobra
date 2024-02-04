@@ -22,6 +22,7 @@ services:
 
     volumes:
       - ./config/database.yml:/var/www/cobra/config/database.yml
+      - ./config/secrets.yml:/var/www/cobra/config/secrets.yml
       - cobra-logs:/var/www/cobra/log
       - cobra-assets:/var/www/cobra/public/assets
       - cobra-tmp:/var/www/cobra/tmp
