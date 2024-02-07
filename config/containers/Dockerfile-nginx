@@ -8,8 +8,6 @@ RUN apt-get update -qq && apt-get -y install apache2-utils
 # TODO: make room for the tournaments.nisei.net name to aid the transition.
 ARG cobra_domain
 ENV COBRA_DOMAIN $cobra_domain
-ARG nisei_domain
-ENV NISEI_DOMAIN $nisei_domain
 
 # establish where Nginx should look for files
 ENV RAILS_ROOT /var/www/cobra
@@ -28,7 +26,7 @@ COPY config/containers/nginx.conf /tmp/cobra.nginx
 
 # substitute variable references in the Nginx config template for real values from the environment
 # put the final config in its place
-RUN envsubst '$RAILS_ROOT:$COBRA_DOMAIN:$NISEI_DOMAIN' < /tmp/cobra.nginx > /etc/nginx/conf.d/default.conf
+RUN envsubst '$RAILS_ROOT:$COBRA_DOMAIN' < /tmp/cobra.nginx > /etc/nginx/conf.d/default.conf
 
 # Use the "exec" form of CMD so Nginx shuts down gracefully on SIGTERM (i.e. `docker stop`)
 CMD [ "nginx", "-g", "daemon off;" ]
