@@ -1,0 +1,15 @@
+version: "3.2"
+
+services:
+  app:
+    ports:
+      - "3000:3000"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        bundle exec rake db:create db:schema:load ids:update
+        bundle exec unicorn -c config/containers/unicorn.rb -E $RAILS_ENV
+  db:
+    ports:
+      - "5432:5432"
