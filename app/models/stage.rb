@@ -13,10 +13,10 @@ class Stage < ApplicationRecord
     double_elim: 1
   }
 
-  def pair_new_round!
+  def pair_new_round!(random = Random)
     number = (rounds.pluck(:number).max || 0) + 1
     rounds.create(number: number, length_minutes: default_round_minutes).tap do |round|
-      round.pair!
+      round.pair! random
     end
   end
 
