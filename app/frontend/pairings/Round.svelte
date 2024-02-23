@@ -28,7 +28,7 @@
                 Pairings by name
             </a>
             {#each round.pairings as pairing}
-                <Pairing pairing={pairing}/>
+                <Pairing pairing={pairing} round="{round}"/>
             {/each}
         </div>
     </div>
