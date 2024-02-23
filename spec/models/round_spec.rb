@@ -20,7 +20,7 @@ RSpec.describe Round do
 
   describe '#pair!' do
     it 'invokes Pairer' do
-      round.pair!(Random)
+      round.pair!
 
       expect(Pairer).to have_received(:new).with(round, Random)
       expect(pairer).to have_received(:pair!)
@@ -81,12 +81,13 @@ RSpec.describe Round do
 
       it 'returns sorted pairings' do
         expect(round.collated_pairings)
-          .to match_array([
-                            pairing1, pairing5, pairing9, pairing13,
-                            pairing2, pairing6, pairing10, nil,
-                            pairing3, pairing7, pairing11, nil,
-                            pairing4, pairing8, pairing12, nil
-                          ])
+          .to match_array(
+                [
+                  pairing1, pairing5, pairing9, pairing13,
+                  pairing2, pairing6, pairing10, nil,
+                  pairing3, pairing7, pairing11, nil,
+                  pairing4, pairing8, pairing12, nil
+                ])
       end
     end
 
@@ -96,9 +97,10 @@ RSpec.describe Round do
 
       it 'returns sorted pairings' do
         expect(round.collated_pairings)
-          .to match_array([
-                            pairing1, pairing2
-                          ])
+          .to match_array(
+                [
+                  pairing1, pairing2
+                ])
       end
     end
 
@@ -132,15 +134,16 @@ RSpec.describe Round do
 
       it 'returns sorted pairings' do
         expect(round.collated_pairings)
-          .to match_array([
-                            pairing1, pairing8, pairing15, pairing22,
-                            pairing2, pairing9, pairing16, pairing23,
-                            pairing3, pairing10, pairing17, pairing24,
-                            pairing4, pairing11, pairing18, pairing25,
-                            pairing5, pairing12, pairing19, pairing26,
-                            pairing6, pairing13, pairing20, nil,
-                            pairing7, pairing14, pairing21, nil,
-                          ])
+          .to match_array(
+                [
+                  pairing1, pairing8, pairing15, pairing22,
+                  pairing2, pairing9, pairing16, pairing23,
+                  pairing3, pairing10, pairing17, pairing24,
+                  pairing4, pairing11, pairing18, pairing25,
+                  pairing5, pairing12, pairing19, pairing26,
+                  pairing6, pairing13, pairing20, nil,
+                  pairing7, pairing14, pairing21, nil,
+                ])
       end
     end
   end
