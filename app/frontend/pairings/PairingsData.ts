@@ -1,5 +1,4 @@
 export type PairingsData = {
-    tournament_id: number;
     policy: TournamentPolicies;
     is_player_meeting: boolean;
     stages: Stage[];
