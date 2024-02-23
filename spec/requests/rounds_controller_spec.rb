@@ -43,7 +43,7 @@ RSpec.describe RoundsController do
       end
     end
 
-    describe 'during Swiss' do
+    describe 'during swiss' do
       before(:each) do
         tournament.pair_new_round! Random.new(0)
       end
@@ -70,6 +70,52 @@ RSpec.describe RoundsController do
                            "score_label" => "6 - 0", "table_number" => 2, "two_for_one" => false }
                        ], "pairings_reported" => 1 }
                    ] }]
+                 })
+      end
+    end
+
+    describe 'during cut' do
+      before(:each) do
+        tournament.pair_new_round! Random.new(0)
+        tournament.cut_to!(:double_elim, 3)
+        tournament.pair_new_round! Random.new(0)
+      end
+      it 'displays pairings' do
+        sign_in nil
+        get pairings_data_tournament_rounds_path(tournament)
+        expect(compare_body(response))
+          .to eq({
+                   'is_player_meeting' => false,
+                   'policy' => { 'update' => false },
+                   'stages' => [
+                     { 'name' => 'Swiss', 'rounds' => [
+                       {
+                         "number" => 1,
+                         "pairings" => [
+                           { "intentional_draw" => false,
+                             "player1" => player_with_no_ids("Charlie (she/her)"),
+                             "player2" => player_with_no_ids("Bob (he/him)"),
+                             "policy" => { "view_decks" => false },
+                             "score_label" => " - ", "table_number" => 1, "two_for_one" => false },
+                           { "intentional_draw" => false,
+                             "player1" => player_with_no_ids("Alice (she/her)"),
+                             "player2" => bye_player,
+                             "policy" => { "view_decks" => false },
+                             "score_label" => "6 - 0", "table_number" => 2, "two_for_one" => false }
+                         ], "pairings_reported" => 1
+                       }] },
+                     { 'name' => 'Double Elim', 'rounds' => [
+                       {
+                         "number" => 1,
+                         "pairings" => [
+                           { "intentional_draw" => false,
+                             "player1" => player_with_no_ids("Bob (he/him)"),
+                             "player2" => player_with_no_ids("Charlie (she/her)"),
+                             "policy" => { "view_decks" => false },
+                             "score_label" => " - ", "table_number" => 1, "two_for_one" => false }
+                         ], "pairings_reported" => 0
+                       }
+                     ] }]
                  })
       end
     end
