@@ -22,7 +22,6 @@ export type Round = {
 
 export type Pairing = {
     id: number;
-    round_id: number;
     table_number: number;
     policy: PairingPolicies;
     player1: Player;
