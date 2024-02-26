@@ -370,6 +370,9 @@ GEM
     zeitwerk (2.6.13)
 
 PLATFORMS
+  aarch64-linux
+  ruby
+  universal-darwin-20
   x86_64-linux
 
 DEPENDENCIES
