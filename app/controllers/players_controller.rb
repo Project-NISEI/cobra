@@ -141,51 +141,64 @@ class PlayersController < ApplicationController
           manual_seed: @tournament.manual_seed?,
           rounds_complete: stage.rounds.select { |round| round.completed? }.count,
           any_decks_viewable: stage.decks_visible_to(current_user) || double_elim&.decks_visible_to(current_user) ? true : false,
-          standings: standing_rows(stage),
+          standings: render_standings_for_stage(stage),
         }
       }
     }
   end
 
-  def standing_rows(stage)
-    seed_by_player = stage.registrations.map { |r| [r.player_id, r.seed] }.to_h
+  def render_standings_for_stage(stage)
     if stage.double_elim?
-      stage.standings.each_with_index.map { |standing, i| {
-        player: standings_player(standing.player),
-        policy: standings_policy(standing.player),
-        position: i + 1,
-        seed: seed_by_player[standing.player.id]
-      } }
-    else
-      if stage.rounds.select { |round| round.completed? }.any?
-        stage.standing_rows.map { |row| {
-          player: standings_player(row.player),
-          policy: standings_policy(row.player),
-          position: row.position,
-          points: row.points,
-          sos: row.sos,
-          extended_sos: row.extended_sos,
-          corp_points: row.corp_points || 0,
-          runner_points: row.runner_points || 0,
-          manual_seed: row.manual_seed,
-        } }
-      else
-        stage.players.sort.each_with_index.map { |player, i| {
-          player: standings_player(player, show_ids=false),
-          policy: standings_policy(player),
-          position: i + 1,
-          points: 0,
-          sos: 0,
-          extended_sos: 0,
-          corp_points: 0,
-          runner_points: 0,
-          manual_seed: player.manual_seed,
-        } }
-      end
+      # Compute standings on the fly during cut
+      return compute_and_render_cut_standings stage
     end
+    if stage.rounds.select { |round| round.completed? }.any?
+      # Standings are stored explicitly at the end of a swiss round, so load those
+      return render_completed_standings stage
+    end
+    # No standings during player meeting or first round, so list players
+    render_player_list_for_standings stage
   end
 
-  def standings_player(player, show_ids=true)
+  def compute_and_render_cut_standings(stage)
+    seed_by_player = stage.registrations.map { |r| [r.player_id, r.seed] }.to_h
+    stage.standings.each_with_index.map { |standing, i| {
+      player: standings_player(standing.player),
+      policy: standings_policy(standing.player),
+      position: i + 1,
+      seed: seed_by_player[standing.player.id]
+    } }
+  end
+
+  def render_completed_standings(stage)
+    stage.standing_rows.map { |row| {
+      player: standings_player(row.player),
+      policy: standings_policy(row.player),
+      position: row.position,
+      points: row.points,
+      sos: row.sos,
+      extended_sos: row.extended_sos,
+      corp_points: row.corp_points || 0,
+      runner_points: row.runner_points || 0,
+      manual_seed: row.manual_seed,
+    } }
+  end
+
+  def render_player_list_for_standings(stage)
+    stage.players.sort.each_with_index.map { |player, i| {
+      player: standings_player(player, show_ids = false),
+      policy: standings_policy(player),
+      position: i + 1,
+      points: 0,
+      sos: 0,
+      extended_sos: 0,
+      corp_points: 0,
+      runner_points: 0,
+      manual_seed: player.manual_seed,
+    } }
+  end
+
+  def standings_player(player, show_ids = true)
     {
       id: player.id,
       name_with_pronouns: player.name_with_pronouns,
