@@ -1,3 +1,5 @@
+import type {Identity} from "../identities/Identity";
+
 export type PairingsData = {
     policy: TournamentPolicies;
     is_player_meeting: boolean;
@@ -40,9 +42,4 @@ export type Player = {
     side_label: string | null;
     corp_id: Identity | null;
     runner_id: Identity | null;
-}
-
-export type Identity = {
-    name: string;
-    faction: string;
 }

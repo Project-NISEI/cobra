@@ -120,6 +120,109 @@ class PlayersController < ApplicationController
     authorize @tournament, :show?
   end
 
+  def view_standings
+    authorize @tournament, :show?
+  end
+
+  def standings_data
+    authorize @tournament, :show?
+    stages = @tournament.stages.includes(
+      rounds: [pairings: [:player1, :player2]],
+      registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, registrations: [:stage]]],
+      standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref, registrations: [:stage]]]
+    )
+    double_elim = stages.select { |stage| stage.double_elim? }.first
+    render json: {
+      is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
+      manual_seed: @tournament.manual_seed?,
+      stages: stages.reverse.map { |stage|
+        {
+          format: stage.format,
+          rounds_complete: stage.rounds.select { |round| round.completed? }.count,
+          any_decks_viewable: stage.decks_visible_to(current_user) || double_elim&.decks_visible_to(current_user) ? true : false,
+          standings: render_standings_for_stage(stage),
+        }
+      }
+    }
+  end
+
+  def render_standings_for_stage(stage)
+    if stage.double_elim?
+      # Compute standings on the fly during cut
+      return compute_and_render_cut_standings stage
+    end
+    if stage.rounds.select { |round| round.completed? }.any?
+      # Standings are stored explicitly at the end of a swiss round, so load those
+      return render_completed_standings stage
+    end
+    # No standings during player meeting or first round, so list players
+    render_player_list_for_standings stage
+  end
+
+  def compute_and_render_cut_standings(stage)
+    seed_by_player = stage.registrations.map { |r| [r.player_id, r.seed] }.to_h
+    stage.standings.each_with_index.map { |standing, i| {
+      player: standings_player(standing.player),
+      policy: standings_policy(standing.player),
+      position: i + 1,
+      seed: seed_by_player[standing.player&.id]
+    } }
+  end
+
+  def render_completed_standings(stage)
+    stage.standing_rows.map { |row| {
+      player: standings_player(row.player),
+      policy: standings_policy(row.player),
+      position: row.position,
+      points: row.points,
+      sos: row.sos,
+      extended_sos: row.extended_sos,
+      corp_points: row.corp_points || 0,
+      runner_points: row.runner_points || 0,
+      manual_seed: row.manual_seed,
+    } }
+  end
+
+  def render_player_list_for_standings(stage)
+    stage.players.sort.each_with_index.map { |player, i| {
+      player: standings_player(player, show_ids = false),
+      policy: standings_policy(player),
+      position: i + 1,
+      points: 0,
+      sos: 0,
+      extended_sos: 0,
+      corp_points: 0,
+      runner_points: 0,
+      manual_seed: player.manual_seed,
+    } }
+  end
+
+  def standings_player(player, show_ids = true)
+    unless player
+      return nil
+    end
+    {
+      id: player.id,
+      name_with_pronouns: player.name_with_pronouns,
+      corp_id: show_ids ? standings_identity(player.corp_identity_object) : nil,
+      runner_id: show_ids ? standings_identity(player.runner_identity_object) : nil
+    }
+  end
+
+  def standings_policy(player)
+    {
+      view_decks: player&.decks_visible_to(current_user) ? true : false
+    }
+  end
+
+  def standings_identity(identity)
+    return nil unless identity
+    {
+      name: identity.name,
+      faction: identity.faction
+    }
+  end
+
   def drop
     authorize @tournament, :update?
 
