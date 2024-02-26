@@ -1,29 +1,42 @@
 import type {Identity} from "../identities/Identity";
 
 export type StandingsData = {
+    manual_seed: boolean;
     stages: Stage[];
 }
 
 export type Stage = {
     name: string;
     format: string;
-    manual_seed: boolean;
     rounds_complete: number;
     any_decks_viewable: boolean;
-    standings: Standing[];
 }
 
-export type Standing = {
+export type SwissStage = Stage & {
+    standings: SwissStanding[];
+}
+
+export type CutStage = Stage & {
+    standings: CutStanding[];
+}
+
+export type SwissStanding = {
     player: Player;
     policy: StandingPolicies;
-    seed: number;
     position: number;
     points: number;
     sos: string;
     extended_sos: string;
     corp_points: number;
     runner_points: number;
-    manual_seed: number;
+    manual_seed: number | null;
+}
+
+export type CutStanding = {
+    player: Player | null;
+    policy: StandingPolicies;
+    seed: number;
+    position: number;
 }
 
 export type Player = {

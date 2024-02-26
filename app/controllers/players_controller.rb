@@ -134,10 +134,10 @@ class PlayersController < ApplicationController
     double_elim = stages.select { |stage| stage.double_elim? }.first
     render json: {
       is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
+      manual_seed: @tournament.manual_seed?,
       stages: stages.reverse.map { |stage|
         {
           format: stage.format,
-          manual_seed: @tournament.manual_seed?,
           rounds_complete: stage.rounds.select { |round| round.completed? }.count,
           any_decks_viewable: stage.decks_visible_to(current_user) || double_elim&.decks_visible_to(current_user) ? true : false,
           standings: render_standings_for_stage(stage),

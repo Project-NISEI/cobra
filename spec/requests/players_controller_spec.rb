@@ -349,10 +349,10 @@ RSpec.describe PlayersController do
         expect(compare_body(response))
           .to eq(
                 'is_player_meeting' => true,
+                'manual_seed' => false,
                 'stages' => [
                   { 'format' => 'swiss',
                     'any_decks_viewable' => false,
-                    'manual_seed' => false,
                     'rounds_complete' => 0,
                     'standings' => [
                       standing_with_no_score(1, player_with_hidden_ids("Alice (she/her)")),
@@ -370,10 +370,10 @@ RSpec.describe PlayersController do
         expect(compare_body(response))
           .to eq(
                 'is_player_meeting' => true,
+                'manual_seed' => false,
                 'stages' => [
                   { 'format' => 'swiss',
                     'any_decks_viewable' => false,
-                    'manual_seed' => false,
                     'rounds_complete' => 0,
                     'standings' => [
                       standing_with_no_score(1, player_with_hidden_ids("Alice (she/her)")),
@@ -391,10 +391,10 @@ RSpec.describe PlayersController do
         expect(compare_body(response))
           .to eq(
                 'is_player_meeting' => true,
+                'manual_seed' => false,
                 'stages' => [
                   { 'format' => 'swiss',
                     'any_decks_viewable' => false,
-                    'manual_seed' => false,
                     'rounds_complete' => 0,
                     'standings' => [
                       standing_with_no_score(1, player_with_hidden_ids("Alice (she/her)")),
@@ -423,10 +423,10 @@ RSpec.describe PlayersController do
         expect(compare_body(response))
           .to eq(
                 'is_player_meeting' => false,
+                'manual_seed' => false,
                 'stages' => [
                   { 'format' => 'swiss',
                     'any_decks_viewable' => false,
-                    'manual_seed' => false,
                     'rounds_complete' => 1,
                     'standings' => [
                       standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: "6.0",
@@ -460,10 +460,10 @@ RSpec.describe PlayersController do
         expect(compare_body(response))
           .to eq(
                 'is_player_meeting' => false,
+                'manual_seed' => false,
                 'stages' => [
                   { 'format' => 'double_elim',
                     'any_decks_viewable' => false,
-                    'manual_seed' => false,
                     'rounds_complete' => 0,
                     'standings' => [
                       standing_at_cut_position(1, player: nil, seed: nil),
@@ -473,7 +473,6 @@ RSpec.describe PlayersController do
                   },
                   { 'format' => 'swiss',
                     'any_decks_viewable' => false,
-                    'manual_seed' => false,
                     'rounds_complete' => 1,
                     'standings' => [
                       standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: "6.0",
@@ -512,10 +511,10 @@ RSpec.describe PlayersController do
         expect(compare_body(response))
           .to eq(
                 'is_player_meeting' => false,
+                'manual_seed' => false,
                 'stages' => [
                   { 'format' => 'double_elim',
                     'any_decks_viewable' => false,
-                    'manual_seed' => false,
                     'rounds_complete' => 1,
                     'standings' => [
                       standing_at_cut_position(1, player: nil, seed: nil),
@@ -526,7 +525,6 @@ RSpec.describe PlayersController do
                   },
                   { 'format' => 'swiss',
                     'any_decks_viewable' => false,
-                    'manual_seed' => false,
                     'rounds_complete' => 1,
                     'standings' => [
                       standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: "6.0",
