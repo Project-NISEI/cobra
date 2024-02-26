@@ -102,8 +102,10 @@ echo "RAILS_ENV=development" >> .env
 - Deploy the app
 
 ```shell
-bin/deploy
+docker compose -f .\docker-compose.yml -f .\docker-compose.override.init.yml up -d
 ```
+After this initial docker compose which initializes the database, the next time, `docker compose up` should suffice.
+
 
 To run tests in your docker container, you will need to override the environment, like so:
 ```shell
@@ -124,8 +126,7 @@ echo "RAILS_ENV=production" > .env
 echo "COMPOSE_FILE=prod" >> .env
 echo "POSTGRES_PASSWORD=some-good-password" >> .env
 echo "SECRET_KEY_BASE=random-64-bit-hex-key" >> .env
-echo "COBRA_DOMAIN=cobr.ai" >> .env
-echo "NISEI_DOMAIN=tournaments.nisei.net" >> .env
+echo "COBRA_DOMAIN=yourdomainhere.com" >> .env
 ```
 - Deploy
 ```shell
@@ -143,7 +144,7 @@ some steps for setting that up.
 3. In the deploy directory, log into Pulumi CLI and create a new stack.
 4. Run this in the deploy directory: `pulumi config set cobra:cobra_domain your_domain.com`. 
    Ensure you own the domain you want to use.
-5. Do the same for cobra:nisei_domain. If you don't like the defaults for cobra:region and cobra:size, you can set them
+5. If you don't like the defaults for cobra:region and cobra:size, you can set them
    to slug values shown here: https://slugs.do-api.dev/.
 6. If you have NetrunnerDB client credentials, encrypt them with these commands:
    ```shell

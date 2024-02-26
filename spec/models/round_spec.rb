@@ -14,7 +14,7 @@ RSpec.describe Round do
     end
 
     it 'returns pairings by table' do
-      expect(round.pairings.map(&:table_number)).to eq([1,2,3])
+      expect(round.pairings.map(&:table_number)).to eq([1, 2, 3])
     end
   end
 
@@ -22,7 +22,7 @@ RSpec.describe Round do
     it 'invokes Pairer' do
       round.pair!
 
-      expect(Pairer).to have_received(:new).with(round)
+      expect(Pairer).to have_received(:new).with(round, Random)
       expect(pairer).to have_received(:pair!)
     end
   end
@@ -80,12 +80,14 @@ RSpec.describe Round do
       let!(:pairing13) { create(:pairing, round: round) }
 
       it 'returns sorted pairings' do
-        expect(round.collated_pairings).to match_array([
-          pairing1, pairing5, pairing9, pairing13,
-          pairing2, pairing6, pairing10, nil,
-          pairing3, pairing7, pairing11, nil,
-          pairing4, pairing8, pairing12, nil
-        ])
+        expect(round.collated_pairings)
+          .to match_array(
+                [
+                  pairing1, pairing5, pairing9, pairing13,
+                  pairing2, pairing6, pairing10, nil,
+                  pairing3, pairing7, pairing11, nil,
+                  pairing4, pairing8, pairing12, nil
+                ])
       end
     end
 
@@ -94,9 +96,11 @@ RSpec.describe Round do
       let!(:pairing2) { create(:pairing, round: round) }
 
       it 'returns sorted pairings' do
-        expect(round.collated_pairings).to match_array([
-          pairing1, pairing2
-        ])
+        expect(round.collated_pairings)
+          .to match_array(
+                [
+                  pairing1, pairing2
+                ])
       end
     end
 
@@ -129,15 +133,17 @@ RSpec.describe Round do
       let!(:pairing26) { create(:pairing, round: round) }
 
       it 'returns sorted pairings' do
-        expect(round.collated_pairings).to match_array([
-          pairing1, pairing8, pairing15, pairing22,
-          pairing2, pairing9, pairing16, pairing23,
-          pairing3, pairing10, pairing17, pairing24,
-          pairing4, pairing11, pairing18, pairing25,
-          pairing5, pairing12, pairing19, pairing26,
-          pairing6, pairing13, pairing20, nil,
-          pairing7, pairing14, pairing21, nil,
-        ])
+        expect(round.collated_pairings)
+          .to match_array(
+                [
+                  pairing1, pairing8, pairing15, pairing22,
+                  pairing2, pairing9, pairing16, pairing23,
+                  pairing3, pairing10, pairing17, pairing24,
+                  pairing4, pairing11, pairing18, pairing25,
+                  pairing5, pairing12, pairing19, pairing26,
+                  pairing6, pairing13, pairing20, nil,
+                  pairing7, pairing14, pairing21, nil,
+                ])
       end
     end
   end

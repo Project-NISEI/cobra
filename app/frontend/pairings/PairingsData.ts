@@ -1,7 +1,6 @@
 import type {Identity} from "../identities/Identity";
 
 export type PairingsData = {
-    tournament_id: number;
     policy: TournamentPolicies;
     is_player_meeting: boolean;
     stages: Stage[];
@@ -25,7 +24,6 @@ export type Round = {
 
 export type Pairing = {
     id: number;
-    round_id: number;
     table_number: number;
     policy: PairingPolicies;
     player1: Player;

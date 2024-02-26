@@ -34,7 +34,6 @@ services:
       dockerfile: config/containers/Dockerfile-nginx
       args:
         cobra_domain: $COBRA_DOMAIN
-        nisei_domain: $NISEI_DOMAIN
 
     # makes the web container aware of the app container
     links:

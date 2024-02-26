@@ -6,15 +6,14 @@ pushd "${PROJECT_DIR}"
 
 # Required environment variables in .env:
 # COBRA_DOMAIN
-# NISEI_DOMAIN
 source .env
 
-if [ "$COBRA_DOMAIN" == "" ] || [ "$NISEI_DOMAIN" == "" ]; then
+if [ "$COBRA_DOMAIN" == "" ]; then
   echo "Not setting up certbot as domains not configured"
   exit
 fi
 
-domains=("$COBRA_DOMAIN" "$NISEI_DOMAIN")
+domains=("$COBRA_DOMAIN")
 rsa_key_size=4096
 data_path="./data/certbot"
 email="" # Adding a valid address is strongly recommended

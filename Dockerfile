@@ -1,17 +1,10 @@
-# Base our image on an official, minimal image of our preferred Ruby
-FROM ruby:3.2.2
+#####################################################################
+FROM ruby:3.2.3-alpine3.19 AS build
 
-# Install essential Linux packages
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client ca-certificates curl gnupg \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install nodejs
-RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
-    | gpg --dearmor --yes -o /etc/apt/keyrings/nodesource.gpg
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" \
-    | tee /etc/apt/sources.list.d/nodesource.list > /dev/null
-RUN apt-get update -qq && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
+# Install essential Linux packages and nodejs
+RUN apk -U upgrade && apk add --no-cache \
+  bash build-base libpq-dev postgresql-client ca-certificates tzdata nodejs npm gcompat \
+  && rm -rf /var/cache/apk/*
 
 # Define where our application will live inside the image
 ENV RAILS_ROOT /var/www/cobra
@@ -22,22 +15,36 @@ RUN mkdir -p $RAILS_ROOT/tmp/pids
 # Set our working directory inside the image
 WORKDIR $RAILS_ROOT
 
-# Use the Gemfiles as Docker cache markers. Always bundle before copying app src.
-# (the src likely changed and we don't want to invalidate Docker's cache too early)
-# http://ilikestuffblog.com/2014/01/06/how-to-skip-bundle-install-when-deploying-a-rails-app-to-docker/
-COPY Gemfile Gemfile
-COPY Gemfile.lock Gemfile.lock
+# Throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
 
-COPY package.json package.json
-COPY package-lock.json package-lock.json
+COPY Gemfile Gemfile.lock package.json package-lock.json ./
 
 # Prevent bundler warnings; ensure that the bundler version executed is >= that which created Gemfile.lock
 RUN gem install bundler
 
 # Finish establishing our Ruby enviornment
-RUN bundle install
+RUN bundle config set --local path "vendor/bundle" && \
+  bundle config set force_ruby_platform true && \
+  bundle install --jobs 4 --retry 3
 RUN npm install
+
+COPY . $RAILS_ROOT/
+
+
+#####################################################################
+FROM ruby:3.2.3-alpine3.19 AS final
+
+RUN apk -U upgrade && apk add --no-cache postgresql-client tzdata nodejs gcompat \
+  && rm -rf /var/cache/apk/*
+
+ENV RAILS_ROOT /var/www/cobra
+WORKDIR $RAILS_ROOT
+RUN bundle config set --local path "vendor/bundle"
+COPY --from=build $RAILS_ROOT $RAILS_ROOT/
+
+EXPOSE 3000
 
 # Define the script we want run once the container boots
 # Use the "exec" form of CMD so our script shuts down gracefully on SIGTERM (i.e. `docker stop`)
-CMD [ "config/containers/app_cmd.sh" ]
+CMD [ "/bin/sh", "-c", "bundle exec unicorn -c config/containers/unicorn.rb -E $RAILS_ENV"]
