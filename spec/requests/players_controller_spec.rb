@@ -488,6 +488,59 @@ RSpec.describe PlayersController do
               )
       end
     end
+
+    describe 'after first round of cut' do
+      before(:each) do
+        tournament.pair_new_round! Random.new(0)
+        swiss_round = tournament.current_stage.rounds.last
+        swiss_round.pairings.each { |pairing|
+          pairing.update!(score1: 6, score2: 0)
+        }
+        swiss_round.update!(completed: true)
+        tournament.cut_to!(:double_elim, 3)
+        tournament.pair_new_round! Random.new(0)
+        cut_round = tournament.current_stage.rounds.last
+        cut_round.pairings.each { |pairing|
+          pairing.update!(score1: 3, score2: 0)
+        }
+        cut_round.update!(completed: true)
+      end
+      it 'displays without logging in' do
+        sign_in nil
+        get standings_data_tournament_players_path(tournament)
+
+        expect(compare_body(response))
+          .to eq(
+                'is_player_meeting' => false,
+                'stages' => [
+                  { 'format' => 'double_elim',
+                    'any_decks_viewable' => false,
+                    'manual_seed' => false,
+                    'rounds_complete' => 1,
+                    'standings' => [
+                      standing_at_cut_position(1, player: nil, seed: nil),
+                      standing_at_cut_position(2, player: nil, seed: nil),
+                      standing_at_cut_position(3, seed: 3,
+                                               player: player_with_no_ids("Bob (he/him)"))
+                    ]
+                  },
+                  { 'format' => 'swiss',
+                    'any_decks_viewable' => false,
+                    'manual_seed' => false,
+                    'rounds_complete' => 1,
+                    'standings' => [
+                      standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: "6.0",
+                                                 player: player_with_no_ids("Charlie (she/her)")),
+                      standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: "0.0",
+                                                 player: player_with_no_ids("Alice (she/her)")),
+                      standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: "0.0",
+                                                 player: player_with_no_ids("Bob (he/him)"))
+                    ]
+                  }
+                ]
+              )
+      end
+    end
   end
 
   def compare_body(response)
