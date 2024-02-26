@@ -8,7 +8,7 @@ RSpec.describe RoundsController do
     let!(:charlie) { create(:player, tournament: tournament, name: 'Charlie', pronouns: 'she/her') }
 
     describe 'during player meeting' do
-      it 'displays no rounds without logging in' do
+      it 'displays without logging in' do
         sign_in nil
         get pairings_data_tournament_rounds_path(tournament)
 
@@ -19,7 +19,7 @@ RSpec.describe RoundsController do
                 'stages' => [{ 'name' => 'Swiss', 'rounds' => [] }]
               )
       end
-      it 'displays no rounds as player' do
+      it 'displays as player' do
         sign_in alice
         get pairings_data_tournament_rounds_path(tournament)
 
@@ -30,7 +30,7 @@ RSpec.describe RoundsController do
                 'stages' => [{ 'name' => 'Swiss', 'rounds' => [] }]
               )
       end
-      it 'displays no rounds as organiser' do
+      it 'displays as organiser' do
         sign_in organiser
         get pairings_data_tournament_rounds_path(tournament)
 
@@ -43,11 +43,11 @@ RSpec.describe RoundsController do
       end
     end
 
-    describe 'during swiss' do
+    describe 'during first swiss round before any results' do
       before(:each) do
         tournament.pair_new_round! Random.new(0)
       end
-      it 'displays pairings' do
+      it 'displays without logging in' do
         sign_in nil
         get pairings_data_tournament_rounds_path(tournament)
         expect(compare_body(response))
@@ -72,15 +72,40 @@ RSpec.describe RoundsController do
                    ] }]
                  })
       end
+      it 'displays as organiser' do
+        sign_in organiser
+        get pairings_data_tournament_rounds_path(tournament)
+        expect(compare_body(response))
+          .to eq({
+                   'is_player_meeting' => false,
+                   'policy' => { 'update' => true },
+                   'stages' => [{ 'name' => 'Swiss', 'rounds' => [
+                     {
+                       "number" => 1,
+                       "pairings" => [
+                         { "intentional_draw" => false,
+                           "player1" => player_with_no_ids("Charlie (she/her)"),
+                           "player2" => player_with_no_ids("Bob (he/him)"),
+                           "policy" => { "view_decks" => false }, # sees player view as a player
+                           "score_label" => " - ", "table_number" => 1, "two_for_one" => false },
+                         { "intentional_draw" => false,
+                           "player1" => player_with_no_ids("Alice (she/her)"),
+                           "player2" => bye_player,
+                           "policy" => { "view_decks" => false }, # sees player view as a player
+                           "score_label" => "6 - 0", "table_number" => 2, "two_for_one" => false }
+                       ], "pairings_reported" => 1 }
+                   ] }]
+                 })
+      end
     end
 
-    describe 'during cut' do
+    describe 'during cut before any results' do
       before(:each) do
         tournament.pair_new_round! Random.new(0)
         tournament.cut_to!(:double_elim, 3)
         tournament.pair_new_round! Random.new(0)
       end
-      it 'displays pairings' do
+      it 'displays without logging in' do
         sign_in nil
         get pairings_data_tournament_rounds_path(tournament)
         expect(compare_body(response))
