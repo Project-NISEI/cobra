@@ -334,6 +334,112 @@ RSpec.describe PlayersController do
     end
   end
 
+  describe 'standings data' do
+    let(:organiser) { create(:user) }
+    let(:tournament) { create(:tournament, name: 'My Tournament', user: organiser) }
+    let!(:alice) { create(:player, tournament: tournament, name: 'Alice', pronouns: 'she/her') }
+    let!(:bob) { create(:player, tournament: tournament, name: 'Bob', pronouns: 'he/him') }
+    let!(:charlie) { create(:player, tournament: tournament, name: 'Charlie', pronouns: 'she/her') }
+
+    describe 'auth' do
+      it 'displays without logging in' do
+        sign_in nil
+        get standings_data_tournament_players_path(tournament)
+
+        expect(compare_body(response))
+          .to eq(
+                'is_player_meeting' => true,
+                'stages' => [
+                  { 'format' => 'swiss',
+                    'any_decks_viewable' => false,
+                    'manual_seed' => false,
+                    'rounds_complete' => 0,
+                    'standings' => [
+                      standing_with_no_score(1, player_with_no_ids("Alice (she/her)")),
+                      standing_with_no_score(2, player_with_no_ids("Bob (he/him)")),
+                      standing_with_no_score(3, player_with_no_ids("Charlie (she/her)"))
+                    ]
+                  }
+                ]
+              )
+      end
+      it 'displays as player' do
+        sign_in alice
+        get standings_data_tournament_players_path(tournament)
+
+        expect(compare_body(response))
+          .to eq(
+                'is_player_meeting' => true,
+                'stages' => [
+                  { 'format' => 'swiss',
+                    'any_decks_viewable' => false,
+                    'manual_seed' => false,
+                    'rounds_complete' => 0,
+                    'standings' => [
+                      standing_with_no_score(1, player_with_no_ids("Alice (she/her)")),
+                      standing_with_no_score(2, player_with_no_ids("Bob (he/him)")),
+                      standing_with_no_score(3, player_with_no_ids("Charlie (she/her)"))
+                    ]
+                  }
+                ]
+              )
+      end
+      it 'displays as organiser' do
+        sign_in organiser
+        get standings_data_tournament_players_path(tournament)
+
+        expect(compare_body(response))
+          .to eq(
+                'is_player_meeting' => true,
+                'stages' => [
+                  { 'format' => 'swiss',
+                    'any_decks_viewable' => false,
+                    'manual_seed' => false,
+                    'rounds_complete' => 0,
+                    'standings' => [
+                      standing_with_no_score(1, player_with_no_ids("Alice (she/her)")),
+                      standing_with_no_score(2, player_with_no_ids("Bob (he/him)")),
+                      standing_with_no_score(3, player_with_no_ids("Charlie (she/her)"))
+                    ]
+                  }
+                ]
+              )
+      end
+    end
+  end
+
+  def compare_body(response)
+    body = JSON.parse(response.body)
+    body['stages'].each { |stage|
+      stage['standings'].each { |standing|
+        standing['player'].delete 'id'
+      }
+    }
+    body
+  end
+
+  def standing_with_no_score(position, player)
+    {
+      'position' => position,
+      'player' => player,
+      'policy' => { 'view_decks' => false },
+      'points' => 0,
+      'sos' => 0,
+      'extended_sos' => 0,
+      'runner_points' => 0,
+      'corp_points' => 0,
+      'manual_seed' => nil
+    }
+  end
+
+  def player_with_no_ids(name_with_pronouns)
+    {
+      "name_with_pronouns" => name_with_pronouns,
+      "corp_id" => nil,
+      "runner_id" => nil
+    }
+  end
+
   def expect_unauthorized
     expect(response).to redirect_to(root_path)
     expect(flash[:alert]).to eq("🔒 Sorry, you can't do that")
