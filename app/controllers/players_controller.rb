@@ -133,7 +133,6 @@ class PlayersController < ApplicationController
     )
     double_elim = stages.select { |stage| stage.double_elim? }.first
     render json: {
-      tournament_id: @tournament.id,
       is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
       stages: stages.reverse.map { |stage|
         {

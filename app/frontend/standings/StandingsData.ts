@@ -1,7 +1,6 @@
 import type {Identity} from "../identities/Identity";
 
 export type StandingsData = {
-    tournament_id: number;
     stages: Stage[];
 }
 
