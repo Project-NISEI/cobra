@@ -35,8 +35,8 @@
                     <td/>
                 {/if}
                 <td class="ids">
-                    <Identity identity={standing.player.corp_id}/>
-                    <Identity identity={standing.player.runner_id}/>
+                    <Identity identity={standing.player.corp_id} name_if_missing="Corp"/>
+                    <Identity identity={standing.player.runner_id} name_if_missing="Runner"/>
                 </td>
                 <td>{standing.seed}</td>
             {:else}

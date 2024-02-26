@@ -49,8 +49,12 @@
                 </td>
             {/if}
             <td class="ids">
-                <Identity identity={standing.player.corp_id} points="{standing.corp_points}"/>
-                <Identity identity={standing.player.runner_id} points="{standing.runner_points}"/>
+                <Identity identity={standing.player.corp_id}
+                          points={standing.corp_points}
+                          name_if_missing="Corp"/>
+                <Identity identity={standing.player.runner_id}
+                          points={standing.runner_points}
+                          name_if_missing="Runner"/>
             </td>
             <td>{standing.points}</td>
             {#if manual_seed}
