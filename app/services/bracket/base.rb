@@ -4,6 +4,8 @@ module Bracket
 
     attr_reader :stage
 
+    delegate :seed, to: :stage
+
     def initialize(stage)
       @stage = stage
       @pairings = stage.rounds.select { |round| round.completed? }

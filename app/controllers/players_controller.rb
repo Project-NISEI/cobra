@@ -165,7 +165,7 @@ class PlayersController < ApplicationController
       player: standings_player(standing.player),
       policy: standings_policy(standing.player),
       position: i + 1,
-      seed: seed_by_player[standing.player.id]
+      seed: seed_by_player[standing.player&.id]
     } }
   end
 
@@ -198,6 +198,9 @@ class PlayersController < ApplicationController
   end
 
   def standings_player(player, show_ids = true)
+    unless player
+      return nil
+    end
     {
       id: player.id,
       name_with_pronouns: player.name_with_pronouns,
@@ -208,7 +211,7 @@ class PlayersController < ApplicationController
 
   def standings_policy(player)
     {
-      view_decks: player.decks_visible_to(current_user) ? true : false
+      view_decks: player&.decks_visible_to(current_user) ? true : false
     }
   end
 
