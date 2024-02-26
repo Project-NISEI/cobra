@@ -25,7 +25,7 @@
         {#if stage.format === 'double_elim' }
             <DoubleElimStandings stage={stage}/>
         {:else}
-            <SwissStandings stage={stage}/>
+            <SwissStandings stage={stage} manual_seed="{data.manual_seed}"/>
         {/if}
     {/each}
 {:else}

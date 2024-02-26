@@ -1,9 +1,10 @@
 <script lang="ts">
-    import type {Stage} from "./StandingsData";
+    import type {SwissStage} from "./StandingsData";
     import Identity from "../identities/Identity.svelte";
     import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
-    export let stage: Stage;
+    export let stage: SwissStage;
+    export let manual_seed: boolean;
 
     function printSOS(sos: string) {
         return parseFloat(sos).toLocaleString(undefined, {
@@ -25,7 +26,7 @@
         {/if}
         <th>IDs</th>
         <th>Points</th>
-        {#if stage.manual_seed}
+        {#if manual_seed}
             <th>Seed</th>
         {/if}
         <th>SOS</th>
@@ -52,7 +53,7 @@
                 <Identity identity={standing.player.runner_id} points="{standing.runner_points}"/>
             </td>
             <td>{standing.points}</td>
-            {#if stage.manual_seed}
+            {#if manual_seed}
                 <td>{standing.manual_seed}</td>
             {/if}
             <td>{printSOS(standing.sos)}</td>

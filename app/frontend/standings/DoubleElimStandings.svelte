@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type {Stage} from "./StandingsData";
+    import type {CutStage} from "./StandingsData";
     import Identity from "../identities/Identity.svelte";
     import FontAwesomeIcon from "@/widgets/FontAwesomeIcon.svelte";
 
-    export let stage: Stage;
+    export let stage: CutStage;
 </script>
 
 <table class="table table-striped standings">
@@ -31,6 +31,8 @@
                             View decks
                         </a>
                     </td>
+                {:else if stage.any_decks_viewable}
+                    <td/>
                 {/if}
                 <td class="ids">
                     <Identity identity={standing.player.corp_id}/>
@@ -41,6 +43,8 @@
                 <td>???</td>
                 {#if standing.policy.view_decks}
                     <td>???</td>
+                {:else if stage.any_decks_viewable}
+                    <td/>
                 {/if}
                 <td class="ids">
                     <p>???</p>
