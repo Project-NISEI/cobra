@@ -1,8 +1,9 @@
 <script lang="ts">
-    import type {Pairing} from "./PairingsData";
+    import type {Pairing, Round} from "./PairingsData";
     import PlayerName from "./PlayerName.svelte";
     import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
+    export let round: Round;
     export let pairing: Pairing;
 </script>
 
@@ -11,7 +12,7 @@
         Table {pairing.table_number}
     </div>
     {#if pairing.policy.view_decks}
-        <a href="{pairing.round_id}/pairings/{pairing.id}/view_decks">
+        <a href="{round.id}/pairings/{pairing.id}/view_decks">
             <FontAwesomeIcon icon="eye"/>
             View decks
         </a>

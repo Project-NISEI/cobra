@@ -27,7 +27,7 @@ module PairingStrategies
     end
 
     def paired_players
-      return @paired_players ||= players_to_pair.to_a.shuffle.in_groups_of(2, Swissper::Bye) if first_round?
+      return @paired_players ||= players_to_pair.to_a.shuffle(random: random).in_groups_of(2, Swissper::Bye) if first_round?
       return @paired_players ||= PairingStrategies::BigSwiss.new(stage).pair! if players.count > 60
 
       @paired_players ||= Swissper.pair(

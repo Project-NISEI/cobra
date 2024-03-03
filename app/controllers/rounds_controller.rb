@@ -22,7 +22,6 @@ class RoundsController < ApplicationController
       registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref]]
     )
     render json: {
-      tournament_id: @tournament.id,
       policy: {
         update: @tournament.user == current_user
       },
@@ -36,7 +35,6 @@ class RoundsController < ApplicationController
             number: round.number,
             pairings: round.pairings.map { |pairing| {
               id: pairing.id,
-              round_id: pairing.round_id,
               table_number: pairing.table_number,
               policy: {
                 view_decks: view_decks

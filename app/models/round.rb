@@ -10,8 +10,8 @@ class Round < ApplicationRecord
   after_update :cache_standings!, if: Proc.new { saved_change_to_completed? && completed? }
   delegate :cache_standings!, to: :stage
 
-  def pair!
-    Pairer.new(self).pair!
+  def pair!(random = Random)
+    Pairer.new(self, random).pair!
   end
 
   def unpaired_players
@@ -28,7 +28,7 @@ class Round < ApplicationRecord
     return pairings if pairings.count < 5
 
     pairings
-      .in_groups_of((pairings.count/4.0).ceil)
+      .in_groups_of((pairings.count / 4.0).ceil)
       .transpose
       .flatten
   end
