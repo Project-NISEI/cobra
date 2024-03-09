@@ -1,9 +1,20 @@
 #####################################################################
-FROM ruby:3.2.3-alpine3.19 AS build
+FROM ruby:3.2.3-alpine3.19 AS base
 
 # Install essential Linux packages and nodejs
 RUN apk -U upgrade && apk add --no-cache \
-  bash build-base libpq-dev postgresql-client ca-certificates tzdata nodejs npm gcompat \
+  postgresql-client tzdata nodejs gcompat \
+  && rm -rf /var/cache/apk/*
+
+# Ensure our rake version is compatible, so we can run rake tasks in the deployed image, not just the builder
+RUN gem install rake
+
+#####################################################################
+FROM base as build
+
+# Install build packages
+RUN apk -U upgrade && apk add --no-cache \
+  bash build-base libpq-dev ca-certificates npm \
   && rm -rf /var/cache/apk/*
 
 # Define where our application will live inside the image
@@ -33,10 +44,7 @@ COPY . $RAILS_ROOT/
 
 
 #####################################################################
-FROM ruby:3.2.3-alpine3.19 AS final
-
-RUN apk -U upgrade && apk add --no-cache postgresql-client tzdata nodejs gcompat \
-  && rm -rf /var/cache/apk/*
+FROM base AS final
 
 ENV RAILS_ROOT /var/www/cobra
 WORKDIR $RAILS_ROOT
