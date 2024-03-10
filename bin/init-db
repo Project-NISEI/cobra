@@ -21,9 +21,9 @@ compose_for_deploy() {
   docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
 }
 
-run_util() {
+run_as_app() {
   if [ "$APP_RUN_TYPE" == "app-in-docker" ]; then
-    compose_for_deploy run --rm util "$@"
+    compose_for_deploy run --rm app "$@"
   else
     "$@"
   fi
@@ -37,11 +37,11 @@ COBRA_DB_FOUND=$(compose_for_deploy exec db psql --username=postgres \
   | grep -c "$DB_NAME" || true)
 if [ "$COBRA_DB_FOUND" -ne 1 ]; then
   echo "Creating DB..."
-  run_util rake db:create db:schema:load --trace
+  run_as_app bundle exec rake db:create db:schema:load --trace
 else
   echo "Migrating DB..."
-  run_util rake db:migrate --trace
+  run_as_app bundle exec rake db:migrate --trace
 fi
 
 echo "Updating IDs..."
-run_util rake ids:update --trace
+run_as_app bundle exec rake ids:update --trace

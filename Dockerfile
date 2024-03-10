@@ -6,10 +6,9 @@ RUN apk -U upgrade && apk add --no-cache \
   postgresql-client tzdata nodejs gcompat \
   && rm -rf /var/cache/apk/*
 
-# Ensure that the bundler version executed is >= that which created Gemfile.lock
-# Ensure bundler & rake versions match between the builder and deployed image
-RUN gem install bundler
-RUN gem install rake
+# Define where our application will live inside the image
+ENV RAILS_ROOT /var/www/cobra
+ENV BUNDLE_ROOT /var/www/bundle
 
 
 #####################################################################
@@ -19,9 +18,6 @@ FROM base as build
 RUN apk -U upgrade && apk add --no-cache \
   bash build-base libpq-dev ca-certificates npm \
   && rm -rf /var/cache/apk/*
-
-# Define where our application will live inside the image
-ENV RAILS_ROOT /var/www/cobra
 
 # Create application home. App server will need the pids dir so just create everything in one shot
 RUN mkdir -p $RAILS_ROOT/tmp/pids
@@ -34,8 +30,11 @@ RUN bundle config --global frozen 1
 
 COPY Gemfile Gemfile.lock package.json package-lock.json ./
 
+# Prevent bundler warnings; ensure that the bundler version executed is >= that which created Gemfile.lock
+RUN gem install bundler
+
 # Finish establishing our Ruby enviornment
-RUN bundle config set --local path "vendor/bundle" && \
+RUN bundle config set --local path $BUNDLE_ROOT && \
   bundle config set force_ruby_platform true && \
   bundle install --jobs 4 --retry 3
 RUN npm install
@@ -46,10 +45,10 @@ COPY . $RAILS_ROOT/
 #####################################################################
 FROM base AS final
 
-ENV RAILS_ROOT /var/www/cobra
 WORKDIR $RAILS_ROOT
-RUN bundle config set --local path "vendor/bundle"
+RUN bundle config set --local path $BUNDLE_ROOT
 COPY --from=build $RAILS_ROOT $RAILS_ROOT/
+COPY --from=build $BUNDLE_ROOT $BUNDLE_ROOT/
 
 EXPOSE 3000
 
