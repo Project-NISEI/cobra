@@ -44,7 +44,12 @@ RUN bundle config set --local path "vendor/bundle"
 COPY --from=build $RAILS_ROOT $RAILS_ROOT/
 
 EXPOSE 3000
+RUN chmod +x ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
+
+# Start the main process.
+CMD ["/bin/sh", "-c", "bundle exec rails server -b 0.0.0.0"]
 
 # Define the script we want run once the container boots
 # Use the "exec" form of CMD so our script shuts down gracefully on SIGTERM (i.e. `docker stop`)
-CMD [ "/bin/sh", "-c", "bundle exec unicorn -c config/containers/unicorn.rb -E $RAILS_ENV"]
+#CMD [ "/bin/sh", "-c", "bundle exec unicorn -c config/containers/unicorn.rb -E $RAILS_ENV"]
