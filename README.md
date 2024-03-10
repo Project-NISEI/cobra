@@ -105,6 +105,9 @@ echo "RAILS_ENV=development" >> .env
 bin/deploy
 ```
 
+This will build the Docker image, run rake tasks to initialise or migrate the database, update Netrunner identities,
+precompile assets, and bring up the app in Docker.
+
 To run tests in your docker container, you will need to override the environment, like so:
 ```shell
 docker compose exec -e RAILS_ENV=test app rspec
