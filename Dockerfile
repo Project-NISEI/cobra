@@ -6,8 +6,11 @@ RUN apk -U upgrade && apk add --no-cache \
   postgresql-client tzdata nodejs gcompat \
   && rm -rf /var/cache/apk/*
 
-# Ensure our rake version is compatible, so we can run rake tasks in the deployed image, not just the builder
+# Ensure that the bundler version executed is >= that which created Gemfile.lock
+# Ensure bundler & rake versions match between the builder and deployed image
+RUN gem install bundler
 RUN gem install rake
+
 
 #####################################################################
 FROM base as build
@@ -30,9 +33,6 @@ WORKDIR $RAILS_ROOT
 RUN bundle config --global frozen 1
 
 COPY Gemfile Gemfile.lock package.json package-lock.json ./
-
-# Prevent bundler warnings; ensure that the bundler version executed is >= that which created Gemfile.lock
-RUN gem install bundler
 
 # Finish establishing our Ruby enviornment
 RUN bundle config set --local path "vendor/bundle" && \
