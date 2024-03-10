@@ -27,37 +27,6 @@ services:
       - cobra-assets:/var/www/cobra/public/assets
       - cobra-tmp:/var/www/cobra/tmp
 
-  # service configuration for running rake tasks, eg. DB migration, precompiling assets, IDs update
-  # (this is different because dev dependencies required for rake tasks are not included in the app image)
-  util:
-    build:
-      context: .
-      target: build
-
-    # sources environment variable configuration for our app
-    env_file: .env
-
-    depends_on: 
-      - db
-
-    # only run when invoked
-    restart: "no"
-    deploy:
-      mode: replicated
-      replicas: 0
-
-    # rely on the RAILS_ENV value of the host machine
-    environment:
-      - POSTGRES_PASSWORD
-      - RAILS_ENV
-
-    volumes:
-      - ./config/database.yml:/var/www/cobra/config/database.yml
-      - ./config/secrets.yml:/var/www/cobra/config/secrets.yml
-      - cobra-logs:/var/www/cobra/log
-      - cobra-assets:/var/www/cobra/public/assets
-      - cobra-tmp:/var/www/cobra/tmp
-
   # service configuration for our database
   db:
     # use the preferred version of the official Postgres image

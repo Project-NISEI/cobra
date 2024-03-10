@@ -20,13 +20,13 @@ compose_for_deploy() {
 }
 
 compose_for_deploy up -d db
-compose_for_deploy build app util
+compose_for_deploy build app
 
 echo "Initialising DB..."
 bin/init-db app-in-docker
 
 echo "Precompiling assets..."
-compose_for_deploy run --rm util rake assets:precompile --trace
+compose_for_deploy run --rm app bundle exec rake assets:precompile --trace
 
 if [ "$COMPOSE_FILE" == "prod" ]; then
   compose_for_deploy up -d app --force-recreate
