@@ -5,6 +5,8 @@ services:
   app:
     ports:
       - "3000:3000"
+    volumes:
+      - .:/var/www/cobra/
   db:
     ports:
       - "5432:5432"
