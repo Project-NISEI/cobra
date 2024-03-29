@@ -1,0 +1,12 @@
+version: "3.2"
+
+services:
+  # service configuration for our dockerized Rails app
+  app:
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/var/www/cobra/
+  db:
+    ports:
+      - "5432:5432"

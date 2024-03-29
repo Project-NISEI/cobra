@@ -36,9 +36,12 @@ COBRA_DB_FOUND=$(compose_for_deploy exec db psql --username=postgres \
   -c "SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('$DB_NAME');" --csv \
   | grep -c "$DB_NAME" || true)
 if [ "$COBRA_DB_FOUND" -ne 1 ]; then
-  run_as_app rake db:create db:schema:load --trace
+  echo "Creating DB..."
+  run_as_app bundle exec rake db:create db:schema:load --trace
 else
-  run_as_app rake db:migrate --trace
+  echo "Migrating DB..."
+  run_as_app bundle exec rake db:migrate --trace
 fi
 
-run_as_app rake ids:update --trace
+echo "Updating IDs..."
+run_as_app bundle exec rake ids:update --trace
