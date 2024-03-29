@@ -409,7 +409,7 @@ RSpec.describe PlayersController do
 
     describe 'after first swiss round' do
       before(:each) do
-        tournament.pair_new_round! Random.new(0)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
         round = tournament.current_stage.rounds.last
         round.pairings.each { |pairing|
           pairing.update!(score1: 6, score2: 0)
@@ -444,14 +444,14 @@ RSpec.describe PlayersController do
 
     describe 'at start of cut' do
       before(:each) do
-        tournament.pair_new_round! Random.new(0)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
         round = tournament.current_stage.rounds.last
         round.pairings.each { |pairing|
           pairing.update!(score1: 6, score2: 0)
         }
         round.update!(completed: true)
         tournament.cut_to!(:double_elim, 3)
-        tournament.pair_new_round! Random.new(0)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
       end
       it 'displays without logging in' do
         sign_in nil
@@ -490,14 +490,14 @@ RSpec.describe PlayersController do
 
     describe 'after first round of cut' do
       before(:each) do
-        tournament.pair_new_round! Random.new(0)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
         swiss_round = tournament.current_stage.rounds.last
         swiss_round.pairings.each { |pairing|
           pairing.update!(score1: 6, score2: 0)
         }
         swiss_round.update!(completed: true)
         tournament.cut_to!(:double_elim, 3)
-        tournament.pair_new_round! Random.new(0)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
         cut_round = tournament.current_stage.rounds.last
         cut_round.pairings.each { |pairing|
           pairing.update!(score1: 3, score2: 0)
