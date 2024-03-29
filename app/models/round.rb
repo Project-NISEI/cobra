@@ -10,8 +10,8 @@ class Round < ApplicationRecord
   after_update :cache_standings!, if: Proc.new { saved_change_to_completed? && completed? }
   delegate :cache_standings!, to: :stage
 
-  def pair!(random = Random)
-    Pairer.new(self, random).pair!
+  def pair!
+    Pairer.new(self).pair!
   end
 
   def unpaired_players

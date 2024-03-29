@@ -21,6 +21,7 @@ class Tournament < ApplicationRecord
     swiss_decks_public: 2
   }
 
+  delegate :new_round!, to: :current_stage
   delegate :pair_new_round!, to: :current_stage
 
   validates :name, :slug, presence: true

@@ -45,7 +45,7 @@ RSpec.describe RoundsController do
 
     describe 'during first swiss round before any results' do
       before(:each) do
-        tournament.pair_new_round! Random.new(0)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
       end
       it 'displays without logging in' do
         sign_in nil
@@ -101,9 +101,9 @@ RSpec.describe RoundsController do
 
     describe 'during cut before any results' do
       before(:each) do
-        tournament.pair_new_round! Random.new(0)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
         tournament.cut_to!(:double_elim, 3)
-        tournament.pair_new_round! Random.new(0)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
       end
       it 'displays without logging in' do
         sign_in nil
