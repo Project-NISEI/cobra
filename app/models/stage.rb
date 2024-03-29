@@ -14,7 +14,7 @@ class Stage < ApplicationRecord
   }
 
   def pair_new_round!
-    new_round! { |round| round.pair! }
+    new_round!.tap { |round| round.pair! }
   end
 
   def new_round!
