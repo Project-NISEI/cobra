@@ -22,7 +22,7 @@ RSpec.describe Round do
     it 'invokes Pairer' do
       round.pair!
 
-      expect(Pairer).to have_received(:new).with(round, Random)
+      expect(Pairer).to have_received(:new).with(round)
       expect(pairer).to have_received(:pair!)
     end
   end
