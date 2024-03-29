@@ -28,7 +28,7 @@ class Round < ApplicationRecord
     return pairings if pairings.count < 5
 
     pairings
-      .in_groups_of((pairings.count/4.0).ceil)
+      .in_groups_of((pairings.count / 4.0).ceil)
       .transpose
       .flatten
   end

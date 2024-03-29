@@ -14,10 +14,12 @@ class Stage < ApplicationRecord
   }
 
   def pair_new_round!
+    new_round!.tap { |round| round.pair! }
+  end
+
+  def new_round!
     number = (rounds.pluck(:number).max || 0) + 1
-    rounds.create(number: number, length_minutes: default_round_minutes).tap do |round|
-      round.pair!
-    end
+    rounds.create(number: number, length_minutes: default_round_minutes)
   end
 
   def standings
