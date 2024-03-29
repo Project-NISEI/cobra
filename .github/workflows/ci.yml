@@ -48,11 +48,6 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Install NPM
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       - name: Set up Rails
         run: |
           cp config/secrets.example.yml config/secrets.yml
@@ -61,6 +56,14 @@ jobs:
       - name: Set up database schema
         run: |
           bin/rails db:create db:schema:load --trace
+
+      - name: Install NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install NPM dependencies
+        run: npm install
 
       - name: Run tests
         run: bundle exec rspec
