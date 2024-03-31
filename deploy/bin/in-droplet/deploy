@@ -11,6 +11,9 @@ update_git() {
   local GIT_DIR=$1
   local GIT_URL=$2
   local BRANCH=$3
+  echo "Updating git repo at $GIT_DIR"
+  echo "URL: $GIT_URL"
+  echo "Branch: $BRANCH"
   if [[ ! -d $GIT_DIR ]]; then
     git clone -b "$BRANCH" "$GIT_URL" "$GIT_DIR"
   fi
