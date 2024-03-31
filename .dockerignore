@@ -23,6 +23,7 @@
 !/app/assets/builds/.keep
 /docker-compose*
 /config/database*
-!/config/database.build.yml
 /config/secrets*
+!/config/database.build.yml
+!/config/secrets.build.yml
 /data
