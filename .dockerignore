@@ -21,3 +21,4 @@
 /docker-compose*
 /config/database*
 /config/secrets*
+/data
