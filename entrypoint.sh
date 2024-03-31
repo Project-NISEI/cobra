@@ -7,4 +7,3 @@ if [ -f tmp/pids/server.pid ]; then
 fi
 
 exec "$@"
-
