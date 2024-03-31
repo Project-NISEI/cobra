@@ -48,4 +48,4 @@ RUN chmod +x ./entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
 
 # Start the main process.
-CMD ["/bin/sh", "-c", "bundle exec rails server -b 0.0.0.0"]
+CMD ["/bin/sh", "-c", "bundle exec puma"]
