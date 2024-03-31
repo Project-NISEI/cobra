@@ -19,7 +19,7 @@ services:
       - "3000"
 
     volumes:
-      - cobra-logs:/var/www/cobra/log
+      - cobra-vite:/var/www/cobra/public/vite
 
   # service configuration for our web server
   web:
@@ -47,6 +47,7 @@ services:
     volumes:
       - cobra-logs:/var/www/cobra/log
       - cobra-assets:/var/www/cobra/public/assets
+      - cobra-vite:/var/www/cobra/public/vite
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
 
@@ -60,4 +61,5 @@ services:
 
 volumes:
     cobra-assets:
+    cobra-vite:
     cobra-logs:
