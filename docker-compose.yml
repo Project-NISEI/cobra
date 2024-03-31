@@ -25,6 +25,7 @@ services:
       - ./config/secrets.yml:/var/www/cobra/config/secrets.yml
       - cobra-logs:/var/www/cobra/log
       - cobra-assets:/var/www/cobra/public/assets
+      - cobra-vite:/var/www/cobra/public/vite
       - cobra-tmp:/var/www/cobra/tmp
 
   # service configuration for our database
@@ -45,6 +46,7 @@ services:
 
 volumes:
   cobra-assets:
+  cobra-vite:
   cobra-logs:
   cobra-postgres:
   cobra-tmp:

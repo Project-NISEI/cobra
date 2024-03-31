@@ -18,9 +18,6 @@ services:
     expose:
       - "3000"
 
-    volumes:
-      - cobra-vite:/var/www/cobra/public/vite
-
   # service configuration for our web server
   web:
     restart: unless-stopped
