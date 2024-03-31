@@ -40,6 +40,9 @@ RUN bundle config set --local path $BUNDLE_ROOT && \
 RUN npm install
 
 COPY . $RAILS_ROOT/
+RUN cp $RAILS_ROOT/config/database.build.yml $RAILS_ROOT/config/database.yml
+RUN bundle exec rake assets:precompile
+RUN rm $RAILS_ROOT/config/database.yml
 
 
 #####################################################################

@@ -43,8 +43,6 @@ services:
 
     volumes:
       - cobra-logs:/var/www/cobra/log
-      - cobra-assets:/var/www/cobra/public/assets
-      - cobra-vite:/var/www/cobra/public/vite
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
 
@@ -57,6 +55,4 @@ services:
       - ./data/certbot/www:/var/www/certbot
 
 volumes:
-    cobra-assets:
-    cobra-vite:
     cobra-logs:

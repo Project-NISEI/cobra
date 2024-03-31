@@ -20,5 +20,6 @@
 !/app/assets/builds/.keep
 /docker-compose*
 /config/database*
+!/config/database.build.yml
 /config/secrets*
 /data
