@@ -23,7 +23,7 @@ services:
       - -c
       - |
         rm -rf /var/www/assets/*
-        cp public/assets/* /var/www/assets
+        cp -a public/assets/* /var/www/assets
         bundle exec unicorn -c config/containers/unicorn.rb -E $RAILS_ENV
 
     volumes:
