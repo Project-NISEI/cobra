@@ -18,9 +18,6 @@ WORKDIR $RAILS_ROOT
 # create log directory
 RUN mkdir log
 
-# copy over static assets
-COPY public public/
-
 # copy our Nginx config template
 COPY config/containers/nginx.conf /tmp/cobra.nginx
 

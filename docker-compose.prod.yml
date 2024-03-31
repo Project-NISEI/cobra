@@ -18,6 +18,17 @@ services:
     expose:
       - "3000"
 
+    command:
+      - /bin/sh
+      - -c
+      - |
+        rm -rf /var/www/assets/*
+        cp public/assets/* /var/www/assets
+        bundle exec unicorn -c config/containers/unicorn.rb -E $RAILS_ENV
+
+    volumes:
+      - cobra-assets:/var/www/assets
+
   # service configuration for our web server
   web:
     restart: unless-stopped
@@ -43,6 +54,7 @@ services:
 
     volumes:
       - cobra-logs:/var/www/cobra/log
+      - cobra-assets:/var/www/cobra/public/assets
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
 
@@ -55,4 +67,5 @@ services:
       - ./data/certbot/www:/var/www/certbot
 
 volumes:
+    cobra-assets:
     cobra-logs:
