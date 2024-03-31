@@ -57,6 +57,14 @@ jobs:
         run: |
           bin/rails db:create db:schema:load --trace
 
+      - name: Install NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install NPM dependencies
+        run: npm install
+
       - name: Run tests
         run: bundle exec rspec
 

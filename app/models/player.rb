@@ -61,16 +61,20 @@ class Player < ApplicationRecord
   def corp_identity_object
     if corp_identity_ref
       corp_identity_ref
-    else
+    elsif corp_identity
       Identity.find_or_initialize_by(name: corp_identity)
+    else
+      Identity.new
     end
   end
 
   def runner_identity_object
     if runner_identity_ref
       runner_identity_ref
-    else
+    elsif runner_identity
       Identity.find_or_initialize_by(name: runner_identity)
+    else
+      Identity.new
     end
   end
 

@@ -48,14 +48,14 @@ RSpec.describe 'a completed top cut with a player with no seed' do
     set_round_score1_and_complete 5, 3
   end
 
-  it 'displays tournament standings with player names' do
-    visit standings_tournament_players_path(tournament)
+  it 'loads tournament standings with player names' do
+    get standings_data_tournament_players_path(tournament)
     aggregate_failures do
-      expect(page).to have_content('Alice')
-      expect(page).to have_content('Bob')
-      expect(page).to have_content('Carl')
-      expect(page).to have_content('Doris')
-      expect(page).to have_content('Emily')
+      expect(response.body).to include('Alice')
+      expect(response.body).to include('Bob')
+      expect(response.body).to include('Carl')
+      expect(response.body).to include('Doris')
+      expect(response.body).to include('Emily')
     end
   end
 
