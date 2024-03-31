@@ -12,6 +12,9 @@
 /.DS_STORE
 /public/packs
 /public/packs-test
+/public/assets/*
+/public/vite
+/public/vite-dev
 /node_modules
 /yarn-error.log
 /yarn-debug.log*
@@ -21,4 +24,6 @@
 /docker-compose*
 /config/database*
 /config/secrets*
+!/config/database.build.yml
+!/config/secrets.build.yml
 /data

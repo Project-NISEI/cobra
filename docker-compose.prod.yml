@@ -18,6 +18,19 @@ services:
     expose:
       - "3000"
 
+    command:
+      - /bin/sh
+      - -c
+      - |
+        rm -rf /var/www/assets/*
+        cp -a public/assets/* /var/www/assets
+        cp -a public/vite/* /var/www/vite
+        bundle exec unicorn -c config/containers/unicorn.rb -E $RAILS_ENV
+
+    volumes:
+      - cobra-assets:/var/www/assets
+      - cobra-vite:/var/www/vite
+
   # service configuration for our web server
   web:
     restart: unless-stopped
