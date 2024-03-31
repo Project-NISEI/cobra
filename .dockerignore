@@ -12,6 +12,9 @@
 /.DS_STORE
 /public/packs
 /public/packs-test
+/public/assets/*
+/public/vite
+/public/vite-dev
 /node_modules
 /yarn-error.log
 /yarn-debug.log*
