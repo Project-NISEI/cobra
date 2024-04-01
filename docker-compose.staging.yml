@@ -28,14 +28,7 @@ services:
     expose:
       - "3000"
 
-    volumes:
-      - cobra-logs:/var/www/cobra/log
-
 networks:
   backend:
   null_signal:
     external: true
-
-volumes:
-  cobra-assets:
-  cobra-logs:

@@ -5,7 +5,9 @@ set -x # Trace commands
 set -o pipefail
 
 # Get Updates
-apt-get -y update && apt-get -y dist-upgrade && apt-get -y autoremove
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
+apt-get autoremove
 
 # Ensure git is installed
 apt-get -y install git
