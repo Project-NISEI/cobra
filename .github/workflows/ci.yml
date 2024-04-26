@@ -144,7 +144,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Pulumi up
         id: pulumi
-        uses: pulumi/actions@v3
+        uses: pulumi/actions@v5
         with:
           command: up
           stack-name: ${{ needs.test.outputs.deploy-stack }}
