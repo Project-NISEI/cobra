@@ -24,7 +24,7 @@ update_git() {
   popd
 }
 
-update_git nginx https://github.com/Project-NISEI/nsg-infra.git main
+update_git nginx https://github.com/Project-NISEI/nginx-proxy.git main
 update_git cobra "https://github.com/$GIT_REPOSITORY.git" "$GIT_BRANCH"
 
 pushd nginx
@@ -45,6 +45,10 @@ pushd cobra
   echo "NRDB_SECRET=$NRDB_SECRET"
   echo "NISEI_NRDB_CLIENT=$NISEI_NRDB_CLIENT"
   echo "NISEI_NRDB_SECRET=$NISEI_NRDB_SECRET"
+  echo "VIRTUAL_HOST=$COBRA_DOMAIN"
+  echo "VIRTUAL_PORT=3000"
+  echo "LETSENCRYPT_HOST=$COBRA_DOMAIN"
+  echo "LETSENCRYPT_EMAIL=website@nisei.net"
 } > ".env"
 
 cp config/database.example.yml config/database.yml
