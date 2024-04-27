@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+
+# This .env file is uploaded by /deploy/bin/github-actions-set-droplet-env
+# For required variables set in this file for this script, see /bin/deploy
+source .env
+
+pushd cobra
+
+{
+  echo "RAILS_ENV=$RAILS_ENV"
+  echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
+  echo "SECRET_KEY_BASE=$SECRET_KEY_BASE"
+  echo "COMPOSE_FILE=$COMPOSE_FILE"
+  echo "COBRA_DOMAIN=$COBRA_DOMAIN"
+  echo "NRDB_CLIENT=$NRDB_CLIENT"
+  echo "NRDB_SECRET=$NRDB_SECRET"
+  echo "NISEI_NRDB_CLIENT=$NISEI_NRDB_CLIENT"
+  echo "NISEI_NRDB_SECRET=$NISEI_NRDB_SECRET"
+} > ".env"
+
+cp config/database.example.yml config/database.yml
+cp config/secrets.example.yml config/secrets.yml
+
+popd

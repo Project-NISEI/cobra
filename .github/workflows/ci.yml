@@ -157,5 +157,15 @@ jobs:
         run: |
           bin/scan-droplet-ssh
           bin/wait-for-cloud-init
-      - name: Deploy code
-        run: bin/github-actions-deploy-in-droplet
+      - name: Set droplet environment variables
+        run: bin/github-actions-set-droplet-env
+      - name: Update Git repositories
+        run: bin/github-actions-redirect-to-droplet bin/in-droplet/update-git
+      - name: Deploy NGINX
+        run: bin/github-actions-redirect-to-droplet bin/in-droplet/deploy-nginx
+      - name: Configure Cobra
+        run: bin/github-actions-redirect-to-droplet bin/in-droplet/configure-cobra
+      - name: Build Cobra
+        run: bin/github-actions-ssh cobra/bin/build
+      - name: Deploy Cobra
+        run: bin/github-actions-ssh cobra/bin/deploy

@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+echo "Running script in droplet via redirect: $1"
+ssh -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" < "$1"
