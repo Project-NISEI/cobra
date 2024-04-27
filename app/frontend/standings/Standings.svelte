@@ -3,13 +3,14 @@
     import DoubleElimStandings from "./DoubleElimStandings.svelte";
     import type {StandingsData} from "./StandingsData";
     import SwissStandings from "./SwissStandings.svelte";
+    import {standings_data_tournament_players_path} from "../../assets/javascripts/routes";
 
-    export let tournamentId: String;
+    export let tournamentId: string;
     let data: StandingsData;
 
     onMount(async () => {
         const response = await fetch(
-            `/tournaments/${tournamentId}/players/standings_data`,
+            standings_data_tournament_players_path(tournamentId),
             {
                 method: 'GET',
             }

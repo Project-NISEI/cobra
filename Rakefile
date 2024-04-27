@@ -4,3 +4,6 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+# Update js-routes file before javascript build
+task "javascript:build" => "js:routes:typescript"
