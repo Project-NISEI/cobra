@@ -36,7 +36,7 @@ RUN gem install bundler
 # Finish establishing our Ruby environment
 RUN bundle config set --local path $BUNDLE_ROOT && \
   bundle config set force_ruby_platform true && \
-  bundle install --jobs 4 --retry 3 --verbose
+  bundle install --verbose
 RUN npm install
 
 COPY . $RAILS_ROOT/
