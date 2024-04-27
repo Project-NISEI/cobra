@@ -14,6 +14,7 @@ pushd "${PROJECT_DIR}"
 # ABR_AUTH
 # NRDB_CLIENT
 # NRDB_SECRET
+# RAILS_SERVE_STATIC_FILES (unless serving static files from proxy)
 # Required if using prod or staging compose file:
 # COBRA_DOMAIN
 source .env
