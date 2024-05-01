@@ -60,4 +60,5 @@ Rails.application.configure do
 
   config.abr_host = 'http://localhost:8000'
   config.nrdb_api_host = 'http://localhost:9000'
+
 end
