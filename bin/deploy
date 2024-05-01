@@ -9,8 +9,13 @@ pushd "${PROJECT_DIR}"
 # POSTGRES_PASSWORD: should be randomly generated per instance
 # Optional:
 # COMPOSE_FILE: prod, staging, override (for local dev - this is the default)
-# Required if using prod compose file:
+# Required if using production Rails environment:
 # SECRET_KEY_BASE: A 64 bit hex key for rails, should be randomly generated
+# ABR_AUTH
+# NRDB_CLIENT
+# NRDB_SECRET
+# RAILS_SERVE_STATIC_FILES (unless serving static files from proxy)
+# Required if using prod or staging compose file:
 # COBRA_DOMAIN
 source .env
 COMPOSE_FILE=${COMPOSE_FILE-override}

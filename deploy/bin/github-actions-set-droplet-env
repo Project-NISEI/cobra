@@ -5,19 +5,26 @@ DIR=$(dirname "${BASH_SOURCE[0]}")
 DEPLOY_DIR=$(cd "$DIR" && cd .. && pwd)
 STACK=$(pulumi stack --show-name)
 DROPLET_IP=$(pulumi stack output droplet_public_ip)
+
 PRIVATE_KEY_FILE="$DEPLOY_DIR/id_cobra_$STACK"
 KNOWN_HOSTS_FILE="$DEPLOY_DIR/known_hosts_cobra_$STACK"
-ENV_FILE="$DEPLOY_DIR/.env"
 
 touch "$PRIVATE_KEY_FILE"
 chmod u=rw,g=,o= "$PRIVATE_KEY_FILE"
 pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
 
+{
+  echo "DROPLET_IP=$DROPLET_IP"
+  echo "PRIVATE_KEY_FILE=$PRIVATE_KEY_FILE"
+  echo "KNOWN_HOSTS_FILE=$KNOWN_HOSTS_FILE"
+} >> "$GITHUB_ENV"
+
+ENV_FILE="$DEPLOY_DIR/.env"
 touch "$ENV_FILE"
 chmod u=rw,g=,o= "$ENV_FILE"
 {
   echo "RAILS_ENV=production"
-  echo "COMPOSE_FILE=prod"
+  echo "COMPOSE_FILE=staging"
   echo "POSTGRES_PASSWORD=$(pulumi stack output postgres_password --show-secrets)"
   echo "SECRET_KEY_BASE=$(pulumi stack output rails_secret_key_base --show-secrets)"
   echo "COBRA_DOMAIN=$(pulumi stack output cobra_domain)"
@@ -32,7 +39,3 @@ chmod u=rw,g=,o= "$ENV_FILE"
 echo "Retrieved deployment details, uploading .env file..."
 scp -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "$ENV_FILE" "root@$DROPLET_IP:~/.env"
 rm "$ENV_FILE"
-
-echo "Connecting for deployment..."
-ssh -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" < "$DIR/in-droplet/deploy"
-rm "$PRIVATE_KEY_FILE"

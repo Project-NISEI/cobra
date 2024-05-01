@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+echo "Running SSH with command arguments: $*"
+ssh -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" "$@"

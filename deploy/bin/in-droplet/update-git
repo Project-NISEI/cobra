@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+# This .env file is uploaded by /deploy/bin/github-actions-set-droplet-env
+# Required variables set in this file for this script:
+# GIT_REPOSITORY: owner/repository
+# GIT_BRANCH: branchname
+source .env
+
+update_git() {
+  local GIT_DIR=$1
+  local GIT_URL=$2
+  local BRANCH=$3
+  echo "Updating git repo at $GIT_DIR"
+  echo "URL: $GIT_URL"
+  echo "Branch: $BRANCH"
+  if [[ ! -d $GIT_DIR ]]; then
+    git clone -b "$BRANCH" "$GIT_URL" "$GIT_DIR"
+  fi
+  pushd "$GIT_DIR"
+  git remote set-url origin "$GIT_URL"
+  git fetch
+  git checkout -B "$BRANCH" --track "origin/$BRANCH" --force
+  popd
+}
+
+update_git nginx https://github.com/Project-NISEI/nginx-proxy.git main
+update_git cobra "https://github.com/$GIT_REPOSITORY.git" "$GIT_BRANCH"
