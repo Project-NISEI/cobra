@@ -33,10 +33,10 @@ COPY Gemfile Gemfile.lock package.json package-lock.json ./
 # Prevent bundler warnings; ensure that the bundler version executed is >= that which created Gemfile.lock
 RUN gem install bundler
 
-# Finish establishing our Ruby enviornment
+# Finish establishing our Ruby environment
 RUN bundle config set --local path $BUNDLE_ROOT && \
   bundle config set force_ruby_platform true && \
-  bundle install --jobs 4 --retry 3
+  bundle install --verbose
 RUN npm install
 
 COPY . $RAILS_ROOT/

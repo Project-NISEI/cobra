@@ -27,7 +27,9 @@ droplet = do.Droplet(
     user_data=user_data,
     ssh_keys=[ssh_key.fingerprint])
 
-public_ip = do.ReservedIp("cobra-public-ip", droplet_id=droplet.id, region=droplet.region)
+public_ip = do.ReservedIp("cobra-public-ip",
+    region=droplet.region,
+    droplet_id=droplet.id.apply(lambda id: int(id)))
 
 pulumi.export("droplet_public_ip", public_ip.ip_address)
 pulumi.export("private_key_openssh", private_key.private_key_openssh)
