@@ -3,4 +3,5 @@ JsRoutes.setup do |c|
   # ESM, CJS, AMD, UMD or nil
   # c.module_type = "ESM"
   c.module_type = nil
+  c.namespace = 'Routes'
 end

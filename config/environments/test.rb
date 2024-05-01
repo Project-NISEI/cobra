@@ -60,8 +60,4 @@ Rails.application.configure do
 
   config.abr_host = 'http://localhost:8000'
   config.nrdb_api_host = 'http://localhost:9000'
-
-  # Automatically update js-routes file
-  # when routes.rb is changed
-  config.middleware.use(JsRoutes::Middleware)
 end

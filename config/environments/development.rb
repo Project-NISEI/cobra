@@ -66,8 +66,4 @@ Rails.application.configure do
       Rails.logger.warn "Failed setting Flipper features: #{e.class}"
     end
   end
-
-  # Automatically update js-routes file
-  # when routes.rb is changed
-  config.middleware.use(JsRoutes::Middleware)
 end

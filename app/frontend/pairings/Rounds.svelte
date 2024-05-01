@@ -2,21 +2,15 @@
     import {onMount} from 'svelte';
     import Stage from "./Stage.svelte";
     import type {PairingsData} from "./PairingsData";
+    import {loadPairings} from "./PairingsData";
     import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
     import {showIdentities} from "./ShowIdentities"
-    import {pairings_data_tournament_rounds_path} from "../../assets/javascripts/routes";
 
     export let tournamentId: string;
     let data: PairingsData;
 
     onMount(async () => {
-        const response = await fetch(
-            pairings_data_tournament_rounds_path(tournamentId),
-            {
-                method: 'GET',
-            }
-        );
-        data = await response.json();
+        data = await loadPairings(tournamentId);
     });
 
     function toggleIdentities() {

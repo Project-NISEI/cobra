@@ -1,5 +1,19 @@
 import type {Identity} from "../identities/Identity";
 
+declare namespace Routes {
+    function pairings_data_tournament_rounds_path(tournamentId: string): string;
+}
+
+export async function loadPairings(tournamentId: string): Promise<PairingsData> {
+    const response = await fetch(
+        Routes.pairings_data_tournament_rounds_path(tournamentId),
+        {
+            method: 'GET',
+        }
+    );
+    return response.json();
+}
+
 export type PairingsData = {
     policy: TournamentPolicies;
     is_player_meeting: boolean;
