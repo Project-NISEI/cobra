@@ -28,6 +28,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'flipper'
 gem 'flipper-active_record'
 gem 'vite_rails'
+gem 'js-routes'
 
 group :development, :test do
   gem 'pry'
