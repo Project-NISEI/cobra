@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.2.3'
+ruby '~> 3.2'
 
 # Gems that have trouble with native packages on alpine.
 gem 'nokogiri', force_ruby_platform: true
@@ -48,5 +48,10 @@ end
 
 group :development do
   gem 'listen'
+  gem 'rubocop'
+  gem 'rubocop-factory_bot'
+  gem 'rubocop-rails'
+  gem 'rubocop-rspec'
+  gem 'rubocop-rspec_rails'
   gem 'spring'
 end
