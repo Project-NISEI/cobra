@@ -67,7 +67,7 @@
                 ],
                 "ruby.format": "rubocop",
                 "rubocop.yjitEnabled": false,
-                "editor.formatOnSave": true,
+                "editor.formatOnSave": false,
                 "rubyLsp.rubyExecutablePath": "/usr/local/bin/ruby",
                 "rubyLsp.rubyVersionManager": {
                   "identifier": "custom"
