@@ -14,8 +14,9 @@
             "version": "latest"
         },
         "ghcr.io/devcontainers/features/ruby:1": {
-            "version": "3.2" // Change to match Ruby version from Gemfile 
+            "version": "3.2.4" // Change to match Ruby version from Gemfile 
         },
+        "ruby": "3.2.4",
         "ghcr.io/devcontainers/features/node:1": {
             "version": 20 // Change Node version as required
         },
@@ -66,7 +67,11 @@
                 ],
                 "ruby.format": "rubocop",
                 "rubocop.yjitEnabled": false,
-                "editor.formatOnSave": true
+                "editor.formatOnSave": true,
+                "rubyLsp.rubyExecutablePath": "/usr/local/bin/ruby",
+                "rubyLsp.rubyVersionManager": {
+                  "identifier": "custom"
+                }
             },
             "extensions": [
                 "IBM.output-colorizer",

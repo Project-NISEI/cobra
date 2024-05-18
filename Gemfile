@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '~> 3.2'
+ruby '~> 3.2.0'
 
 # Gems that have trouble with native packages on alpine.
 gem 'nokogiri', force_ruby_platform: true
