@@ -27,21 +27,7 @@ droplet = do.Droplet(
     ssh_keys=[ssh_key.fingerprint],
     opts=ResourceOptions(protect=True))
 
-config_reserved_ip = config.get("reserved_ip")
-if config_reserved_ip:
-    do.ReservedIpAssignment("cobra-public-ip-assignment",
-                            ip_address=config_reserved_ip,
-                            droplet_id=droplet.id.apply(lambda id: int(id)))
-    public_ip = config_reserved_ip
-elif config.get_bool("deploy_reserved_ip"):
-    reserved_ip = do.ReservedIp("cobra-public-ip",
-                                region=droplet.region,
-                                droplet_id=droplet.id.apply(lambda id: int(id)))
-    public_ip = reserved_ip.ip_address
-else:
-    public_ip = droplet.ipv4_address
-
-pulumi.export("droplet_public_ip", public_ip)
+pulumi.export("droplet_public_ip", droplet.ipv4_address)
 pulumi.export("private_key_openssh", private_key.private_key_openssh)
 
 if config.get_bool("configure_cobra"):
