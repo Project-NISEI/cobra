@@ -23,6 +23,8 @@ droplet = do.Droplet(
     image="ubuntu-22-04-x64",
     region=config.get("region", "lon1"),
     size=config.get("size", "s-1vcpu-1gb"),
+    backups=config.get_bool("backups", True),
+    monitoring=config.get_bool("monitoring", True),
     user_data=user_data,
     ssh_keys=[ssh_key.fingerprint],
     opts=ResourceOptions(protect=True))
