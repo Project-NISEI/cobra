@@ -30,16 +30,26 @@ droplet = do.Droplet(
     ssh_keys=[ssh_key.fingerprint],
     opts=ResourceOptions(protect=True))
 
-public_ip = do.ReservedIp("cobra-public-ip",
-    region=droplet.region,
-    droplet_id=droplet.id.apply(lambda id: int(id)))
+config_reserved_ip = config.get("reserved_ip")
+if config_reserved_ip:
+    do.ReservedIpAssignment("cobra-public-ip-assignment",
+                            ip_address=config_reserved_ip,
+                            droplet_id=droplet.id.apply(lambda id: int(id)))
+    public_ip = config_reserved_ip
+elif config.get_bool("deploy_reserved_ip"):
+    reserved_ip = do.ReservedIp("cobra-public-ip",
+        region=droplet.region,
+        droplet_id=droplet.id.apply(lambda id: int(id)))
+    public_ip = reserved_ip.ip_address
+else:
+    public_ip = droplet.ipv4_address
 
-pulumi.export("droplet_public_ip", public_ip.ip_address)
+pulumi.export("droplet_public_ip", public_ip)
 pulumi.export("private_key_openssh", private_key.private_key_openssh)
 pulumi.export("postgres_password", postgres_password.result)
 pulumi.export("rails_secret_key_base", rails_secret_key_base.result)
-pulumi.export("cobra_domain", config.require("cobra_domain"))
-pulumi.export("nisei_domain", config.require("nisei_domain"))
+pulumi.export("cobra_domain", config.get("cobra_domain"))
+pulumi.export("nisei_domain", config.get("nisei_domain", config.get("cobra_domain")))
 pulumi.export("nrdb_client", config.get("nrdb_client"))
 pulumi.export("nrdb_secret", config.get_secret("nrdb_secret"))
 pulumi.export("nisei_nrdb_client", config.get("nisei_nrdb_client"))
