@@ -159,20 +159,21 @@ deploy Cobra. There's a GitHub Actions workflow that handles deployment with Pul
 the droplet. This needs the configuration for Cobra stored in Pulumi, alongside details of the droplet. You'll also need
 to connect your GitHub repository to Pulumi and DigitalOcean. Follow the following steps:
 
-1. Set your reserved IP in Pulumi with `pulumi config set cobra:reserved_ip 123.456.789.0`.
-2. Set the domain you want to use in Pulumi, with `pulumi config set cobra:cobra_domain your_domain.com`.
+1. Tell Pulumi we want it to configure Cobra with `pulumi config set cobra:configure_cobra true`.
+2. Set your reserved IP in Pulumi with `pulumi config set cobra:reserved_ip 123.456.789.0`.
+3. Set the domain you want to use in Pulumi, with `pulumi config set cobra:cobra_domain your_domain.com`.
    Ensure you own the domain you want to use.
-3. If you have NetrunnerDB client credentials, encrypt them with these commands:
+4. If you have NetrunnerDB client credentials, encrypt them with these commands:
    ```shell
    pulumi config set cobra:nrdb_client --secret
    pulumi config set cobra:nrdb_secret --secret
    ```
    If you don't have client credentials, you can still deploy but you won't be able to log into Cobra.
-4. Set a Pulumi access token and a DigitalOcean token in GitHub repository secrets, PULUMI_ACCESS_TOKEN and 
+5. Set a Pulumi access token and a DigitalOcean token in GitHub repository secrets, PULUMI_ACCESS_TOKEN and 
    DIGITALOCEAN_TOKEN. You can get these from the Pulumi and DigitalOcean websites, see their documentation.
-5. Check in the resulting Pulumi.stackname.yaml file to Git, on a branch named `deploy/stackname` matching the name of
+6. Check in the resulting Pulumi.stackname.yaml file to Git, on a branch named `deploy/stackname` matching the name of
    your Pulumi stack.
-6. Push your branch to your fork on GitHub and watch the output in the Actions tab.
+7. Push your branch to your fork on GitHub and watch the output in the Actions tab.
 
 You can SSH to the resulting droplet with `deploy/bin/ssh-to-droplet`. The app should already be accessible at your
 domain if the Actions deploy job was successful. If you manage to configure DNS before it requests a certificate, the
