@@ -151,8 +151,6 @@ some steps for setting that up.
 3. Choose the region you'll deploy to, and size of droplet you want to deploy.
 4. Find the slug values for these here: https://slugs.do-api.dev/.
 5. Set these for Pulumi like `pulumi config set cobra:region lon1` and `pulumi config set cobra:size s-1vcpu-1gb`.
-6. Create a reserved IP and point your domain to the reserved IP. Reserved IPs are free while assigned to a droplet,
-   and make it easier to switch to a new droplet if you need to replace it.
 
 You can deploy a droplet directly with `pulumi up` if you're logged into Pulumi and DigitalOcean, but this will not
 deploy Cobra. There's a GitHub Actions workflow that handles deployment with Pulumi, and also deployment of Cobra inside
@@ -160,24 +158,23 @@ the droplet. This needs the configuration for Cobra stored in Pulumi, alongside 
 to connect your GitHub repository to Pulumi and DigitalOcean. Follow the following steps:
 
 1. Tell Pulumi we want it to configure Cobra with `pulumi config set cobra:configure_cobra true`.
-2. Set your reserved IP in Pulumi with `pulumi config set cobra:reserved_ip 123.456.789.0`.
-3. Set the domain you want to use in Pulumi, with `pulumi config set cobra:cobra_domain your_domain.com`.
+2. Set the domain you want to use in Pulumi, with `pulumi config set cobra:cobra_domain your_domain.com`.
    Ensure you own the domain you want to use.
-4. If you have NetrunnerDB client credentials, encrypt them with these commands:
+3. If you have NetrunnerDB client credentials, encrypt them with these commands:
    ```shell
    pulumi config set cobra:nrdb_client --secret
    pulumi config set cobra:nrdb_secret --secret
    ```
    If you don't have client credentials, you can still deploy but you won't be able to log into Cobra.
-5. Set a Pulumi access token and a DigitalOcean token in GitHub repository secrets, PULUMI_ACCESS_TOKEN and 
+4. Set a Pulumi access token and a DigitalOcean token in GitHub repository secrets, PULUMI_ACCESS_TOKEN and 
    DIGITALOCEAN_TOKEN. You can get these from the Pulumi and DigitalOcean websites, see their documentation.
-6. Check in the resulting Pulumi.stackname.yaml file to Git, on a branch named `deploy/stackname` matching the name of
+5. Check in the resulting Pulumi.stackname.yaml file to Git, on a branch named `deploy/stackname` matching the name of
    your Pulumi stack.
-7. Push your branch to your fork on GitHub and watch the output in the Actions tab.
+6. Push your branch to your fork on GitHub and watch the output in the Actions tab.
 
-You can SSH to the resulting droplet with `deploy/bin/ssh-to-droplet`. The app should already be accessible at your
-domain if the Actions deploy job was successful. If you manage to configure DNS before it requests a certificate, the
-whole deployment job should take about 10 minutes starting with an empty Pulumi stack.
+You can SSH to the resulting droplet with `deploy/bin/ssh-to-droplet`. If the Actions deploy job was successful, you can
+point your DNS to the new droplet, or assign it a reserved IP that your domain already points to. The whole deployment
+job should take about 10 minutes starting with an empty Pulumi stack.
 
 ## :bug: Troubleshooting
 
