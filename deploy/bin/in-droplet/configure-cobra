@@ -17,7 +17,6 @@ pushd cobra
   echo "NRDB_SECRET=$NRDB_SECRET"
   echo "NISEI_NRDB_CLIENT=$NISEI_NRDB_CLIENT"
   echo "NISEI_NRDB_SECRET=$NISEI_NRDB_SECRET"
-  echo "RAILS_SERVE_STATIC_FILES=true"
 } > ".env"
 
 cp config/database.example.yml config/database.yml
