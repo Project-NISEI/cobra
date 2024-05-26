@@ -160,21 +160,20 @@ some steps for setting that up.
    pulumi config set cobra:nrdb_secret --secret
    ```
    If you don't have client credentials, you can still deploy but you won't be able to log in.
-7. Check in the resulting Pulumi.stackname.yaml file to Git, on a branch named `deploy/stackname` matching the name of
+7. Create a reserved IP and point your domain to the reserved IP. Reserved IPs are free while assigned to a droplet,
+   and make it much easier to switch to a new droplet if you need to replace it.
+8. Check in the resulting Pulumi.stackname.yaml file to Git, on a branch named `deploy/stackname` matching the name of
    your Pulumi stack.
-8. Push your branch to your fork on GitHub and watch the output in the Actions tab. This will fail to get an HTTPS
-   certificate for the domain as there's no DNS record pointing to the droplet yet. You might avoid that if you do the
-   next step before it gets to it. If not, you may want to temporarily set the staging flag in `bin/init-certbot` to
-   avoid hitting the rate limit for certificate requests to production Let's Encrypt.
-9. Configure your domain to point to the public IP listed in the Actions output, or configure your domain in
-   DigitalOcean. The generated public IP is a DigitalOcean reserved static IP. This is free while assigned to a droplet
-   but costs money if it's left unassigned. After the DNS change has propagated, you'll need to re-run the Actions job.
-   If you used the staging flag then you'll need to SSH to the droplet and delete the `data/certbot directory` in the
-   cobra repository, then set the flag back to use production Let's Encrypt.
+9. Push your branch to your fork on GitHub and watch the output in the Actions tab.
+10. Assign your reserved IP to the new droplet.
 
 You can SSH to the resulting droplet with `deploy/bin/ssh-to-droplet`. The app should already be accessible at your
 domain if the Actions deploy job was successful. If you manage to configure DNS before it requests a certificate, the
 whole deployment job should take about 10 minutes starting with an empty Pulumi stack.
+
+If you want to deploy your droplet directly rather than use GitHub Actions, you can follow the steps up until checking
+Pulumi.stackname.yaml into Git. Instead of pushing to `deploy/stackname` you can just use `pulumi up` to deploy the
+droplet from your machine. This will not include deployment of Cobra inside the droplet.
 
 ## :bug: Troubleshooting
 
