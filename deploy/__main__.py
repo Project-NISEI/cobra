@@ -2,6 +2,8 @@ import pulumi
 import pulumi_digitalocean as do
 import pulumi_tls as tls
 import pulumi_random as random
+from pulumi import ResourceOptions
+
 import rails_secret_key_base as rails
 
 config = pulumi.Config()
@@ -25,7 +27,8 @@ droplet = do.Droplet(
     region=config.get("region", "lon1"),
     size=config.get("size", "s-1vcpu-1gb"),
     user_data=user_data,
-    ssh_keys=[ssh_key.fingerprint])
+    ssh_keys=[ssh_key.fingerprint],
+    opts=ResourceOptions(protect=True))
 
 public_ip = do.ReservedIp("cobra-public-ip",
     region=droplet.region,
