@@ -178,10 +178,6 @@ You can SSH to the resulting droplet with `deploy/bin/ssh-to-droplet`. The app s
 domain if the Actions deploy job was successful. If you manage to configure DNS before it requests a certificate, the
 whole deployment job should take about 10 minutes starting with an empty Pulumi stack.
 
-If you want to deploy your droplet directly rather than use GitHub Actions, you can follow the steps up until checking
-Pulumi.stackname.yaml into Git. Instead of pushing to `deploy/stackname` you can just use `pulumi up` to deploy the
-droplet from your machine. This will not include deployment of Cobra inside the droplet.
-
 ## :bug: Troubleshooting
 
 ### Rails doesn't start
