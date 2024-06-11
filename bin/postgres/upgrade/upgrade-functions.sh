@@ -1,7 +1,7 @@
 set -e
 BASE_DIR_IN_CONTAINER="/var/www/cobra"
 CONTAINER_SCRIPTS_DIR="$BASE_DIR_IN_CONTAINER/bin/postgres/in-container"
-BASE_DIR=$(cd "$(dirname "$0")" && cd "../../" && pwd)
+BASE_DIR=$(cd "$(dirname "$0")" && cd "../../../" && pwd)
 pushd "${BASE_DIR}"
 
 compose_for_upgrade() {
