@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 user@old_droplet_host user@new_droplet_host reserved_ip"
+    exit 1
+fi
+
+# TODO
+# Ensure app has been built locally
+# Stop app on old droplet
+# Make DB dump on old droplet & download
+# Upload DB dump to new droplet & restore
+# Start app on new droplet
+# Switch reserved IP to new droplet with doctl
