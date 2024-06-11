@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+# TODO
+# Go to cobra directory, read .env, switch to deploy user
+# Stop app
+# Make DB dump in container
+# Copy dump out of container
