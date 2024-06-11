@@ -1,0 +1,38 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 user_name /path/to/id_ed25519.pub"
+    exit 1
+fi
+
+NEW_USERNAME=$1
+PUB_FILE=$2
+
+DEPLOY_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)
+STACK=$(pulumi stack --show-name)
+DROPLET_IP=$(pulumi stack output droplet_public_ip)
+PRIVATE_KEY_FILE="$DEPLOY_DIR/id_cobra_$STACK"
+KNOWN_HOSTS_FILE="$DEPLOY_DIR/known_hosts_cobra_$STACK"
+CREATE_USER_SCRIPT="$DEPLOY_DIR/bin/in-droplet/create-user-with-key"
+
+touch "$PRIVATE_KEY_FILE"
+chmod u=rw,g=,o= "$PRIVATE_KEY_FILE"
+pulumi stack output private_key_openssh --show-secrets > "$PRIVATE_KEY_FILE"
+echo "Retrieved connection details"
+
+echo "Uploading script"
+scp -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "$CREATE_USER_SCRIPT" "root@$DROPLET_IP:create-user-with-key"
+
+echo "Uploading public key"
+scp -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "$PUB_FILE" "root@$DROPLET_IP:id.pub"
+
+echo "Setting script permissions"
+ssh -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" chmod 700 ./create-user-with-key
+
+echo "Creating user"
+ssh -i "$PRIVATE_KEY_FILE" -o "UserKnownHostsFile=$KNOWN_HOSTS_FILE" "root@$DROPLET_IP" ./create-user-with-key "$NEW_USERNAME" ./id.pub
+
+SSH_EXIT_CODE=$?
+rm "$PRIVATE_KEY_FILE"
+echo "Connect with ssh $NEW_USERNAME@$DROPLET_IP"
+exit $SSH_EXIT_CODE
