@@ -152,7 +152,10 @@ some steps for setting that up.
 
 You can deploy a droplet directly with `pulumi up` if you're logged into Pulumi and DigitalOcean, but this will not
 deploy Cobra. You can follow the instructions above for manual deployment on the droplet, or use the automated
-deployment below. You can SSH to the resulting droplet with `deploy/bin/ssh-to-droplet`.
+deployment below.
+
+You can SSH to the resulting droplet with `deploy/bin/ssh-to-droplet`. If you have an SSH key you'd like to use to log
+in, you can create a non-root user on the droplet with `deploy/bin/create-user-with-key`.
 
 If you'd prefer to manage the resulting droplet manually and just use this as a way to create a droplet, you can discard
 the resulting Pulumi stack. It may be easier to hold state locally for this, rather than creating a stack in Pulumi
