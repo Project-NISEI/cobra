@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 user_name /path/to/id_ed25519.pub"
+    exit 1
+fi
+
+NEW_USERNAME=$1
+PUB_FILE=$2
+
+adduser --disabled-password --gecos "" "$NEW_USERNAME"
+usermod -aG sudo "$NEW_USERNAME"
+
+NEW_HOME=$(eval echo ~"$NEW_USERNAME")
+
+mkdir "$NEW_HOME/.ssh"
+chown "$NEW_USERNAME:$NEW_USERNAME" "$NEW_HOME/.ssh"
+chmod 700 "$NEW_HOME/.ssh"
+cat "$PUB_FILE" > "$NEW_HOME/.ssh/authorized_keys"
+chown "$NEW_USERNAME:$NEW_USERNAME" "$NEW_HOME/.ssh/authorized_keys"
+chmod 600 "$NEW_HOME/.ssh/authorized_keys"
