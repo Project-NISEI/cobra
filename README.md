@@ -114,6 +114,13 @@ docker compose exec -e RAILS_ENV=test app rspec
 ```
 
 ## Deploy in production with Docker Compose
+- Deploy NGINX
+```shell
+git clone https://github.com/Project-NISEI/nginx-proxy.git nginx
+cd nginx
+docker network create --driver bridge null_signal
+docker compose up -d
+```
 - Get the project
 ```shell
 git clone https://github.com/Project-NISEI/cobra.git
