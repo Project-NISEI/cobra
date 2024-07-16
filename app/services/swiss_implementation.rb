@@ -1,16 +1,17 @@
 require 'graph_matching'
 
 module SwissImplementation
-  def self.pair(players, options = {})
-    Pairer.new(options).pair(players)
+  def self.pair(players, options = {}, &block)
+    Pairer.new(options).pair(players, &block)
   end
 
   class Player
-    attr_accessor :delta, :exclude
+    attr_accessor :delta, :exclude, :label
 
-    def initialize
+    def initialize(label = '')
       @delta = 0
       @exclude = []
+      @label = label
     end
   end
   class Bye; end
@@ -22,9 +23,10 @@ module SwissImplementation
       @bye_delta = options[:bye_delta] || -1
     end
 
-    def pair(player_data)
+    def pair(player_data, &block)
       @player_data = player_data
-      graph.maximum_weighted_matching(true).edges.map do |pairing|
+      edges = graph(&block).maximum_weighted_matching(true).edges
+      edges.map do |pairing|
         [players[pairing[0]], players[pairing[1]]]
       end
     end
@@ -35,9 +37,15 @@ module SwissImplementation
 
     def graph
       edges = [].tap do |e|
-        players.each_with_index do |player, i|
-          players.each_with_index do |opp, j|
-            e << [i, j, delta(player,opp)] if permitted?(player, opp)
+        (0...players.length).to_a.combination(2).each do |p1_index, p2_index|
+          p1 = players[p1_index]
+          p2 = players[p2_index]
+
+          if block_given?
+            weight = yield(p1, p2)
+            e << [p1_index, p2_index, weight] unless weight.nil?
+          else
+            e << [p1_index, p2_index, delta(p1, p2)] if permitted?(p1, p2)
           end
         end
       end
