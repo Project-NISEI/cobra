@@ -55,7 +55,7 @@ module PairingStrategies
 
     def pair_batch(players)
       chunk(players).map do |batch|
-        Swissper.pair(
+        SwissImplementation.pair(
           batch,
           delta_key: :points,
           exclude_key: :unpairable_opponents
@@ -67,7 +67,7 @@ module PairingStrategies
       # last chance to add players who fell through the cracks, this bit needs
       # human intervention really so just naively do the easiest thing
       @overflow = []
-      players.shuffle.in_groups_of(2, Swissper::Bye)
+      players.shuffle.in_groups_of(2, SwissImplementation::Bye)
     end
 
     def chunk(players)
