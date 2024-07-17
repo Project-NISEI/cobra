@@ -42,6 +42,16 @@ class Player < ApplicationRecord
     @sos_earned ||= non_bye_pairings.reported.sum { |pairing| pairing.score_for(self) }
   end
 
+  def side_bias
+    @side_bias ||= pairings.reported.reduce(0) do |bias, pairing|
+      side = pairing.side_for(self)
+      bias += 1 if side == :corp
+      bias -= 1 if side == :runner
+
+      bias
+    end
+  end
+
   def drop!
     update(active: false)
   end
