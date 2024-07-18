@@ -22,6 +22,8 @@ cobra_test
 # Ignore db dumps
 *.data
 *.data.gz
+*.sql
+*.sql.gz
 
 public/scoop.png
 /public/assets/*
