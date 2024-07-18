@@ -5,12 +5,12 @@ PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "../" && pwd)
 pushd "${PROJECT_DIR}"
 
 # Optional environment variable in .env:
-# COMPOSE_FILE: prod, staging, override (for local dev - this is the default)
+# COMPOSE_FILE_TYPE: prod, staging, override (for local dev - this is the default)
 source .env
-COMPOSE_FILE=${COMPOSE_FILE-override}
+COMPOSE_FILE_TYPE=${COMPOSE_FILE_TYPE-override}
 
 compose_for_deploy() {
-  docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
+  docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE_TYPE.yml" "$@"
 }
 
 compose_for_deploy build app

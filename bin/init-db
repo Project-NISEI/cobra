@@ -7,7 +7,7 @@ pushd "${PROJECT_DIR}"
 
 source .env
 DB_NAME=cobra
-COMPOSE_FILE=${COMPOSE_FILE-override}
+COMPOSE_FILE_TYPE=${COMPOSE_FILE_TYPE-override}
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 [app-in-docker|app-in-host]"
@@ -17,7 +17,7 @@ fi
 APP_RUN_TYPE=$1
 
 compose_for_deploy() {
-  docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
+  docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE_TYPE.yml" "$@"
 }
 
 run_as_app() {
