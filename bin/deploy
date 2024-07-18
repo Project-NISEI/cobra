@@ -8,7 +8,7 @@ pushd "${PROJECT_DIR}"
 # RAILS_ENV: develop or production
 # POSTGRES_PASSWORD: should be randomly generated per instance
 # Optional:
-# COMPOSE_FILE: prod, staging, override (for local dev - this is the default)
+# COMPOSE_FILE_TYPE: prod, staging, override (for local dev - this is the default)
 # Required if using production Rails environment:
 # SECRET_KEY_BASE: A 64 bit hex key for rails, should be randomly generated
 # ABR_AUTH
@@ -17,10 +17,10 @@ pushd "${PROJECT_DIR}"
 # Required if using prod or staging compose file:
 # COBRA_DOMAIN
 source .env
-COMPOSE_FILE=${COMPOSE_FILE-override}
+COMPOSE_FILE_TYPE=${COMPOSE_FILE_TYPE-override}
 
 compose_for_deploy() {
-  docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE.yml" "$@"
+  docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE_TYPE.yml" "$@"
 }
 
 compose_for_deploy up -d db
@@ -32,9 +32,9 @@ bin/init-db app-in-docker
 echo "Precompiling assets..."
 compose_for_deploy run --rm app bundle exec rake assets:precompile --trace
 
-if [ "$COMPOSE_FILE" == "prod" ]; then
+if [ "$COMPOSE_FILE_TYPE" == "prod" ]; then
   compose_for_deploy up -d app --force-recreate
-elif [ "$COMPOSE_FILE" == "staging" ]; then
+elif [ "$COMPOSE_FILE_TYPE" == "staging" ]; then
   compose_for_deploy up -d app --force-recreate
 fi
 
