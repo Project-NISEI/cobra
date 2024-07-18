@@ -11,6 +11,7 @@ PUB_FILE=$2
 
 adduser --disabled-password --gecos "" "$NEW_USERNAME"
 usermod -aG sudo "$NEW_USERNAME"
+passwd -d "$NEW_USERNAME"
 
 NEW_HOME=$(eval echo ~"$NEW_USERNAME")
 
