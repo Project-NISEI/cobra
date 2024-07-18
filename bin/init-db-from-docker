@@ -5,7 +5,9 @@ THIS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 PROJECT_DIR=$(cd "$THIS_DIR" && cd "../" && pwd)
 pushd "${PROJECT_DIR}"
-docker compose -f docker-compose.yml build app
+source .env
+COMPOSE_FILE_TYPE=${COMPOSE_FILE_TYPE-override}
+docker compose -f docker-compose.yml -f "docker-compose.$COMPOSE_FILE_TYPE.yml" build app
 popd
 
 $THIS_DIR/init-db app-in-docker
