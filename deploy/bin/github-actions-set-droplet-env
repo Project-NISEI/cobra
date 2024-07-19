@@ -24,7 +24,7 @@ touch "$ENV_FILE"
 chmod u=rw,g=,o= "$ENV_FILE"
 {
   echo "RAILS_ENV=production"
-  echo "COMPOSE_FILE=staging"
+  echo "COMPOSE_FILE_TYPE=staging"
   echo "POSTGRES_PASSWORD=$(pulumi stack output postgres_password --show-secrets)"
   echo "SECRET_KEY_BASE=$(pulumi stack output rails_secret_key_base --show-secrets)"
   echo "COBRA_DOMAIN=$(pulumi stack output cobra_domain)"

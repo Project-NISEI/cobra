@@ -131,7 +131,7 @@ cd cobra
 cp config/database.example.yml config/database.yml
 cp config/secrets.example.yml config/secrets.yml
 echo "RAILS_ENV=production" > .env
-echo "COMPOSE_FILE=prod" >> .env
+echo "COMPOSE_FILE_TYPE=prod" >> .env
 echo "POSTGRES_PASSWORD=some-good-password" >> .env
 echo "SECRET_KEY_BASE=random-64-bit-hex-key" >> .env
 echo "COBRA_DOMAIN=yourdomainhere.com" >> .env
