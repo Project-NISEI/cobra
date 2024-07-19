@@ -3,7 +3,7 @@ FROM ruby:3.2.3-alpine3.19 AS base
 
 # Install essential Linux packages and nodejs
 RUN apk -U upgrade && apk add --no-cache \
-  postgresql-client tzdata nodejs gcompat \
+  postgresql-client tzdata nodejs npm gcompat \
   && rm -rf /var/cache/apk/*
 
 # Define where our application will live inside the image
@@ -16,7 +16,7 @@ FROM base as build
 
 # Install build packages
 RUN apk -U upgrade && apk add --no-cache \
-  bash build-base libpq-dev ca-certificates npm \
+  bash build-base libpq-dev ca-certificates \
   && rm -rf /var/cache/apk/*
 
 # Create application home. App server will need the pids dir so just create everything in one shot
