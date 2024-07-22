@@ -12,7 +12,7 @@ ENV BUNDLE_ROOT /var/www/bundle
 
 
 #####################################################################
-FROM base as build
+FROM base AS build
 
 # Install build packages
 RUN apk -U upgrade && apk add --no-cache \
