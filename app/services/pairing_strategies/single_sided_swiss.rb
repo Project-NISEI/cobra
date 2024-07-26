@@ -29,7 +29,7 @@ module PairingStrategies
         # return nil (no pairing possible) if the sides would repeat the previous pairing
         next nil if previous_pairing && preferred_side && previous_pairing.side_for(player1) == preferred_side
 
-        points_weight(player1, player2) + side_bias_weight(player1, player2)
+        points_weight(player1, player2) + side_bias_weight(player1, player2) + rematch_bias_weight(player1, player2)
       end
     end
 
@@ -39,6 +39,10 @@ module PairingStrategies
 
     def side_bias_weight(player1, player2)
       8 ** ((player1.side_bias - player2.side_bias).abs / 2.0)
+    end
+
+    def rematch_bias_weight(player1, player2)
+      0 - Pairing.for_players(player1, player2).count/2.0
     end
 
     def preferred_player1_side(player1, player2)

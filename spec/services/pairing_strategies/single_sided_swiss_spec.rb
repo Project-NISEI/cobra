@@ -100,6 +100,21 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
     end
   end
 
+  describe '#rematch_bias_weight' do
+    let(:player1) { create(:player) }
+    let(:player2) { create(:player) }
+
+    it 'returns 0 with no games played' do
+      expect(pairer.rematch_bias_weight(player1, player2)).to eq(0)
+    end
+
+    it 'returns small negative number with 1 game played' do
+      create(:pairing, player1: player1, player2: player2)
+
+      expect(pairer.rematch_bias_weight(player1, player2)).to eq(-0.5)
+    end
+  end
+
   describe '#preferred_player1_side' do
     let(:player1) { create(:player) }
     let(:player2) { create(:player) }
