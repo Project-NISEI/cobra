@@ -10,7 +10,8 @@ class Stage < ApplicationRecord
 
   enum format: {
     swiss: 0,
-    double_elim: 1
+    double_elim: 1,
+    single_sided_swiss: 2
   }
 
   def pair_new_round!

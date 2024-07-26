@@ -12,7 +12,7 @@ RSpec.describe Pairer do
 
   describe '#pair!' do
     context 'swiss' do
-      let(:strategy) { double('PairingStrategies::Swiss') }
+      let(:strategy) { double(PairingStrategies::Swiss) }
 
       it 'delegates to swiss strategy' do
         allow(PairingStrategies::Swiss).to receive(:new).and_return(strategy)
@@ -33,7 +33,7 @@ RSpec.describe Pairer do
 
     context 'double elim' do
       let(:stage) { create(:stage, format: :double_elim) }
-      let(:strategy) { double('PairingStrategies::DoubleElim') }
+      let(:strategy) { double(PairingStrategies::DoubleElim) }
 
       before do
         stage.players << jack
@@ -44,6 +44,20 @@ RSpec.describe Pairer do
 
       it 'delegates to double_elim strategy' do
         allow(PairingStrategies::DoubleElim).to receive(:new).and_return(strategy)
+        allow(strategy).to receive(:pair!)
+
+        pairer.pair!
+
+        expect(strategy).to have_received(:pair!)
+      end
+    end
+
+    context 'single-sided swiss' do
+      let(:tournament) { create(:tournament, swiss_format: :single_sided) }
+      let(:strategy) { double(PairingStrategies::SingleSidedSwiss) }
+
+      it 'delegates to single-sided swiss strategy' do
+        allow(PairingStrategies::SingleSidedSwiss).to receive(:new).and_return(strategy)
         allow(strategy).to receive(:pair!)
 
         pairer.pair!
