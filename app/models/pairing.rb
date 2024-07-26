@@ -10,6 +10,8 @@ class Pairing < ApplicationRecord
   scope :reported, -> { where.not(score1: nil, score2: nil) }
   scope :completed, -> { joins(:round).where('rounds.completed = ?', true) }
   scope :for_stage, ->(stage) { joins(:round).where(rounds: { stage: stage }) }
+  scope :for_player, ->(player) { where(player1: player).or(where(player2: player)) }
+  scope :for_players, ->(player1, player2) { where(player1: player1, player2: player2).or(where(player1: player2, player2: player1)) }
 
   before_save :normalise_scores_before_save
   after_update :cache_standings!, if: Proc.new { round.completed? }
@@ -19,10 +21,6 @@ class Pairing < ApplicationRecord
     player1_is_corp: 1,
     player1_is_runner: 2
   }
-
-  def self.for_player(player)
-    where(player1: player).or(where(player2: player))
-  end
 
   def players
     [player1, player2]
