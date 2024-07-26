@@ -201,7 +201,7 @@ RSpec.describe PairingStrategies::Swiss do
       it 'does not hand off to BigSwiss pairing strategy' do
         pairer.pair!
 
-        expect(PairingStrategies::BigSwiss).not_to have_received(:new).with(stage)
+        expect(PairingStrategies::BigSwiss).not_to have_received(:new)
         expect(strategy).not_to have_received(:pair!)
       end
     end
@@ -216,7 +216,7 @@ RSpec.describe PairingStrategies::Swiss do
       it 'hands off to BigSwiss pairing strategy' do
         pairer.pair!
 
-        expect(PairingStrategies::BigSwiss).to have_received(:new).with(stage)
+        expect(PairingStrategies::BigSwiss).to have_received(:new).with(stage, PairingStrategies::Swiss)
         expect(strategy).to have_received(:pair!)
       end
     end

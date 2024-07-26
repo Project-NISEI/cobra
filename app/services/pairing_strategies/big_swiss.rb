@@ -4,8 +4,9 @@ module PairingStrategies
     # is used for very large fields to improve performance
     attr_reader :stage
 
-    def initialize(stage)
+    def initialize(stage, base_pairing_strategy = PairingStrategies::Swiss)
       @stage = stage
+      @base_pairing_strategy = base_pairing_strategy
 
       @overflow = []
     end
@@ -20,7 +21,7 @@ module PairingStrategies
         @overflow += to_pair - paired.flatten
 
         paired
-      end.sum + panic_pair(@overflow)
+      end.sum(Array.new) + panic_pair(@overflow)
     end
 
     private
@@ -55,12 +56,8 @@ module PairingStrategies
 
     def pair_batch(players)
       chunk(players).map do |batch|
-        SwissImplementation.pair(
-          batch,
-          delta_key: :points,
-          exclude_key: :unpairable_opponents
-        )
-      end.sum
+        @base_pairing_strategy.get_pairings(batch)
+      end.sum(Array.new)
     end
 
     def panic_pair(players)

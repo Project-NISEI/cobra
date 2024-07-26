@@ -13,6 +13,14 @@ module PairingStrategies
       apply_numbers!(PairingSorters::Ranked)
     end
 
+    def self.get_pairings(players)
+      SwissImplementation.pair(
+        players,
+        delta_key: :points,
+        exclude_key: :unpairable_opponents
+      )
+    end
+
     private
 
     def assign_byes!
@@ -28,13 +36,9 @@ module PairingStrategies
 
     def paired_players
       return @paired_players ||= players_to_pair.to_a.shuffle(random: random).in_groups_of(2, SwissImplementation::Bye) if first_round?
-      return @paired_players ||= PairingStrategies::BigSwiss.new(stage).pair! if players.count > 60
+      return @paired_players ||= PairingStrategies::BigSwiss.new(stage, self.class).pair! if players.count > 60
 
-      @paired_players ||= SwissImplementation.pair(
-        players_to_pair.to_a,
-        delta_key: :points,
-        exclude_key: :unpairable_opponents
-      )
+      @paired_players ||= self.class.get_pairings(players_to_pair.to_a)
     end
 
     def pairing_params(pairing)
