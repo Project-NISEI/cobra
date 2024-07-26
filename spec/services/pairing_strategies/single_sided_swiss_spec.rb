@@ -2,20 +2,20 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
   let(:pairer) { described_class.new(round) }
   let(:round) { create(:round, number: 1, stage: stage) }
   let(:stage) { tournament.current_stage }
-  let(:tournament) { create(:tournament) }
+  let(:tournament) { create(:tournament, swiss_format: :single_sided) }
   let(:nil_player) { double('NilPlayer', id: nil, points: 0) }
 
   before do
     allow(NilPlayer).to receive(:new).and_return(nil_player)
   end
 
-  describe '#points_weight' do
+  describe '.points_weight' do
     let(:player1) { create(:player) }
     let(:player2) { create(:player) }
 
     context 'with no games played' do
       it 'returns 0' do
-        expect(pairer.points_weight(player1, player2)).to eq(0)
+        expect(described_class.points_weight(player1.points, player2.points)).to eq(0)
       end
     end
 
@@ -25,7 +25,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
       end
 
       it 'returns a negative number' do
-        expect(pairer.points_weight(player1, player2)).to eq(-1.5)
+        expect(described_class.points_weight(player1.points, player2.points)).to eq(-1.5)
       end
     end
 
@@ -37,7 +37,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
       end
 
       it 'returns a more negative number' do
-        expect(pairer.points_weight(player1, player2)).to eq(-6)
+        expect(described_class.points_weight(player1.points, player2.points)).to eq(-6)
       end
     end
 
@@ -48,18 +48,18 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
       end
 
       it 'returns 0' do
-        expect(pairer.points_weight(player1, player2)).to eq(0)
+        expect(described_class.points_weight(player1.points, player2.points)).to eq(0)
       end
     end
   end
 
-  describe '#side_bias_weight' do
+  describe '.side_bias_weight' do
     let(:player1) { create(:player) }
     let(:player2) { create(:player) }
 
     context 'with no games played' do
       it 'returns 0' do
-        expect(pairer.side_bias_weight(player1, player2)).to eq(1)
+        expect(described_class.side_bias_weight(player1.side_bias, player2.side_bias)).to eq(1)
       end
     end
 
@@ -70,7 +70,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
       end
 
       it 'returns 0' do
-        expect(pairer.side_bias_weight(player1, player2)).to eq(1)
+        expect(described_class.side_bias_weight(player1.side_bias, player2.side_bias)).to eq(1)
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
       end
 
       it 'returns positive number' do
-        expect(pairer.side_bias_weight(player1, player2)).to eq(8)
+        expect(described_class.side_bias_weight(player1.side_bias, player2.side_bias)).to eq(8)
       end
     end
 
@@ -95,32 +95,30 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
       end
 
       it 'returns more positive number' do
-        expect(pairer.side_bias_weight(player1, player2)).to eq(64)
+        expect(described_class.side_bias_weight(player1.side_bias, player2.side_bias)).to eq(64)
       end
     end
   end
 
-  describe '#rematch_bias_weight' do
+  describe '.rematch_bias_weight' do
     let(:player1) { create(:player) }
     let(:player2) { create(:player) }
 
     it 'returns 0 with no games played' do
-      expect(pairer.rematch_bias_weight(player1, player2)).to eq(0)
+      expect(described_class.rematch_bias_weight(false)).to eq(0)
     end
 
     it 'returns small negative number with 1 game played' do
-      create(:pairing, player1: player1, player2: player2)
-
-      expect(pairer.rematch_bias_weight(player1, player2)).to eq(-0.5)
+      expect(described_class.rematch_bias_weight(true)).to eq(-0.5)
     end
   end
 
-  describe '#preferred_player1_side' do
+  describe '.preferred_player1_side' do
     let(:player1) { create(:player) }
     let(:player2) { create(:player) }
 
     it 'returns nil with no data' do
-      expect(pairer.preferred_player1_side(player1, player2)).to eq(nil)
+      expect(described_class.preferred_player1_side(player1.side_bias, player2.side_bias)).to eq(nil)
     end
 
     context 'when player 1 has corped many times' do
@@ -131,7 +129,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
       end
 
       it 'returns :runner' do
-        expect(pairer.preferred_player1_side(player1, player2)).to eq(:runner)
+        expect(described_class.preferred_player1_side(player1.side_bias, player2.side_bias)).to eq(:runner)
       end
 
       context 'and player 2 has corped once' do
@@ -140,7 +138,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
         end
 
         it 'returns :runner' do
-          expect(pairer.preferred_player1_side(player1, player2)).to eq(:runner)
+          expect(described_class.preferred_player1_side(player1.side_bias, player2.side_bias)).to eq(:runner)
         end
       end
 
@@ -153,7 +151,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
         end
 
         it 'returns :corp' do
-          expect(pairer.preferred_player1_side(player1, player2)).to eq(:corp)
+          expect(described_class.preferred_player1_side(player1.side_bias, player2.side_bias)).to eq(:corp)
         end
       end
 
@@ -165,7 +163,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
         end
 
         it 'returns nil' do
-          expect(pairer.preferred_player1_side(player1, player2)).to eq(nil)
+          expect(described_class.preferred_player1_side(player1.side_bias, player2.side_bias)).to eq(nil)
         end
       end
     end

@@ -1,8 +1,8 @@
 RSpec.describe 'load testing' do
-  ROUNDS = 9
-  PLAYERS = 350
+  ROUNDS = 15
+  PLAYERS = 150
 
-  let(:tournament) { create(:tournament) }
+  let(:tournament) { create(:tournament, swiss_format: :single_sided) }
 
   def timer
     (Time.now-(@start || Time.now)).seconds.tap do
@@ -32,7 +32,8 @@ RSpec.describe 'load testing' do
 
       puts "\tGenerating results"
       round.pairings.each do |p|
-        score = [[6, 0], [4, 1], [3, 3], [0, 6]].sample
+        # score = [[6, 0], [4, 1], [3, 3], [0, 6]].sample
+        score = [[3, 0], [0, 3], [1, 1]].sample
         # visit tournament_rounds_path(tournament)
         p.update(score1: score.first, score2: score.last)
       end
@@ -48,14 +49,14 @@ RSpec.describe 'load testing' do
       end
     end
 
-    tournament.players.each do |player|
-      if player.opponents.uniq.length != player.pairings.count
-        puts "Player #{player.name} (#{player.active? ? :active : :dropped}) had #{player.opponents.uniq.length}/#{player.pairings.count} unique opponents:"
-        player.pairings.each do |pairing|
-          opp = pairing.opponent_for(player)
-          puts "\t#{pairing.round.number}: #{opp.name}"
-        end
-      end
-    end
+    # tournament.players.each do |player|
+    #   if player.opponents.uniq.length != player.pairings.count
+    #     puts "Player #{player.name} (#{player.active? ? :active : :dropped}) had #{player.opponents.uniq.length}/#{player.pairings.count} unique opponents:"
+    #     player.pairings.each do |pairing|
+    #       opp = pairing.opponent_for(player)
+    #       puts "\t#{pairing.round.number}: #{opp.name}"
+    #     end
+    #   end
+    # end
   end
 end
