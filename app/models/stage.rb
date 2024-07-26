@@ -36,11 +36,11 @@ class Stage < ApplicationRecord
   end
 
   def single_sided?
-    double_elim?
+    double_elim? || single_sided_swiss?
   end
 
   def default_round_minutes
-    if double_elim?
+    if single_sided?
       40
     else
       65

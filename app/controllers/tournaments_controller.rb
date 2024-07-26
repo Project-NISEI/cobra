@@ -203,7 +203,7 @@ class TournamentsController < ApplicationController
   def tournament_params
     params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed,
                                        :self_registration, :allow_streaming_opt_out, :nrdb_deck_registration,
-                                       :cut_deck_visibility, :swiss_deck_visibility)
+                                       :cut_deck_visibility, :swiss_deck_visibility, :swiss_format)
   end
 
   def set_tournament_view_data
