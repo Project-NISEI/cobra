@@ -8,7 +8,7 @@ name: "CI"
 
 on:
   push:
-    branches: [main]
+    branches: [main, deploy/**]
   pull_request:
     branches: [main]
   release:
@@ -77,6 +77,10 @@ jobs:
       - name: Run rails tests
         run: bundle exec rails test
 
+      - name: Plan deployment
+        id: plan-deployment
+        run: deploy/bin/github-actions-plan-deployment
+
     outputs:
       deploy-stack: ${{ steps.plan-deployment.outputs.deploy-stack }}
 
@@ -120,13 +124,20 @@ jobs:
       - name: Log in to DO Container Registry
         run: doctl registry login --expiry-seconds 600
 
-      - name: Build, tag, and publish image
+      - name: Build image
         env:
           IMAGETAG: ${{ github.ref == 'refs/heads/main' && 'latest' || github.ref_name }}
-        run: |
-          docker build -t $IMAGENAME:$IMAGETAG .
-          docker tag $IMAGENAME:$IMAGETAG $IMAGENAME:${{ github.run_id }}
-          docker push -a $IMAGENAME
+        run: docker build -t $IMAGENAME:$IMAGETAG .
+
+      - name: Tag image
+        env:
+          IMAGETAG: ${{ github.ref == 'refs/heads/main' && 'latest' || github.ref_name }}
+        run: docker tag $IMAGENAME:$IMAGETAG $IMAGENAME:${{ github.run_id }}
+
+      - name: Publish image to container registry
+        env:
+          IMAGETAG: ${{ github.ref == 'refs/heads/main' && 'latest' || github.ref_name }}
+        run: docker push -a $IMAGENAME
 
   deploy:
     name: Deploy
