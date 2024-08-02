@@ -21,6 +21,11 @@ class Tournament < ApplicationRecord
     swiss_decks_public: 2
   }
 
+  enum swiss_format: {
+    double_sided: 0,
+    single_sided: 1
+  }
+
   delegate :new_round!, to: :current_stage
   delegate :pair_new_round!, to: :current_stage
 
@@ -216,7 +221,7 @@ class Tournament < ApplicationRecord
   def create_stage
     stages.create(
       number: 1,
-      format: :swiss
+      format: single_sided? ? :single_sided_swiss : :swiss
     )
   end
 end

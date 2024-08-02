@@ -54,33 +54,15 @@ class NrtmJson
   private
 
   def swiss_stage
-    tournament.stages.find_by(format: :swiss)
+    @swiss_stage ||= tournament.stages.find_by(format: [:swiss, :single_sided_swiss])
   end
 
   def swiss_pairing_data
-    if not swiss_stage
-      return []
-    end
+    return [] unless swiss_stage
+
     swiss_stage.rounds.map do |round|
       round.pairings.map do |pairing|
-        {
-          table: pairing.table_number,
-          player1: {
-            id: pairing.player1_id,
-            runnerScore: pairing.score1_runner,
-            corpScore: pairing.score1_corp,
-            combinedScore: pairing.score1
-          },
-          player2: {
-            id: pairing.player2_id,
-            runnerScore: pairing.score2_runner,
-            corpScore: pairing.score2_corp,
-            combinedScore: pairing.score2
-          },
-          intentionalDraw: pairing.intentional_draw.present?,
-          twoForOne: pairing.two_for_one.present?,
-          eliminationGame: false
-        }
+        swiss_stage.single_sided? ? single_sided_pairing_data(pairing): double_sided_pairing_data(pairing)
       end
     end
   end
@@ -94,23 +76,56 @@ class NrtmJson
 
     cut_stage.rounds.map do |round|
       round.pairings.map do |pairing|
-        {
-          table: pairing.table_number,
-          player1: {
-            id: pairing.player1.id,
-            role: pairing.player1_side,
-            winner: (pairing.score1 > pairing.score2 if pairing.score1 && pairing.score2)
-          },
-          player2: {
-            id: pairing.player2.id,
-            role: pairing.player2_side,
-            winner: (pairing.score2 > pairing.score1 if pairing.score1 && pairing.score2)
-          },
-          intentionalDraw: pairing.intentional_draw.present?,
-          twoForOne: pairing.two_for_one.present?,
-          eliminationGame: true
-        }
+        single_sided_pairing_data(pairing)
       end
     end
+  end
+
+  def double_sided_pairing_data(pairing)
+    {
+      table: pairing.table_number,
+      player1: {
+        id: pairing.player1_id,
+        runnerScore: pairing.score1_runner,
+        corpScore: pairing.score1_corp,
+        combinedScore: pairing.score1
+      },
+      player2: {
+        id: pairing.player2_id,
+        runnerScore: pairing.score2_runner,
+        corpScore: pairing.score2_corp,
+        combinedScore: pairing.score2
+      },
+      intentionalDraw: pairing.intentional_draw.present?,
+      twoForOne: pairing.two_for_one.present?,
+      eliminationGame: false
+    }
+  end
+
+  def single_sided_pairing_data(pairing)
+    {
+      table: pairing.table_number,
+      player1: {
+        id: pairing.player1.id,
+        role: pairing.player1_side&.to_s,
+      }.merge(score_for_pairing(pairing, pairing.player1_side, pairing.score1, pairing.score2)),
+      player2: {
+        id: pairing.player2.id,
+        role: pairing.player2_side&.to_s,
+      }.merge(score_for_pairing(pairing, pairing.player2_side, pairing.score2, pairing.score1)),
+      intentionalDraw: pairing.intentional_draw.present?,
+      twoForOne: pairing.two_for_one.present?,
+      eliminationGame: pairing.stage.double_elim?
+    }
+  end
+
+  def score_for_pairing(pairing, side, score, opp_score)
+    return { winner: (score > opp_score if score && opp_score) } if pairing.stage.double_elim?
+
+    hash = { combinedScore: score }
+    hash.merge!({ runnerScore: nil, corpScore: score }) if side == :corp
+    hash.merge!({ runnerScore: score, corpScore: nil }) if side == :runner
+    hash.merge!({ runnerScore: nil, corpScore: nil }) if side.nil?
+    hash
   end
 end

@@ -1,6 +1,6 @@
 {
-  "name": "Empty Tournament",
-  "date": "2023-12-03",
+  "name": "Some Tournament",
+  "date": "2017-01-01",
   "cutToTop": 0,
   "preliminaryRounds": 0,
   "tournamentOrganiser": {
@@ -13,6 +13,6 @@
   "uploadedFrom": "Cobra",
   "links": [
     { "rel": "schemaderivedfrom", "href": "http://steffens.org/nrtm/nrtm-schema.json" },
-    { "rel": "uploadedfrom", "href": "https://server/EMPT" }
+    { "rel": "uploadedfrom", "href": "https://server/SLUG" }
   ]
 }

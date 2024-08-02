@@ -29,6 +29,21 @@ RSpec.describe Tournament do
     expect(stage.swiss?).to be(true)
   end
 
+  context 'when tournament is created with alternative swiss format' do
+    let(:tournament) { create(:tournament, swiss_format: :single_sided) }
+
+    it 'automatically creates stage with correct format' do
+      expect do
+        tournament
+      end.to change(Stage, :count).by(1)
+
+      stage = tournament.stages.last
+
+      expect(stage.number).to eq(1)
+      expect(stage.single_sided_swiss?).to be(true)
+    end
+  end
+
   describe 'stream_url' do
     it 'has no stream_url by default' do
       expect(tournament.stream_url).to eq(nil)

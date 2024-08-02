@@ -138,4 +138,43 @@ RSpec.describe Player do
       end
     end
   end
+
+  describe '#side_bias' do
+    it 'returns 0' do
+      expect(player.side_bias).to eq(0)
+    end
+
+    context 'with balanced pairings' do
+      before do
+        create_list(:pairing, 2, player1: player, side: :player1_is_corp)
+        create_list(:pairing, 2, player1: player, side: :player1_is_runner)
+      end
+
+      it 'returns 0' do
+        expect(player.side_bias).to eq(0)
+      end
+    end
+
+    context 'with more corp pairings' do
+      before do
+        create_list(:pairing, 3, player1: player, side: :player1_is_corp)
+        create_list(:pairing, 1, player1: player, side: :player1_is_runner)
+      end
+
+      it 'returns positive number' do
+        expect(player.side_bias).to eq(2)
+      end
+    end
+
+    context 'with more runner pairings' do
+      before do
+        create_list(:pairing, 1, player1: player, side: :player1_is_corp)
+        create_list(:pairing, 4, player1: player, side: :player1_is_runner)
+      end
+
+      it 'returns negative number' do
+        expect(player.side_bias).to eq(-3)
+      end
+    end
+  end
 end

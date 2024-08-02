@@ -13,6 +13,14 @@ module PairingStrategies
       apply_numbers!(PairingSorters::Ranked)
     end
 
+    def self.get_pairings(players)
+      SwissImplementation.pair(
+        players,
+        delta_key: :points,
+        exclude_key: :unpairable_opponents
+      )
+    end
+
     private
 
     def assign_byes!
@@ -27,14 +35,10 @@ module PairingStrategies
     end
 
     def paired_players
-      return @paired_players ||= players_to_pair.to_a.shuffle(random: random).in_groups_of(2, Swissper::Bye) if first_round?
-      return @paired_players ||= PairingStrategies::BigSwiss.new(stage).pair! if players.count > 60
+      return @paired_players ||= players_to_pair.to_a.shuffle(random: random).in_groups_of(2, SwissImplementation::Bye) if first_round?
+      return @paired_players ||= PairingStrategies::BigSwiss.new(stage, self.class).pair! if players.count > 60
 
-      @paired_players ||= Swissper.pair(
-        players_to_pair.to_a,
-        delta_key: :points,
-        exclude_key: :unpairable_opponents
-      )
+      @paired_players ||= self.class.get_pairings(players_to_pair.to_a)
     end
 
     def pairing_params(pairing)
@@ -47,13 +51,13 @@ module PairingStrategies
     end
 
     def player_from_pairing(player)
-      player == Swissper::Bye ? nil : player
+      player == SwissImplementation::Bye ? nil : player
     end
 
     def auto_score(pairing, player_index)
-      return unless pairing[0] == Swissper::Bye || pairing[1] == Swissper::Bye
+      return unless pairing[0] == SwissImplementation::Bye || pairing[1] == SwissImplementation::Bye
 
-      pairing[player_index] == Swissper::Bye ? BYE_LOSER_SCORE : BYE_WINNER_SCORE
+      pairing[player_index] == SwissImplementation::Bye ? BYE_LOSER_SCORE : BYE_WINNER_SCORE
     end
 
     def apply_numbers!(sorter)
