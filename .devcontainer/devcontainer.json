@@ -14,7 +14,7 @@
             "version": "latest"
         },
         "ghcr.io/devcontainers/features/ruby:1": {
-            "version": "3.2.4" // Change to match Ruby version from Gemfile 
+            "version": "3.2.4" // Change to match Ruby version from Gemfile
         },
         "ruby": "3.2.4",
         "ghcr.io/devcontainers/features/node:1": {
@@ -74,18 +74,19 @@
                 }
             },
             "extensions": [
-                "IBM.output-colorizer",
                 "aki77.rails-db-schema",
                 "bung87.rails",
                 "bung87.vscode-gemfile",
                 "connorshea.vscode-ruby-test-adapter",
                 "eamodio.gitlens",
+                "github.vscode-github-actions",
                 "hbenl.vscode-test-explorer",
+                "IBM.output-colorizer",
                 "iliazeus.vscode-ansi",
                 "manuelpuyol.erb-linter",
                 "ms-azuretools.vscode-docker",
-                "mtxr.sqltools",
                 "mtxr.sqltools-driver-pg",
+                "mtxr.sqltools",
                 "rubocop.vscode-rubocop",
                 "vscode-icons-team.vscode-icons",
                 "waderyan.gitblame"
