@@ -23,5 +23,13 @@ ruby:
             td= link_to view_decks_tournament_round_pairing_path(@tournament, @round, p[:pairing]), class: 'ml-2' do
               => fa_icon 'eye'
               | View decks
-          td= p[:player1_name]
-          td= p[:player2_name]
+          td
+            =p[:player1_name]
+            - if p[:pairing].round.stage.format == :single_sided_swiss.to_s
+              <br />
+              = render p[:pairing].player1_is_corp? ? p[:pairing].player1.corp_identity_object : p[:pairing].player1.runner_identity_object
+          td
+            = p[:player2_name]
+            - if p[:pairing].round.stage.format == :single_sided_swiss.to_s
+              <br />
+              = render p[:pairing].player1_is_corp? ? p[:pairing].player2.runner_identity_object : p[:pairing].player2.corp_identity_object
