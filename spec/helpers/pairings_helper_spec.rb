@@ -1,10 +1,34 @@
 RSpec.describe PairingsHelper do
+  describe '#single_sided_swiss_presets' do
+    let(:tournament) { create(:tournament, swiss_format: :single_sided) }
+    let(:stage) { tournament.current_stage }
+
+    context 'when player 1 is corp' do
+      let(:pairing) { create(:pairing, stage: stage, side: :player1_is_corp) }
+
+      it 'returns single-sided swiss defaults' do
+        expect(helper.presets(pairing)).to eq(
+          [
+            { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+              label: 'Corp Win' },
+            { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+              label: 'Tie' },
+            { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+              label: 'Runner Win' },
+            { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: true,
+              label: 'Intentional Draw' }
+          ]
+        )
+      end
+    end
+  end
+
   describe '#presets' do
     let(:tournament) { create(:tournament) }
     let(:stage) { tournament.current_stage }
     let(:pairing) { create(:pairing, stage: stage) }
 
-    context 'for swiss' do
+    context 'for double-sided swiss' do
       it 'returns swiss defaults' do
         expect(helper.presets(pairing)).to eq(
           [

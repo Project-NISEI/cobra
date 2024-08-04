@@ -46,6 +46,7 @@ module PairingsHelper
   end
 
   def presets(pairing)
+    # Double-sided round
     return [
       { score1_corp: 3, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '6-0' },
       { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '3-3 (C)' },
@@ -53,6 +54,32 @@ module PairingsHelper
       { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 3, label: '0-6' }
     ] unless pairing.stage.single_sided?
 
+    # Single-sided swiss round
+    if pairing.round.stage.format == :single_sided_swiss.to_s
+      if pairing.side.try(:to_sym) == :player1_is_corp
+        return [
+          { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+            label: 'Corp Win' },
+          { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: false, label: 'Tie' },
+          { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+            label: 'Runner Win' },
+          { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: true,
+            label: 'Intentional Draw' }
+        ]
+      else
+        return [
+          { score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 3, intentional_draw: false,
+            label: 'Corp Win' },
+          { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: false, label: 'Tie' },
+          { score1_corp: 0, score2_runner: 0, score1_runner: 3, score2_corp: 0, intentional_draw: false,
+            label: 'Runner Win' },
+          { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: true,
+            label: 'Intentional Draw' }
+        ]
+      end
+    end
+
+    # Single-sided elimination round
     return [
       { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
       { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
