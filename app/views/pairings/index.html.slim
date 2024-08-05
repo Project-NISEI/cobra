@@ -24,12 +24,18 @@ ruby:
               => fa_icon 'eye'
               | View decks
           td
-            =p[:player1_name]
             - if p[:pairing].round.stage.format == :single_sided_swiss.to_s
-              <br />
-              = render p[:pairing].player1_is_corp? ? p[:pairing].player1.corp_identity_object : p[:pairing].player1.runner_identity_object
+              - if p[:pairing].side == 'player1_is_corp'
+                = p[:player1_name] + ' (Corp)'
+              - else
+                = p[:player2_name] + ' (Corp)'
+            - else
+              = p[:player1_name]
           td
-            = p[:player2_name]
             - if p[:pairing].round.stage.format == :single_sided_swiss.to_s
-              <br />
-              = render p[:pairing].player1_is_corp? ? p[:pairing].player2.runner_identity_object : p[:pairing].player2.corp_identity_object
+              - if p[:pairing].side == 'player1_is_corp'
+                = p[:player2_name] + ' (Runner)'
+              - else
+                = p[:player1_name] + ' (Runner)'
+            - else
+              = p[:player2_name]

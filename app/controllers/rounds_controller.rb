@@ -36,6 +36,7 @@ class RoundsController < ApplicationController
             pairings: round.pairings.map { |pairing| {
               id: pairing.id,
               table_number: pairing.table_number,
+              is_single_sided_swiss: @tournament.swiss_format == :single_sided.to_s,
               policy: {
                 view_decks: view_decks
               },

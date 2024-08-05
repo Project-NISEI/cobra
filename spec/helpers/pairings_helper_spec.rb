@@ -13,10 +13,10 @@ RSpec.describe PairingsHelper do
               label: 'Corp Win' },
             { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: false,
               label: 'Tie' },
-            { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, intentional_draw: false,
-              label: 'Runner Win' },
             { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: true,
-              label: 'Intentional Draw' }
+              label: 'Intentional Draw' },
+            { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+              label: 'Runner Win' }
           ]
         )
       end

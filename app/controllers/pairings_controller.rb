@@ -18,7 +18,18 @@ class PairingsController < ApplicationController
         player2_name: p.player1.name_with_pronouns,
         pairing: p
       }
-    end.sort_by { |p| p[:player1_name] }
+    end.sort_by do |p|
+      # Sort by username for doublesided, but Corp username for Single-Sided Swiss.
+      if p[:pairing].round.stage.format == :single_sided_swiss.to_s
+        if p[:pairing].side == 'player1_is_corp'
+          p[:player1_name].downcase
+        else
+          p[:player2_name].downcase
+        end
+      else
+        p[:player1_name].downcase
+      end
+    end
   end
 
   def create

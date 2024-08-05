@@ -5,6 +5,12 @@
 
     export let round: Round;
     export let pairing: Pairing;
+    export let left_player = pairing.player1
+    export let right_player = pairing.player2
+    if (pairing.is_single_sided_swiss && pairing.player2.side_label == '(Corp)') {
+        left_player = pairing.player2
+        right_player = pairing.player1
+    }
 </script>
 
 <div class="row m-1 round_pairing align-items-center table_{pairing.table_number}">
@@ -17,7 +23,7 @@
             View decks
         </a>
     {/if}
-    <PlayerName player={pairing.player1} left_or_right="left"/>
+    <PlayerName player={left_player} left_or_right="left"/>
     <div class="col-sm-2 centre_score">
         {pairing.score_label}
         {#if pairing.intentional_draw}
@@ -27,5 +33,5 @@
             <span class="badge badge-pill badge-secondary score-badge">2 for 1</span>
         {/if}
     </div>
-    <PlayerName player={pairing.player2} left_or_right="right"/>
+    <PlayerName player={right_player} left_or_right="right"/>
 </div>
