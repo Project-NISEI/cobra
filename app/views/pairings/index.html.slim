@@ -20,7 +20,7 @@ ruby:
         tr
           td= p[:table_number]
           - if @decks_visible
-            td= link_to view_decks_tournament_round_pairing_path(@tournament, @round, p[:pairing]), class: 'ml-2' do
+            td= link_to view_decks_tournament_round_pairing_path(@tournament, @round, p[:pairing]), class: 'ms-2' do
               => fa_icon 'eye'
               | View decks
           td= p[:player1_name]

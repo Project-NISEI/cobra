@@ -5,7 +5,7 @@
       | Remaining
     | &nbsp;#{round.timer.header}&nbsp;
     / Width is fixed to avoid numbers popping around on Mac as the font has numbers of different widths
-    span#round_time_remaining.text-left style='width: 2.6rem; display: inline-block'
+    span#round_time_remaining.text-start style='width: 2.6rem; display: inline-block'
       | 00:00
   javascript:
     roundTimer = #{raw round.timer.state.to_json};

@@ -1,7 +1,7 @@
 - if policy(round.tournament).edit? && !round.completed?
   = form_tag update_timer_tournament_round_path(round.tournament, round), method: :patch, \
       class: 'my-2 round-timer-form' do
-    .form-row
+    .row
       = label_tag :length_minutes, 'Round timer length (minutes)', class: 'col-form-label'
       .col-sm-1
         = text_field_tag :length_minutes, round.length_minutes, class: 'form-control'
@@ -18,6 +18,6 @@
           button.btn.btn-success type='submit' name='operation' value='start'
             => fa_icon 'clock-o'
             | Start
-        button.btn.btn-info.ml-1 type='submit' name='operation' value='reset' data-confirm='This will clear all elapsed time in the round. Are you sure?'
+        button.btn.btn-info.ms-1 type='submit' name='operation' value='reset' data-confirm='This will clear all elapsed time in the round. Are you sure?'
           => fa_icon 'undo'
           | Reset

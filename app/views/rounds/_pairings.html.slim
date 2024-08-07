@@ -6,15 +6,15 @@
       - if @tournament.allow_streaming_opt_out? && policy(round.tournament).edit?
         - if pairing.player_ids.all? { |player_id| @players[player_id].include_in_stream? }
           = fa_icon 'video-camera',
-                  class: 'text-success streaming-tooltip ml-2',
+                  class: 'text-success streaming-tooltip ms-2',
                   title: 'May be included in video coverage'
         - elsif round.stage.double_elim?
           = fa_icon 'video-camera',
-                  class: 'text-warning streaming-tooltip ml-2',
+                  class: 'text-warning streaming-tooltip ms-2',
                   title: 'One or both players requested not to be included in video coverage,
                   but were informed this may not be possible in the cut'
         - else
-          span.text-nowrap.streaming-tooltip.ml-2 title='One or both players requested not to be included in video coverage'
+          span.text-nowrap.streaming-tooltip.ms-2 title='One or both players requested not to be included in video coverage'
             = fa_icon 'video-camera', class: 'text-secondary'
             =< fa_icon 'ban', class: 'text-danger'
         javascript:

@@ -23,7 +23,7 @@ module PairingsHelper
   def side_value(player, side, pairing)
     return unless player_is_in_pairing(player, pairing)
 
-    [:player1_is_corp, :player1_is_runner].tap do |options|
+    %i[player1_is_corp player1_is_runner].tap do |options|
       options.reverse! if (side == :runner) ^ (pairing.player2_id == player.id)
     end.first
   end
@@ -42,26 +42,32 @@ module PairingsHelper
               pairing: { side: value }
             ),
             method: :post,
-            class: "btn btn-sm mr-1 #{active ? 'btn-dark' : 'btn-outline-dark'}"
+            class: "btn btn-sm me-1 #{active ? 'btn-dark' : 'btn-outline-dark'}"
   end
 
   def presets(pairing)
-    return [
-      { score1_corp: 3, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '6-0' },
-      { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '3-3 (C)' },
-      { score1_corp: 0, score2_runner: 3, score1_runner: 3, score2_corp: 0, label: '3-3 (R)' },
-      { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 3, label: '0-6' }
-    ] unless pairing.stage.single_sided?
+    unless pairing.stage.single_sided?
+      return [
+        { score1_corp: 3, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '6-0' },
+        { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '3-3 (C)' },
+        { score1_corp: 0, score2_runner: 3, score1_runner: 3, score2_corp: 0, label: '3-3 (R)' },
+        { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 3, label: '0-6' }
+      ]
+    end
 
-    return [
-      { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
-      { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
-    ] if pairing.side.try(:to_sym) == :player1_is_corp
+    if pairing.side.try(:to_sym) == :player1_is_corp
+      return [
+        { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
+        { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
+      ]
+    end
 
-    return [
-      { score1_corp: 0, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '3-0' },
-      { score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '0-3' }
-    ] if pairing.side.try(:to_sym) == :player1_is_runner
+    if pairing.side.try(:to_sym) == :player1_is_runner
+      return [
+        { score1_corp: 0, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '3-0' },
+        { score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '0-3' }
+      ]
+    end
 
     [
       { score1: 3, score2: 0, score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
@@ -84,7 +90,8 @@ module PairingsHelper
   end
 
   def readable_score(pairing)
-    return "-" if pairing.score1 == 0 && pairing.score2 == 0
+    return '-' if pairing.score1 == 0 && pairing.score2 == 0
+
     ws = winning_side(pairing)
 
     return "#{pairing.score1} - #{pairing.score2}" unless ws
@@ -96,10 +103,9 @@ module PairingsHelper
     corp_score = (pairing.score1_corp || 0) + (pairing.score2_corp || 0)
     runner_score = (pairing.score1_runner || 0) + (pairing.score2_runner || 0)
 
-    case
-    when corp_score - runner_score == 0
+    if corp_score - runner_score == 0
       nil
-    when corp_score - runner_score < 0
+    elsif corp_score - runner_score < 0
       'R'
     else
       'C'

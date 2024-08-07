@@ -2,10 +2,10 @@
 / Sizes have been set relative to viewport width (vw) to ensure fullscreen scaling
 .container-fluid
   .fixed-top
-    .float-right.text-center.align-middle style='margin: 1vw; font-size: 2vw; line-height: 1'
+    .float-end.text-center.align-middle style='margin: 1vw; font-size: 2vw; line-height: 1'
       a href='javascript:closeRoundTimer()'
         i.fa.fa-close.text-dark
-    .float-right.text-center.align-middle#pop_out_button style='margin: 1vw; font-size: 2vw; line-height: 1; display: none'
+    .float-end.text-center.align-middle#pop_out_button style='margin: 1vw; font-size: 2vw; line-height: 1; display: none'
       a href='javascript:popOutRoundTimer()'
         i.fa.fa-window-maximize.text-dark
   .row.vh-100.align-items-center.justify-content-center.text-center
@@ -17,7 +17,7 @@
       .alert.alert-primary.mb-0 style='font-size: 22vw; border-radius: 2vw; padding: 0.5vw 4vw'
         => fa_icon 'clock-o'
         / Width is fixed to avoid numbers popping around on Mac as the font has numbers of different widths
-        span#round_time_remaining.text-left style='width: 55vw; display: inline-block'
+        span#round_time_remaining.text-start style='width: 55vw; display: inline-block'
           | 00:00
         javascript:
           roundTimer = #{raw @timer.state.to_json};

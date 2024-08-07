@@ -12,7 +12,7 @@
 .col-12
   = simple_form_for :shortcode, url: shortlink_tournaments_path, method: :get, html: { class: 'form-inline justify-content-center' } do |f|
     label.mx-2 Try again?
-    => f.text_field :slug, class: 'form-control mr-2', placeholder: 'SHRT', name: :slug, value: @code.upcase
-    = button_tag type: :submit, class: 'btn btn-primary mr-2' do
+    => f.text_field :slug, class: 'form-control me-2', placeholder: 'SHRT', name: :slug, value: @code.upcase
+    = button_tag type: :submit, class: 'btn btn-primary me-2' do
       => fa_icon 'arrow-right'
       | Go to tournament

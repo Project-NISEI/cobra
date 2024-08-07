@@ -8,7 +8,7 @@ ruby:
         .card-header
           .d-flex.justify-content-between
             h5.mb-0 Registration Information
-            span.float-right.dontprint
+            span.float-end.dontprint
               - if @tournament.nrdb_deck_registration?
                 a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
                   => fa_icon 'print'
@@ -26,16 +26,16 @@ ruby:
             = f.input_field :corp_identity, hidden: true
             = f.input_field :runner_identity, hidden: true
             .form-group.mr-3
-              label.d-block.mr-2 for="player_name" Name
+              label.d-block.me-2 for="player_name" Name
               = f.input_field :name,
                       placeholder: 'Enter player name',
                       class: 'form-control'
             .form-group.mr-3
-              label.d-block.mr-2 for="player_pronouns" Pronouns
+              label.d-block.me-2 for="player_pronouns" Pronouns
               = f.input_field :pronouns,
                       placeholder: 'Example: they/them',
                       class: 'form-control'
-            = button_tag type: :submit, class: 'btn btn-primary dontprint mr-2' do
+            = button_tag type: :submit, class: 'btn btn-primary dontprint me-2' do
               => fa_icon 'check'
               | Submit
             span.badge.badge-warning.p-2.my-1.d-none#deck_changes_not_submitted_warning Changes not yet submitted
@@ -54,7 +54,7 @@ ruby:
                 | Edit decks in place
       - if @tournament.nrdb_deck_registration?
         .alert.alert-danger.mt-3.mb-0.dontprint role=alert
-          => fa_icon 'exclamation-triangle', class: 'mr-2'
+          => fa_icon 'exclamation-triangle', class: 'me-2'
           | Deck legality is not yet checked. Please check decks manually.
 
   = render 'deck_selection'

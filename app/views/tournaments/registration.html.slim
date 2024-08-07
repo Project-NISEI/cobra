@@ -9,7 +9,7 @@ ruby:
           .card-header
             .d-flex.justify-content-between
               h5.mb-0 My Registration Information
-              span.float-right.dontprint
+              span.float-end.dontprint
                 a.mr-3 href="#" onclick='window.print(); event.preventDefault();'
                   => fa_icon 'print'
                 = link_to tournament_path(@tournament), title: 'Cancel' do
@@ -24,13 +24,13 @@ ruby:
               = f.input_field :corp_identity, hidden: true
               = f.input_field :runner_identity, hidden: true
               .form-group.mr-3
-                label.d-block.mr-2 for="player_name" Name
+                label.d-block.me-2 for="player_name" Name
                 = f.input_field :name,
                         placeholder: 'Enter player name',
                         class: 'form-control',
                         readonly: @current_user_player.registration_locked?
               .form-group.mr-3
-                label.d-block.mr-2 for="player_pronouns" Pronouns
+                label.d-block.me-2 for="player_pronouns" Pronouns
                 = f.input_field :pronouns,
                         placeholder: 'Example: they/them',
                         class: 'form-control',
@@ -39,11 +39,11 @@ ruby:
                 = f.input :include_in_stream, as: :select, prompt: false, label: Tournament.streaming_opt_out_notice,
                         wrapper_html: { class: 'mt-2' },
                         input_html: { class: 'form-control' },
-                        label_html: { class: 'mr-2 d-inline-block align-middle' }
+                        label_html: { class: 'me-2 d-inline-block align-middle' }
               - if @current_user_player.registration_locked?
                 .mt-2 Registration is locked, talk to a Tournament Organiser to change your decks or details.
                 - if @tournament.allow_streaming_opt_out?
-                  .my-2.mr-2 Your video coverage preference may still be changed here, but please tell the TO as well.
+                  .my-2.me-2 Your video coverage preference may still be changed here, but please tell the TO as well.
                   = button_tag type: :submit, class: 'btn btn-primary dontprint' do
                     => fa_icon 'check'
                     | Submit
@@ -51,10 +51,10 @@ ruby:
                 = button_tag type: :submit, class: 'btn btn-primary dontprint' do
                   => fa_icon 'check'
                   | Submit
-              span.badge.badge-warning.ml-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
+              span.badge.badge-warning.ms-3.p-2.d-none#deck_changes_not_submitted_warning Changes not yet submitted
         - unless @current_user_player.registration_locked?
           .alert.alert-danger.mt-3.mb-0.dontprint role=alert
-            => fa_icon 'exclamation-triangle', class: 'mr-2'
+            => fa_icon 'exclamation-triangle', class: 'me-2'
             | Deck legality is not yet checked. Please ensure your decks are legal.
     = render 'players/deck_selection'
   - else
@@ -65,7 +65,7 @@ ruby:
           .card-header
             .d-flex.justify-content-between
               h5.mb-0 My Registration Information
-              span.float-right.dontprint
+              span.float-end.dontprint
                 = link_to tournament_path(@tournament), title: 'Cancel' do
                   => fa_icon 'undo'
                   span.d-none Cancel registration edits
@@ -75,7 +75,7 @@ ruby:
               - if @current_user_player.registration_locked?
                 div.mt-3 Registration is locked, talk to a Tournament Organiser to change your details.
               - unless @current_user_player.registration_locked? && !@tournament.allow_streaming_opt_out?
-                .text-right.dontprint
+                .text-end.dontprint
                   = button_tag type: :submit, class: 'btn btn-primary' do
                     => fa_icon 'check'
                     | Submit

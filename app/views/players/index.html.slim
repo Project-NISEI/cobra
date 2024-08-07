@@ -8,7 +8,7 @@
     h5.mb-3 Register New Player
     = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline d-block' } do |f|
       = render 'form', f: f, organiser_view: true, new_registration: true
-      .mt-2.text-right
+      .mt-2.text-end
         = button_tag type: :submit, class: 'btn btn-success',
                 data: { confirm: @tournament.registration_closed? ? 'Tournament is closed, add new player anyway?' : nil } do
           => fa_icon 'plus'
@@ -18,9 +18,9 @@
     | Players
     - if @tournament.self_registration?
       span.dropdown
-        button.btn.btn-sm.dropdown-toggle.btn-light.text-muted.font-weight-bold.ml-3 data-toggle='dropdown'
+        button.btn.btn-sm.dropdown-toggle.btn-light.text-muted.font-weight-bold.ms-3 id="registrationDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
           | Registration: #{@tournament.registration_lock_description}
-        .dropdown-menu
+        .dropdown-menu aria-labelledby="registrationDropdownBtn"
           => link_to lock_player_registrations_tournament_path(@tournament), method: :patch,
                   class: ['dropdown-item', *('disabled' unless @tournament.any_player_unlocked?)] do
             => fa_icon 'lock', style: 'width: 16px'
@@ -41,7 +41,7 @@
     - if @tournament.nrdb_deck_registration?
       - if Flipper.enabled? :open_list_cut
         span.dropdown
-          button.btn.btn-sm.dropdown-toggle.btn-light.text-muted.font-weight-bold.ml-2 data-toggle='dropdown'
+          button.btn.btn-sm.dropdown-toggle.btn-light.text-muted.font-weight-bold.ms-2 data-toggle='dropdown'
             | Decks: #{@tournament.decks_visibility_description}
           .dropdown-menu
             => link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_private}}), method: :patch,
@@ -85,34 +85,34 @@
         .spinner-border.spinner-border-sm.d-none#download_streaming_spinner style='width: 15px'
         => fa_icon 'download', id: 'download_streaming_icon'
         | Streaming spreadsheet
-  ul.list-group.list-group-flush
-  - @players.each do |player|
-    li.list-group-item
-      = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mt-2 d-block' } do |f|
-        = render 'form', f: f, organiser_view: true, player: player
-        .text-right
-          - if @tournament.self_registration?
-            - if player.registration_locked?
-              =< link_to unlock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
-                => fa_icon 'unlock'
-                | Unlock player
-            - else
-              =< link_to lock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do
-                => fa_icon 'lock'
-                | Lock player
-          - if @tournament.nrdb_deck_registration?
-            =< link_to registration_tournament_player_path(@tournament, player), class: 'btn btn-link text-info mr-2' do
-              => fa_icon 'eye'
-              | View decks
-          = button_tag type: :submit, class: 'btn btn-link text-success mr-2' do
-            => fa_icon 'floppy-o'
-            | Save
-          =< link_to drop_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-warning mr-2' do
-            => fa_icon 'arrow-down'
-            | Drop
-          =< link_to tournament_player_path(@tournament, player), method: :delete, class: 'btn btn-link text-danger mr-2' do
-            => fa_icon 'trash'
-            | Delete
+  ul.list-group
+    - @players.each do |player|
+      li.list-group-item
+        = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mt-2 d-block' } do |f|
+          = render 'form', f: f, organiser_view: true, player: player
+          .text-end
+            - if @tournament.self_registration?
+              - if player.registration_locked?
+                =< link_to unlock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info me-2' do
+                  => fa_icon 'unlock'
+                  | Unlock player
+              - else
+                =< link_to lock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info me-2' do
+                  => fa_icon 'lock'
+                  | Lock player
+            - if @tournament.nrdb_deck_registration?
+              =< link_to registration_tournament_player_path(@tournament, player), class: 'btn btn-link text-info me-2' do
+                => fa_icon 'eye'
+                | View decks
+            = button_tag type: :submit, class: 'btn btn-link text-success me-2' do
+              => fa_icon 'floppy-o'
+              | Save
+            =< link_to drop_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-warning me-2' do
+              => fa_icon 'arrow-down'
+              | Drop
+            =< link_to tournament_player_path(@tournament, player), method: :delete, class: 'btn btn-link text-danger me-2' do
+              => fa_icon 'trash'
+              | Delete
 
   - if @dropped.any?
     h3.mt-4 Dropped Players

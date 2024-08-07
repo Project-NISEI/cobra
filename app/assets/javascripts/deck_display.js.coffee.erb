@@ -147,7 +147,7 @@ $(document).on 'turbolinks:load', ->
       ]
       if deckAfter.details.mine
         buttons.push($('<a/>', {
-          class: 'ml-2',
+          class: 'ms-2',
           title: 'Edit Deck',
           href: 'https://netrunnerdb.com/en/deck/edit/' + deckAfter.details.nrdb_uuid,
           target: '_blank'
@@ -156,7 +156,7 @@ $(document).on 'turbolinks:load', ->
         ))
       display = [
         document.createTextNode(deckAfter.details.name),
-        $('<div/>', {class: 'float-right dontprint'}).append(buttons)
+        $('<div/>', {class: 'float-end dontprint'}).append(buttons)
       ]
       display
 
@@ -345,7 +345,7 @@ $(document).on 'turbolinks:load', ->
           $('<a/>', {
             title: 'Remove'
             href: '#'
-            class: 'mr-2'
+            class: 'me-2'
           }).append(
             $('<i/>', {class: 'fa fa-minus'})
           ).on('click', ((e) =>
@@ -359,7 +359,7 @@ $(document).on 'turbolinks:load', ->
           $('<a/>', {
             title: 'Add'
             href: '#'
-            class: 'ml-2'
+            class: 'ms-2'
           }).append(
             $('<i/>', {class: 'fa fa-plus'})
           ).on('click', ((e) =>
