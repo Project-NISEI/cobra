@@ -1,0 +1,29 @@
+<div class="col-md-6">
+<% @overview_notices.each do |notice|
+ %><div class="alert alert-info"><%= ::Temple::Utils.escape_html((notice)) %></div>
+<% end %><div class="card">
+<ul class="list-group list-group-flush">
+<% if @tournament.slug
+ %><li class="list-group-item">
+<div class="small text-secondary">Shortcode:</div>
+<%= ::Temple::Utils.escape_html((@tournament.slug)) %> (
+<%= ::Temple::Utils.escape_html((link_to tournament_url(@tournament.slug, request), tournament_url(@tournament.slug, request))) %>
+)
+
+</li><% end %><li class="list-group-item">
+<div class="small text-secondary">Organiser:</div>
+<%= ::Temple::Utils.escape_html((@tournament.user.nrdb_username)) %>
+</li><li class="list-group-item">
+<div class="small text-secondary">Players:</div>
+<%= ::Temple::Utils.escape_html((pluralize(@players.count, 'active player'))) %>
+ (<%= ::Temple::Utils.escape_html((@dropped.count)) %> dropped)
+</li><% if policy(@tournament).edit?
+ %><li class="list-group-item">
+<div class="small text-secondary">
+QR Code:
+</div><div class="row">
+<div class="col-sm-6">
+<% _slim_controls1 = link_to qr_tournament_path(@tournament), :target => '_blank' do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'qrcode'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Open Printable QR Code".freeze); 
+; _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %></div></div></li><% end %></ul></div></div>

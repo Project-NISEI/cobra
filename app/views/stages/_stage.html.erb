@@ -1,0 +1,15 @@
+<div class="accordion mb-3" role="tablist">
+<div class="row mb-1">
+<div class="col-sm-11">
+<h4><%= ::Temple::Utils.escape_html((stage.format.titleize)) %>
+</h4></div><div class="col-sm-1">
+<% if policy(stage.tournament).update?
+_slim_controls1 = link_to tournament_stage_path(stage.tournament, stage), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed and all rounds will be deleted!' } do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'trash'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %><% end %></div></div><% if stage.rounds.any?
+if stage.players.count > 60 && !policy(stage.tournament).update?
+ %><div class="alert alert-info">Due to the number of players, only the most recent round will be displayed on this page to help page load.</div>
+<%= ::Temple::Utils.escape_html((render stage.rounds.last)) %>
+<% else
+ %><%= ::Temple::Utils.escape_html((render stage.rounds)) %>
+<% end; end %></div>

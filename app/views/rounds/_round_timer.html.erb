@@ -1,0 +1,12 @@
+<% if round&.timer&.show?
+ %><div class="alert alert-primary mb-0">
+<%= ::Temple::Utils.escape_html((fa_icon 'clock-o')) %>
+ <span id="time_remaining_header">
+Remaining
+</span>&nbsp;<%= ::Temple::Utils.escape_html((round.timer.header)) %>&nbsp;
+
+<span class="text-left" id="round_time_remaining" style="width: 2.6rem; display: inline-block">
+00:00
+</span></div><script>
+roundTimer = <%= ::Temple::Utils.escape_html((raw round.timer.state.to_json)) %>;</script>
+<% end %>

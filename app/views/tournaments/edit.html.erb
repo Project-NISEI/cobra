@@ -1,0 +1,31 @@
+<div class="col-md-6">
+<% _slim_controls1 = simple_form_for @tournament do |f| %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((render 'form', f: f))).to_s); 
+; _slim_controls2 << ("<div".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("form-group".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; _slim_controls3 = button_tag type: :submit, class: 'btn btn-primary' do |f|; _slim_controls4 = ''; 
+; _slim_controls4 << ((::Temple::Utils.escape_html((fa_icon 'floppy-o'))).to_s); 
+; _slim_controls4 << (" ".freeze); _slim_controls4 << ("Save".freeze); 
+; 
+; _slim_controls4; end; _slim_controls2 << ((::Temple::Utils.escape_html((_slim_controls3))).to_s); _slim_controls2 << ("</div>".freeze); _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %></div><div class="col-md-3">
+</div><div class="col-md-3">
+<p><% _slim_controls5 = link_to upload_to_abr_tournament_path(@tournament), class: 'btn btn-success', method: :post do |f| %><% _slim_controls6 = ''; 
+; _slim_controls6 << ((::Temple::Utils.escape_html((fa_icon 'arrow-circle-up'))).to_s); 
+; _slim_controls6 << (" ".freeze); _slim_controls6 << ("Upload to Always Be Running".freeze); 
+; _slim_controls6 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls5)) %></p> <% if @tournament.abr_code
+ %>Uploaded to ABR with code <%= ::Temple::Utils.escape_html((@tournament.abr_code)) %>
+<% end %><p><% _slim_controls7 = link_to save_json_tournament_path(@tournament), class: 'btn btn-success', target: '_blank' do |f| %><% _slim_controls8 = ''; 
+; _slim_controls8 << ((::Temple::Utils.escape_html((fa_icon 'arrow-circle-down'))).to_s); 
+; _slim_controls8 << (" ".freeze); _slim_controls8 << ("Download as JSON".freeze); 
+; _slim_controls8 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls7)) %></p><p><% _slim_controls9 = button_to cut_tournament_path(@tournament, number: 3), method: :post, class: 'btn btn-success' do %><% _slim_controls10 = ''; 
+; _slim_controls10 << ((::Temple::Utils.escape_html((fa_icon 'scissors'))).to_s); 
+; _slim_controls10 << (" ".freeze); _slim_controls10 << ("Cut to Top 3".freeze); 
+; _slim_controls10 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls9)) %></p><p><% _slim_controls11 = button_to cut_tournament_path(@tournament, number: 4), method: :post, class: 'btn btn-success' do %><% _slim_controls12 = ''; 
+; _slim_controls12 << ((::Temple::Utils.escape_html((fa_icon 'scissors'))).to_s); 
+; _slim_controls12 << (" ".freeze); _slim_controls12 << ("Cut to Top 4".freeze); 
+; _slim_controls12 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls11)) %></p><p><% _slim_controls13 = button_to cut_tournament_path(@tournament, number: 8), method: :post, class: 'btn btn-success' do %><% _slim_controls14 = ''; 
+; _slim_controls14 << ((::Temple::Utils.escape_html((fa_icon 'scissors'))).to_s); 
+; _slim_controls14 << (" ".freeze); _slim_controls14 << ("Cut to Top 8".freeze); 
+; _slim_controls14 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls13)) %></p><p><% _slim_controls15 = button_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do %><% _slim_controls16 = ''; 
+; _slim_controls16 << ((::Temple::Utils.escape_html((fa_icon 'scissors'))).to_s); 
+; _slim_controls16 << (" ".freeze); _slim_controls16 << ("Cut to Top 16".freeze); 
+; _slim_controls16 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls15)) %></p></div>

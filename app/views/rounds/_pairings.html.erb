@@ -1,0 +1,79 @@
+<% single_sided = round.stage.single_sided?
+round.pairings.each do |pairing|
+ %><div class="row m-1 round_pairing align-items-center table_<%= ::Temple::Utils.escape_html((pairing.table_number)) %> <%= ::Temple::Utils.escape_html(('reported' if pairing.reported? && current_user == @tournament.user)) %>">
+<div class="col-sm-2">
+Table <%= ::Temple::Utils.escape_html((pairing.table_number)) %>
+<% if @tournament.allow_streaming_opt_out? && policy(round.tournament).edit?
+if pairing.player_ids.all? { |player_id| @players[player_id].include_in_stream? }
+ %><%= ::Temple::Utils.escape_html((fa_icon 'video-camera',
+class: 'text-success streaming-tooltip ml-2',
+title: 'May be included in video coverage')) %>
+<% elsif round.stage.double_elim?
+ %><%= ::Temple::Utils.escape_html((fa_icon 'video-camera',
+class: 'text-warning streaming-tooltip ml-2',
+title: 'One or both players requested not to be included in video coverage,
+but were informed this may not be possible in the cut')) %>
+<% else
+ %><span class="text-nowrap streaming-tooltip ml-2" title="One or both players requested not to be included in video coverage">
+<%= ::Temple::Utils.escape_html((fa_icon 'video-camera', class: 'text-secondary')) %>
+ <%= ::Temple::Utils.escape_html((fa_icon 'ban', class: 'text-danger')) %>
+</span><% end %><script>
+$('.streaming-tooltip').tooltip()</script>
+<% end %></div><% if pairing.decks_visible_to(current_user)
+ %> <% _slim_controls1 = link_to view_decks_tournament_round_pairing_path(@tournament, round, pairing) do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'eye'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("View decks".freeze); 
+; _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %><% end %><div class="col-sm left_player_name">
+<%= ::Temple::Utils.escape_html((@players[pairing.player1_id].name_with_pronouns)) %>
+ <%= ::Temple::Utils.escape_html((render 'player_side', pairing: pairing, player: @players[pairing.player1_id], single_sided: single_sided)) %>
+<% if @players[pairing.player1_id].id
+ %><div class="ids">
+<%= ::Temple::Utils.escape_html((render @players[pairing.player1_id].corp_identity_object)) %>
+<%= ::Temple::Utils.escape_html((render @players[pairing.player1_id].runner_identity_object)) %>
+</div><% end %></div><% if policy(round.tournament).edit?
+ %><div class="col-sm-5 centre_score">
+<div class="preset_score">
+<% presets(pairing).each do |data|
+ %><%= ::Temple::Utils.escape_html((preset_score_button pairing, data)) %>
+ <% end %><%= ::Temple::Utils.escape_html((link_to '...', '#', class: 'btn btn-primary toggle_custom_score')) %>
+</div><div class="custom_score">
+<% _slim_controls3 = simple_form_for pairing, url: report_tournament_round_pairing_path(round.tournament, round, pairing), method: :post, html: { class: 'form-inline' } do |f| %><% _slim_controls4 = ''; 
+; _slim_controls4 << ("<div".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("mx-auto".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.hidden_field :score1_runner, value: 0))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.hidden_field :score1_corp, value: 0))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.hidden_field :score2_runner, value: 0))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.hidden_field :score2_corp, value: 0))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'))).to_s); 
+; _slim_controls5 = button_tag type: :submit, class: 'btn btn-primary mx-2' do; _slim_controls6 = ''; 
+; _slim_controls6 << ((::Temple::Utils.escape_html((fa_icon 'flag-checkered'))).to_s); 
+; _slim_controls6 << (" ".freeze); _slim_controls6 << ("Save".freeze); 
+; _slim_controls6; end; _slim_controls4 << ((::Temple::Utils.escape_html((_slim_controls5))).to_s); _slim_controls4 << ((::Temple::Utils.escape_html((f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'))).to_s); 
+; _slim_controls4 << (" ".freeze); _slim_controls4 << ((::Temple::Utils.escape_html((link_to '...', '#', class: 'btn btn-primary toggle_custom_score'))).to_s); 
+; _slim_controls4 << ("<div".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("form-group".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); 
+; _slim_controls4 << ("<div".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("form-check form-check-inline".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.check_box :intentional_draw, class: 'form-check-input'))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.label :intentional_draw, 'ID', class: 'form-check-label'))).to_s); 
+; _slim_controls4 << ("</div>".freeze); _slim_controls4 << ("<div".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("form-check form-check-inline".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.check_box :two_for_one, class: 'form-check-input'))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.label :two_for_one, '2 for 1', class: 'form-check-label'))).to_s); 
+; _slim_controls4 << ("</div>".freeze); _slim_controls4 << ("</div>".freeze); _slim_controls4 << ("</div>".freeze); _slim_controls4 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls3)) %></div></div><% else
+ %><div class="col-sm-2 centre_score">
+<%= ::Temple::Utils.escape_html((readable_score(pairing))) %>
+<% if pairing.intentional_draw
+ %><span class="badge badge-pill badge-secondary score-badge">
+ID
+</span><% end; if pairing.two_for_one
+ %><span class="badge badge-pill badge-secondary score-badge">
+2 for 1
+</span><% end %></div><% end %><div class="col-sm right_player_name">
+<%= ::Temple::Utils.escape_html((@players[pairing.player2_id].name_with_pronouns)) %>
+ <%= ::Temple::Utils.escape_html((render 'player_side', pairing: pairing, player: @players[pairing.player2_id], single_sided: single_sided)) %>
+<% if @players[pairing.player2_id].id
+ %><div class="ids">
+<%= ::Temple::Utils.escape_html((render @players[pairing.player2_id].corp_identity_object)) %>
+<%= ::Temple::Utils.escape_html((render @players[pairing.player2_id].runner_identity_object)) %>
+</div><% end %></div><% if policy(round.tournament).update?
+ %><div class="col-sm-1">
+<% _slim_controls7 = link_to tournament_round_pairing_path(round.tournament, round, pairing), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed.' } do %><% _slim_controls8 = ''; 
+; _slim_controls8 << ((::Temple::Utils.escape_html((fa_icon 'trash'))).to_s); 
+; _slim_controls8 << (" ".freeze); _slim_controls8 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls7)) %></div><% end %></div><% end %>

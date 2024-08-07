@@ -1,0 +1,20 @@
+<div class="col-12">
+<p class="dontprint"><% _slim_controls1 = link_to 'javascript:history.back()', class: 'btn btn-primary' do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'arrow-left'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Back to pairings".freeze); 
+; 
+; _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %></p><h3>Player meeting
+</h3>
+<table class="table">
+<thead>
+<tr>
+<th>#</th>
+<th>Player 1</th>
+<th>Player 2</th>
+</tr></thead><tbody>
+<% @tournament.players.map(&:name).sort_by{ |n| n.downcase }.in_groups_of(2).each_with_index do |pairing, i|
+ %><tr>
+<td><%= ::Temple::Utils.escape_html((i+1)) %>
+</td><td><%= ::Temple::Utils.escape_html((pairing[0])) %>
+</td><td><%= ::Temple::Utils.escape_html((pairing[1])) %>
+</td></tr><% end %></tbody></table></div>

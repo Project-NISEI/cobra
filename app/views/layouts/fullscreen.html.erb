@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cobra</title>
+<%= ::Temple::Utils.escape_html((csrf_meta_tags)) %>
+<%= ::Temple::Utils.escape_html((stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload')) %>
+<%= ::Temple::Utils.escape_html((javascript_include_tag 'application', 'data-turbolinks-track': 'reload')) %>
+<%= ::Temple::Utils.escape_html((favicon_link_tag 'favicon.ico')) %>
+
+</head><body class="m-0 p-0">
+<%= ::Temple::Utils.escape_html((yield)) %>
+</body></html>

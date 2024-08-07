@@ -1,0 +1,4 @@
+<div class="tournament col-12">
+<%= ::Temple::Utils.escape_html((player.name)) %>
+<%= ::Temple::Utils.escape_html((" (Dropped)" unless player.active?)) %>
+</div>

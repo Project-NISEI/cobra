@@ -1,0 +1,47 @@
+<div class="dontprint col-12 mb-3">
+<% _slim_controls1 = link_to tournament_rounds_path(@round.tournament), class: 'btn btn-primary' do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'arrow-left'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Back to rounds".freeze); 
+; _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %> <% if params[:collate]
+_slim_controls3 = link_to match_slips_tournament_round_pairings_path(@round.tournament, @round), class: 'btn btn-primary' do %><% _slim_controls4 = ''; 
+; _slim_controls4 << ((::Temple::Utils.escape_html((fa_icon 'flag-checkered'))).to_s); 
+; _slim_controls4 << (" ".freeze); _slim_controls4 << ("Uncollate".freeze); 
+; _slim_controls4 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls3)) %><% else
+_slim_controls5 = link_to match_slips_tournament_round_pairings_path(@round.tournament, @round, collate: true), class: 'btn btn-primary' do %><% _slim_controls6 = ''; 
+; _slim_controls6 << ((::Temple::Utils.escape_html((fa_icon 'flag-checkered'))).to_s); 
+; _slim_controls6 << (" ".freeze); _slim_controls6 << ("Collate".freeze); 
+; 
+; _slim_controls6 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls5)) %><% end %></div><div class="slips">
+<% @pairings.each do |p|
+if p
+ %><div class="match_slip">
+<h4>Round <%= ::Temple::Utils.escape_html((p.round.number)) %> - Table <%= ::Temple::Utils.escape_html((p.table_number)) %></h4>
+<table class="table table-bordered">
+<thead>
+<tr>
+<th>Name</th>
+<th>Wins</th>
+<th>Timed Wins</th>
+<th>Draws</th>
+<th>Initials</th>
+<th>Drop?</th>
+</tr></thead><tbody>
+<tr>
+<td><%= ::Temple::Utils.escape_html((p.player1.name)) %>
+</td><td>
+</td><td>
+</td><td>
+</td><td>
+</td><td>
+</td></tr><tr>
+<td><%= ::Temple::Utils.escape_html((p.player2.name)) %>
+</td><td>
+</td><td>
+</td><td>
+</td><td>
+</td><td>
+</td></tr></tbody></table><p>Indicate how many wins, timed wins, and draws were earned by each player. Then initial to confirm. Tick "Drop?" if you would like to drop.</p>
+</div><% else
+ %><div class="match_slip">
+</div><% end %><hr />
+<% end %></div>

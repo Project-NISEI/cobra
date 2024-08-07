@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cobra</title>
+<%= ::Temple::Utils.escape_html((csrf_meta_tags)) %>
+<%= ::Temple::Utils.escape_html((stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload')) %>
+<%= ::Temple::Utils.escape_html((javascript_include_tag 'application', 'data-turbolinks-track': 'reload')) %>
+<%= ::Temple::Utils.escape_html((favicon_link_tag 'favicon.ico')) %>
+<%= ::Temple::Utils.escape_html((yield :head)) %>
+
+</head><body>
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark dontprint">
+<div class="container">
+<%= ::Temple::Utils.escape_html((link_to "Cobra", root_path, class: 'navbar-brand')) %>
+<button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarNav" data-toggle="collapse" type="button">
+<span class="navbar-toggler-icon">
+</span></button><div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav ml-auto">
+<li class="nav-item"><% _slim_controls1 = link_to help_path, class: 'nav-link text-light' do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'life-ring'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("How to".freeze); 
+; _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %></li><% if user_signed_in?
+ %><li class="nav-item dropdown">
+<a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" id="signedInDropdown" role="button">
+<%= ::Temple::Utils.escape_html((fa_icon 'user')) %>
+ <%= ::Temple::Utils.escape_html((current_user.nrdb_username)) %>
+</a><div aria-labelledby="signedInDropdown" class="dropdown-menu dropdown-menu-right">
+<% _slim_controls3 = link_to new_tournament_path, class: 'dropdown-item' do %><% _slim_controls4 = ''; 
+; _slim_controls4 << ((::Temple::Utils.escape_html((fa_icon 'plus'))).to_s); 
+; _slim_controls4 << (" ".freeze); _slim_controls4 << ("Create tournament".freeze); 
+; _slim_controls4 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls3)) %><% _slim_controls5 = link_to my_tournaments_path, class: 'dropdown-item' do %><% _slim_controls6 = ''; 
+; _slim_controls6 << ((::Temple::Utils.escape_html((fa_icon 'trophy'))).to_s); 
+; _slim_controls6 << (" ".freeze); _slim_controls6 << ("My tournaments".freeze); 
+; _slim_controls6 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls5)) %><div class="dropdown-divider">
+</div><% _slim_controls7 = link_to logout_path, class: 'dropdown-item' do %><% _slim_controls8 = ''; 
+; _slim_controls8 << ((::Temple::Utils.escape_html((fa_icon 'sign-out'))).to_s); 
+; _slim_controls8 << (" ".freeze); _slim_controls8 << ("Sign out".freeze); 
+; _slim_controls8 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls7)) %></div></li><% else
+ %><li class="nav-item"><% _slim_controls9 = link_to login_path(:return_to => request.path), class: 'nav-link' do %><% _slim_controls10 = ''; 
+; _slim_controls10 << ((::Temple::Utils.escape_html((fa_icon 'sign-in'))).to_s); 
+; _slim_controls10 << (" ".freeze); _slim_controls10 << ("Sign in".freeze); 
+; _slim_controls10 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls9)) %></li><% end %></ul></div></div></nav><div class="container">
+<% if @tournament
+ %><div class="row dontprint">
+<div class="col-md">
+<h1><%= ::Temple::Utils.escape_html((@tournament.name)) %>
+</h1></div><% if @tournament.stream_url.present?
+ %><div class="col-auto">
+<% _slim_controls11 = link_to @tournament.stream_url, class: 'stream-link', target: '_blank' do %><% _slim_controls12 = ''; 
+; _slim_controls12 << ((::Temple::Utils.escape_html((fa_icon 'video-camera'))).to_s); 
+; _slim_controls12 << (" ".freeze); _slim_controls12 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls11)) %></div><% end %><div class="col col-md-auto mb-md-0 mb-2">
+<% _slim_controls13 = link_to timer_tournament_path(@tournament) do %><% _slim_controls14 = ''; 
+; _slim_controls14 << ((::Temple::Utils.escape_html((render 'rounds/round_timer', round: @tournament.rounds.last))).to_s); 
+; _slim_controls14 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls13)) %></div></div><ul class="nav nav-tabs dontprint">
+<% if policy(@tournament).show?
+ %><li class="nav-item"><% _slim_controls15 = link_to tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name != 'edit'}" do %><% _slim_controls16 = ''; 
+; _slim_controls16 << ((::Temple::Utils.escape_html((fa_icon 'trophy'))).to_s); 
+; _slim_controls16 << (" ".freeze); _slim_controls16 << ("Tournament".freeze); 
+; _slim_controls16 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls15)) %></li><% end; if policy(@tournament).edit?
+ %><li class="nav-item"><% _slim_controls17 = link_to tournament_players_path(@tournament), class: "nav-link #{'active' if controller_name == 'players' && action_name == 'index'}" do %><% _slim_controls18 = ''; 
+; _slim_controls18 << ((::Temple::Utils.escape_html((fa_icon 'users'))).to_s); 
+; _slim_controls18 << (" ".freeze); _slim_controls18 << ("Players".freeze); 
+; _slim_controls18 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls17)) %></li><% end; if policy(@tournament).edit?
+ %><li class="nav-item"><% _slim_controls19 = link_to tournament_rounds_path(@tournament), class: "nav-link #{'active' if controller_name == 'rounds' || controller_name == 'pairings'}" do %><% _slim_controls20 = ''; 
+; _slim_controls20 << ((::Temple::Utils.escape_html((fa_icon 'calendar-check-o'))).to_s); 
+; _slim_controls20 << (" ".freeze); _slim_controls20 << ("Pairings".freeze); 
+; _slim_controls20 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls19)) %></li><% elsif policy(@tournament).show?
+ %><li class="nav-item"><% _slim_controls21 = link_to view_pairings_tournament_rounds_path(@tournament), class: "nav-link #{'active' if controller_name == 'rounds' || controller_name == 'pairings'}" do %><% _slim_controls22 = ''; 
+; _slim_controls22 << ((::Temple::Utils.escape_html((fa_icon 'calendar-check-o'))).to_s); 
+; _slim_controls22 << (" ".freeze); _slim_controls22 << ("Pairings".freeze); 
+; _slim_controls22 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls21)) %></li><% end; if policy(@tournament).show?
+ %><li class="nav-item"><% _slim_controls23 = link_to standings_tournament_players_path(@tournament), class: "nav-link #{'active' if controller_name == 'players' && action_name == 'standings'}" do %><% _slim_controls24 = ''; 
+; _slim_controls24 << ((::Temple::Utils.escape_html((fa_icon 'list-ol'))).to_s); 
+; _slim_controls24 << (" ".freeze); _slim_controls24 << ("Standings".freeze); 
+; _slim_controls24 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls23)) %></li><% end; if policy(@tournament).edit?
+ %><li class="nav-item"><% _slim_controls25 = link_to edit_tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name == 'edit'}" do %><% _slim_controls26 = ''; 
+; _slim_controls26 << ((::Temple::Utils.escape_html((fa_icon 'cog'))).to_s); 
+; _slim_controls26 << (" ".freeze); _slim_controls26 << ("Settings".freeze); 
+; _slim_controls26 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls25)) %></li><% end %></ul><% end; if alert
+ %><div class="row py-3">
+<div class="col-12">
+<div class="alert alert-danger"><%= ::Temple::Utils.escape_html((alert)) %>
+</div></div></div><% end %><div class="row py-3 main-content">
+<%= ::Temple::Utils.escape_html((yield)) %>
+</div></div><div class="footer dontprint">
+<div class="container">
+<div class="row">
+<div class="col-3 nav-item">
+<%= ::Temple::Utils.escape_html((link_to 'Support NSG on Patreon', 'https://www.patreon.com/join/NullSignalGames')) %>
+ </div><div class="col-6 nav-item text-center">
+🐍 Maintained by <a href="https://nullsignal.games">Null Signal Games</a>. Created by Johno. 🐍
+</div><div class="col-3 nav-item text-right">
+<%= ::Temple::Utils.escape_html((link_to "v#{Rails.configuration.version}", 'https://github.com/project-nisei/cobra/releases', class: 'text-muted')) %>
+</div></div></div></div></body></html>

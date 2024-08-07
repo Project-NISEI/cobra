@@ -1,0 +1,62 @@
+
+<% @corp_deck_json = @player&.corp_deck&.as_view(current_user)&.to_json
+@runner_deck_json = @player&.runner_deck&.as_view(current_user)&.to_json
+
+ %><div class="container">
+<div class="row mb-3">
+<div class="col">
+<div class="card">
+<div class="card-header">
+<div class="d-flex justify-content-between">
+<h5 class="mb-0">Registration Information</h5>
+<span class="float-right dontprint">
+<% if @tournament.nrdb_deck_registration?
+ %><a class="mr-3" href="#" onclick="window.print(); event.preventDefault();">
+<%= ::Temple::Utils.escape_html((fa_icon 'print')) %>
+ </a><% end; _slim_controls1 = link_to tournament_players_path(@tournament), title: 'Cancel' do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'undo'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("<span".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("d-none".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); _slim_controls2 << ("Back".freeze); _slim_controls2 << ("</span>".freeze); 
+; _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %></span></div></div><div class="card-body">
+<% _slim_controls3 = simple_form_for @player, url: tournament_player_path(@tournament, @player), html: {class: 'form-inline'} do |f| %><% _slim_controls4 = ''; 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :organiser_view, hidden: true, readonly: true, value: true))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :registration_view, hidden: true, readonly: true, value: true))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :corp_deck_before, hidden: true, disabled: true, value: @corp_deck_json))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :runner_deck_before, hidden: true, disabled: true, value: @runner_deck_json))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :corp_deck, hidden: true, value: @corp_deck_json))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :runner_deck, hidden: true, value: @runner_deck_json))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :corp_identity, hidden: true))).to_s); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :runner_identity, hidden: true))).to_s); 
+; _slim_controls4 << ("<div".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("form-group".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("mr-3".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); 
+; _slim_controls4 << ("<label".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("d-block".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("mr-2".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (" for=\"".freeze); _slim_controls4 << ("player_name".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); _slim_controls4 << ("Name".freeze); _slim_controls4 << ("</label>".freeze); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :name,
+placeholder: 'Enter player name',
+class: 'form-control'))).to_s); 
+; _slim_controls4 << ("</div>".freeze); _slim_controls4 << ("<div".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("form-group".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("mr-3".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); 
+; _slim_controls4 << ("<label".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("d-block".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("mr-2".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (" for=\"".freeze); _slim_controls4 << ("player_pronouns".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); _slim_controls4 << ("Pronouns".freeze); _slim_controls4 << ("</label>".freeze); 
+; _slim_controls4 << ((::Temple::Utils.escape_html((f.input_field :pronouns,
+placeholder: 'Example: they/them',
+class: 'form-control'))).to_s); 
+; _slim_controls4 << ("</div>".freeze); _slim_controls5 = button_tag type: :submit, class: 'btn btn-primary dontprint mr-2' do; _slim_controls6 = ''; 
+; _slim_controls6 << ((::Temple::Utils.escape_html((fa_icon 'check'))).to_s); 
+; _slim_controls6 << (" ".freeze); _slim_controls6 << ("Submit".freeze); 
+; _slim_controls6; end; _slim_controls4 << ((::Temple::Utils.escape_html((_slim_controls5))).to_s); _slim_controls4 << ("<span".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("badge".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("badge-warning".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("p-2".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("my-1".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("d-none".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (" id=\"".freeze); _slim_controls4 << ("deck_changes_not_submitted_warning".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); _slim_controls4 << ("Changes not yet submitted".freeze); _slim_controls4 << ("</span>".freeze); 
+; _slim_controls4 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls3)) %><div class="dontprint mt-sm-2">
+<% if @edit_decks
+_slim_controls7 = link_to registration_tournament_player_path(@tournament, @player), class: 'btn btn-link text-info' do %><% _slim_controls8 = ''; 
+; _slim_controls8 << ((::Temple::Utils.escape_html((fa_icon 'undo'))).to_s); 
+; _slim_controls8 << (" ".freeze); _slim_controls8 << ("Cancel deck changes".freeze); 
+; _slim_controls8 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls7)) %><% else
+_slim_controls9 = link_to registration_tournament_player_path(@tournament, @player, {edit_decks: true}),
+id: 'choose_nrdb_decks_button', class: 'btn btn-link text-info' do %><% _slim_controls10 = ''; 
+; _slim_controls10 << ((::Temple::Utils.escape_html((fa_icon 'edit'))).to_s); 
+; _slim_controls10 << (" ".freeze); _slim_controls10 << ("Choose decks from your NetrunnerDB".freeze); 
+; _slim_controls10 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls9)) %><% _slim_controls11 = button_tag type: :button, id: 'edit_decks_button', class: 'btn btn-link text-info' do %><% _slim_controls12 = ''; 
+; _slim_controls12 << ((::Temple::Utils.escape_html((fa_icon 'edit'))).to_s); 
+; _slim_controls12 << (" ".freeze); _slim_controls12 << ("Edit decks in place".freeze); 
+; _slim_controls12 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls11)) %><% end %></div></div></div><% if @tournament.nrdb_deck_registration?
+ %><div class="alert alert-danger mt-3 mb-0 dontprint"<% _slim_codeattributes1 = alert; if _slim_codeattributes1; if _slim_codeattributes1 == true %> role=""<% else %> role="<%= ::Temple::Utils.escape_html((_slim_codeattributes1)) %>"<% end; end %>>
+<%= ::Temple::Utils.escape_html((fa_icon 'exclamation-triangle', class: 'mr-2')) %>
+ Deck legality is not yet checked. Please check decks manually.
+
+</div><% end %></div></div><%= ::Temple::Utils.escape_html((render 'deck_selection')) %>
+</div>

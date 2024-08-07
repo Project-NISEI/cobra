@@ -1,0 +1,24 @@
+
+
+<div class="container-fluid">
+<div class="fixed-top">
+<div class="float-right text-center align-middle" style="margin: 1vw; font-size: 2vw; line-height: 1">
+<a href="javascript:closeRoundTimer()">
+<i class="fa fa-close text-dark">
+</i></a></div><div class="float-right text-center align-middle" id="pop_out_button" style="margin: 1vw; font-size: 2vw; line-height: 1; display: none">
+<a href="javascript:popOutRoundTimer()">
+<i class="fa fa-window-maximize text-dark">
+</i></a></div></div><div class="row vh-100 align-items-center justify-content-center text-center">
+<div class="col col-auto" style="line-height: 1.1">
+<p style="font-size: 5vw; margin-bottom: 1vw">
+<span id="time_remaining_header">
+Remaining
+</span>&nbsp;<%= ::Temple::Utils.escape_html((@timer.header)) %>
+</p><div class="alert alert-primary mb-0" style="font-size: 22vw; border-radius: 2vw; padding: 0.5vw 4vw">
+<%= ::Temple::Utils.escape_html((fa_icon 'clock-o')) %>
+ 
+<span class="text-left" id="round_time_remaining" style="width: 55vw; display: inline-block">
+00:00
+</span><script>
+roundTimer = <%= ::Temple::Utils.escape_html((raw @timer.state.to_json)) %>;</script>
+</div></div></div></div>
