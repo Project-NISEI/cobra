@@ -5,15 +5,17 @@ ruby '~> 3.2.0'
 # Gems that have trouble with native packages on alpine.
 gem 'nokogiri', force_ruby_platform: true
 
-gem 'bootstrap', '~> 4.6'
-gem 'bootstrap-datepicker-rails'
+gem 'bootstrap', '~> 5.3', '>= 5.3.2'
 gem 'coffee-rails'
 gem 'execjs'
 gem 'faraday', '~> 1.0'
+gem 'flipper'
+gem 'flipper-active_record'
 gem 'font-awesome-rails'
 gem 'graph_matching'
 gem 'jbuilder'
 gem 'jquery-rails'
+gem 'js-routes'
 gem 'net-http'
 gem 'pg', '~> 1.3'
 gem 'puma'
@@ -25,17 +27,15 @@ gem 'simple_form'
 gem 'slim-rails'
 gem 'turbolinks', '~> 5'
 gem 'uglifier', '>= 1.3.0'
-gem 'flipper'
-gem 'flipper-active_record'
 gem 'vite_rails'
-gem 'js-routes'
 
 group :development, :test do
+  gem 'brakeman', '~> 5.2'
   gem 'pry'
-  gem "brakeman", "~> 5.2"
 end
 
 group :test do
+  gem 'bundler-audit', '~> 0.9.0'
   gem 'capybara'
   gem 'database_cleaner'
   gem 'factory_bot_rails'
@@ -43,7 +43,6 @@ group :test do
   gem 'launchy'
   gem 'rspec-rails'
   gem 'vcr', '~> 3'
-  gem "bundler-audit", "~> 0.9.0"
 end
 
 group :development do
