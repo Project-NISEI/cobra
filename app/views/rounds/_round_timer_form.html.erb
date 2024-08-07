@@ -1,0 +1,24 @@
+<% if policy(round.tournament).edit? && !round.completed?
+_slim_controls1 = form_tag update_timer_tournament_round_path(round.tournament, round), method: :patch, \
+class: 'my-2 round-timer-form' do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ("<div".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("form-row".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; _slim_controls2 << ((::Temple::Utils.escape_html((label_tag :length_minutes, 'Round timer length (minutes)', class: 'col-form-label'))).to_s); 
+; _slim_controls2 << ("<div".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("col-sm-1".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; _slim_controls2 << ((::Temple::Utils.escape_html((text_field_tag :length_minutes, round.length_minutes, class: 'form-control'))).to_s); 
+; _slim_controls2 << ("</div>".freeze); _slim_controls2 << ("<div".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("col-auto".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; if round.timer.running?
+; _slim_controls2 << ("<button".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("btn".freeze); _slim_controls2 << (" ".freeze); _slim_controls2 << ("btn-danger".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" name=\"".freeze); _slim_controls2 << ("operation".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" type=\"".freeze); _slim_controls2 << ("submit".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" value=\"".freeze); _slim_controls2 << ("stop".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'clock-o'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Pause".freeze); 
+; _slim_controls2 << ("</button>".freeze); elsif round.timer.paused?
+; _slim_controls2 << ("<button".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("btn".freeze); _slim_controls2 << (" ".freeze); _slim_controls2 << ("btn-success".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" name=\"".freeze); _slim_controls2 << ("operation".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" type=\"".freeze); _slim_controls2 << ("submit".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" value=\"".freeze); _slim_controls2 << ("start".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'clock-o'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Resume".freeze); 
+; _slim_controls2 << ("</button>".freeze); elsif !round.timer.started?
+; _slim_controls2 << ("<button".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("btn".freeze); _slim_controls2 << (" ".freeze); _slim_controls2 << ("btn-success".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" name=\"".freeze); _slim_controls2 << ("operation".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" type=\"".freeze); _slim_controls2 << ("submit".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" value=\"".freeze); _slim_controls2 << ("start".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'clock-o'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Start".freeze); 
+; _slim_controls2 << ("</button>".freeze); end; _slim_controls2 << ("<button".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("btn".freeze); _slim_controls2 << (" ".freeze); _slim_controls2 << ("btn-info".freeze); _slim_controls2 << (" ".freeze); _slim_controls2 << ("ml-1".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" data-confirm=\"".freeze); _slim_controls2 << ("This will clear all elapsed time in the round. Are you sure?".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" name=\"".freeze); _slim_controls2 << ("operation".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" type=\"".freeze); _slim_controls2 << ("submit".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (" value=\"".freeze); _slim_controls2 << ("reset".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'undo'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Reset".freeze); 
+; _slim_controls2 << ("</button>".freeze); _slim_controls2 << ("</div>".freeze); _slim_controls2 << ("</div>".freeze); _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %><% end %>

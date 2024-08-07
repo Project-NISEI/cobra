@@ -1,0 +1,6 @@
+<div class="col-12 text-center">
+<h1 class="mb-5"><%= ::Temple::Utils.escape_html((tournament_url(@tournament.slug, request))) %></h1>
+<p><%= ::Temple::Utils.escape_html((raw qr_code(@tournament.slug, request).as_svg(offset: 0, color: '000',
+shape_rendering: 'crispEdges',
+module_size: 25))) %>
+</p></div>

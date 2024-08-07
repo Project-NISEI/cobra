@@ -1,0 +1,25 @@
+<% if @tournament.rounds.any? || policy(@tournament).edit?
+ %><div class="row mt-3 dontprint">
+<div class="col-md-6">
+<table class="table">
+<thead>
+<tr>
+<th>Corp</th>
+<th>Players</th>
+</tr></thead><tbody>
+<% @tournament.corp_counts.each do |id, count|
+ %><tr>
+<td><%= ::Temple::Utils.escape_html((render id)) %>
+</td><td><%= ::Temple::Utils.escape_html((count)) %>
+</td></tr><% end %></tbody></table></div><div class="col-md-6">
+<table class="table">
+<thead>
+<tr>
+<th>Runner</th>
+<th>Players</th>
+</tr></thead><tbody>
+<% @tournament.runner_counts.each do |id, count|
+ %><tr>
+<td><%= ::Temple::Utils.escape_html((render id)) %>
+</td><td><%= ::Temple::Utils.escape_html((count)) %>
+</td></tr><% end %></tbody></table></div></div><% end %>

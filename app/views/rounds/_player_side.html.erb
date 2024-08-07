@@ -1,0 +1,7 @@
+<% if single_sided
+if policy(pairing.tournament).update?
+ %><%= ::Temple::Utils.escape_html((set_side_button(player, :corp, pairing))) %>
+<%= ::Temple::Utils.escape_html((set_side_button(player, :runner, pairing))) %>
+<% else
+ %><%= ::Temple::Utils.escape_html((side_label_for(pairing, player))) %>
+<% end; end %>

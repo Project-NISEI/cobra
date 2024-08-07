@@ -1,0 +1,11 @@
+<% _slim_controls1 = simple_form_for(@<%= singular_table_name %>) do |f| %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((f.error_notification))).to_s); 
+; 
+; _slim_controls2 << ("<div".freeze); _slim_controls2 << (" class=\"".freeze); _slim_controls2 << ("form-inputs".freeze); _slim_controls2 << ("\"".freeze); _slim_controls2 << (">".freeze); 
+; _slim_controls2 << ("</div>".freeze); _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %><%- attributes.each do |attribute| -%>
+<%= ::Temple::Utils.escape_html((f.<%= attribute.reference? ? :association : :input %> :<%= attribute.name %>)) %>
+<%- end -%>
+
+<div class="form-actions">
+<%= ::Temple::Utils.escape_html((f.button :submit)) %>
+</div>

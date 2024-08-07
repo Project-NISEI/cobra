@@ -1,0 +1,125 @@
+<div class="col-12 players">
+<p>
+<% _slim_controls1 = link_to meeting_tournament_players_path(@tournament), class: 'btn btn-primary' do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'list'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Player meeting".freeze); 
+; 
+; _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %></p><div class="alert alert-secondary mt-4">
+<h5 class="mb-3">Register New Player</h5>
+<% _slim_controls3 = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline d-block' } do |f| %><% _slim_controls4 = ''; 
+; _slim_controls4 << ((::Temple::Utils.escape_html((render 'form', f: f, organiser_view: true, new_registration: true))).to_s); 
+; _slim_controls4 << ("<div".freeze); _slim_controls4 << (" class=\"".freeze); _slim_controls4 << ("mt-2".freeze); _slim_controls4 << (" ".freeze); _slim_controls4 << ("text-right".freeze); _slim_controls4 << ("\"".freeze); _slim_controls4 << (">".freeze); 
+; _slim_controls5 = button_tag type: :submit, class: 'btn btn-success',
+data: { confirm: @tournament.registration_closed? ? 'Tournament is closed, add new player anyway?' : nil } do; _slim_controls6 = ''; 
+; _slim_controls6 << ((::Temple::Utils.escape_html((fa_icon 'plus'))).to_s); 
+; _slim_controls6 << (" ".freeze); _slim_controls6 << ("Create".freeze); 
+; 
+; _slim_controls6; end; _slim_controls4 << ((::Temple::Utils.escape_html((_slim_controls5))).to_s); _slim_controls4 << ("</div>".freeze); _slim_controls4 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls3)) %></div><h3 class="mt-4">
+Players
+<% if @tournament.self_registration?
+ %><span class="dropdown">
+<button class="btn btn-sm dropdown-toggle btn-light text-muted font-weight-bold ml-3" data-toggle="dropdown">
+Registration: <%= ::Temple::Utils.escape_html((@tournament.registration_lock_description)) %>
+</button><div class="dropdown-menu">
+<% _slim_controls7 = link_to lock_player_registrations_tournament_path(@tournament), method: :patch,
+class: ['dropdown-item', *('disabled' unless @tournament.any_player_unlocked?)] do %><% _slim_controls8 = ''; 
+; _slim_controls8 << ((::Temple::Utils.escape_html((fa_icon 'lock', style: 'width: 16px'))).to_s); 
+; _slim_controls8 << (" ".freeze); _slim_controls8 << ("Lock all players, prevent editing".freeze); 
+; _slim_controls8 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls7)) %> <% _slim_controls9 = link_to unlock_player_registrations_tournament_path(@tournament), method: :patch,
+class: ['dropdown-item', *('disabled' if @tournament.all_players_unlocked?)] do %><% _slim_controls10 = ''; 
+; _slim_controls10 << ((::Temple::Utils.escape_html((fa_icon 'unlock', style: 'width: 16px'))).to_s); 
+; _slim_controls10 << (" ".freeze); _slim_controls10 << ("Unlock all players, allow editing".freeze); 
+; _slim_controls10 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls9)) %> <div class="dropdown-divider">
+</div><% _slim_controls11 = link_to close_registration_tournament_path(@tournament), method: :patch,
+class: ['dropdown-item', *('disabled' if @tournament.registration_closed?)] do %><% _slim_controls12 = ''; 
+; _slim_controls12 << ((::Temple::Utils.escape_html((fa_icon 'lock', style: 'width: 16px'))).to_s); 
+; _slim_controls12 << (" ".freeze); _slim_controls12 << ("Close registration, prevent new players".freeze); 
+; _slim_controls12 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls11)) %> <% _slim_controls13 = link_to open_registration_tournament_path(@tournament), method: :patch,
+class: ['dropdown-item', *('disabled' unless @tournament.registration_closed?)] do %><% _slim_controls14 = ''; 
+; _slim_controls14 << ((::Temple::Utils.escape_html((fa_icon 'unlock', style: 'width: 16px'))).to_s); 
+; _slim_controls14 << (" ".freeze); _slim_controls14 << ("Open registration, allow new players".freeze); 
+; _slim_controls14 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls13)) %> </div></span><% end; if @tournament.nrdb_deck_registration?
+if Flipper.enabled? :open_list_cut
+ %><span class="dropdown">
+<button class="btn btn-sm dropdown-toggle btn-light text-muted font-weight-bold ml-2" data-toggle="dropdown">
+Decks: <%= ::Temple::Utils.escape_html((@tournament.decks_visibility_description)) %>
+</button><div class="dropdown-menu">
+<% _slim_controls15 = link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_private}}), method: :patch,
+class: ['dropdown-item', *('disabled' if @tournament.swiss_decks_private?)] do %><% _slim_controls16 = ''; 
+; _slim_controls16 << ((::Temple::Utils.escape_html((fa_icon 'eye-slash'))).to_s); 
+; _slim_controls16 << (" ".freeze); _slim_controls16 << ("Make decks in swiss private".freeze); 
+; _slim_controls16 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls15)) %> <% _slim_controls17 = link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_open}}), method: :patch,
+class: ['dropdown-item', *('disabled' if @tournament.swiss_decks_open?)],
+data: { confirm: 'This will make all decklists visible to all registered players in the tournament. Are you sure?' } do %><% _slim_controls18 = ''; 
+; _slim_controls18 << ((::Temple::Utils.escape_html((fa_icon 'eye'))).to_s); 
+; _slim_controls18 << (" ".freeze); _slim_controls18 << ("Make decks in swiss open, visible to participants".freeze); 
+; _slim_controls18 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls17)) %> <% _slim_controls19 = link_to tournament_path(@tournament, {tournament: {swiss_deck_visibility: :swiss_decks_public}}), method: :patch,
+class: ['dropdown-item', *('disabled' if @tournament.swiss_decks_public?)],
+data: { confirm: 'This will make all decklists visible to anyone who views the tournament. Are you sure?' } do %><% _slim_controls20 = ''; 
+; _slim_controls20 << ((::Temple::Utils.escape_html((fa_icon 'eye'))).to_s); 
+; _slim_controls20 << (" ".freeze); _slim_controls20 << ("Make decks in swiss public, visible to anyone".freeze); 
+; _slim_controls20 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls19)) %> <div class="dropdown-divider">
+</div><% _slim_controls21 = link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_private}}), method: :patch,
+class: ['dropdown-item', *('disabled' if @tournament.cut_decks_private?)] do %><% _slim_controls22 = ''; 
+; _slim_controls22 << ((::Temple::Utils.escape_html((fa_icon 'eye-slash'))).to_s); 
+; _slim_controls22 << (" ".freeze); _slim_controls22 << ("Make decks in cut private".freeze); 
+; _slim_controls22 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls21)) %> <% _slim_controls23 = link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_open}}), method: :patch,
+class: ['dropdown-item', *('disabled' if @tournament.cut_decks_open?)],
+data: { confirm: 'This will make decklists of players registered for the cut visible to other players registered for the cut. Are you sure?' } do %><% _slim_controls24 = ''; 
+; _slim_controls24 << ((::Temple::Utils.escape_html((fa_icon 'eye'))).to_s); 
+; _slim_controls24 << (" ".freeze); _slim_controls24 << ("Make decks in cut open, visible to participants".freeze); 
+; _slim_controls24 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls23)) %> <% _slim_controls25 = link_to tournament_path(@tournament, {tournament: {cut_deck_visibility: :cut_decks_public}}), method: :patch,
+class: ['dropdown-item', *('disabled' if @tournament.cut_decks_public?)],
+data: { confirm: 'This will make decklists of players registered for the cut visible to anyone who views the tournament. Are you sure?' } do %><% _slim_controls26 = ''; 
+; _slim_controls26 << ((::Temple::Utils.escape_html((fa_icon 'eye'))).to_s); 
+; _slim_controls26 << (" ".freeze); _slim_controls26 << ("Make decks in cut public, visible to anyone".freeze); 
+; _slim_controls26 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls25)) %> </div></span><% end %><input id="download_tournament" type="hidden" value="<%= ::Temple::Utils.escape_html((@tournament.name)) %>" />
+<input id="download_decks_path" type="hidden" value="<%= ::Temple::Utils.escape_html((download_decks_tournament_players_path(@tournament))) %>" />
+<input id="download_streaming_path" type="hidden" value="<%= ::Temple::Utils.escape_html((download_streaming_tournament_players_path(@tournament))) %>" />
+<a class="btn btn-link text-info" href="#" id="download_decks_button">
+<div class="spinner-border spinner-border-sm d-none" id="download_decks_spinner" style="width: 15px">
+</div><%= ::Temple::Utils.escape_html((fa_icon 'download', id: 'download_decks_icon')) %>
+ Decks spreadsheet
+</a><% end; if @tournament.allow_streaming_opt_out?
+ %><a class="btn btn-link text-info" href="#" id="download_streaming_button">
+<div class="spinner-border spinner-border-sm d-none" id="download_streaming_spinner" style="width: 15px">
+</div><%= ::Temple::Utils.escape_html((fa_icon 'download', id: 'download_streaming_icon')) %>
+ Streaming spreadsheet
+</a><% end %></h3><ul class="list-group list-group-flush">
+</ul><% @players.each do |player|
+ %><li class="list-group-item">
+<% _slim_controls27 = simple_form_for player, url: tournament_player_path(@tournament, player), html: { class: 'form-inline mt-2 d-block' } do |f| %><% _slim_controls28 = ''; 
+; _slim_controls28 << ((::Temple::Utils.escape_html((render 'form', f: f, organiser_view: true, player: player))).to_s); 
+; _slim_controls28 << ("<div".freeze); _slim_controls28 << (" class=\"".freeze); _slim_controls28 << ("text-right".freeze); _slim_controls28 << ("\"".freeze); _slim_controls28 << (">".freeze); 
+; if @tournament.self_registration?
+if player.registration_locked?
+; _slim_controls28 << (" ".freeze); _slim_controls29 = link_to unlock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do; _slim_controls30 = ''; 
+; _slim_controls30 << ((::Temple::Utils.escape_html((fa_icon 'unlock'))).to_s); 
+; _slim_controls30 << (" ".freeze); _slim_controls30 << ("Unlock player".freeze); 
+; _slim_controls30; end; _slim_controls28 << ((::Temple::Utils.escape_html((_slim_controls29))).to_s); else
+; _slim_controls28 << (" ".freeze); _slim_controls31 = link_to lock_registration_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-info mr-2' do; _slim_controls32 = ''; 
+; _slim_controls32 << ((::Temple::Utils.escape_html((fa_icon 'lock'))).to_s); 
+; _slim_controls32 << (" ".freeze); _slim_controls32 << ("Lock player".freeze); 
+; _slim_controls32; end; _slim_controls28 << ((::Temple::Utils.escape_html((_slim_controls31))).to_s); end; end; if @tournament.nrdb_deck_registration?
+; _slim_controls28 << (" ".freeze); _slim_controls33 = link_to registration_tournament_player_path(@tournament, player), class: 'btn btn-link text-info mr-2' do; _slim_controls34 = ''; 
+; _slim_controls34 << ((::Temple::Utils.escape_html((fa_icon 'eye'))).to_s); 
+; _slim_controls34 << (" ".freeze); _slim_controls34 << ("View decks".freeze); 
+; _slim_controls34; end; _slim_controls28 << ((::Temple::Utils.escape_html((_slim_controls33))).to_s); end; _slim_controls35 = button_tag type: :submit, class: 'btn btn-link text-success mr-2' do; _slim_controls36 = ''; 
+; _slim_controls36 << ((::Temple::Utils.escape_html((fa_icon 'floppy-o'))).to_s); 
+; _slim_controls36 << (" ".freeze); _slim_controls36 << ("Save".freeze); 
+; _slim_controls36; end; _slim_controls28 << ((::Temple::Utils.escape_html((_slim_controls35))).to_s); _slim_controls28 << (" ".freeze); _slim_controls37 = link_to drop_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-warning mr-2' do; _slim_controls38 = ''; 
+; _slim_controls38 << ((::Temple::Utils.escape_html((fa_icon 'arrow-down'))).to_s); 
+; _slim_controls38 << (" ".freeze); _slim_controls38 << ("Drop".freeze); 
+; _slim_controls38; end; _slim_controls28 << ((::Temple::Utils.escape_html((_slim_controls37))).to_s); _slim_controls28 << (" ".freeze); _slim_controls39 = link_to tournament_player_path(@tournament, player), method: :delete, class: 'btn btn-link text-danger mr-2' do; _slim_controls40 = ''; 
+; _slim_controls40 << ((::Temple::Utils.escape_html((fa_icon 'trash'))).to_s); 
+; _slim_controls40 << (" ".freeze); _slim_controls40 << ("Delete".freeze); 
+; 
+; _slim_controls40; end; _slim_controls28 << ((::Temple::Utils.escape_html((_slim_controls39))).to_s); _slim_controls28 << ("</div>".freeze); _slim_controls28 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls27)) %></li><% end; if @dropped.any?
+ %><h3 class="mt-4">Dropped Players</h3>
+<% @dropped.each do |player|
+ %><p>
+<%= ::Temple::Utils.escape_html((player.name)) %> (<%= ::Temple::Utils.escape_html((player.corp_identity)) %>, <%= ::Temple::Utils.escape_html((player.runner_identity)) %>)
+ <% _slim_controls41 = link_to reinstate_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-warning' do %><% _slim_controls42 = ''; 
+; _slim_controls42 << ((::Temple::Utils.escape_html((fa_icon 'arrow-up'))).to_s); 
+; _slim_controls42 << (" ".freeze); _slim_controls42 << ("Reinstate".freeze); 
+; _slim_controls42 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls41)) %></p><% end; end %></div>

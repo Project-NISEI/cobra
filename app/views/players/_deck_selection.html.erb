@@ -1,0 +1,43 @@
+
+<% @the_shadow_corp_nrdb_code = '00005'
+@the_masque_runner_nrdb_code = '00006'
+
+if @decks
+ %><div class="row mb-3 dontprint">
+<div class="col">
+<div class="card">
+<div class="card-header" style="border: 0">
+Please select from your decks below.
+ <a href="https://netrunnerdb.com/en/decks" target="_blank">See your decks in NetrunnerDB.</a>
+ Refresh the page to reload from NetrunnerDB.
+</div></div></div></div><div class="row mb-3 dontprint">
+<ul class="d-none" id="nrdb_decks">
+<% @decks.each do |deck|
+
+
+
+
+ %><li class="list-group-item" data-deck="<%= ::Temple::Utils.escape_html((deck.to_json)) %>" id="nrdb_deck_<%= ::Temple::Utils.escape_html((deck[:uuid])) %>" onclick="selectDeck(&quot;<%= ::Temple::Utils.escape_html((deck[:uuid])) %>&quot;)">
+<p class="mb-1"><%= ::Temple::Utils.escape_html((deck[:name])) %>
+</p></li><% end %></ul><div class="col-md-6">
+<div class="card">
+<ul class="list-group list-group-flush" id="nrdb_corp_selected" style="border-bottom: 0">
+<li class="list-group-item selected-deck">
+<div class="selected-deck-buttons">
+</div><div class="selected-deck-identity" style="background-image:url(https://static.nrdbassets.com/v1/small/<%= ::Temple::Utils.escape_html((@the_shadow_corp_nrdb_code)) %>.jpg)">
+</div><p class="mb-1">No corp selected</p>
+</li></ul><ul class="list-group list-group-flush overflow-auto" id="nrdb_corp_decks" style="height: 24em">
+<div class="d-flex align-items-center m-2">
+<div class="spinner-border m-auto">
+</div></div></ul></div></div><div class="col-md-6">
+<div class="card">
+<ul class="list-group list-group-flush" id="nrdb_runner_selected" style="border-bottom: 0">
+<li class="list-group-item selected-deck">
+<div class="selected-deck-buttons">
+</div><div class="selected-deck-identity" style="background-image:url(https://static.nrdbassets.com/v1/small/<%= ::Temple::Utils.escape_html((@the_masque_runner_nrdb_code)) %>.jpg)">
+</div><p class="mb-1">No runner selected</p>
+</li></ul><ul class="list-group list-group-flush overflow-auto" id="nrdb_runner_decks" style="height: 24em">
+<div class="d-flex align-items-center m-2">
+<div class="spinner-border m-auto">
+</div></div></ul></div></div></div><% end %><div class="row" id="display_decks">
+</div>

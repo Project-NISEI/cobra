@@ -1,0 +1,7 @@
+<div<% _temple_html_attributeremover1 = ''; _temple_html_attributemerger1 = []; _temple_html_attributemerger1[0] = "div"; _temple_html_attributemerger1[1] = (::Temple::Utils.escape_html((identity.faction))).to_s; _temple_html_attributeremover1 << ((_temple_html_attributemerger1.reject(&:empty?).join(" ")).to_s); _temple_html_attributeremover1 %><% if !_temple_html_attributeremover1.empty? %> class="<%= _temple_html_attributeremover1 %>"<% end %>>
+<i class="fa icon icon-<%= ::Temple::Utils.escape_html((identity.faction)) %>">
+</i> <%= ::Temple::Utils.escape_html((identity.name)) %>
+<% if local_assigns[:points]
+ %><%= ::Temple::Utils.escape_html((side if identity.name&.empty? && local_assigns[:side])) %>
+<%= ::Temple::Utils.escape_html((" (#{points})")) %>
+<% end %></div>

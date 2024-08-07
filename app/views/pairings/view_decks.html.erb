@@ -1,0 +1,16 @@
+<div class="col-12">
+<p class="dontprint"><% _slim_controls1 = link_to :back, class: 'btn btn-primary' do %><% _slim_controls2 = ''; 
+; _slim_controls2 << ((::Temple::Utils.escape_html((fa_icon 'arrow-left'))).to_s); 
+; _slim_controls2 << (" ".freeze); _slim_controls2 << ("Back to pairings".freeze); 
+; 
+; _slim_controls2 %><% end %><%= ::Temple::Utils.escape_html((_slim_controls1)) %></p></div><input id="player1_name" type="hidden" value="<%= ::Temple::Utils.escape_html((@pairing.player1&.name)) %>" />
+<input id="player2_name" type="hidden" value="<%= ::Temple::Utils.escape_html((@pairing.player2&.name)) %>" />
+<input id="player1_deck" type="hidden" value="<%= ::Temple::Utils.escape_html((@pairing.player1_deck&.as_view(current_user).to_json)) %>" />
+<input id="player2_deck" type="hidden" value="<%= ::Temple::Utils.escape_html((@pairing.player2_deck&.as_view(current_user).to_json)) %>" />
+<div class="container">
+<div class="row mb-2">
+<div class="col">
+<h4><%= ::Temple::Utils.escape_html((@pairing.stage.format.titleize)) %></h4>
+<h5>Round <%= ::Temple::Utils.escape_html((@pairing.round.number)) %> table <%= ::Temple::Utils.escape_html((@pairing.table_number)) %></h5>
+</div></div><div class="row" id="display_pairing_decks">
+</div></div>
