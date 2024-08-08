@@ -1,3 +1,5 @@
+require 'pp'
+
 class PairingsController < ApplicationController
   before_action :set_tournament
   attr_reader :tournament
@@ -9,26 +11,21 @@ class PairingsController < ApplicationController
       pairings << {
         table_number: p.table_number,
         player1_name: p.player1.name_with_pronouns,
+        player1_side: p.side == 'player1_is_corp' ? ' (Corp)' : ' (Runner)',
         player2_name: p.player2.name_with_pronouns,
+        player2_side: p.side == 'player1_is_corp' ? ' (Runner)' : ' (Corp)',
         pairing: p
       }
       pairings << {
         table_number: p.table_number,
         player1_name: p.player2.name_with_pronouns,
+        player1_side: p.side == 'player1_is_corp' ? ' (Runner)' : ' (Corp)',
         player2_name: p.player1.name_with_pronouns,
+        player2_side: p.side == 'player1_is_corp' ? ' (Corp)' : ' (Runner)',
         pairing: p
       }
     end.sort_by do |p|
-      # Sort by username for doublesided, but Corp username for Single-Sided Swiss.
-      if p[:pairing].round.stage.format == :single_sided_swiss.to_s
-        if p[:pairing].side == 'player1_is_corp'
-          p[:player1_name].downcase
-        else
-          p[:player2_name].downcase
-        end
-      else
-        p[:player1_name].downcase
-      end
+      p[:player1_name].downcase
     end
   end
 
@@ -59,11 +56,11 @@ class PairingsController < ApplicationController
   def match_slips
     authorize @tournament, :edit?
 
-    if params[:collate]
-      @pairings = round.collated_pairings
-    else
-      @pairings = round.pairings
-    end
+    @pairings = if params[:collate]
+                  round.collated_pairings
+                else
+                  round.pairings
+                end
   end
 
   def view_decks
