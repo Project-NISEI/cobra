@@ -2,7 +2,7 @@
   = f.input :name, input_html: { class: 'form-control' }, label: 'Tournament name'
 .form-group
   = f.input :date, html5: true, input_html: { class: 'form-control' }
-- if Flipper.enabled? :single_sided_swiss
+- if Flipper.enabled?(:single_sided_swiss, current_user)
   .form-group
     = f.input :swiss_format, collection: Tournament.swiss_formats.keys, input_html: { class: 'form-control' }, include_blank: false, label_method: ->(val) { val.capitalize.tr('_', '-') }
 .form-group
