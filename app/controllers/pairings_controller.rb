@@ -1,5 +1,3 @@
-require 'pp'
-
 class PairingsController < ApplicationController
   before_action :set_tournament
   attr_reader :tournament
