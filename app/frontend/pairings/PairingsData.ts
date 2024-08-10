@@ -54,6 +54,7 @@ export type PairingPolicies = {
 
 export type Player = {
     name_with_pronouns: string;
+    side: string | null;
     side_label: string | null;
     corp_id: Identity | null;
     runner_id: Identity | null;

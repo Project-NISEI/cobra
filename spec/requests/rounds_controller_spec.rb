@@ -168,11 +168,12 @@ RSpec.describe RoundsController do
       'name_with_pronouns' => name_with_pronouns,
       'corp_id' => { 'faction' => nil, 'name' => nil },
       'runner_id' => { 'faction' => nil, 'name' => nil },
+      'side' => nil,
       'side_label' => nil
     }
   end
 
   def bye_player
-    { 'corp_id' => nil, 'name_with_pronouns' => '(Bye)', 'runner_id' => nil, 'side_label' => nil }
+    { 'corp_id' => nil, 'name_with_pronouns' => '(Bye)', 'runner_id' => nil, 'side' => nil, 'side_label' => nil }
   end
 end

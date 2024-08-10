@@ -57,8 +57,8 @@ module PairingsHelper
     end
 
     # Single-sided swiss round
-    if pairing.round.stage.format == :single_sided_swiss.to_s
-      if pairing.side.try(:to_sym) == :player1_is_corp
+    if pairing.stage.single_sided_swiss?
+      if pairing.player1_is_corp?
         return [
           { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, intentional_draw: false,
             label: 'Corp Win' },
@@ -82,14 +82,14 @@ module PairingsHelper
     end
 
     # Single-sided elimination round
-    if pairing.side.try(:to_sym) == :player1_is_corp
+    if pairing.player1_is_corp?
       return [
         { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
         { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
       ]
     end
 
-    if pairing.side.try(:to_sym) == :player1_is_runner
+    if pairing.player1_is_runner?
       return [
         { score1_corp: 0, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '3-0' },
         { score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '0-3' }
