@@ -1,13 +1,14 @@
 <script lang="ts">
-    import type {Pairing, Round} from "./PairingsData";
+    import type {Pairing, Round, Stage} from "./PairingsData";
     import PlayerName from "./PlayerName.svelte";
     import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
+    export let stage: Stage;
     export let round: Round;
     export let pairing: Pairing;
     export let left_player = pairing.player1
     export let right_player = pairing.player2
-    if (pairing.is_single_sided_swiss && pairing.player2.side_label == '(Corp)') {
+    if (stage.format == 'single_sided_swiss' && pairing.player2.side_label == '(Corp)') {
         left_player = pairing.player2
         right_player = pairing.player1
     }

@@ -26,6 +26,7 @@ export type TournamentPolicies = {
 
 export type Stage = {
     name: string;
+    format: string;
     rounds: Round[];
 }
 
@@ -39,7 +40,6 @@ export type Round = {
 export type Pairing = {
     id: number;
     table_number: number;
-    is_single_sided_swiss: boolean;
     policy: PairingPolicies;
     player1: Player;
     player2: Player;
