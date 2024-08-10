@@ -8,7 +8,7 @@
     export let pairing: Pairing;
     export let left_player = pairing.player1
     export let right_player = pairing.player2
-    if (stage.format == 'single_sided_swiss' && pairing.player2.side_label == '(Corp)') {
+    if (stage.format == 'single_sided_swiss' && pairing.player2.side == 'corp') {
         left_player = pairing.player2
         right_player = pairing.player1
     }

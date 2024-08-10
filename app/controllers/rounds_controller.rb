@@ -143,6 +143,7 @@ class RoundsController < ApplicationController
   def pairing_player(stage, player, side)
     {
       name_with_pronouns: player.name_with_pronouns,
+      side:,
       side_label: side_label(stage, side),
       corp_id: pairing_identity(player.corp_identity_object),
       runner_id: pairing_identity(player.runner_identity_object)
