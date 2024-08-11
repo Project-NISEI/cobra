@@ -1,4 +1,6 @@
-class AddOpenListCut < ActiveRecord::Migration[7.0]
+# frozen_string_literal: true
+
+class AddOpenListCut < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
   def change
     add_column :tournaments, :open_list_cut, :boolean, default: false
   end

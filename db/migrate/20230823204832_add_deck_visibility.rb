@@ -1,7 +1,9 @@
-class AddDeckVisibility < ActiveRecord::Migration[7.0]
+# frozen_string_literal: true
+
+class AddDeckVisibility < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
   def change
     add_column :tournaments, :swiss_deck_visibility, :integer, default: 0, null: false
     add_column :tournaments, :cut_deck_visibility, :integer, default: 0, null: false
-    remove_column :tournaments, :open_list_cut
+    remove_column :tournaments, :open_list_cut # rubocop:disable Rails/ReversibleMigration
   end
 end

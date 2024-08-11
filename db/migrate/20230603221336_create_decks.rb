@@ -1,4 +1,6 @@
-class CreateDecks < ActiveRecord::Migration[7.0]
+# frozen_string_literal: true
+
+class CreateDecks < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
   def change
     create_table :decks do |t|
       t.references :player, foreign_key: true
