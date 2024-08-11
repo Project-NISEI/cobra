@@ -49,6 +49,7 @@ end
 group :development do
   gem 'listen'
   gem 'rubocop'
+  gem 'rubocop-capybara'
   gem 'rubocop-factory_bot'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
