@@ -1,5 +1,3 @@
-version: "3.2"
-
 # This is the file for a deployed server.
 # Domain names can be customized in the .env file.
 # This assumes you have already set up certificates via Let's Encrypt for the domain.
