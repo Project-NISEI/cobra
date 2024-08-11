@@ -1,4 +1,6 @@
-class AddIdentitiesToPlayers < ActiveRecord::Migration[5.0]
+# frozen_string_literal: true
+
+class AddIdentitiesToPlayers < ActiveRecord::Migration[5.0] # rubocop:disable Style/Documentation
   def change
     add_column :players, :corp_identity, :string
     add_column :players, :runner_identity, :string

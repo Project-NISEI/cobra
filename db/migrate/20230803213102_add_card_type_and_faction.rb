@@ -1,4 +1,6 @@
-class AddCardTypeAndFaction < ActiveRecord::Migration[7.0]
+# frozen_string_literal: true
+
+class AddCardTypeAndFaction < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
   def change
     add_column :decks, :faction_id, :string
     add_column :deck_cards, :card_type_id, :string

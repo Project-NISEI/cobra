@@ -5,3 +5,25 @@ require:
   - rubocop-rspec
   - rubocop-rspec_rails
 
+Metrics/AbcSize:
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Max: 100
+Metrics/PerceivedComplexity:
+  Enabled: false
+Rails/BulkChangeTable:
+  Enabled: false
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/ExampleWording:
+  Enabled: false
+RSpec/FilePath:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
