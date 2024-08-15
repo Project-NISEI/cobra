@@ -2,7 +2,9 @@
     import type {Round} from "./PairingsData";
     import Pairing from "./Pairing.svelte";
     import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
+    import Stage from "./Stage.svelte";
 
+    export let stage: Stage;
     export let round: Round;
     export let start_expanded: boolean;
 </script>
@@ -28,7 +30,7 @@
                 Pairings by name
             </a>
             {#each round.pairings as pairing}
-                <Pairing pairing={pairing} round="{round}"/>
+                <Pairing pairing={pairing} round="{round}" stage={stage} />
             {/each}
         </div>
     </div>

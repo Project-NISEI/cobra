@@ -13,6 +13,6 @@
         </div>
     </div>
     {#each stage.rounds as round, index}
-        <Round round={round} start_expanded={start_expanded && index === stage.rounds.length - 1}/>
+        <Round round={round} stage={stage} start_expanded={start_expanded && index === stage.rounds.length - 1}/>
     {/each}
 </div>

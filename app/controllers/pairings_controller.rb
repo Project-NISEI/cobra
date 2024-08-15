@@ -9,16 +9,22 @@ class PairingsController < ApplicationController
       pairings << {
         table_number: p.table_number,
         player1_name: p.player1.name_with_pronouns,
+        player1_side: p.side == 'player1_is_corp' ? ' (Corp)' : ' (Runner)',
         player2_name: p.player2.name_with_pronouns,
+        player2_side: p.side == 'player1_is_corp' ? ' (Runner)' : ' (Corp)',
         pairing: p
       }
       pairings << {
         table_number: p.table_number,
         player1_name: p.player2.name_with_pronouns,
+        player1_side: p.side == 'player1_is_corp' ? ' (Runner)' : ' (Corp)',
         player2_name: p.player1.name_with_pronouns,
+        player2_side: p.side == 'player1_is_corp' ? ' (Corp)' : ' (Runner)',
         pairing: p
       }
-    end.sort_by { |p| p[:player1_name] }
+    end.sort_by do |p|
+      p[:player1_name].downcase
+    end
   end
 
   def create
@@ -48,11 +54,11 @@ class PairingsController < ApplicationController
   def match_slips
     authorize @tournament, :edit?
 
-    if params[:collate]
-      @pairings = round.collated_pairings
-    else
-      @pairings = round.pairings
-    end
+    @pairings = if params[:collate]
+                  round.collated_pairings
+                else
+                  round.pairings
+                end
   end
 
   def view_decks

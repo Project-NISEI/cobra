@@ -12,7 +12,11 @@
         {player.side_label}
     {/if}
     <div class="ids" style="{$showIdentities ? 'display: block;' : ''}">
-        <Identity identity={player.corp_id}/>
-        <Identity identity={player.runner_id}/>
+        {#if player.side_label}
+            <Identity identity={player.side == 'corp' ? player.corp_id : player.runner_id }/>
+        {:else}
+            <Identity identity={player.corp_id}/>
+            <Identity identity={player.runner_id}/>
+        {/if}
     </div>
 </div>
