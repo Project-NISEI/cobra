@@ -13,7 +13,7 @@
     {/if}
     <div class="ids" style="{$showIdentities ? 'display: block;' : ''}">
         {#if player.side_label}
-            <Identity identity={player.side_label == '(Corp)' ? player.corp_id : player.runner_id }/>
+            <Identity identity={player.side == 'corp' ? player.corp_id : player.runner_id }/>
         {:else}
             <Identity identity={player.corp_id}/>
             <Identity identity={player.runner_id}/>
