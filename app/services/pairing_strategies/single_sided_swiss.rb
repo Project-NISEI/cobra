@@ -43,7 +43,7 @@ module PairingStrategies
         # return nil (no pairing possible) if the sides would repeat the previous pairing
         next nil if preferred_side && cached_data[player1.id][:opponents][player2.id] && cached_data[player1.id][:opponents][player2.id].include?(preferred_side)
 
-        points_weight(cached_data[player1.id][:points], cached_data[player1.id][:points]) +
+        points_weight(cached_data[player1.id][:points], cached_data[player2.id][:points]) +
           side_bias_weight(cached_data[player1.id][:side_bias], cached_data[player2.id][:side_bias]) +
           rematch_bias_weight(cached_data[player1.id][:opponents].keys.include?(player2.id))
       end
