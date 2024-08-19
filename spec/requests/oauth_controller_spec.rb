@@ -20,7 +20,7 @@ RSpec.describe OauthController do
     before do
       expect_any_instance_of(ActionDispatch::Request).to receive(:host).at_least(1).times.and_return('localhost')
       allow(Nrdb::Oauth).to receive(:get_access_token)
-        .with('some_code', 'localhost')
+        .with('some_code')
         .and_return(token_data)
       allow(Nrdb::Connection).to receive(:new)
         .with(nil, 'ABC123')
