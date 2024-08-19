@@ -87,8 +87,8 @@ Rails.application.configure do
   config.abr_host = ENV['ABR_HOST']
   config.abr_auth = ENV['ABRAUTH']
   config.nrdb = {
-    client_id: ENV['NRDB_CLIENT_ID'],
-    client_secret: ENV['NRDB_CLIENT_SECRET'],
+    client_id: ENV['NRDB_CLIENT'],
+    client_secret: ENV['NRDB_SECRET'],
     redirect_uri: ENV['NRDB_REDIRECT_URI']
   }
   config.nrdb_api_host = ENV['NRDB_API_HOST']
