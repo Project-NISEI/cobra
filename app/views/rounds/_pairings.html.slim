@@ -1,10 +1,14 @@
 - single_sided = round.stage.single_sided?
 - round.pairings.each do |pairing|
   - left_player = @players[pairing.player1_id]
+  - left_player_number = 1
   - right_player = @players[pairing.player2_id]
+  - right_player_number = 2
   - if single_sided && !pairing.player1_is_corp?
     - left_player = @players[pairing.player2_id]
+    - left_player_number = 2
     - right_player = @players[pairing.player1_id]
+    - right_player_number = 1
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user}"
     .col-sm-2
       | Table #{pairing.table_number}
@@ -53,11 +57,17 @@
               = f.hidden_field :score1_corp, value: 0
               = f.hidden_field :score2_runner, value: 0
               = f.hidden_field :score2_corp, value: 0
-              = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
+              - if left_player_number == 1
+                = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
+              - else
+                = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               = button_tag type: :submit, class: 'btn btn-primary mx-2' do
                 => fa_icon 'flag-checkered'
                 | Save
-              = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
+              - if right_player_number == 1
+                = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
+              - else
+                = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               =< link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
               div class='form-group'
                 div class='form-check form-check-inline'

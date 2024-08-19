@@ -60,22 +60,22 @@ module PairingsHelper
     if pairing.stage.single_sided_swiss?
       if pairing.player1_is_corp?
         return [
-          { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+          { score1_corp: 3, score2_corp: 0, score1_runner: 0, score2_runner: 0, intentional_draw: false,
             label: 'Corp Win' },
-          { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: false, label: 'Tie' },
-          { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: true,
+          { score1_corp: 1, score2_corp: 0, score1_runner: 0, score2_runner: 1, intentional_draw: false, label: 'Tie' },
+          { score1_corp: 1, score2_corp: 0, score1_runner: 0, score2_runner: 1, intentional_draw: true,
             label: 'Intentional Draw' },
-          { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+          { score1_corp: 0, score2_corp: 0, score1_runner: 0, score2_runner: 3, intentional_draw: false,
             label: 'Runner Win' }
         ]
       else
         return [
-          { score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 3, intentional_draw: false,
+          { score1_corp: 0, score2_corp: 3, score1_runner: 0, score2_runner: 0, intentional_draw: false,
             label: 'Corp Win' },
-          { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: false, label: 'Tie' },
-          { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: true,
+          { score1_corp: 1, score2_corp: 0, score1_runner: 0, score2_runner: 1, intentional_draw: false, label: 'Tie' },
+          { score1_corp: 1, score2_corp: 0, score1_runner: 0, score2_runner: 1, intentional_draw: true,
             label: 'Intentional Draw' },
-          { score1_corp: 0, score2_runner: 0, score1_runner: 3, score2_corp: 0, intentional_draw: false,
+          { score1_corp: 0, score2_corp: 0, score1_runner: 3, score2_runner: 0, intentional_draw: false,
             label: 'Runner Win' }
         ]
       end
@@ -121,9 +121,24 @@ module PairingsHelper
 
     ws = winning_side(pairing)
 
-    return "#{pairing.score1} - #{pairing.score2}" unless ws
+    if pairing.stage.single_sided_swiss?
+      left_score = 0
+      right_score = 0
+      if pairing.player1_is_corp?
+        left_score = pairing.score1
+        right_score = pairing.score2
+      else
+        left_score = pairing.score2
+        right_score = pairing.score1
+      end
+      return "#{left_score} - #{right_score}" unless ws
 
-    "#{pairing.score1} - #{pairing.score2} (#{ws})"
+      "#{left_score} - #{right_score} (#{ws})"
+    else
+      return "#{pairing.score1} - #{pairing.score2}" unless ws
+
+      "#{pairing.score1} - #{pairing.score2} (#{ws})"
+    end
   end
 
   def winning_side(pairing)
