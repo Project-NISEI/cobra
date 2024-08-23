@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NrtmJson
   attr_reader :tournament
 
@@ -6,15 +8,15 @@ class NrtmJson
   end
 
   def data(tournament_url)
-    preliminaryRounds = 0
+    preliminary_rounds = 0
     players = []
     if swiss_stage
-      preliminaryRounds = swiss_stage.rounds.count
+      preliminary_rounds = swiss_stage.rounds.count
       players = swiss_stage.standings.each_with_index.map do |standing, i|
         {
           id: standing.player.id,
           name: standing.name,
-          rank: i+1,
+          rank: i + 1,
           corpIdentity: (standing.corp_identity.name if standing.corp_identity.id),
           runnerIdentity: (standing.runner_identity.name if standing.runner_identity.id),
           matchPoints: standing.points,
@@ -28,25 +30,25 @@ class NrtmJson
       name: tournament.name,
       date: tournament.date.to_fs(:db),
       cutToTop: cut_stage.players.count,
-      preliminaryRounds: preliminaryRounds,
+      preliminary_rounds:,
       tournamentOrganiser: {
         nrdbId: tournament.user.nrdb_id,
         nrdbUsername: tournament.user.nrdb_username
       },
-      players: players,
+      players:,
       eliminationPlayers: cut_stage.standings.each_with_index.map do |standing, i|
         {
           id: standing.player&.id,
           name: standing.player&.name,
-          rank: i+1,
+          rank: i + 1,
           seed: standing.player&.seed_in_stage(cut_stage)
         }
       end,
       rounds: swiss_pairing_data + cut_pairing_data,
-      uploadedFrom: "Cobra",
+      uploadedFrom: 'Cobra',
       links: [
-        { rel: "schemaderivedfrom", href: "http://steffens.org/nrtm/nrtm-schema.json" },
-        { rel: "uploadedfrom", href: tournament_url }
+        { rel: 'schemaderivedfrom', href: 'http://steffens.org/nrtm/nrtm-schema.json' },
+        { rel: 'uploadedfrom', href: tournament_url }
       ]
     }
   end
@@ -54,7 +56,7 @@ class NrtmJson
   private
 
   def swiss_stage
-    @swiss_stage ||= tournament.stages.find_by(format: [:swiss, :single_sided_swiss])
+    @swiss_stage ||= tournament.stages.find_by(format: %i[swiss single_sided_swiss])
   end
 
   def swiss_pairing_data
@@ -62,7 +64,7 @@ class NrtmJson
 
     swiss_stage.rounds.map do |round|
       round.pairings.map do |pairing|
-        swiss_stage.single_sided? ? single_sided_pairing_data(pairing): double_sided_pairing_data(pairing)
+        swiss_stage.single_sided? ? single_sided_pairing_data(pairing) : double_sided_pairing_data(pairing)
       end
     end
   end
@@ -107,11 +109,11 @@ class NrtmJson
       table: pairing.table_number,
       player1: {
         id: pairing.player1.id,
-        role: pairing.player1_side&.to_s,
+        role: pairing.player1_side&.to_s
       }.merge(score_for_pairing(pairing, pairing.player1_side, pairing.score1, pairing.score2)),
       player2: {
         id: pairing.player2.id,
-        role: pairing.player2_side&.to_s,
+        role: pairing.player2_side&.to_s
       }.merge(score_for_pairing(pairing, pairing.player2_side, pairing.score2, pairing.score1)),
       intentionalDraw: pairing.intentional_draw.present?,
       twoForOne: pairing.two_for_one.present?,

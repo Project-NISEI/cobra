@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bracket
   class Top4 < Base
     game 1, seed(1), seed(4), round: 1
@@ -17,6 +19,6 @@ module Bracket
       [loser(7), loser_if_also_winner(6, 5)],
       loser(5),
       loser(4)
-    ]
+    ].freeze
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PairingsController < ApplicationController
   before_action :set_tournament
   attr_reader :tournament

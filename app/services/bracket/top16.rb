@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bracket
   class Top16 < Base
     game 1, seed(1), seed(16), round: 1
@@ -57,6 +59,6 @@ module Bracket
       seed_of([loser(9), loser(10), loser(11), loser(12)], 2),
       seed_of([loser(9), loser(10), loser(11), loser(12)], 3),
       seed_of([loser(9), loser(10), loser(11), loser(12)], 4)
-    ]
+    ].freeze
   end
 end

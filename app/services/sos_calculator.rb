@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class SosCalculator
   def self.calculate!(stage)
-    players = Hash[stage.players.map{ |p| [p.id, p] }]
+    players = stage.players.index_by(&:id)
 
     # calculate points and cache values for sos calculations
     points = {}
@@ -43,34 +45,33 @@ class SosCalculator
 
     sos = {}
     opponents.each do |id, o|
-      if o.any?
-        sos[id] = o.sum do |player|
-          player[:weight] * points_for_sos[player[:id]].to_f / games_played[player[:id]]
-        end.to_f / o.inject(0) { |i, player| i += player[:weight] if player[:id] }
-      else
-        sos[id] = 0.0
-      end
+      sos[id] = if o.any?
+                  o.sum do |player|
+                    player[:weight] * points_for_sos[player[:id]].to_f / games_played[player[:id]]
+                  end.to_f / o.inject(0) { |i, player| i + player[:weight] if player[:id] }
+                else
+                  0.0
+                end
     end
 
     extended_sos = {}
     opponents.each do |id, o|
-      if o.any?
-        extended_sos[id] = o.sum do |player|
-          player[:weight] * sos[player[:id]]
-        end.to_f / o.inject(0) { |i, player| i += player[:weight] if player[:id] }
-      else
-        extended_sos[id] = 0.0
-      end
+      extended_sos[id] = if o.any?
+                           o.sum do |player|
+                             player[:weight] * sos[player[:id]]
+                           end.to_f / o.inject(0) { |i, player| i + player[:weight] if player[:id] }
+                         else
+                           0.0
+                         end
     end
 
     players.values.map do |p|
       Standing.new(p,
-        points: points[p.id],
-        sos: sos[p.id],
-        extended_sos: extended_sos[p.id],
-        corp_points: corp_points[p.id],
-        runner_points: runner_points[p.id]
-      )
+                   points: points[p.id],
+                   sos: sos[p.id],
+                   extended_sos: extended_sos[p.id],
+                   corp_points: corp_points[p.id],
+                   runner_points: runner_points[p.id])
     end.sort
   end
 end

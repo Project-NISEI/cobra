@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Round < ApplicationRecord
   belongs_to :stage, touch: true
   has_one :tournament, through: :stage
@@ -7,7 +9,7 @@ class Round < ApplicationRecord
   default_scope { order(number: :asc) }
   scope :complete, -> { where(completed: true) }
 
-  after_update :cache_standings!, if: Proc.new { saved_change_to_completed? && completed? }
+  after_update :cache_standings!, if: proc { saved_change_to_completed? && completed? }
   delegate :cache_standings!, to: :stage
 
   def pair!

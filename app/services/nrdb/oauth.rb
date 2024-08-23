@@ -5,6 +5,7 @@ module Nrdb
       unless secrets
         raise "Secrets not configured for host: #{host}"
       end
+
       URI("https://netrunnerdb.com/oauth/v2/auth").tap do |uri|
         uri.query = {
           client_id: secrets[:nrdb][:client_id],

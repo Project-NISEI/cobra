@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bracket
   class Base
     include Engine
@@ -8,7 +10,7 @@ module Bracket
 
     def initialize(stage)
       @stage = stage
-      @pairings = stage.rounds.select { |round| round.completed? }
+      @pairings = stage.rounds.select(&:completed?)
                        .map(&:pairings).flatten
       @seed_by_player = stage.registrations.map { |r| [r.player_id, r.seed] }.to_h
     end

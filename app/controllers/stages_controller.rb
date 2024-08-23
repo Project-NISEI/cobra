@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StagesController < ApplicationController
   before_action :set_tournament
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Standings
   include Enumerable
 
@@ -20,7 +22,7 @@ class Standings
   private
 
   def strategy
-    return StandingStrategies::Swiss unless %w(swiss double_elim).include? stage.format
+    return StandingStrategies::Swiss unless %w[swiss double_elim].include? stage.format
 
     "StandingStrategies::#{stage.format.camelize}".constantize
   end

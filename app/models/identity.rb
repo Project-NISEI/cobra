@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Identity < ApplicationRecord
   enum side: {
     corp: 1,

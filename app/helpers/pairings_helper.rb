@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PairingsHelper
   def pairing_player_select(form, label, round)
     form.input label,
@@ -103,7 +105,7 @@ module PairingsHelper
   end
 
   def side_options
-    Pairing.sides.collect { |v, k| [v, v] }
+    Pairing.sides.collect { |v, _k| [v, v] }
   end
 
   def side_label_for(pairing, player)
@@ -117,7 +119,7 @@ module PairingsHelper
   end
 
   def readable_score(pairing)
-    return '-' if pairing.score1 == 0 && pairing.score2 == 0
+    return '-' if pairing.score1.zero? && pairing.score2.zero?
 
     ws = winning_side(pairing)
 
@@ -145,9 +147,9 @@ module PairingsHelper
     corp_score = (pairing.score1_corp || 0) + (pairing.score2_corp || 0)
     runner_score = (pairing.score1_runner || 0) + (pairing.score2_runner || 0)
 
-    if corp_score - runner_score == 0
+    if (corp_score - runner_score).zero?
       nil
-    elsif corp_score - runner_score < 0
+    elsif (corp_score - runner_score).negative?
       'R'
     else
       'C'

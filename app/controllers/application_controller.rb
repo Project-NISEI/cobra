@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
@@ -26,7 +28,7 @@ class ApplicationController < ActionController::Base
 
   def user_not_authorised
     flash[:alert] = "🔒 Sorry, you can't do that"
-    redirect_to(request.referrer || root_path)
+    redirect_to(request.referer || root_path)
   end
 
   def error
@@ -36,6 +38,7 @@ class ApplicationController < ActionController::Base
   def load_current_user
     id = session[:user_id]
     return nil unless id
-    User.find_by(id: id)
+
+    User.find_by(id:)
   end
 end
