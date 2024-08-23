@@ -47,7 +47,6 @@ $(document).on 'turbolinks:load', ->
 
     getPrintings = (request) =>
       request.data['fields[printings]'] = 'card_id,card_type_id,title,side_id,faction_id,minimum_deck_size,influence_limit,influence_cost'
-      1+1
       $.get({
         url: '<%= Rails.configuration.nrdb_api_host %>/api/v3/public/printings',
         data: request.data,
