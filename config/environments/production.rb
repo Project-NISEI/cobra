@@ -84,14 +84,14 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.abr_host = ENV['ABR_HOST']
+  config.abr_host = 'https://alwaysberunning.net'
   config.abr_auth = ENV['ABRAUTH']
   config.nrdb = {
     client_id: ENV['NRDB_CLIENT'],
     client_secret: ENV['NRDB_SECRET'],
     redirect_uri: ENV['NRDB_REDIRECT_URI']
   }
-  config.nrdb_api_host = ENV['NRDB_API_HOST']
+  config.nrdb_api_host = 'https://api.netrunnerdb.com'
 
   config.action_mailer.default_url_options = { host: 'cobra.net' }
 end
