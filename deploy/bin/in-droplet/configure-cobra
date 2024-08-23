@@ -15,8 +15,6 @@ pushd cobra
   echo "COBRA_DOMAIN=$COBRA_DOMAIN"
   echo "NRDB_CLIENT=$NRDB_CLIENT"
   echo "NRDB_SECRET=$NRDB_SECRET"
-  echo "NISEI_NRDB_CLIENT=$NISEI_NRDB_CLIENT"
-  echo "NISEI_NRDB_SECRET=$NISEI_NRDB_SECRET"
 } > ".env"
 
 cp config/database.example.yml config/database.yml
