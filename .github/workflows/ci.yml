@@ -98,7 +98,7 @@ jobs:
       - name: Security audit application code
         run: bundle exec brakeman -q -w2
       - name: Lint Ruby files
-        run: bin/rubocop --parallel
+        run: bundle exec rubocop --parallel
 
   build_and_push:
     name: Build docker image
