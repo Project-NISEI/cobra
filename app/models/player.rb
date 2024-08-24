@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 class Player < ApplicationRecord
   include Pairable
 
   belongs_to :tournament
   belongs_to :user, optional: true
   belongs_to :previous, class_name: 'Player', optional: true
-  has_one :next, class_name: 'Player', foreign_key: :previous_id
+  has_one :next, class_name: 'Player', foreign_key: :previous_id # rubocop:disable Rails/InverseOf
   belongs_to :corp_identity_ref, class_name: 'Identity', optional: true
   belongs_to :runner_identity_ref, class_name: 'Identity', optional: true
   has_many :registrations, dependent: :destroy
@@ -61,7 +63,7 @@ class Player < ApplicationRecord
   end
 
   def seed_in_stage(stage)
-    registrations.find_by(stage: stage)&.seed
+    registrations.find_by(stage:)&.seed
   end
 
   def had_bye?
@@ -115,17 +117,11 @@ class Player < ApplicationRecord
   end
 
   def set_identities
-    if corp_identity == ''
-      self.corp_identity = nil
-    end
-    if corp_identity
-      self.corp_identity_ref = Identity.find_by(name: corp_identity)
-    end
-    if runner_identity == ''
-      self.runner_identity = nil
-    end
-    if runner_identity
-      self.runner_identity_ref = Identity.find_by(name: runner_identity)
-    end
+    self.corp_identity = nil if corp_identity == ''
+    self.corp_identity_ref = Identity.find_by(name: corp_identity) if corp_identity
+    self.runner_identity = nil if runner_identity == ''
+    return unless runner_identity
+
+    self.runner_identity_ref = Identity.find_by(name: runner_identity)
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe SwissImplementation do
   describe '#pair' do
     10.times do |i|
@@ -6,9 +8,9 @@ RSpec.describe SwissImplementation do
 
     let(:players) do
       [player0, player1, player2, player3, player4,
-        player5, player6, player7, player8, player9]
+       player5, player6, player7, player8, player9]
     end
-    let(:paired) { SwissImplementation.pair(players) }
+    let(:paired) { described_class.pair(players) }
 
     it 'pairs correctly' do
       expect(paired.length).to eq(5)
@@ -24,12 +26,12 @@ RSpec.describe SwissImplementation do
       end
 
       let(:players) { [player1, player2, player3, player4] }
-      let(:paired) { SwissImplementation.pair(players) }
+      let(:paired) { described_class.pair(players) }
 
       it 'pairs players on matching score' do
         paired.each do |p|
-          expect(p).to match_array([player1, player2]) if p.include?(player1)
-          expect(p).to match_array([player3, player4]) if p.include?(player3)
+          expect(p).to contain_exactly(player1, player2) if p.include?(player1)
+          expect(p).to contain_exactly(player3, player4) if p.include?(player3)
         end
       end
 
@@ -52,17 +54,17 @@ RSpec.describe SwissImplementation do
         player2.exclude = [player1]
       end
 
-      let(:paired) { SwissImplementation.pair(players) }
+      let(:paired) { described_class.pair(players) }
 
       it 'excludes those matchups' do
         paired.each do |p|
-          expect(p).to match_array([player1, player0]) if p.include?(player1)
+          expect(p).to contain_exactly(player1, player0) if p.include?(player1)
         end
       end
     end
 
     context 'with odd number of players' do
-      %i(snap crackle pop).each do |name|
+      %i[snap crackle pop].each do |name|
         let(name) { SwissImplementation::Player.new }
       end
       let(:players) { [snap, crackle, pop] }
@@ -77,7 +79,7 @@ RSpec.describe SwissImplementation do
         crackle.exclude = [SwissImplementation::Bye]
 
         paired.each do |p|
-          expect(p).to match_array([pop, SwissImplementation::Bye]) if p.include?(pop)
+          expect(p).to contain_exactly(pop, SwissImplementation::Bye) if p.include?(pop)
         end
       end
 
@@ -87,7 +89,7 @@ RSpec.describe SwissImplementation do
         pop.delta = 0
 
         paired.each do |p|
-          expect(p).not_to match_array([snap, SwissImplementation::Bye]) if p.include?(SwissImplementation::Bye)
+          expect(p).not_to contain_exactly(snap, SwissImplementation::Bye) if p.include?(SwissImplementation::Bye)
         end
       end
     end
@@ -96,19 +98,19 @@ RSpec.describe SwissImplementation do
       let(:players) { [player0, player1, player2, player3] }
 
       it 'pairs players with a high custom weighting' do
-        paired = SwissImplementation.pair(players) do |p1, p2|
+        paired = described_class.pair(players) do |p1, p2|
           next 100 if [p1, p2] - [player0, player3] == []
 
           5
         end
 
         paired.each do |p|
-          expect(p).to match_array([player0, player3]) if p.include?(player0)
+          expect(p).to contain_exactly(player0, player3) if p.include?(player0)
         end
       end
 
       it 'avoids players with a low custom weighting' do
-        paired = SwissImplementation.pair(players) do |p1, p2|
+        paired = described_class.pair(players) do |p1, p2|
           next -100 if [p1, p2] - [player0, player1] == []
           next -100 if [p1, p2] - [player0, player2] == []
 
@@ -116,12 +118,12 @@ RSpec.describe SwissImplementation do
         end
 
         paired.each do |p|
-          expect(p).to match_array([player0, player3]) if p.include?(player0)
+          expect(p).to contain_exactly(player0, player3) if p.include?(player0)
         end
       end
 
       it 'does not allow a pairing if nil weight is returned' do
-        paired = SwissImplementation.pair(players) do |p1, p2|
+        paired = described_class.pair(players) do |_p1, _p2|
           nil
         end
 

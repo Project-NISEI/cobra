@@ -1,5 +1,6 @@
-RSpec.describe PlayersController do
+# frozen_string_literal: true
 
+RSpec.describe PlayersController do
   describe 'self registration' do
     let(:user1) { create(:user) }
     let(:user2) { create(:user) }
@@ -46,13 +47,14 @@ RSpec.describe PlayersController do
     end
 
     describe '#update' do
-      let(:player1) { create(:player, name: 'Player 1', tournament: tournament, user_id: user1.id) }
+      let(:player1) { create(:player, name: 'Player 1', tournament:, user_id: user1.id) }
+
       it 'prevents updating a player without logging in' do
         sign_in nil
         put tournament_player_path(tournament, player1), params: { player: { name: 'Changed Name' } }
 
         player1.reload
-        expect(player1.name).to_not eq('Changed Name')
+        expect(player1.name).not_to eq('Changed Name')
         expect_unauthorized
       end
 
@@ -61,7 +63,7 @@ RSpec.describe PlayersController do
         put tournament_player_path(tournament, player1), params: { player: { name: 'Changed Name' } }
 
         player1.reload
-        expect(player1.name).to_not eq('Changed Name')
+        expect(player1.name).not_to eq('Changed Name')
         expect_unauthorized
       end
 
@@ -89,7 +91,7 @@ RSpec.describe PlayersController do
           name: 'Updated name',
           pronouns: 'they/them',
           corp_identity: 'Some corp',
-          runner_identity: 'Some runner',
+          runner_identity: 'Some runner'
         } }
 
         player1.reload
@@ -101,7 +103,8 @@ RSpec.describe PlayersController do
 
       it 'allows TO updating another user' do
         sign_in tournament.user
-        put tournament_player_path(tournament, player1), params: { player: { name: 'Changed Name', organiser_view: true } }
+        put tournament_player_path(tournament, player1),
+            params: { player: { name: 'Changed Name', organiser_view: true } }
 
         player1.reload
         expect(player1.name).to eq('Changed Name')
@@ -110,7 +113,8 @@ RSpec.describe PlayersController do
       it 'allows TO updating another user when locked' do
         sign_in tournament.user
         player1.update(registration_locked: true)
-        put tournament_player_path(tournament, player1), params: { player: { name: 'Changed Name', organiser_view: true } }
+        put tournament_player_path(tournament, player1),
+            params: { player: { name: 'Changed Name', organiser_view: true } }
 
         player1.reload
         expect(player1.name).to eq('Changed Name')
@@ -128,7 +132,8 @@ RSpec.describe PlayersController do
       it 'allows TO updating themselves in the organiser view' do
         sign_in tournament.user
         post tournament_players_path(tournament), params: { player: { name: 'Tournament organiser' } }
-        put tournament_player_path(tournament, Player.last), params: { player: { name: 'Mr. Organiser', organiser_view: true } }
+        put tournament_player_path(tournament, Player.last),
+            params: { player: { name: 'Mr. Organiser', organiser_view: true } }
 
         expect(Player.last.user_id).to be(tournament.user.id)
         expect(Player.last.name).to eq('Mr. Organiser')
@@ -155,7 +160,7 @@ RSpec.describe PlayersController do
       sign_in user1
       put tournament_player_path(tournament, @player1), params: { player: {
         corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}',
-        runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}',
+        runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}'
       } }
 
       @player1.reload
@@ -167,7 +172,7 @@ RSpec.describe PlayersController do
       sign_in user1
       put tournament_player_path(tournament, @player1), params: { player: {
         corp_deck: '{"details": {}, "cards": [{"title": "Corp Card", "quantity": 3}]}',
-        runner_deck: '{"details": {}, "cards": [{"title": "Runner Card", "quantity": 3}]}',
+        runner_deck: '{"details": {}, "cards": [{"title": "Runner Card", "quantity": 3}]}'
       } }
 
       @player1.reload
@@ -179,11 +184,11 @@ RSpec.describe PlayersController do
       sign_in user1
       put tournament_player_path(tournament, @player1), params: { player: {
         corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}',
-        runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}',
+        runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}'
       } }
       put tournament_player_path(tournament, @player1), params: { player: {
         corp_deck: '',
-        runner_deck: '',
+        runner_deck: ''
       } }
 
       @player1.reload
@@ -197,7 +202,7 @@ RSpec.describe PlayersController do
       sign_in user1
       put tournament_player_path(tournament, @player1), params: { player: {
         corp_deck: '{"details": {"name": "Corp Deck"}, "cards": []}',
-        runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}',
+        runner_deck: '{"details": {"name": "Runner Deck"}, "cards": []}'
       } }
 
       @player1.reload
@@ -337,9 +342,9 @@ RSpec.describe PlayersController do
   describe 'standings data' do
     let(:organiser) { create(:user) }
     let(:tournament) { create(:tournament, name: 'My Tournament', user: organiser) }
-    let!(:alice) { create(:player, tournament: tournament, name: 'Alice', pronouns: 'she/her') }
-    let!(:bob) { create(:player, tournament: tournament, name: 'Bob', pronouns: 'he/him') }
-    let!(:charlie) { create(:player, tournament: tournament, name: 'Charlie', pronouns: 'she/her') }
+    let!(:alice) { create(:player, tournament:, name: 'Alice', pronouns: 'she/her') }
+    let!(:bob) { create(:player, tournament:, name: 'Bob', pronouns: 'he/him') }
+    let!(:charlie) { create(:player, tournament:, name: 'Charlie', pronouns: 'she/her') }
 
     describe 'during player meeting' do
       it 'displays without logging in' do
@@ -348,206 +353,203 @@ RSpec.describe PlayersController do
 
         expect(compare_body(response))
           .to eq(
-                'is_player_meeting' => true,
-                'manual_seed' => false,
-                'stages' => [
-                  { 'format' => 'swiss',
-                    'any_decks_viewable' => false,
-                    'rounds_complete' => 0,
-                    'standings' => [
-                      standing_with_no_score(1, player_with_hidden_ids("Alice (she/her)")),
-                      standing_with_no_score(2, player_with_hidden_ids("Bob (he/him)")),
-                      standing_with_no_score(3, player_with_hidden_ids("Charlie (she/her)"))
-                    ]
-                  }
-                ]
-              )
+            'is_player_meeting' => true,
+            'manual_seed' => false,
+            'stages' => [
+              { 'format' => 'swiss',
+                'any_decks_viewable' => false,
+                'rounds_complete' => 0,
+                'standings' => [
+                  standing_with_no_score(1, player_with_hidden_ids('Alice (she/her)')),
+                  standing_with_no_score(2, player_with_hidden_ids('Bob (he/him)')),
+                  standing_with_no_score(3, player_with_hidden_ids('Charlie (she/her)'))
+                ] }
+            ]
+          )
       end
+
       it 'displays as player' do
         sign_in alice
         get standings_data_tournament_players_path(tournament)
 
         expect(compare_body(response))
           .to eq(
-                'is_player_meeting' => true,
-                'manual_seed' => false,
-                'stages' => [
-                  { 'format' => 'swiss',
-                    'any_decks_viewable' => false,
-                    'rounds_complete' => 0,
-                    'standings' => [
-                      standing_with_no_score(1, player_with_hidden_ids("Alice (she/her)")),
-                      standing_with_no_score(2, player_with_hidden_ids("Bob (he/him)")),
-                      standing_with_no_score(3, player_with_hidden_ids("Charlie (she/her)"))
-                    ]
-                  }
-                ]
-              )
+            'is_player_meeting' => true,
+            'manual_seed' => false,
+            'stages' => [
+              { 'format' => 'swiss',
+                'any_decks_viewable' => false,
+                'rounds_complete' => 0,
+                'standings' => [
+                  standing_with_no_score(1, player_with_hidden_ids('Alice (she/her)')),
+                  standing_with_no_score(2, player_with_hidden_ids('Bob (he/him)')),
+                  standing_with_no_score(3, player_with_hidden_ids('Charlie (she/her)'))
+                ] }
+            ]
+          )
       end
+
       it 'displays as organiser' do
         sign_in organiser
         get standings_data_tournament_players_path(tournament)
 
         expect(compare_body(response))
           .to eq(
-                'is_player_meeting' => true,
-                'manual_seed' => false,
-                'stages' => [
-                  { 'format' => 'swiss',
-                    'any_decks_viewable' => false,
-                    'rounds_complete' => 0,
-                    'standings' => [
-                      standing_with_no_score(1, player_with_hidden_ids("Alice (she/her)")),
-                      standing_with_no_score(2, player_with_hidden_ids("Bob (he/him)")),
-                      standing_with_no_score(3, player_with_hidden_ids("Charlie (she/her)"))
-                    ]
-                  }
-                ]
-              )
+            'is_player_meeting' => true,
+            'manual_seed' => false,
+            'stages' => [
+              { 'format' => 'swiss',
+                'any_decks_viewable' => false,
+                'rounds_complete' => 0,
+                'standings' => [
+                  standing_with_no_score(1, player_with_hidden_ids('Alice (she/her)')),
+                  standing_with_no_score(2, player_with_hidden_ids('Bob (he/him)')),
+                  standing_with_no_score(3, player_with_hidden_ids('Charlie (she/her)'))
+                ] }
+            ]
+          )
       end
     end
 
     describe 'after first swiss round' do
-      before(:each) do
+      before do
         Pairer.new(tournament.new_round!, Random.new(0)).pair!
         round = tournament.current_stage.rounds.last
-        round.pairings.each { |pairing|
+        round.pairings.each do |pairing|
           pairing.update!(score1: 6, score2: 0)
-        }
+        end
         round.update!(completed: true)
       end
+
       it 'displays without logging in' do
         sign_in nil
         get standings_data_tournament_players_path(tournament)
 
         expect(compare_body(response))
           .to eq(
-                'is_player_meeting' => false,
-                'manual_seed' => false,
-                'stages' => [
-                  { 'format' => 'swiss',
-                    'any_decks_viewable' => false,
-                    'rounds_complete' => 1,
-                    'standings' => [
-                      standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: "6.0",
-                                                 player: player_with_no_ids("Charlie (she/her)")),
-                      standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: "0.0",
-                                                 player: player_with_no_ids("Alice (she/her)")),
-                      standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: "0.0",
-                                                 player: player_with_no_ids("Bob (he/him)"))
-                    ]
-                  }
-                ]
-              )
+            'is_player_meeting' => false,
+            'manual_seed' => false,
+            'stages' => [
+              { 'format' => 'swiss',
+                'any_decks_viewable' => false,
+                'rounds_complete' => 1,
+                'standings' => [
+                  standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: '6.0',
+                                                player: player_with_no_ids('Charlie (she/her)')),
+                  standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: '0.0',
+                                                player: player_with_no_ids('Alice (she/her)')),
+                  standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: '0.0',
+                                                player: player_with_no_ids('Bob (he/him)'))
+                ] }
+            ]
+          )
       end
     end
 
     describe 'at start of cut' do
-      before(:each) do
+      before do
         Pairer.new(tournament.new_round!, Random.new(0)).pair!
         round = tournament.current_stage.rounds.last
-        round.pairings.each { |pairing|
+        round.pairings.each do |pairing|
           pairing.update!(score1: 6, score2: 0)
-        }
+        end
         round.update!(completed: true)
         tournament.cut_to!(:double_elim, 3)
         Pairer.new(tournament.new_round!, Random.new(0)).pair!
       end
+
       it 'displays without logging in' do
         sign_in nil
         get standings_data_tournament_players_path(tournament)
 
         expect(compare_body(response))
           .to eq(
-                'is_player_meeting' => false,
-                'manual_seed' => false,
-                'stages' => [
-                  { 'format' => 'double_elim',
-                    'any_decks_viewable' => false,
-                    'rounds_complete' => 0,
-                    'standings' => [
-                      standing_at_cut_position(1, player: nil, seed: nil),
-                      standing_at_cut_position(2, player: nil, seed: nil),
-                      standing_at_cut_position(3, player: nil, seed: nil)
-                    ]
-                  },
-                  { 'format' => 'swiss',
-                    'any_decks_viewable' => false,
-                    'rounds_complete' => 1,
-                    'standings' => [
-                      standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: "6.0",
-                                                 player: player_with_no_ids("Charlie (she/her)")),
-                      standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: "0.0",
-                                                 player: player_with_no_ids("Alice (she/her)")),
-                      standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: "0.0",
-                                                 player: player_with_no_ids("Bob (he/him)"))
-                    ]
-                  }
-                ]
-              )
+            'is_player_meeting' => false,
+            'manual_seed' => false,
+            'stages' => [
+              { 'format' => 'double_elim',
+                'any_decks_viewable' => false,
+                'rounds_complete' => 0,
+                'standings' => [
+                  standing_at_cut_position(1, player: nil, seed: nil),
+                  standing_at_cut_position(2, player: nil, seed: nil),
+                  standing_at_cut_position(3, player: nil, seed: nil)
+                ] },
+              { 'format' => 'swiss',
+                'any_decks_viewable' => false,
+                'rounds_complete' => 1,
+                'standings' => [
+                  standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: '6.0',
+                                                player: player_with_no_ids('Charlie (she/her)')),
+                  standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: '0.0',
+                                                player: player_with_no_ids('Alice (she/her)')),
+                  standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: '0.0',
+                                                player: player_with_no_ids('Bob (he/him)'))
+                ] }
+            ]
+          )
       end
     end
 
     describe 'after first round of cut' do
-      before(:each) do
+      before do
         Pairer.new(tournament.new_round!, Random.new(0)).pair!
         swiss_round = tournament.current_stage.rounds.last
-        swiss_round.pairings.each { |pairing|
+        swiss_round.pairings.each do |pairing|
           pairing.update!(score1: 6, score2: 0)
-        }
+        end
         swiss_round.update!(completed: true)
         tournament.cut_to!(:double_elim, 3)
         Pairer.new(tournament.new_round!, Random.new(0)).pair!
         cut_round = tournament.current_stage.rounds.last
-        cut_round.pairings.each { |pairing|
+        cut_round.pairings.each do |pairing|
           pairing.update!(score1: 3, score2: 0)
-        }
+        end
         cut_round.update!(completed: true)
       end
+
       it 'displays without logging in' do
         sign_in nil
         get standings_data_tournament_players_path(tournament)
 
         expect(compare_body(response))
           .to eq(
-                'is_player_meeting' => false,
-                'manual_seed' => false,
-                'stages' => [
-                  { 'format' => 'double_elim',
-                    'any_decks_viewable' => false,
-                    'rounds_complete' => 1,
-                    'standings' => [
-                      standing_at_cut_position(1, player: nil, seed: nil),
-                      standing_at_cut_position(2, player: nil, seed: nil),
-                      standing_at_cut_position(3, seed: 3,
-                                               player: player_with_no_ids("Bob (he/him)"))
-                    ]
-                  },
-                  { 'format' => 'swiss',
-                    'any_decks_viewable' => false,
-                    'rounds_complete' => 1,
-                    'standings' => [
-                      standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: "6.0",
-                                                 player: player_with_no_ids("Charlie (she/her)")),
-                      standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: "0.0",
-                                                 player: player_with_no_ids("Alice (she/her)")),
-                      standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: "0.0",
-                                                 player: player_with_no_ids("Bob (he/him)"))
-                    ]
-                  }
-                ]
-              )
+            'is_player_meeting' => false,
+            'manual_seed' => false,
+            'stages' => [
+              { 'format' => 'double_elim',
+                'any_decks_viewable' => false,
+                'rounds_complete' => 1,
+                'standings' => [
+                  standing_at_cut_position(1, player: nil, seed: nil),
+                  standing_at_cut_position(2, player: nil, seed: nil),
+                  standing_at_cut_position(3, seed: 3,
+                                              player: player_with_no_ids('Bob (he/him)'))
+                ] },
+              { 'format' => 'swiss',
+                'any_decks_viewable' => false,
+                'rounds_complete' => 1,
+                'standings' => [
+                  standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: '6.0',
+                                                player: player_with_no_ids('Charlie (she/her)')),
+                  standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: '0.0',
+                                                player: player_with_no_ids('Alice (she/her)')),
+                  standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: '0.0',
+                                                player: player_with_no_ids('Bob (he/him)'))
+                ] }
+            ]
+          )
       end
     end
   end
 
   def compare_body(response)
     body = JSON.parse(response.body)
-    body['stages'].each { |stage|
-      stage['standings'].each { |standing|
+    body['stages'].each do |stage|
+      stage['standings'].each do |standing|
         standing['player']&.delete 'id'
-      }
-    }
+      end
+    end
     body
   end
 
@@ -590,17 +592,17 @@ RSpec.describe PlayersController do
 
   def player_with_hidden_ids(name_with_pronouns)
     {
-      "name_with_pronouns" => name_with_pronouns,
-      "corp_id" => nil,
-      "runner_id" => nil
+      'name_with_pronouns' => name_with_pronouns,
+      'corp_id' => nil,
+      'runner_id' => nil
     }
   end
 
   def player_with_no_ids(name_with_pronouns)
     {
-      "name_with_pronouns" => name_with_pronouns,
-      "corp_id" => { "faction" => nil, "name" => nil },
-      "runner_id" => { "faction" => nil, "name" => nil }
+      'name_with_pronouns' => name_with_pronouns,
+      'corp_id' => { 'faction' => nil, 'name' => nil },
+      'runner_id' => { 'faction' => nil, 'name' => nil }
     }
   end
 

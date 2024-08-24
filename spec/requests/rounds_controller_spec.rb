@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe RoundsController do
   describe 'pairings data' do
     let(:organiser) { create(:user) }
@@ -18,6 +20,7 @@ RSpec.describe RoundsController do
             'stages' => [{ 'name' => 'Swiss', 'format' => 'swiss', 'rounds' => [] }]
           )
       end
+
       it 'displays as player' do
         sign_in alice
         get pairings_data_tournament_rounds_path(tournament)
@@ -29,6 +32,7 @@ RSpec.describe RoundsController do
             'stages' => [{ 'name' => 'Swiss', 'format' => 'swiss', 'rounds' => [] }]
           )
       end
+
       it 'displays as organiser' do
         sign_in organiser
         get pairings_data_tournament_rounds_path(tournament)
@@ -43,9 +47,10 @@ RSpec.describe RoundsController do
     end
 
     describe 'during first swiss round before any results' do
-      before(:each) do
+      before do
         Pairer.new(tournament.new_round!, Random.new(0)).pair!
       end
+
       it 'displays without logging in' do
         sign_in nil
         get pairings_data_tournament_rounds_path(tournament)
@@ -72,6 +77,7 @@ RSpec.describe RoundsController do
                    ] }]
                  })
       end
+
       it 'displays as organiser' do
         sign_in organiser
         get pairings_data_tournament_rounds_path(tournament)
@@ -101,11 +107,12 @@ RSpec.describe RoundsController do
     end
 
     describe 'during cut before any results' do
-      before(:each) do
+      before do
         Pairer.new(tournament.new_round!, Random.new(0)).pair!
         tournament.cut_to!(:double_elim, 3)
         Pairer.new(tournament.new_round!, Random.new(0)).pair!
       end
+
       it 'displays without logging in' do
         sign_in nil
         get pairings_data_tournament_rounds_path(tournament)

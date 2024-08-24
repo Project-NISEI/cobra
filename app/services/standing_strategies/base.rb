@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module StandingStrategies
   class Base
     attr_reader :stage

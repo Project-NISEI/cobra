@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 RSpec.describe AbrUpload do
   let(:upload) { described_class.new(tournament, 'https://server/SLUG') }
   let(:tournament) { create(:tournament, name: 'Some Tournament') }
   let(:jack) { create(:player, corp_identity: 'ETF', runner_identity: 'Noise') }
   let(:jill) { create(:player, corp_identity: 'PE', runner_identity: 'Gabe') }
-  let(:round) { create(:round, tournament: tournament) }
+  let(:round) { create(:round, tournament:) }
 
   before do
     round.pairings << create(:pairing, player1: jack, player2: jill)
@@ -34,7 +36,7 @@ RSpec.describe AbrUpload do
       VCR.use_cassette :upload_to_abr do
         response = upload.upload!
 
-        expect(response[:code]).to eq(301063)
+        expect(response[:code]).to eq(301_063)
       end
     end
 

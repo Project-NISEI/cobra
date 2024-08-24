@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OauthController < ApplicationController
   before_action :skip_authorization
 
@@ -27,13 +29,9 @@ class OauthController < ApplicationController
 
       session[:user_id] = user.id
 
-      if session[:return_to]
-        redirect_to session[:return_to]
-      else
-        redirect_to root_path
-      end
+      redirect_to session[:return_to] || root_path
     else
-      render json: { message: :failed }, status: 500
+      render json: { message: :failed }, status: :internal_server_error
     end
   end
 

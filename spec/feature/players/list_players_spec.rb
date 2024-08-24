@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'Listing players' do
   let(:tournament) { create(:tournament) }
 
@@ -38,7 +40,7 @@ RSpec.describe 'Listing players' do
     end
 
     it 'redirects away' do
-      expect(page.current_path).to eq(root_path)
+      expect(page).to have_current_path(root_path, ignore_query: true)
       expect(page).to have_content("Sorry, you can't do that")
     end
   end

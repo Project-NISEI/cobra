@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ConvertPlayerLockedFlags < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
+class ConvertPlayerLockedFlags < ActiveRecord::Migration[7.0]
   def change
     rename_column :players, :decks_locked, :registration_locked
     rename_column :tournaments, :all_players_decks_unlocked, :all_players_unlocked

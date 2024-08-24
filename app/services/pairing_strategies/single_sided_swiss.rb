@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PairingStrategies
   class SingleSidedSwiss < Swiss
     def pair!
@@ -13,10 +15,9 @@ module PairingStrategies
           {
             points: player.points,
             side_bias: player.side_bias,
-            opponents: player.pairings.reduce(Hash.new) do |output, pairing|
-              output[pairing.opponent_for(player).id] ||= Array.new
+            opponents: player.pairings.each_with_object({}) do |pairing, output|
+              output[pairing.opponent_for(player).id] ||= []
               output[pairing.opponent_for(player).id] << pairing.side_for(player)
-              output
             end
           }
         ]
@@ -34,14 +35,20 @@ module PairingStrategies
         end
 
         # return nil (no pairing possible) if players have already played twice
-        next nil if cached_data[player1.id][:opponents].keys.include?(player2.id) && cached_data[player1.id][:opponents][player2.id].count >= 2
+        if cached_data[player1.id][:opponents].keys.include?(player2.id) &&
+           cached_data[player1.id][:opponents][player2.id].count >= 2
+          next nil
+        end
 
         preferred_side = preferred_player1_side(
           cached_data[player1.id][:side_bias],
           cached_data[player2.id][:side_bias]
         )
         # return nil (no pairing possible) if the sides would repeat the previous pairing
-        next nil if preferred_side && cached_data[player1.id][:opponents][player2.id] && cached_data[player1.id][:opponents][player2.id].include?(preferred_side)
+        if preferred_side && cached_data[player1.id][:opponents][player2.id] &&
+           cached_data[player1.id][:opponents][player2.id].include?(preferred_side)
+          next nil
+        end
 
         points_weight(cached_data[player1.id][:points], cached_data[player2.id][:points]) +
           side_bias_weight(cached_data[player1.id][:side_bias], cached_data[player2.id][:side_bias]) +
@@ -50,11 +57,11 @@ module PairingStrategies
     end
 
     def self.points_weight(player1_points, player2_points)
-      0 - (player1_points - player2_points) ** 2 / 6.0
+      0 - (player1_points - player2_points)**2 / 6.0
     end
 
     def self.side_bias_weight(player1_side_bias, player2_side_bias)
-      8 ** ((player1_side_bias - player2_side_bias).abs / 2.0)
+      8**((player1_side_bias - player2_side_bias).abs / 2.0)
     end
 
     def self.rematch_bias_weight(has_previous_matchup)
@@ -77,7 +84,7 @@ module PairingStrategies
         preference = self.class.preferred_player1_side(pairing.player1.side_bias, pairing.player2.side_bias)
         pairing.update(side: :player1_is_runner) if preference == :runner
         pairing.update(side: :player1_is_corp) if preference == :corp
-        pairing.update(side: [:player1_is_corp, :player1_is_runner].sample) if preference == nil
+        pairing.update(side: %i[player1_is_corp player1_is_runner].sample) if preference.nil?
       end
     end
   end

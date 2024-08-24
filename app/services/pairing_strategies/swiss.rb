@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PairingStrategies
   class Swiss < Base
     BYE_WINNER_SCORE = 6
@@ -35,7 +37,10 @@ module PairingStrategies
     end
 
     def paired_players
-      return @paired_players ||= players_to_pair.to_a.shuffle(random: random).in_groups_of(2, SwissImplementation::Bye) if first_round?
+      if first_round?
+        return @paired_players ||= players_to_pair.to_a.shuffle(random:).in_groups_of(2,
+                                                                                      SwissImplementation::Bye)
+      end
       return @paired_players ||= PairingStrategies::BigSwiss.new(stage, self.class).pair! if players.count > 60
 
       @paired_players ||= self.class.get_pairings(players_to_pair.to_a)

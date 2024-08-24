@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 RSpec.describe 'deck visibility' do
   let(:tournament) { create(:tournament) }
   let(:unregistered_user) { create(:user) }
 
-  let(:jack) { create(:player, tournament: tournament, user: create(:user)) }
-  let(:jill) { create(:player, tournament: tournament) }
-  let(:alice) { create(:player, tournament: tournament, user: create(:user)) }
-  let(:bob) { create(:player, tournament: tournament) }
-  let(:bubble_boy) { create(:player, tournament: tournament, user: create(:user)) }
+  let(:jack) { create(:player, tournament:, user: create(:user)) }
+  let(:jill) { create(:player, tournament:) }
+  let(:alice) { create(:player, tournament:, user: create(:user)) }
+  let(:bob) { create(:player, tournament:) }
+  let(:bubble_boy) { create(:player, tournament:, user: create(:user)) }
 
   let(:swiss) { tournament.stages.find_by!(format: :swiss) }
-  let(:cut) { create(:stage, tournament: tournament, format: :double_elim) }
+  let(:cut) { create(:stage, tournament:, format: :double_elim) }
 
   before do
     create(:registration, player: jack, stage: swiss)
@@ -24,7 +26,6 @@ RSpec.describe 'deck visibility' do
   end
 
   describe 'view decks of players' do
-
     describe 'private lists' do
       it 'does not show decks of your opponent' do
         expect(jill.decks_visible_to(jack.user)).to be(false)
@@ -129,9 +130,11 @@ RSpec.describe 'deck visibility' do
   end
 
   context 'a pairing in the cut' do
-    let(:pairing) { create(:pairing, :player1_is_corp,
-                           round: create(:round, stage: cut),
-                           player1: jack, player2: jill) }
+    let(:pairing) do
+      create(:pairing, :player1_is_corp,
+             round: create(:round, stage: cut),
+             player1: jack, player2: jill)
+    end
 
     describe 'private lists' do
       it 'does not let you see decks in your pairing' do
@@ -217,9 +220,11 @@ RSpec.describe 'deck visibility' do
   end
 
   context 'a pairing in swiss' do
-    let(:pairing) { create(:pairing, :player1_is_corp,
-                           round: create(:round, stage: swiss),
-                           player1: jack, player2: jill) }
+    let(:pairing) do
+      create(:pairing, :player1_is_corp,
+             round: create(:round, stage: swiss),
+             player1: jack, player2: jill)
+    end
 
     describe 'public list cut' do
       before { tournament.update(cut_deck_visibility: :cut_decks_public) }
@@ -237,9 +242,11 @@ RSpec.describe 'deck visibility' do
   end
 
   context 'a pairing with sides not chosen yet' do
-    let(:pairing) { create(:pairing,
-                           round: create(:round, stage: cut),
-                           player1: jack, player2: jill) }
+    let(:pairing) do
+      create(:pairing,
+             round: create(:round, stage: cut),
+             player1: jack, player2: jill)
+    end
 
     describe 'public list cut' do
       before { tournament.update(cut_deck_visibility: :cut_decks_public) }

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PlayerPolicy < ApplicationPolicy
   def create?
     user

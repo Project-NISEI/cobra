@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddScoresToPairings < ActiveRecord::Migration[5.0] # rubocop:disable Style/Documentation
+class AddScoresToPairings < ActiveRecord::Migration[5.0]
   def change
     add_column :pairings, :score1, :integer
     add_column :pairings, :score2, :integer

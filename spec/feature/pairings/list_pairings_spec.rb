@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'list pairings for a round' do
   context 'with swiss tournament' do
     let(:round) { create(:round) }
@@ -47,11 +49,11 @@ RSpec.describe 'list pairings for a round' do
 
   context 'with double elim tournament' do
     let(:tournament) { create(:tournament, player_count: 4) }
-    let(:stage) { create(:stage, tournament: tournament, format: :double_elim) }
+    let(:stage) { create(:stage, tournament:, format: :double_elim) }
 
     before do
       tournament.players.each_with_index do |player, i|
-        create(:registration, stage: stage, player: player, seed: i + 1)
+        create(:registration, stage:, player:, seed: i + 1)
       end
 
       stage.pair_new_round!

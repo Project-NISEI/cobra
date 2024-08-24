@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'graph_matching'
 
 module SwissImplementation
@@ -14,6 +16,7 @@ module SwissImplementation
       @label = label
     end
   end
+
   class Bye; end
 
   class Pairer
@@ -44,8 +47,8 @@ module SwissImplementation
           if block_given?
             weight = yield(p1, p2)
             e << [p1_index, p2_index, weight] unless weight.nil?
-          else
-            e << [p1_index, p2_index, delta(p1, p2)] if permitted?(p1, p2)
+          elsif permitted?(p1, p2)
+            e << [p1_index, p2_index, delta(p1, p2)]
           end
         end
       end

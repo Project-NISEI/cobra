@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SideDeterminer
   def self.determine_sides(player1, player2, stage)
     return nil unless player_has_pairings(player1, stage) || player_has_pairings(player2, stage)
@@ -8,10 +10,8 @@ class SideDeterminer
     return :player1_is_corp if diff1 < diff2
     return :player1_is_runner if diff1 > diff2
 
-    [:player1_is_corp, :player1_is_runner].sample
+    %i[player1_is_corp player1_is_runner].sample
   end
-
-  private
 
   # positive for more often corp, negative for more often runner
   def self.differential(player)

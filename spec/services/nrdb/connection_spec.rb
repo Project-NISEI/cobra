@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Nrdb::Connection do
   let(:connection) { described_class.new }
 
@@ -17,12 +19,12 @@ RSpec.describe Nrdb::Connection do
       it 'fetches player info' do
         VCR.use_cassette :nrdb_player_info do
           expect(connection.player_info).to eq([
-            "id" => 123,
-            "username" => "test_user",
-            "email" => "test@test.com",
-            "reputation" => 1,
-            "sharing" => true
-          ])
+                                                 'id' => 123,
+                                                 'username' => 'test_user',
+                                                 'email' => 'test@test.com',
+                                                 'reputation' => 1,
+                                                 'sharing' => true
+                                               ])
         end
       end
     end
@@ -31,16 +33,16 @@ RSpec.describe Nrdb::Connection do
       it 'fetches a deck' do
         VCR.use_cassette 'nrdb_decks/simplified_deck' do
           expect(connection.decks).to eq([
-              "id" => 123,
-              "name" => "My Best Deck"
-            ])
+                                           'id' => 123,
+                                           'name' => 'My Best Deck'
+                                         ])
         end
       end
 
       it 'orders decks most recent first' do
         VCR.use_cassette 'nrdb_decks/unordered_decks' do
           expect(connection.decks.map { |deck| deck[:name] })
-            .to eq(["Some Deck", "A Perfect Deck", "My Best Deck"])
+            .to eq(['Some Deck', 'A Perfect Deck', 'My Best Deck'])
         end
       end
     end
@@ -53,12 +55,12 @@ RSpec.describe Nrdb::Connection do
       it 'fetches player info' do
         VCR.use_cassette :nrdb_player_info do
           expect(connection.player_info).to eq([
-            "id" => 123,
-            "username" => "test_user",
-            "email" => "test@test.com",
-            "reputation" => 1,
-            "sharing" => true
-          ])
+                                                 'id' => 123,
+                                                 'username' => 'test_user',
+                                                 'email' => 'test@test.com',
+                                                 'reputation' => 1,
+                                                 'sharing' => true
+                                               ])
         end
       end
     end

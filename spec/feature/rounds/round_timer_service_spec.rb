@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 RSpec.describe 'round timer service' do
   let(:tournament) { create(:tournament) }
   let(:round) { create(:round, stage: tournament.current_stage) }
+
   delegate :timer, to: :round
 
   it 'has a default round length' do

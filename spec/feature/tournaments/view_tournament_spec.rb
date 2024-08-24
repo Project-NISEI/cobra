@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'viewing a tournament' do
   context 'with public tournament' do
     let(:tournament) { create(:tournament) }
@@ -38,24 +40,13 @@ RSpec.describe 'viewing a tournament' do
   context 'with private tournament' do
     let(:tournament) { create(:tournament, private: true) }
 
-    context 'as owner' do
-      before do
-        tournament.players << create(:player, name: 'Jack Player')
-        tournament.players << create(:player, name: 'Jill Player')
-        tournament.players << create(:player, active: false)
-
-        sign_in tournament.user
-        visit tournament_path(tournament)
-      end
-    end
-
     context 'as non-owner' do
       before do
         visit tournament_path(tournament)
       end
 
       it 'redirects away' do
-        expect(page.current_path).to eq(root_path)
+        expect(page).to have_current_path(root_path, ignore_query: true)
         expect(page).to have_content("Sorry, you can't do that")
       end
     end

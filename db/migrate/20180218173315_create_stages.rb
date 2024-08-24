@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateStages < ActiveRecord::Migration[5.0] # rubocop:disable Style/Documentation
+class CreateStages < ActiveRecord::Migration[5.0]
   def change
     create_table :stages do |t| # rubocop:disable Rails/CreateTableWithTimestamps
       t.references :tournament, foreign_key: true

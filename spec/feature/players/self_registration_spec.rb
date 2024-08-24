@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 RSpec.describe 'registering for a tournament' do
   let(:organiser) { create(:user) }
   let(:player) { create(:user) }
+
   before do
     sign_in organiser
     visit new_tournament_path
@@ -13,7 +16,7 @@ RSpec.describe 'registering for a tournament' do
     expect do
       register_player player
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(tournament_path(Tournament.last))
+    expect(page).to have_current_path(tournament_path(Tournament.last), ignore_query: true)
     expect(Player.last.user_id).to be(player.id)
   end
 
@@ -23,7 +26,7 @@ RSpec.describe 'registering for a tournament' do
     expect do
       register_player player
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(tournament_path(Tournament.last))
+    expect(page).to have_current_path(tournament_path(Tournament.last), ignore_query: true)
     expect(Player.last.user_id).to be(player.id)
   end
 
@@ -31,7 +34,7 @@ RSpec.describe 'registering for a tournament' do
     expect do
       register_player organiser
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(tournament_path(Tournament.last))
+    expect(page).to have_current_path(tournament_path(Tournament.last), ignore_query: true)
     expect(Player.last.user_id).to be(organiser.id)
   end
 
@@ -47,5 +50,4 @@ RSpec.describe 'registering for a tournament' do
     visit tournament_rounds_path(Tournament.last)
     click_on class: ['btn-danger']
   end
-
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'creating a round' do
   let(:tournament) { create(:tournament, player_count: 4) }
 
@@ -9,6 +11,6 @@ RSpec.describe 'creating a round' do
   it 'redirects to rounds page' do
     click_link 'Pair new round'
 
-    expect(current_path).to eq tournament_rounds_path(tournament)
+    expect(page).to have_current_path tournament_rounds_path(tournament), ignore_query: true
   end
 end

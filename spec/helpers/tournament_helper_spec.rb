@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe TournamentHelper do
   describe '#short_date' do
     let(:tournament) { create(:tournament, created_at: '2017/01/02', date: '2017/01/04') }
@@ -9,7 +11,7 @@ RSpec.describe TournamentHelper do
     it 'returns nil when no date is set' do
       tournament.update(date: nil)
 
-      expect(helper.short_date(tournament)).to eq(nil)
+      expect(helper.short_date(tournament)).to be_nil
     end
   end
 end

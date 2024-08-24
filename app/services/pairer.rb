@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 class Pairer
   attr_reader :round, :random
+
   delegate :stage, to: :round
 
   def initialize(round, random = Random)
@@ -14,7 +17,7 @@ class Pairer
   private
 
   def strategy
-    return PairingStrategies::Swiss unless %w(swiss double_elim single_sided_swiss).include? stage.format
+    return PairingStrategies::Swiss unless %w[swiss double_elim single_sided_swiss].include? stage.format
 
     "PairingStrategies::#{stage.format.camelize}".constantize
   end

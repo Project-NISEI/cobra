@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 RSpec.describe 'reporting scores for pairings' do
   let(:tournament) { create(:tournament) }
   let(:stage) { tournament.current_stage }
-  let(:round) { create(:round, stage: stage) }
+  let(:round) { create(:round, stage:) }
   let(:pairing) { round.pairings.last }
 
   before do
@@ -82,7 +84,7 @@ RSpec.describe 'reporting scores for pairings' do
       end
     end
 
-    context 'for single_sided pairing' do
+    context 'when for single_sided pairing' do
       before { stage.update(format: :double_elim) }
 
       describe 'player 1 is corp' do

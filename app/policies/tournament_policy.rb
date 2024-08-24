@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TournamentPolicy < ApplicationPolicy
   def show?
     !record.private? || record.user == user

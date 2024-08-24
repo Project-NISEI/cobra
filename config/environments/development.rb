@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -64,16 +66,14 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
   config.after_initialize do
-    begin
-      Flipper.enable :nrdb_deck_registration
-      Flipper.enable :open_list_cut
-      Flipper.enable :streaming_opt_out
-      cool_users = User.where(nrdb_username: ['plural'])
-      cool_users.each do |user|
-        Flipper.enable_actor(:single_sided_swiss, user)
-      end
-    rescue => e
-      Rails.logger.warn "Failed setting Flipper features: #{e.class}"
+    Flipper.enable :nrdb_deck_registration
+    Flipper.enable :open_list_cut
+    Flipper.enable :streaming_opt_out
+    cool_users = User.where(nrdb_username: ['plural'])
+    cool_users.each do |user|
+      Flipper.enable_actor(:single_sided_swiss, user)
     end
+  rescue StandardError => e
+    Rails.logger.warn "Failed setting Flipper features: #{e.class}"
   end
 end

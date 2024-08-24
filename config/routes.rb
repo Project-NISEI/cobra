@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   root 'home#home'
 
@@ -9,7 +11,7 @@ Rails.application.routes.draw do
   end
 
   resources :tournaments do
-    resources :players, only: [:index, :new, :create, :update, :destroy] do
+    resources :players, only: %i[index new create update destroy] do
       get :standings, on: :collection
       get :standings_data, on: :collection
       get :meeting, on: :collection
@@ -22,8 +24,8 @@ Rails.application.routes.draw do
       get :registration, on: :member
       get :view_decks, on: :member
     end
-    resources :rounds, only: [:index, :show, :create, :edit, :update, :destroy] do
-      resources :pairings, only: [:index, :create, :destroy] do
+    resources :rounds, only: %i[index show create edit update destroy] do
+      resources :pairings, only: %i[index create destroy] do
         post :report, on: :member
         get :match_slips, on: :collection
         get :view_decks, on: :member
@@ -34,7 +36,7 @@ Rails.application.routes.draw do
       get :view_pairings, on: :collection
       get :pairings_data, on: :collection
     end
-    resources :stages, only: [:create, :destroy]
+    resources :stages, only: %i[create destroy]
     post :upload_to_abr, on: :member
     get :save_json, on: :member
     post :cut, on: :member

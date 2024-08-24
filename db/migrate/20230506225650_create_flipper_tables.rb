@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateFlipperTables < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
+class CreateFlipperTables < ActiveRecord::Migration[7.0]
   def self.up
     create_table :flipper_features do |t|
       t.string :key, null: false

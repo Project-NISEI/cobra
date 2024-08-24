@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Player do
   let(:player) { create(:player) }
 
@@ -30,7 +32,7 @@ RSpec.describe Player do
     let!(:another) { create(:pairing, round: complete) }
 
     it 'only returns pairings from complete rounds' do
-      expect(player.eligible_pairings).to match_array([pairing1, pairing2])
+      expect(player.eligible_pairings).to contain_exactly(pairing1, pairing2)
     end
   end
 
@@ -45,7 +47,6 @@ RSpec.describe Player do
   end
 
   describe 'identities' do
-
     it 'sets empty identities to nil on update' do
       player.update(runner_identity: '', corp_identity: '')
       expect(player.runner_identity).to be_nil
@@ -59,7 +60,7 @@ RSpec.describe Player do
     let!(:pairing3) { create(:pairing, player1: player, player2: nil, score1: 6) }
 
     describe '#opponents' do
-      let(:nil_player) { instance_double('NilPlayer') }
+      let(:nil_player) { instance_double(NilPlayer) }
 
       before do
         allow(NilPlayer).to receive(:new).and_return(nil_player)
@@ -105,8 +106,8 @@ RSpec.describe Player do
     let(:player) { create(:player, tournament: stage1.tournament, skip_registration: true) }
 
     before do
-      create(:registration, player: player, stage: stage1, seed: 123)
-      create(:registration, player: player, stage: stage2, seed: 456)
+      create(:registration, player:, stage: stage1, seed: 123)
+      create(:registration, player:, stage: stage2, seed: 456)
     end
 
     it 'returns the seed for the player in the specified stage' do
@@ -122,19 +123,19 @@ RSpec.describe Player do
       create_list(:pairing, 3, player1: player)
     end
 
-    context 'player has not had a bye' do
+    context 'when player has not had a bye' do
       it 'returns false' do
-        expect(player.had_bye?).to eq(false)
+        expect(player.had_bye?).to be(false)
       end
     end
 
-    context 'player has had a bye' do
+    context 'when player has had a bye' do
       before do
         create(:pairing, player1: player, player2: nil)
       end
 
       it 'returns true' do
-        expect(player.had_bye?).to eq(true)
+        expect(player.had_bye?).to be(true)
       end
     end
   end

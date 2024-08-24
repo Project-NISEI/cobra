@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'creating a stage' do
   let(:tournament) { create(:tournament, player_count: 4) }
 

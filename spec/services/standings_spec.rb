@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 RSpec.describe Standings do
   let(:tournament) { create(:tournament) }
   let(:stage) { tournament.current_stage }
-  let!(:jack) { create(:player, tournament: tournament) }
-  let!(:jill) { create(:player, tournament: tournament) }
-  let!(:hansel) { create(:player, tournament: tournament) }
-  let!(:gretel) { create(:player, tournament: tournament) }
-  let(:round1) { create(:round, stage: stage, completed: true) }
-  let(:round2) { create(:round, stage: stage, completed: true) }
+  let!(:jack) { create(:player, tournament:) }
+  let!(:jill) { create(:player, tournament:) }
+  let!(:hansel) { create(:player, tournament:) }
+  let!(:gretel) { create(:player, tournament:) }
+  let(:round1) { create(:round, stage:, completed: true) }
+  let(:round2) { create(:round, stage:, completed: true) }
   let(:standings) { described_class.new(stage) }
 
   before do

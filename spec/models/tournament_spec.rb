@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Tournament do
   let(:tournament) { create(:tournament, player_count: 4) }
 
@@ -5,7 +7,7 @@ RSpec.describe Tournament do
     sample = create(:tournament, slug: nil)
 
     expect(sample).to be_valid
-    expect(sample.slug).not_to eq(nil)
+    expect(sample.slug).not_to be_nil
   end
 
   it 'does not overwrite slug' do
@@ -46,7 +48,7 @@ RSpec.describe Tournament do
 
   describe 'stream_url' do
     it 'has no stream_url by default' do
-      expect(tournament.stream_url).to eq(nil)
+      expect(tournament.stream_url).to be_nil
     end
 
     it 'can have a stream_url set' do
@@ -70,9 +72,9 @@ RSpec.describe Tournament do
 
     it 'returns counts' do
       expect(tournament.corp_counts).to eq([
-        [identity, 2],
-        [other_identity, 1]
-      ])
+                                             [identity, 2],
+                                             [other_identity, 1]
+                                           ])
     end
   end
 
@@ -87,8 +89,8 @@ RSpec.describe Tournament do
 
     it 'returns counts' do
       expect(tournament.runner_counts).to eq([
-        [identity, 1]
-      ])
+                                               [identity, 1]
+                                             ])
     end
   end
 
@@ -98,18 +100,18 @@ RSpec.describe Tournament do
     let(:cut) do
       tournament.cut_to! :double_elim, 4
     end
-    let(:alpha) { create(:player, tournament: tournament, name: 'Alpha') }
-    let(:bravo) { create(:player, tournament: tournament, name: 'Bravo') }
-    let(:charlie) { create(:player, tournament: tournament, name: 'Charlie') }
-    let(:delta) { create(:player, tournament: tournament, name: 'Delta') }
-    let(:echo) { create(:player, tournament: tournament, name: 'Echo') }
-    let(:foxtrot) { create(:player, tournament: tournament, name: 'Foxtrot') }
+    let(:alpha) { create(:player, tournament:, name: 'Alpha') }
+    let(:bravo) { create(:player, tournament:, name: 'Bravo') }
+    let(:charlie) { create(:player, tournament:, name: 'Charlie') }
+    let(:delta) { create(:player, tournament:, name: 'Delta') }
+    let(:echo) { create(:player, tournament:, name: 'Echo') }
+    let(:foxtrot) { create(:player, tournament:, name: 'Foxtrot') }
     let(:round) { create(:round, stage: swiss, completed: true) }
 
     before do
-      create(:pairing, round: round, player1: alpha, player2: bravo, score1: 5, score2: 4)
-      create(:pairing, round: round, player1: charlie, player2: delta, score1: 3, score2: 2)
-      create(:pairing, round: round, player1: echo, player2: foxtrot, score1: 1, score2: 0)
+      create(:pairing, round:, player1: alpha, player2: bravo, score1: 5, score2: 4)
+      create(:pairing, round:, player1: charlie, player2: delta, score1: 3, score2: 2)
+      create(:pairing, round:, player1: echo, player2: foxtrot, score1: 1, score2: 0)
     end
 
     it 'creates elim stage' do
@@ -136,7 +138,7 @@ RSpec.describe Tournament do
   end
 
   describe '#current_stage' do
-    let!(:new_stage) { create(:stage, tournament: tournament, number: 2) }
+    let!(:new_stage) { create(:stage, tournament:, number: 2) }
 
     it 'returns last stage' do
       expect(tournament.current_stage).to eq(new_stage)

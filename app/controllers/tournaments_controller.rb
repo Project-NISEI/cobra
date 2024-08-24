@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [
-    :show, :edit, :update, :destroy,
-    :upload_to_abr, :save_json, :cut, :qr, :registration, :timer,
-    :close_registration, :open_registration, :lock_player_registrations, :unlock_player_registrations
+  before_action :set_tournament, only: %i[
+    show edit update destroy
+    upload_to_abr save_json cut qr registration timer
+    close_registration open_registration lock_player_registrations unlock_player_registrations
   ]
 
   def index
@@ -50,14 +52,13 @@ class TournamentsController < ApplicationController
       return
     end
 
-    if @tournament.nrdb_deck_registration?
-      unless @current_user_player.registration_locked?
-        begin
-          @decks = Nrdb::Connection.new(current_user).decks
-        rescue
-          redirect_to login_path(:return_to => request.path)
-        end
-      end
+    return unless @tournament.nrdb_deck_registration?
+    return if @current_user_player.registration_locked?
+
+    begin
+      @decks = Nrdb::Connection.new(current_user).decks
+    rescue StandardError
+      redirect_to login_path(return_to: request.path)
     end
   end
 
@@ -91,11 +92,13 @@ class TournamentsController < ApplicationController
     if params[:swiss_deck_visibility]
       unless params[:cut_deck_visibility]
         params[:cut_deck_visibility] = Tournament.max_visibility_cut_or_swiss(
-          @tournament.cut_deck_visibility, params[:swiss_deck_visibility])
+          @tournament.cut_deck_visibility, params[:swiss_deck_visibility]
+        )
       end
     elsif params[:cut_deck_visibility]
       params[:swiss_deck_visibility] = Tournament.min_visibility_swiss_or_cut(
-        @tournament.swiss_deck_visibility, params[:cut_deck_visibility])
+        @tournament.swiss_deck_visibility, params[:cut_deck_visibility]
+      )
     end
     @tournament.update(params)
 
@@ -115,9 +118,7 @@ class TournamentsController < ApplicationController
 
     response = AbrUpload.upload!(@tournament, tournament_url(@tournament.slug, @request))
 
-    if (response[:code])
-      @tournament.update(abr_code: response[:code])
-    end
+    @tournament.update(abr_code: response[:code]) if response[:code]
 
     redirect_to edit_tournament_path(@tournament)
   end
@@ -210,11 +211,11 @@ class TournamentsController < ApplicationController
     @players = @tournament.players.active.sort_by { |p| p.name || '' }
     @dropped = @tournament.players.dropped.sort_by { |p| p.name || '' }
 
-    if current_user
-      @current_user_is_running_tournament = @tournament.user_id == current_user.id
-      @current_user_player = @players.find { |p| p.user_id == current_user.id }
-      @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
-    end
+    return unless current_user
+
+    @current_user_is_running_tournament = @tournament.user_id == current_user.id
+    @current_user_player = @players.find { |p| p.user_id == current_user.id }
+    @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
   end
 
   def set_overview_notices
@@ -222,13 +223,10 @@ class TournamentsController < ApplicationController
   end
 
   def registration_notice
-    unless @tournament.nrdb_deck_registration?
-      return
-    end
+    return unless @tournament.nrdb_deck_registration?
+
     if @tournament.registration_open?
-      unless @current_user_player && @current_user_player.registration_locked?
-        'Registration is open'
-      end
+      'Registration is open' unless @current_user_player&.registration_locked?
     elsif @current_user_player
       if @tournament.all_players_unlocked?
         'Registration is editable'

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class Tournament < ApplicationRecord
-  has_many :players, -> { order(:id) }, dependent: :destroy
+  has_many :players, -> { order(:id) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   belongs_to :user
-  has_many :stages, -> { order(:number) }, dependent: :destroy
+  has_many :stages, -> { order(:number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   has_many :rounds, through: :stages
 
   enum stage: {
@@ -30,7 +32,7 @@ class Tournament < ApplicationRecord
   delegate :pair_new_round!, to: :current_stage
 
   validates :name, :slug, presence: true
-  validates :slug, uniqueness: true
+  validates :slug, uniqueness: true # rubocop:disable Rails/UniqueValidationWithoutIndex
 
   before_validation :generate_slug, on: :create, unless: :slug
   before_create :default_date, unless: :date
@@ -39,12 +41,12 @@ class Tournament < ApplicationRecord
   def cut_to!(format, number)
     previous_stage = current_stage
     stages.create!(
-      format: format,
+      format:,
       number: previous_stage.number + 1
     ).tap do |stage|
       previous_stage.top(number).each_with_index do |player, i|
         stage.registrations.create!(
-          player: player,
+          player:,
           seed: i + 1
         )
       end
@@ -75,7 +77,7 @@ class Tournament < ApplicationRecord
   end
 
   def registration_unlocked?
-    self_registration? && (!registration_closed? || unlocked_players.count > 0)
+    self_registration? && (!registration_closed? || unlocked_players.count.positive?)
   end
 
   def stage_decks_open?(stage)
@@ -117,8 +119,8 @@ class Tournament < ApplicationRecord
   end
 
   def generate_slug
-    self.slug = rand(Integer(36 ** 4)).to_s(36).upcase
-    generate_slug if Tournament.exists?(slug: slug)
+    self.slug = rand(Integer(36**4)).to_s(36).upcase
+    generate_slug if Tournament.exists?(slug:)
   end
 
   def current_stage
@@ -146,14 +148,12 @@ class Tournament < ApplicationRecord
       else
         'closed'
       end
+    elsif all_players_unlocked?
+      'open'
+    elsif any_player_unlocked?
+      'open, part locked'
     else
-      if all_players_unlocked?
-        'open'
-      elsif any_player_unlocked?
-        'open, part locked'
-      else
-        'open, all locked'
-      end
+      'open, all locked'
     end
   end
 

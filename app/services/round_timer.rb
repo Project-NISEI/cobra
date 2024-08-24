@@ -1,5 +1,6 @@
-class RoundTimer
+# frozen_string_literal: true
 
+class RoundTimer
   def initialize(round)
     @round = round
   end
@@ -17,7 +18,7 @@ class RoundTimer
   end
 
   def show?
-    round_timer_activations.count > 0 && !completed?
+    round_timer_activations.count.positive? && !completed?
   end
 
   def paused?
@@ -58,21 +59,20 @@ class RoundTimer
   PausedState = Struct.new(:started, :paused, :remaining_seconds)
   NotStartedState = Struct.new(:started, :paused, :length_minutes)
   attr_reader :round
+
   delegate :round_timer_activations, :completed?, :length_minutes, to: :round
 
   def finish_time
     last = last_activation
-    if !last.nil? && (last.stop_time.nil? || last.stop_time >= expected_end)
-      expected_end
-    else
-      nil
-    end
+    return unless !last.nil? && (last.stop_time.nil? || last.stop_time >= expected_end)
+
+    expected_end
   end
 
   def expected_end
-    unless last_activation.nil?
-      last_activation.start_time + length_seconds - prev_activations_seconds
-    end
+    return if last_activation.nil?
+
+    last_activation.start_time + length_seconds - prev_activations_seconds
   end
 
   def remaining_seconds_after_unpause
@@ -85,15 +85,14 @@ class RoundTimer
   end
 
   def prev_activations_seconds
-    round_timer_activations[0..-2].map{|a| a.committed_seconds}.sum
+    round_timer_activations[0..-2].map(&:committed_seconds).sum
   end
 
   def all_activation_seconds
-    round_timer_activations.map{|a| a.committed_seconds}.sum
+    round_timer_activations.map(&:committed_seconds).sum
   end
 
   def last_activation
     round_timer_activations.last
   end
-
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PairingStrategies
   class BigSwiss
     # this class is not a real pairing strategy but a special-case class that
@@ -21,7 +23,7 @@ module PairingStrategies
         @overflow += to_pair - paired.flatten
 
         paired
-      end.sum(Array.new) + panic_pair(@overflow)
+      end.sum([]) + panic_pair(@overflow)
     end
 
     private
@@ -57,7 +59,7 @@ module PairingStrategies
     def pair_batch(players)
       chunk(players).map do |batch|
         @base_pairing_strategy.get_pairings(batch)
-      end.sum(Array.new)
+      end.sum([])
     end
 
     def panic_pair(players)

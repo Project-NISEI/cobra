@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Nrdb
   class Oauth
-    def self.auth_uri(host)
-      URI("https://netrunnerdb.com/oauth/v2/auth").tap do |uri|
+    def self.auth_uri(_host)
+      URI('https://netrunnerdb.com/oauth/v2/auth').tap do |uri|
         uri.query = {
           client_id: Rails.configuration.nrdb[:client_id],
           redirect_uri: Rails.configuration.nrdb[:redirect_uri],
@@ -17,13 +19,13 @@ module Nrdb
     end
 
     def self.grant_token_uri(code)
-      URI("https://netrunnerdb.com/oauth/v2/token").tap do |uri|
+      URI('https://netrunnerdb.com/oauth/v2/token').tap do |uri|
         uri.query = {
           client_id: Rails.configuration.nrdb[:client_id],
           client_secret: Rails.configuration.nrdb[:client_secret],
           redirect_uri: Rails.configuration.nrdb[:redirect_uri],
           grant_type: :authorization_code,
-          code: code
+          code:
         }.to_query
       end.to_s
     end

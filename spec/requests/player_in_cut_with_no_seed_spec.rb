@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'a completed top cut with a player with no seed' do
   let(:tournament) { create(:tournament) }
 
@@ -38,9 +40,9 @@ RSpec.describe 'a completed top cut with a player with no seed' do
     set_round_score1_and_complete 1, 6
     tournament.cut_to!(:double_elim, 4)
     tournament.pair_new_round!
-    cut_round_1 = round_number(1)
-    @unseeded = cut_round_1.unpaired_players.first
-    set_table_player1(cut_round_1, 1, @unseeded)
+    cut_round1 = round_number(1)
+    @unseeded = cut_round1.unpaired_players.first
+    set_table_player1(cut_round1, 1, @unseeded)
     set_round_score1_and_pair_new 1, 3
     set_round_score1_and_pair_new 2, 3
     set_round_score1_and_pair_new 3, 3
@@ -76,15 +78,15 @@ RSpec.describe 'a completed top cut with a player with no seed' do
 
   def set_round_score1_and_complete(round_number, score1)
     round = round_number(round_number)
-    round.pairings.each { |pairing| pairing.update({ score1: score1, score2: 0 }) }
+    round.pairings.each { |pairing| pairing.update({ score1:, score2: 0 }) }
     round.update(completed: true)
   end
 
   def set_table_player1(round, table_number, player)
-    delete_pairing = round.pairings.find_by(table_number: table_number)
-    player_2 = delete_pairing.player2
+    delete_pairing = round.pairings.find_by(table_number:)
+    player2 = delete_pairing.player2
     side = delete_pairing.side
     delete_pairing.destroy
-    round.pairings.create(player1: player, player2: player_2, table_number: 1, side: side)
+    round.pairings.create(player1: player, player2:, table_number: 1, side:)
   end
 end
