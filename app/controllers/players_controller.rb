@@ -41,7 +41,7 @@ class PlayersController < ApplicationController
     end
 
     params = player_params
-    params[:user_id] = current_user.id unless is_organiser_view
+    params[:user_id] = current_user.id unless organiser_view?
 
     player = @tournament.players.create(params.except(:corp_deck, :runner_deck))
     @tournament.current_stage.players << player unless @tournament.current_stage.nil?
@@ -62,7 +62,7 @@ class PlayersController < ApplicationController
   def update
     authorize @player
 
-    if is_organiser_view
+    if organiser_view?
       if params.require(:player)[:registration_view]
         redirect_to registration_tournament_player_path(@tournament, @player)
       else
@@ -139,7 +139,8 @@ class PlayersController < ApplicationController
         {
           format: stage.format,
           rounds_complete: stage.rounds.select(&:completed?).count,
-          any_decks_viewable: stage.decks_visible_to(current_user) || double_elim&.decks_visible_to(current_user) ? true : false,
+          any_decks_viewable: stage.decks_visible_to(current_user) ||
+            (double_elim&.decks_visible_to(current_user) ? true : false),
           standings: render_standings_for_stage(stage)
         }
       end
@@ -191,7 +192,7 @@ class PlayersController < ApplicationController
   def render_player_list_for_standings(stage)
     stage.players.sort.each_with_index.map do |player, i|
       {
-        player: standings_player(player, false),
+        player: standings_player(player, show_ids: false),
         policy: standings_policy(player),
         position: i + 1,
         points: 0,
@@ -204,7 +205,7 @@ class PlayersController < ApplicationController
     end
   end
 
-  def standings_player(player, show_ids = true)
+  def standings_player(player, show_ids: true)
     return nil unless player
 
     {
@@ -294,7 +295,7 @@ class PlayersController < ApplicationController
                   :first_round_bye, :manual_seed, :include_in_stream)
   end
 
-  def is_organiser_view
+  def organiser_view?
     params.require(:player)[:organiser_view] && @tournament.user_id == current_user.id
   end
 

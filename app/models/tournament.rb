@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class Tournament < ApplicationRecord
-  has_many :players, -> { order(:id) }, dependent: :destroy
+  has_many :players, -> { order(:id) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   belongs_to :user
-  has_many :stages, -> { order(:number) }, dependent: :destroy
+  has_many :stages, -> { order(:number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   has_many :rounds, through: :stages
 
   enum stage: {
@@ -32,7 +32,7 @@ class Tournament < ApplicationRecord
   delegate :pair_new_round!, to: :current_stage
 
   validates :name, :slug, presence: true
-  validates :slug, uniqueness: true
+  validates :slug, uniqueness: true # rubocop:disable Rails/UniqueValidationWithoutIndex
 
   before_validation :generate_slug, on: :create, unless: :slug
   before_create :default_date, unless: :date

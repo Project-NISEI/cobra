@@ -6,7 +6,7 @@ class Player < ApplicationRecord
   belongs_to :tournament
   belongs_to :user, optional: true
   belongs_to :previous, class_name: 'Player', optional: true
-  has_one :next, class_name: 'Player', foreign_key: :previous_id
+  has_one :next, class_name: 'Player', foreign_key: :previous_id # rubocop:disable Rails/InverseOf
   belongs_to :corp_identity_ref, class_name: 'Identity', optional: true
   belongs_to :runner_identity_ref, class_name: 'Identity', optional: true
   has_many :registrations, dependent: :destroy

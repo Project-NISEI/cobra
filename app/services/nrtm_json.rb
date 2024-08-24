@@ -8,6 +8,8 @@ class NrtmJson
   end
 
   def data(tournament_url)
+    # rubocop:disable Naming/VariableName
+    # preliminaryRounds must be named in camelCase to match the expected NRTM format.
     preliminaryRounds = 0
     players = []
     if swiss_stage
@@ -51,6 +53,7 @@ class NrtmJson
         { rel: 'uploadedfrom', href: tournament_url }
       ]
     }
+    # rubocop:enable Naming/VariableName
   end
 
   private
