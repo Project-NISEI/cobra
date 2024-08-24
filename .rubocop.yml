@@ -25,13 +25,31 @@ Rails/BulkChangeTable:
   Enabled: false
 Rails/HasManyOrHasOneDependent:
   Enabled: false
+RSpec/AnyInstance:
+  Enabled: false
+RSpec/ContextWording:
+  Enabled: false
+RSpec/DescribeClass:
+  Enabled: false
 RSpec/ExampleLength:
   Enabled: false
 RSpec/ExampleWording:
   Enabled: false
 RSpec/FilePath:
   Enabled: false
+RSpec/IndexedLet:
+  Enabled: false
+RSpec/InstanceVariable:
+  Enabled: false
+RSpec/LetSetup:
+  Enabled: false
 RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+RSpec/NestedGroups:
+  Enabled: false
+RSpec/SpecFilePathSuffix:
   Enabled: false
 Style/Documentation:
   Enabled: false
