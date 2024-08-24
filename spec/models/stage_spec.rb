@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 RSpec.describe Stage do
   let(:tournament) { create(:tournament) }
-  let(:stage) { create(:stage, tournament: tournament) }
+  let(:stage) { create(:stage, tournament:) }
 
   describe '#pair_new_round!' do
     it 'creates new round with pairings' do
@@ -19,7 +21,7 @@ RSpec.describe Stage do
       end
 
       it 'adds to previous highest' do
-        round = create(:round, stage: stage, number: 4)
+        create(:round, stage:, number: 4)
 
         expect(stage.pair_new_round!.number).to eq(5)
       end
@@ -27,7 +29,7 @@ RSpec.describe Stage do
   end
 
   describe '#standings' do
-    let(:standings) { instance_double('Standings') }
+    let(:standings) { instance_double(Standings) }
 
     before do
       allow(Standings).to receive(:new).and_return(standings)
@@ -40,8 +42,8 @@ RSpec.describe Stage do
   end
 
   describe '#players' do
-    let(:player1) { create(:player, tournament: tournament, skip_registration: true) }
-    let(:player2) { create(:player, tournament: tournament, skip_registration: true) }
+    let(:player1) { create(:player, tournament:, skip_registration: true) }
+    let(:player2) { create(:player, tournament:, skip_registration: true) }
 
     before do
       stage.players << player1
@@ -56,8 +58,8 @@ RSpec.describe Stage do
   end
 
   describe '#eligible_pairings' do
-    let(:round1) { create(:round, stage: stage, completed: true) }
-    let(:round2) { create(:round, stage: stage, completed: false) }
+    let(:round1) { create(:round, stage:, completed: true) }
+    let(:round2) { create(:round, stage:, completed: false) }
     let!(:pairing1) { create(:pairing, round: round1) }
     let!(:pairing2) { create(:pairing, round: round2) }
 
@@ -67,10 +69,10 @@ RSpec.describe Stage do
   end
 
   describe '#seed' do
-    let(:player1) { create(:player, tournament: tournament, skip_registration: true) }
-    let(:player2) { create(:player, tournament: tournament, skip_registration: true) }
-    let!(:reg1) { create(:registration, player: player1, stage: stage, seed: 1) }
-    let!(:reg2) { create(:registration, player: player2, stage: stage, seed: 2) }
+    let(:player1) { create(:player, tournament:, skip_registration: true) }
+    let(:player2) { create(:player, tournament:, skip_registration: true) }
+    let!(:reg1) { create(:registration, player: player1, stage:, seed: 1) }
+    let!(:reg2) { create(:registration, player: player2, stage:, seed: 2) }
 
     it 'returns player for correct seeded registration' do
       aggregate_failures do
@@ -80,7 +82,7 @@ RSpec.describe Stage do
     end
 
     it 'handles invalid seed' do
-      expect(stage.seed(99)).to eq(nil)
+      expect(stage.seed(99)).to be_nil
     end
   end
 
@@ -105,8 +107,8 @@ RSpec.describe Stage do
   describe '#cache_standings!' do
     let(:jack) { create(:player, name: 'Jack') }
     let(:jill) { create(:player, name: 'Jill') }
-    let(:round1) { create(:round, stage: stage, completed: true) }
-    let(:round2) { create(:round, stage: stage, completed: false) }
+    let(:round1) { create(:round, stage:, completed: true) }
+    let(:round2) { create(:round, stage:, completed: false) }
 
     it 'generates standing row entries' do
       stage.players << jack
@@ -116,7 +118,7 @@ RSpec.describe Stage do
 
       expect do
         stage.cache_standings!
-      end.to change { StandingRow.count }.by(2)
+      end.to change(StandingRow, :count).by(2)
 
       expect(stage.standing_rows.map(&:position)).to eq([1, 2])
       expect(stage.standing_rows.map(&:name)).to eq(%w[Jack Jill])

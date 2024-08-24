@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 RSpec.describe TournamentsController do
   let(:tournament) { create(:tournament, name: 'My Tournament') }
 
   describe '#save_json' do
     before do
       allow(NrtmJson).to receive(:new).with(tournament).and_return(
-        double(:json, data: { some: :data })
+        instance_double(NrtmJson, data: { some: :data })
       )
     end
 
@@ -14,12 +16,12 @@ RSpec.describe TournamentsController do
       expect(response.headers['Content-Disposition']).to eq(
         'attachment; filename="my tournament.json"; filename*=UTF-8\'\'my%20tournament.json'
       )
-      expect(response.body).to eq("{\"some\":\"data\"}")
+      expect(response.body).to eq('{"some":"data"}')
     end
   end
 
   describe '#cut' do
-    let(:cut) { create(:stage, tournament: tournament) }
+    let(:cut) { create(:stage, tournament:) }
 
     before do
       allow(Tournament).to receive(:find)

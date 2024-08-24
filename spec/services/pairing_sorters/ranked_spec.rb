@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PairingSorters::Ranked do
   let(:player1) { create(:player) }
   let(:player2) { create(:player) }
@@ -5,7 +7,7 @@ RSpec.describe PairingSorters::Ranked do
   let(:player4) { create(:player) }
   let(:player5) { create(:player) }
   let(:player6) { create(:player) }
-  let(:pairing1) { create(:pairing, player1: player1, player2: player2) }
+  let(:pairing1) { create(:pairing, player1:, player2:) }
   let(:pairing2) { create(:pairing, player1: player3, player2: player4) }
   let(:pairing3) { create(:pairing, player1: player5, player2: player6) }
   let(:pairings) { [pairing1, pairing2, pairing3] }

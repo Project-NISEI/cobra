@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 RSpec.describe 'registering a deck from NetrunnerDB' do
   let(:organiser) { create(:user, nrdb_access_token: 'a_token') }
   let(:player) { create(:user, nrdb_access_token: 'a_token') }
+
   before do
     Flipper.enable :nrdb_deck_registration
     sign_in organiser
@@ -15,21 +18,21 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
     expect do
       register_as_player
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(registration_tournament_path(Tournament.last))
+    expect(page).to have_current_path(registration_tournament_path(Tournament.last), ignore_query: true)
   end
 
   it 'TO registers themselves as a player' do
     expect do
       register_as_organizer
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(registration_tournament_path(Tournament.last))
+    expect(page).to have_current_path(registration_tournament_path(Tournament.last), ignore_query: true)
   end
 
   it 'creates a player as the TO' do
     expect do
       create_player_as_organizer
     end.to change(Player, :count).by(1)
-    expect(page.current_path).to eq(tournament_players_path(Tournament.last))
+    expect(page).to have_current_path(tournament_players_path(Tournament.last), ignore_query: true)
   end
 
   it 'displays a deck in the list' do
@@ -106,8 +109,8 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       visit registration_tournament_path(Tournament.last)
       expect(page).not_to have_selector '#nrdb_decks'
       expect(page).to have_selector '#display_decks'
-      expect(find("#player_corp_deck", visible: false).value).to match /^\{.+}$/
-      expect(find("#player_runner_deck", visible: false).value).to match /^\{.+}$/
+      expect(find('#player_corp_deck', visible: false).value).to match(/^\{.+}$/)
+      expect(find('#player_runner_deck', visible: false).value).to match(/^\{.+}$/)
     end
   end
 
@@ -158,5 +161,4 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       block.call
     end
   end
-
 end

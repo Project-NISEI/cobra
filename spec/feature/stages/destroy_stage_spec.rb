@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'destroying a stage' do
   let(:tournament) { create(:tournament) }
 

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 RSpec.describe 'reinstating players' do
   let(:tournament) { create(:tournament) }
-  let!(:player) { create(:player, tournament: tournament, active: false) }
+  let!(:player) { create(:player, tournament:, active: false) }
 
   before do
     sign_in tournament.user
@@ -12,12 +14,12 @@ RSpec.describe 'reinstating players' do
       click_link 'Reinstate'
     end.not_to change(tournament.players, :count)
 
-    expect(player.reload.active).to eq(true)
+    expect(player.reload.active).to be(true)
   end
 
   it 'redirects to players page' do
     click_link 'Reinstate'
 
-    expect(current_path).to eq(tournament_players_path(tournament))
+    expect(page).to have_current_path(tournament_players_path(tournament), ignore_query: true)
   end
 end

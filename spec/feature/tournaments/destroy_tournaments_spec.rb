@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 RSpec.describe 'destroying tournaments' do
   let(:tournament) { create(:tournament) }
   let(:round) { create(:round, stage: tournament.current_stage) }
 
   before do
-    create(:player, tournament: tournament)
-    create(:player, tournament: tournament)
+    create(:player, tournament:)
+    create(:player, tournament:)
 
     round.pair!
 

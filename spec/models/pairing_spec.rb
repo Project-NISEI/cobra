@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Pairing do
   let(:jack) { create(:player) }
   let(:jill) { create(:player) }
@@ -11,7 +13,7 @@ RSpec.describe Pairing do
 
   describe 'nil players' do
     let(:pairing) { create(:pairing, player1: nil) }
-    let(:nil_player) { double('NilPlayer') }
+    let(:nil_player) { instance_double(NilPlayer) }
 
     before do
       allow(NilPlayer).to receive(:new).and_return(nil_player)
@@ -34,13 +36,13 @@ RSpec.describe Pairing do
   describe '#reported?' do
     let(:pairing) { create(:pairing, score1: nil, score2: nil) }
 
-    context 'no score reported' do
+    context 'when no score reported' do
       it 'returns false' do
-        expect(pairing.reported?).to eq(false)
+        expect(pairing.reported?).to be(false)
       end
     end
 
-    context 'score reported' do
+    context 'when score reported' do
       before do
         pairing.update(
           score1: 6,
@@ -49,7 +51,7 @@ RSpec.describe Pairing do
       end
 
       it 'returns true' do
-        expect(pairing.reported?).to eq(true)
+        expect(pairing.reported?).to be(true)
       end
     end
   end
@@ -59,41 +61,41 @@ RSpec.describe Pairing do
       pairing.update(score1: 4, score2: 1)
     end
 
-    context 'player1' do
+    context 'when player1' do
       it 'returns correct score' do
         expect(pairing.score_for(jack)).to eq(4)
       end
     end
 
-    context 'player2' do
+    context 'when player2' do
       it 'returns correct score' do
         expect(pairing.score_for(jill)).to eq(1)
       end
     end
 
-    context 'unrelated player' do
+    context 'when unrelated player' do
       it 'returns nil' do
-        expect(pairing.score_for(create(:player))).to eq(nil)
+        expect(pairing.score_for(create(:player))).to be_nil
       end
     end
   end
 
   describe '#opponent_for' do
-    context 'player1' do
+    context 'when player1' do
       it 'returns player 2' do
         expect(pairing.opponent_for(jack)).to eq(jill)
       end
     end
 
-    context 'player2' do
+    context 'when player2' do
       it 'returns player 1' do
         expect(pairing.opponent_for(jill)).to eq(jack)
       end
     end
 
-    context 'unrelated player' do
+    context 'when unrelated player' do
       it 'returns nil' do
-        expect(pairing.opponent_for(create(:player))).to eq(nil)
+        expect(pairing.opponent_for(create(:player))).to be_nil
       end
     end
   end
@@ -130,7 +132,7 @@ RSpec.describe Pairing do
     it 'handles undeclared' do
       pairing.side = nil
 
-      expect(pairing.player1_side).to eq(nil)
+      expect(pairing.player1_side).to be_nil
     end
   end
 
@@ -150,12 +152,12 @@ RSpec.describe Pairing do
     it 'handles undeclared' do
       pairing.side = nil
 
-      expect(pairing.player2_side).to eq(nil)
+      expect(pairing.player2_side).to be_nil
     end
   end
 
   describe '#cache_standings!' do
-    let(:pairing) { create(:pairing, round: round) }
+    let(:pairing) { create(:pairing, round:) }
 
     before do
       allow(pairing.stage).to receive(:cache_standings!)

@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 RSpec.describe PairingSorters::Random do
   let(:pairing1) { create(:pairing) }
   let(:pairing2) { create(:pairing) }
   let(:pairing3) { create(:pairing) }
   let(:pairings) { [pairing1, pairing2, pairing3] }
 
-  let(:shuffled) { double('shuffled') }
+  let(:shuffled) { instance_double(described_class) }
 
   before do
     allow(pairings).to receive(:shuffle).and_return(shuffled)

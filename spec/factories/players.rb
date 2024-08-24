@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :player do
     name { Faker::Name.name }
@@ -11,12 +13,14 @@ FactoryBot.define do
     end
 
     after(:create) do |player, evaluator|
-      create(
-        :registration,
-        player: player,
-        stage: player.tournament.current_stage,
-        seed: evaluator.seed
-      ) unless evaluator.skip_registration
+      unless evaluator.skip_registration
+        create(
+          :registration,
+          player:,
+          stage: player.tournament.current_stage,
+          seed: evaluator.seed
+        )
+      end
     end
   end
 end

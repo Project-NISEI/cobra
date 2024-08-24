@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 RSpec.describe 'load testing' do
-  ROUNDS = 15
-  PLAYERS = 150
+  ROUNDS = 15 # rubocop:disable Lint/ConstantDefinitionInBlock,RSpec/LeakyConstantDeclaration
+  PLAYERS = 150 # rubocop:disable Lint/ConstantDefinitionInBlock,RSpec/LeakyConstantDeclaration
 
   let(:tournament) { create(:tournament, swiss_format: :single_sided) }
 
   def timer
-    (Time.now-(@start || Time.now)).seconds.tap do
-      @start = Time.now
+    (Time.zone.now - (@start || Time.zone.now)).seconds.tap do
+      @start = Time.zone.now
     end
   end
 
@@ -14,13 +16,13 @@ RSpec.describe 'load testing' do
     timer
     sign_in tournament.user
     puts 'Creating players'
-    PLAYERS.times { create(:player, tournament: tournament) }
+    PLAYERS.times { create(:player, tournament:) }
     expect(tournament.players.count).to equal(PLAYERS)
     puts "\tDone. Took #{timer} seconds"
 
     active_players = PLAYERS
     ROUNDS.times do |i|
-      puts "Round #{i+1}"
+      puts "Round #{i + 1}"
 
       puts "\tPairing #{tournament.players.active.count} players"
       round = tournament.pair_new_round!
@@ -51,7 +53,7 @@ RSpec.describe 'load testing' do
 
     # tournament.players.each do |player|
     #   if player.opponents.uniq.length != player.pairings.count
-    #     puts "Player #{player.name} (#{player.active? ? :active : :dropped}) had #{player.opponents.uniq.length}/#{player.pairings.count} unique opponents:"
+    #     puts "Player #{player.name} (#{player.active? ? :active : :dropped}) had #{player.opponents.uniq.length}/#{player.pairings.count} unique opponents:" # rubocop:disable Layout/LineLength
     #     player.pairings.each do |pairing|
     #       opp = pairing.opponent_for(player)
     #       puts "\t#{pairing.round.number}: #{opp.name}"

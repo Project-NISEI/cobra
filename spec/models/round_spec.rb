@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 RSpec.describe Round do
   let(:round) { create(:round) }
-  let(:pairer) { double('Pairer', pair!: true) }
+  let(:pairer) { instance_double(Pairer, pair!: true) }
 
   before do
     allow(Pairer).to receive(:new).and_return(pairer)
@@ -8,9 +10,9 @@ RSpec.describe Round do
 
   describe 'ordering' do
     before do
-      create(:pairing, round: round, table_number: 2)
-      create(:pairing, round: round, table_number: 1)
-      create(:pairing, round: round, table_number: 3)
+      create(:pairing, round:, table_number: 2)
+      create(:pairing, round:, table_number: 1)
+      create(:pairing, round:, table_number: 3)
     end
 
     it 'returns pairings by table' do
@@ -28,9 +30,9 @@ RSpec.describe Round do
   end
 
   describe '#unpaired_players' do
-    let!(:snap) { create(:player, tournament: tournament) }
-    let!(:crackle) { create(:player, tournament: tournament) }
-    let!(:pop) { create(:player, tournament: tournament) }
+    let!(:snap) { create(:player, tournament:) }
+    let!(:crackle) { create(:player, tournament:) }
+    let!(:pop) { create(:player, tournament:) }
     let(:tournament) { round.tournament }
 
     before do
@@ -65,85 +67,71 @@ RSpec.describe Round do
     let(:round) { create(:round) }
 
     context 'with some pairings' do
-      let!(:pairing1) { create(:pairing, round: round) }
-      let!(:pairing2) { create(:pairing, round: round) }
-      let!(:pairing3) { create(:pairing, round: round) }
-      let!(:pairing4) { create(:pairing, round: round) }
-      let!(:pairing5) { create(:pairing, round: round) }
-      let!(:pairing6) { create(:pairing, round: round) }
-      let!(:pairing7) { create(:pairing, round: round) }
-      let!(:pairing8) { create(:pairing, round: round) }
-      let!(:pairing9) { create(:pairing, round: round) }
-      let!(:pairing10) { create(:pairing, round: round) }
-      let!(:pairing11) { create(:pairing, round: round) }
-      let!(:pairing12) { create(:pairing, round: round) }
-      let!(:pairing13) { create(:pairing, round: round) }
+      let!(:pairing1) { create(:pairing, round:) }
+      let!(:pairing2) { create(:pairing, round:) }
+      let!(:pairing3) { create(:pairing, round:) }
+      let!(:pairing4) { create(:pairing, round:) }
+      let!(:pairing5) { create(:pairing, round:) }
+      let!(:pairing6) { create(:pairing, round:) }
+      let!(:pairing7) { create(:pairing, round:) }
+      let!(:pairing8) { create(:pairing, round:) }
+      let!(:pairing9) { create(:pairing, round:) }
+      let!(:pairing10) { create(:pairing, round:) }
+      let!(:pairing11) { create(:pairing, round:) }
+      let!(:pairing12) { create(:pairing, round:) }
+      let!(:pairing13) { create(:pairing, round:) }
 
       it 'returns sorted pairings' do
         expect(round.collated_pairings)
-          .to match_array(
-                [
-                  pairing1, pairing5, pairing9, pairing13,
-                  pairing2, pairing6, pairing10, nil,
-                  pairing3, pairing7, pairing11, nil,
-                  pairing4, pairing8, pairing12, nil
-                ])
+          .to contain_exactly(pairing1, pairing5, pairing9, pairing13, pairing2, pairing6, pairing10, nil, pairing3,
+                              pairing7, pairing11, nil, pairing4, pairing8, pairing12, nil)
       end
     end
 
     context 'with few pairings' do
-      let!(:pairing1) { create(:pairing, round: round) }
-      let!(:pairing2) { create(:pairing, round: round) }
+      let!(:pairing1) { create(:pairing, round:) }
+      let!(:pairing2) { create(:pairing, round:) }
 
       it 'returns sorted pairings' do
         expect(round.collated_pairings)
-          .to match_array(
-                [
-                  pairing1, pairing2
-                ])
+          .to contain_exactly(pairing1, pairing2)
       end
     end
 
     context 'with many pairings' do
-      let!(:pairing1) { create(:pairing, round: round) }
-      let!(:pairing2) { create(:pairing, round: round) }
-      let!(:pairing3) { create(:pairing, round: round) }
-      let!(:pairing4) { create(:pairing, round: round) }
-      let!(:pairing5) { create(:pairing, round: round) }
-      let!(:pairing6) { create(:pairing, round: round) }
-      let!(:pairing7) { create(:pairing, round: round) }
-      let!(:pairing8) { create(:pairing, round: round) }
-      let!(:pairing9) { create(:pairing, round: round) }
-      let!(:pairing10) { create(:pairing, round: round) }
-      let!(:pairing11) { create(:pairing, round: round) }
-      let!(:pairing12) { create(:pairing, round: round) }
-      let!(:pairing13) { create(:pairing, round: round) }
-      let!(:pairing14) { create(:pairing, round: round) }
-      let!(:pairing15) { create(:pairing, round: round) }
-      let!(:pairing16) { create(:pairing, round: round) }
-      let!(:pairing17) { create(:pairing, round: round) }
-      let!(:pairing18) { create(:pairing, round: round) }
-      let!(:pairing19) { create(:pairing, round: round) }
-      let!(:pairing20) { create(:pairing, round: round) }
-      let!(:pairing21) { create(:pairing, round: round) }
-      let!(:pairing22) { create(:pairing, round: round) }
-      let!(:pairing23) { create(:pairing, round: round) }
-      let!(:pairing24) { create(:pairing, round: round) }
-      let!(:pairing25) { create(:pairing, round: round) }
-      let!(:pairing26) { create(:pairing, round: round) }
+      let!(:pairing1) { create(:pairing, round:) }
+      let!(:pairing2) { create(:pairing, round:) }
+      let!(:pairing3) { create(:pairing, round:) }
+      let!(:pairing4) { create(:pairing, round:) }
+      let!(:pairing5) { create(:pairing, round:) }
+      let!(:pairing6) { create(:pairing, round:) }
+      let!(:pairing7) { create(:pairing, round:) }
+      let!(:pairing8) { create(:pairing, round:) }
+      let!(:pairing9) { create(:pairing, round:) }
+      let!(:pairing10) { create(:pairing, round:) }
+      let!(:pairing11) { create(:pairing, round:) }
+      let!(:pairing12) { create(:pairing, round:) }
+      let!(:pairing13) { create(:pairing, round:) }
+      let!(:pairing14) { create(:pairing, round:) }
+      let!(:pairing15) { create(:pairing, round:) }
+      let!(:pairing16) { create(:pairing, round:) }
+      let!(:pairing17) { create(:pairing, round:) }
+      let!(:pairing18) { create(:pairing, round:) }
+      let!(:pairing19) { create(:pairing, round:) }
+      let!(:pairing20) { create(:pairing, round:) }
+      let!(:pairing21) { create(:pairing, round:) }
+      let!(:pairing22) { create(:pairing, round:) }
+      let!(:pairing23) { create(:pairing, round:) }
+      let!(:pairing24) { create(:pairing, round:) }
+      let!(:pairing25) { create(:pairing, round:) }
+      let!(:pairing26) { create(:pairing, round:) }
 
       it 'returns sorted pairings' do
         expect(round.collated_pairings)
-          .to match_array(
-                [
-                  pairing1, pairing8, pairing15, pairing22,
-                  pairing2, pairing9, pairing16, pairing23,
-                  pairing3, pairing10, pairing17, pairing24,
-                  pairing4, pairing11, pairing18, pairing25,
-                  pairing5, pairing12, pairing19, pairing26,
-                  pairing6, pairing13, pairing20, nil,
-                  pairing7, pairing14, pairing21, nil,
-                ])
+          .to contain_exactly(pairing1, pairing8, pairing15, pairing22, pairing2, pairing9, pairing16, pairing23,
+                              pairing3, pairing10, pairing17, pairing24, pairing4, pairing11, pairing18, pairing25,
+                              pairing5, pairing12, pairing19, pairing26, pairing6, pairing13, pairing20,
+                              nil, pairing7, pairing14, pairing21, nil)
       end
     end
   end

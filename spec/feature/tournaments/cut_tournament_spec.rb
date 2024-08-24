@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'cutting tournament' do
   let(:tournament) do
     create(:tournament, player_count: 10)

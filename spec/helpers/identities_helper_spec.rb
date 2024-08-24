@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 RSpec.describe IdentitiesHelper do
   describe '#autocomplete_hash' do
     let(:id) do
       create(:identity,
-        name: 'Something hard to type',
-        autocomplete: 'Something easy'
-      )
+             name: 'Something hard to type',
+             autocomplete: 'Something easy')
     end
 
     it 'returns has for autocomplete' do

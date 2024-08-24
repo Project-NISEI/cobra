@@ -1,22 +1,23 @@
+# frozen_string_literal: true
+
 RSpec.describe SosCalculator do
   let(:tournament) { create(:tournament) }
   let(:stage) { tournament.current_stage }
-  let(:round) { create(:round, stage: stage, completed: true) }
-  let!(:snap) { create(:player, tournament: tournament) }
-  let!(:crackle) { create(:player, tournament: tournament) }
-  let!(:pop) { create(:player, tournament: tournament) }
-  let!(:other) { create(:player, tournament: tournament) }
+  let(:round) { create(:round, stage:, completed: true) }
+  let!(:snap) { create(:player, tournament:) }
+  let!(:crackle) { create(:player, tournament:) }
+  let!(:pop) { create(:player, tournament:) }
+  let!(:other) { create(:player, tournament:) }
   let(:results) { described_class.calculate!(stage) }
-  let(:standing) { results.find{ |p| p.player == snap }}
+  let(:standing) { results.find { |p| p.player == snap } }
 
   context 'with opponents' do
-
     before do
-      create(:pairing, player1: snap, player2: crackle, score1: 6, score2: 0, round: round)
-      create(:pairing, player1: pop, player2: other, score1: 6, score2: 0, round: round)
+      create(:pairing, player1: snap, player2: crackle, score1: 6, score2: 0, round:)
+      create(:pairing, player1: pop, player2: other, score1: 6, score2: 0, round:)
 
-      create(:pairing, player1: snap, player2: pop, score1: 6, score2: 0, round: round)
-      create(:pairing, player1: crackle, player2: other, score1: 3, score2: 3, round: round)
+      create(:pairing, player1: snap, player2: pop, score1: 6, score2: 0, round:)
+      create(:pairing, player1: crackle, player2: other, score1: 3, score2: 3, round:)
     end
 
     it 'calculates sos' do
@@ -30,8 +31,8 @@ RSpec.describe SosCalculator do
 
   describe 'points' do
     before do
-      create(:pairing, player1: snap, score1: 5, round: round)
-      create(:pairing, player1: snap, score1: 2, player2: nil, round: round)
+      create(:pairing, player1: snap, score1: 5, round:)
+      create(:pairing, player1: snap, score1: 2, player2: nil, round:)
     end
 
     it 'returns total of all points from pairings including byes' do
@@ -43,10 +44,10 @@ RSpec.describe SosCalculator do
     before do
       other = create(:player)
       # player played two games, including against opponent 'other'
-      create(:pairing, player1: snap, player2: other, score1: 3, score2: 2, round: round)
-      create(:pairing, player1: snap, score1: 1, score2: 3, round: round)
+      create(:pairing, player1: snap, player2: other, score1: 3, score2: 2, round:)
+      create(:pairing, player1: snap, score1: 1, score2: 3, round:)
       # other played one other eligible game
-      create(:pairing, player2: other, score1: 0, score2: 5, round: round)
+      create(:pairing, player2: other, score1: 0, score2: 5, round:)
     end
 
     it 'calculates sos' do
@@ -62,7 +63,7 @@ RSpec.describe SosCalculator do
 
   context 'player with only byes' do
     before do
-      create(:pairing, player1: snap, player2: nil, score1: 6, score2: 0, round: round)
+      create(:pairing, player1: snap, player2: nil, score1: 6, score2: 0, round:)
     end
 
     it 'calculates standing' do
@@ -83,10 +84,10 @@ RSpec.describe SosCalculator do
     let(:results) { described_class.calculate!(stage) }
 
     before do
-      create(:pairing, player1: dan, player2: johno, score1: 3, score2: 3, round: round)
-      create(:pairing, player1: laurie, player2: nil, score1: 6, score2: 0, round: round)
-      create(:pairing, player1: laurie, player2: johno, score1: 6, score2: 0, round: round)
-      create(:pairing, player1: dan, player2: nil, score1: 6, score2: 0, round: round)
+      create(:pairing, player1: dan, player2: johno, score1: 3, score2: 3, round:)
+      create(:pairing, player1: laurie, player2: nil, score1: 6, score2: 0, round:)
+      create(:pairing, player1: laurie, player2: johno, score1: 6, score2: 0, round:)
+      create(:pairing, player1: dan, player2: nil, score1: 6, score2: 0, round:)
     end
 
     it 'calculates standings' do
@@ -114,8 +115,8 @@ RSpec.describe SosCalculator do
     let(:beta) { create(:player, tournament: weighted) }
     let(:gamma) { create(:player, tournament: weighted) }
     let(:delta) { create(:player, tournament: weighted) }
-    let(:round1) { create(:round, stage: stage, weight: 1.0, completed: true) }
-    let(:round2) { create(:round, stage: stage, weight: 0.5, completed: true) }
+    let(:round1) { create(:round, stage:, weight: 1.0, completed: true) }
+    let(:round2) { create(:round, stage:, weight: 0.5, completed: true) }
     let(:results) { described_class.calculate!(stage) }
 
     before do
@@ -149,8 +150,8 @@ RSpec.describe SosCalculator do
 
   describe 'corp and runner points' do
     before do
-      create(:pairing, player1: snap, player2: crackle, score1_corp: 3, score1_runner: 3, round: round)
-      create(:pairing, player1: snap, player2: pop, score1_corp: 1, score2_corp: 3, round: round)
+      create(:pairing, player1: snap, player2: crackle, score1_corp: 3, score1_runner: 3, round:)
+      create(:pairing, player1: snap, player2: pop, score1_corp: 1, score2_corp: 3, round:)
     end
 
     it 'calculates side points' do

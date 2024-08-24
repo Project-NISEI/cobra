@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 RSpec.describe 'show player meeting' do
   let(:tournament) { create(:tournament) }
 
   it 'displays meeting pairings' do
-    create(:player, name: 'Jack', tournament: tournament)
-    create(:player, name: 'Jill', tournament: tournament)
-    create(:player, name: 'Snap', tournament: tournament)
-    create(:player, name: 'Crackle', tournament: tournament)
-    create(:player, name: 'Pop', tournament: tournament)
+    create(:player, name: 'Jack', tournament:)
+    create(:player, name: 'Jill', tournament:)
+    create(:player, name: 'Snap', tournament:)
+    create(:player, name: 'Crackle', tournament:)
+    create(:player, name: 'Pop', tournament:)
 
     sign_in tournament.user
     visit tournament_players_path(tournament)
@@ -20,10 +22,10 @@ RSpec.describe 'show player meeting' do
   end
 
   it 'sorts player names correctly' do
-    create(:player, name: 'alan', tournament: tournament)
-    create(:player, name: 'Ben', tournament: tournament)
-    create(:player, name: 'callum', tournament: tournament)
-    create(:player, name: 'David', tournament: tournament)
+    create(:player, name: 'alan', tournament:)
+    create(:player, name: 'Ben', tournament:)
+    create(:player, name: 'callum', tournament:)
+    create(:player, name: 'David', tournament:)
 
     sign_in tournament.user
     visit tournament_players_path(tournament)
