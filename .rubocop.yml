@@ -9,6 +9,8 @@ Metrics/AbcSize:
   Enabled: false
 Metrics/BlockLength:
   Enabled: false
+Metrics/ClassLength:
+  Enabled: false
 Metrics/CyclomaticComplexity:
   Enabled: false
 Metrics/MethodLength:
@@ -28,4 +30,6 @@ RSpec/ExampleWording:
 RSpec/FilePath:
   Enabled: false
 RSpec/MultipleExpectations:
+  Enabled: false
+Style/Documentation:
   Enabled: false
