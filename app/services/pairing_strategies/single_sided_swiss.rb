@@ -35,7 +35,8 @@ module PairingStrategies
         end
 
         # return nil (no pairing possible) if players have already played twice
-        if cached_data[player1.id][:opponents].keys.include?(player2.id) && cached_data[player1.id][:opponents][player2.id].count >= 2
+        if cached_data[player1.id][:opponents].keys.include?(player2.id) &&
+           cached_data[player1.id][:opponents][player2.id].count >= 2
           next nil
         end
 
@@ -44,7 +45,8 @@ module PairingStrategies
           cached_data[player2.id][:side_bias]
         )
         # return nil (no pairing possible) if the sides would repeat the previous pairing
-        if preferred_side && cached_data[player1.id][:opponents][player2.id] && cached_data[player1.id][:opponents][player2.id].include?(preferred_side)
+        if preferred_side && cached_data[player1.id][:opponents][player2.id] &&
+           cached_data[player1.id][:opponents][player2.id].include?(preferred_side)
           next nil
         end
 

@@ -8,10 +8,10 @@ class NrtmJson
   end
 
   def data(tournament_url)
-    preliminary_rounds = 0
+    preliminaryRounds = 0
     players = []
     if swiss_stage
-      preliminary_rounds = swiss_stage.rounds.count
+      preliminaryRounds = swiss_stage.rounds.count
       players = swiss_stage.standings.each_with_index.map do |standing, i|
         {
           id: standing.player.id,
@@ -30,7 +30,7 @@ class NrtmJson
       name: tournament.name,
       date: tournament.date.to_fs(:db),
       cutToTop: cut_stage.players.count,
-      preliminary_rounds:,
+      preliminaryRounds:,
       tournamentOrganiser: {
         nrdbId: tournament.user.nrdb_id,
         nrdbUsername: tournament.user.nrdb_username

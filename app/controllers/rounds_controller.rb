@@ -174,7 +174,7 @@ class RoundsController < ApplicationController
   end
 
   def score_label(pairing)
-    return '-' if pairing.score1.zero? && pairing.score2.zero?
+    return '-' if pairing.score1 == 0 && pairing.score2 == 0 # rubocop:disable Style/NumericPredicate
 
     ws = winning_side(pairing)
 

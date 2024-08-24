@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AbrUpload
   attr_reader :tournament
 
@@ -16,7 +18,7 @@ class AbrUpload
 
   private
 
-  def send_data()
+  def send_data
     Faraday.new do |conn|
       conn.request :multipart
       conn.adapter :net_http
@@ -31,7 +33,7 @@ class AbrUpload
     "#{Rails.configuration.abr_host}/api/nrtm"
   end
 
-  def json(tournament, tournament_url)
+  def json(_tournament, _tournament_url)
     NrtmJson.new(@tournament).data(@tournament_url).to_json
   end
 end
