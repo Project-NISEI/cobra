@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddDeckUserId < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
+class AddDeckUserId < ActiveRecord::Migration[7.0]
   def change
     add_reference :decks, :user
     Deck.all.find_each do |deck|

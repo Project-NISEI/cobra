@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class JoinPlayerToIdentity < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
+class JoinPlayerToIdentity < ActiveRecord::Migration[7.0]
   def change
     add_reference :players, :corp_identity_ref, foreign_key: { to_table: :identities }
     add_reference :players, :runner_identity_ref, foreign_key: { to_table: :identities }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class RemoveDeviseFromUsers < ActiveRecord::Migration[5.0] # rubocop:disable Style/Documentation
+class RemoveDeviseFromUsers < ActiveRecord::Migration[5.0]
   def up
     remove_column :users, :email
     remove_column :users, :encrypted_password

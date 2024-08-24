@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddAbrCodeToTournaments < ActiveRecord::Migration[5.0] # rubocop:disable Style/Documentation
+class AddAbrCodeToTournaments < ActiveRecord::Migration[5.0]
   def change
     add_column :tournaments, :abr_code, :string
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ChangeFlipperGatesValueToText < ActiveRecord::Migration[7.0] # rubocop:disable Style/Documentation
+class ChangeFlipperGatesValueToText < ActiveRecord::Migration[7.0]
   def up
     # Ensure this incremental update migration is idempotent
     return unless connection.column_exists? :flipper_gates, :value, :string

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreatePlayers < ActiveRecord::Migration[5.0] # rubocop:disable Style/Documentation
+class CreatePlayers < ActiveRecord::Migration[5.0]
   def change
     create_table :players do |t| # rubocop:disable Rails/CreateTableWithTimestamps
       t.string :name
