@@ -97,9 +97,8 @@ jobs:
         run: bundle exec bundler-audit --update --ignore=CVE-2024-6531
       - name: Security audit application code
         run: bundle exec brakeman -q -w2
-      # TODO(plural): Uncomment when lint errors are clean and we want to block on them.
-      # - name: Lint Ruby files
-      #   run: bin/rubocop --parallel
+      - name: Lint Ruby files
+        run: bin/rubocop --parallel
 
   build_and_push:
     name: Build docker image
