@@ -41,5 +41,3 @@ if config.get_bool("configure_cobra"):
     pulumi.export("nisei_domain", config.get("nisei_domain", config.get("cobra_domain")))
     pulumi.export("nrdb_client", config.get("nrdb_client"))
     pulumi.export("nrdb_secret", config.get_secret("nrdb_secret"))
-    pulumi.export("nisei_nrdb_client", config.get("nisei_nrdb_client"))
-    pulumi.export("nisei_nrdb_secret", config.get_secret("nisei_nrdb_secret"))

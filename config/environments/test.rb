@@ -58,7 +58,12 @@ Rails.application.configure do
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 
+  config.abr_auth = 'ABRAUTH'
   config.abr_host = 'http://localhost:8000'
-  config.nrdb_api_host = 'http://localhost:9000'
-
+  config.nrdb = {
+    client_id: 'test_id',
+    client_secret: 'test_secret',
+    redirect_uri: 'http://localhost:3000/oauth/callback'
+  }
+  config.nrdb_api_host = 'https://api-preview.netrunnerdb.com'
 end
