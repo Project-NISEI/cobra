@@ -25,7 +25,6 @@ $ bundle
 - Set up config files
 ```
 $ cp config/database.example.yml config/database.yml
-$ cp config/secrets.example.yml config/secrets.yml
 ```
 - Set up database
 ```
@@ -94,7 +93,6 @@ end
 - Set up config files
 ```shell
 cat config/database.example.yml | sed s/localhost/db/ > config/database.yml
-cp config/secrets.example.yml config/secrets.yml
 echo "POSTGRES_PASSWORD=cobra" > .env
 echo "RAILS_ENV=development" >> .env
 ```
@@ -129,7 +127,6 @@ cd cobra
 - Set up config files
 ```shell
 cp config/database.example.yml config/database.yml
-cp config/secrets.example.yml config/secrets.yml
 echo "RAILS_ENV=production" > .env
 echo "COMPOSE_FILE_TYPE=prod" >> .env
 echo "POSTGRES_PASSWORD=some-good-password" >> .env
@@ -176,7 +173,7 @@ your GitHub to Pulumi and DigitalOcean. With a Pulumi stack set up as above, fol
    pulumi config set cobra:nrdb_secret --secret
    ```
    If you don't have client credentials, you can still deploy but you won't be able to log into Cobra.
-4. Set a Pulumi access token and a DigitalOcean token in GitHub repository secrets, PULUMI_ACCESS_TOKEN and 
+4. Set a Pulumi access token and a DigitalOcean token in GitHub repository secrets, PULUMI_ACCESS_TOKEN and
    DIGITALOCEAN_TOKEN. You can get these from the Pulumi and DigitalOcean websites, see their documentation.
 5. On your own fork of the GitHub repository, create a branch  named `deploy/stackname` matching the name of your stack.
 6. Commit the resulting `Pulumi.stackname.yaml` file to the branch. Push this to your fork on GitHub and watch the

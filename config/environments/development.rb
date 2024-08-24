@@ -53,7 +53,13 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.abr_host = 'https://alwaysberunning.net'
-  config.nrdb_api_host = 'http://localhost:9000'
+  config.abr_auth = 'ABRAUTH'
+  config.nrdb = {
+    client_id: '17_68q8wwxa2bs4ws0gk4o8wcoo4k8cgk80o8s0kggcsggcww4o48',
+    client_secret: '11wixjjki6u8g4kkkss4ksog4gosowg4wswksko48c0gwwc0s',
+    redirect_uri: 'http://localhost:3000/oauth/callback'
+  }
+  config.nrdb_api_host = 'https://api.netrunnerdb.com'
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 

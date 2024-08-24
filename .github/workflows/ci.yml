@@ -55,7 +55,6 @@ jobs:
 
       - name: Set up Rails
         run: |
-          cp config/secrets.example.yml config/secrets.yml
           cp config/database.ci.yml config/database.yml
 
       - name: Set up database schema

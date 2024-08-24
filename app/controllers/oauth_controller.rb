@@ -14,7 +14,7 @@ class OauthController < ApplicationController
 
   def callback
     if callback_code
-      token_data = Nrdb::Oauth.get_access_token(callback_code, request.host)
+      token_data = Nrdb::Oauth.get_access_token(callback_code)
 
       user_data = Nrdb::Connection.new(nil, token_data[:access_token]).player_info.first
 

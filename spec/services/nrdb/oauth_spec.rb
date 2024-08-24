@@ -10,7 +10,7 @@ RSpec.describe Nrdb::Oauth do
   describe '.get_access_token' do
     it 'fetches access token' do
       VCR.use_cassette :nrdb_get_access_token do
-        expect(described_class.get_access_token('123', "localhost")).to eq({
+        expect(described_class.get_access_token('123')).to eq({
           "access_token" => "some_token",
           "expires_in" => 3600,
           "refresh_token" => "some_refresh_token",
