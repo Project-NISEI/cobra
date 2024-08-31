@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe IdentitiesController do
   describe '#index' do
     before do
@@ -5,10 +7,9 @@ RSpec.describe IdentitiesController do
       create(:identity, name: 'Jill', side: :runner, autocomplete: 'Jill')
       create(:identity, name: 'Conglomo', side: :corp, autocomplete: 'Conglomo')
       create(:identity,
-        name: 'Dystöpiæ',
-        side: :corp,
-        autocomplete: 'Dystopia'
-      )
+             name: 'Dystöpiæ',
+             side: :corp,
+             autocomplete: 'Dystopia')
     end
 
     it 'lists corp identities' do

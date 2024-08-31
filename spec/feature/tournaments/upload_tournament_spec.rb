@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 RSpec.describe 'uploading tournament' do
   let(:tournament) { create(:tournament) }
-  let(:uploader) { instance_double('AbrUpload') }
+  let(:uploader) { instance_double(AbrUpload) }
 
   before do
     allow(AbrUpload).to receive(:new).and_return(uploader)

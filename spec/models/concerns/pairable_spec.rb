@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Pairable do
   let(:player) { create(:player) }
   let(:jack) { create(:player) }
@@ -11,7 +13,7 @@ RSpec.describe Pairable do
     end
 
     it 'returns opponents with special bye class' do
-      expect(player.unpairable_opponents).to match_array([jack, jill, Swissper::Bye])
+      expect(player.unpairable_opponents).to contain_exactly(jack, jill, SwissImplementation::Bye)
     end
   end
 end

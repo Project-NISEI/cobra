@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Nrdb
   class Connection
     def initialize(user = nil, access_token = nil)
@@ -33,14 +35,14 @@ module Nrdb
 
     def connection
       # TODO: allow the NRDB url to be configurable for local testing.
-      @connection ||= Faraday.new(url: "https://netrunnerdb.com") do |conn|
+      @connection ||= Faraday.new(url: 'https://netrunnerdb.com') do |conn|
         conn.adapter :net_http
         conn.headers[:Authorization] = "Bearer #{access_token}"
       end
     end
 
     def public_connection
-      @connection ||= Faraday.new(url: "https://netrunnerdb.com") do |conn|
+      @public_connection ||= Faraday.new(url: 'https://netrunnerdb.com') do |conn|
         conn.adapter :net_http
       end
     end

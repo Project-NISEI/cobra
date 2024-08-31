@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 class RoundsController < ApplicationController
   before_action :set_tournament
-  before_action :set_round, only: [:show, :edit, :update, :destroy, :repair, :complete, :update_timer]
+  before_action :set_round, only: %i[show edit update destroy repair complete update_timer]
 
   def index
     authorize @tournament, :show?
     @stages = @tournament.stages.includes(
-      :tournament, rounds: [:tournament, :stage, pairings: [:tournament, :stage, :round]])
+      :tournament, rounds: [:tournament, :stage, { pairings: %i[tournament stage round] }]
+    )
     @players = @tournament.players
                           .includes(:corp_identity_ref, :runner_identity_ref)
                           .index_by(&:id).merge({ nil => NilPlayer.new })
@@ -18,37 +21,42 @@ class RoundsController < ApplicationController
   def pairings_data
     authorize @tournament, :show?
     stages = @tournament.stages.includes(
-      rounds: [pairings: [:player1, :player2]],
-      registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref]]
+      rounds: [pairings: %i[player1 player2]],
+      registrations: [player: %i[user corp_identity_ref runner_identity_ref]]
     )
     render json: {
       policy: {
         update: @tournament.user == current_user
       },
       is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
-      stages: stages.map { |stage|
+      stages: stages.map do |stage|
         view_decks = stage.decks_visible_to(current_user) ? true : false
         {
           name: stage.format.titleize,
-          rounds: stage.rounds.map { |round| {
-            id: round.id,
-            number: round.number,
-            pairings: round.pairings.map { |pairing| {
-              id: pairing.id,
-              table_number: pairing.table_number,
-              policy: {
-                view_decks: view_decks
-              },
-              player1: pairing_player1(stage, pairing),
-              player2: pairing_player2(stage, pairing),
-              score_label: score_label(pairing),
-              intentional_draw: pairing.intentional_draw,
-              two_for_one: pairing.two_for_one
-            } },
-            pairings_reported: round.pairings.select { |p| p.score1 && p.score2 }.count,
-          } }
+          format: stage.format,
+          rounds: stage.rounds.map do |round|
+                    {
+                      id: round.id,
+                      number: round.number,
+                      pairings: round.pairings.map do |pairing|
+                                  {
+                                    id: pairing.id,
+                                    table_number: pairing.table_number,
+                                    policy: {
+                                      view_decks:
+                                    },
+                                    player1: pairing_player1(stage, pairing),
+                                    player2: pairing_player2(stage, pairing),
+                                    score_label: score_label(pairing),
+                                    intentional_draw: pairing.intentional_draw,
+                                    two_for_one: pairing.two_for_one
+                                  }
+                                end,
+                      pairings_reported: round.pairings.select { |p| p.score1 && p.score2 }.count
+                    }
+                  end
         }
-      }
+      end
     }
   end
 
@@ -110,11 +118,12 @@ class RoundsController < ApplicationController
     @round.update!(length_minutes: params[:length_minutes])
 
     operation = params[:operation]
-    if operation == "start"
+    case operation
+    when 'start'
       @round.timer.start!
-    elsif operation == "stop"
+    when 'stop'
       @round.timer.stop!
-    elsif operation == "reset"
+    when 'reset'
       @round.timer.reset!
     end
 
@@ -142,6 +151,7 @@ class RoundsController < ApplicationController
   def pairing_player(stage, player, side)
     {
       name_with_pronouns: player.name_with_pronouns,
+      side:,
       side_label: side_label(stage, side),
       corp_id: pairing_identity(player.corp_identity_object),
       runner_id: pairing_identity(player.runner_identity_object)
@@ -156,6 +166,7 @@ class RoundsController < ApplicationController
 
   def pairing_identity(identity)
     return nil unless identity
+
     {
       name: identity.name,
       faction: identity.faction
@@ -163,7 +174,8 @@ class RoundsController < ApplicationController
   end
 
   def score_label(pairing)
-    return "-" if pairing.score1 == 0 && pairing.score2 == 0
+    return '-' if pairing.score1 == 0 && pairing.score2 == 0 # rubocop:disable Style/NumericPredicate
+
     ws = winning_side(pairing)
 
     return "#{pairing.score1} - #{pairing.score2}" unless ws
@@ -175,10 +187,9 @@ class RoundsController < ApplicationController
     corp_score = (pairing.score1_corp || 0) + (pairing.score2_corp || 0)
     runner_score = (pairing.score1_runner || 0) + (pairing.score2_runner || 0)
 
-    case
-    when corp_score - runner_score == 0
+    if (corp_score - runner_score).zero?
       nil
-    when corp_score - runner_score < 0
+    elsif (corp_score - runner_score).negative?
       'R'
     else
       'C'

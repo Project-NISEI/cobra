@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -53,17 +55,25 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.abr_host = 'https://alwaysberunning.net'
-  config.nrdb_api_host = 'http://localhost:9000'
+  config.abr_auth = 'ABRAUTH'
+  config.nrdb = {
+    client_id: '17_68q8wwxa2bs4ws0gk4o8wcoo4k8cgk80o8s0kggcsggcww4o48',
+    client_secret: '11wixjjki6u8g4kkkss4ksog4gosowg4wswksko48c0gwwc0s',
+    redirect_uri: 'http://localhost:3000/oauth/callback'
+  }
+  config.nrdb_api_host = 'https://api.netrunnerdb.com'
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
   config.after_initialize do
-    begin
-      Flipper.enable :nrdb_deck_registration
-      Flipper.enable :open_list_cut
-      Flipper.enable :streaming_opt_out
-    rescue => e
-      Rails.logger.warn "Failed setting Flipper features: #{e.class}"
+    Flipper.enable :nrdb_deck_registration
+    Flipper.enable :open_list_cut
+    Flipper.enable :streaming_opt_out
+    cool_users = User.where(nrdb_username: ['plural'])
+    cool_users.each do |user|
+      Flipper.enable_actor(:single_sided_swiss, user)
     end
+  rescue StandardError => e
+    Rails.logger.warn "Failed setting Flipper features: #{e.class}"
   end
 end

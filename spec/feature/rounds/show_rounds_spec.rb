@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'showing a round' do
   let(:round) { create(:round) }
 

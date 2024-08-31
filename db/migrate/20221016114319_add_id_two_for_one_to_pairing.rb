@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddIdTwoForOneToPairing < ActiveRecord::Migration[7.0]
   def change
     add_column :pairings, :intentional_draw, :boolean, default: false, null: false

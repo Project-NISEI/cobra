@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Pairing < ApplicationRecord
   belongs_to :round, touch: true
   belongs_to :player1, class_name: 'Player', optional: true
@@ -9,20 +11,20 @@ class Pairing < ApplicationRecord
   scope :bye, -> { where('player1_id IS NULL OR player2_id IS NULL') }
   scope :reported, -> { where.not(score1: nil, score2: nil) }
   scope :completed, -> { joins(:round).where('rounds.completed = ?', true) }
-  scope :for_stage, ->(stage) { joins(:round).where(rounds: { stage: stage }) }
+  scope :for_stage, ->(stage) { joins(:round).where(rounds: { stage: }) }
+  scope :for_player, ->(player) { where(player1: player).or(where(player2: player)) }
+  scope :for_players, lambda { |player1, player2|
+                        where(player1:, player2:).or(where(player1: player2, player2: player1))
+                      }
 
   before_save :normalise_scores_before_save
-  after_update :cache_standings!, if: Proc.new { round.completed? }
+  after_update :cache_standings!, if: proc { round.completed? }
   delegate :cache_standings!, to: :stage
 
   enum side: {
     player1_is_corp: 1,
     player1_is_runner: 2
   }
-
-  def self.for_player(player)
-    where(player1: player).or(where(player2: player))
-  end
 
   def players
     [player1, player2]
@@ -81,9 +83,8 @@ class Pairing < ApplicationRecord
   end
 
   def decks_visible_to(user)
-    if !stage.single_sided? || side.nil?
-      return false
-    end
+    return false if !stage.single_sided? || side.nil?
+
     stage.decks_visible_to(user)
   end
 
@@ -119,10 +120,10 @@ class Pairing < ApplicationRecord
   end
 
   def combine_separate_side_scores
-    return unless (score1_corp.present? && score1_corp > 0) ||
-      (score1_runner.present? && score1_runner > 0) ||
-      (score2_corp.present? && score2_corp > 0) ||
-      (score2_runner.present? && score2_runner > 0)
+    return unless (score1_corp.present? && score1_corp.positive?) ||
+                  (score1_runner.present? && score1_runner.positive?) ||
+                  (score2_corp.present? && score2_corp.positive?) ||
+                  (score2_runner.present? && score2_runner.positive?)
 
     self.score1 = (score1_corp || 0) + (score1_runner || 0)
     self.score2 = (score2_corp || 0) + (score2_runner || 0)

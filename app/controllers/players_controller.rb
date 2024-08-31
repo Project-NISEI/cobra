@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class PlayersController < ApplicationController
   before_action :set_tournament
-  before_action :set_player, only: [:update, :destroy, :drop, :reinstate,
-                                    :lock_registration, :unlock_registration, :registration, :view_decks]
+  before_action :set_player, only: %i[update destroy drop reinstate
+                                      lock_registration unlock_registration registration view_decks]
 
   def index
     authorize @tournament, :update?
@@ -13,19 +15,21 @@ class PlayersController < ApplicationController
   def download_decks
     authorize @tournament, :update?
     render json: @tournament.players
-                            .sort_by { |p| p.name }
-                            .flat_map { |p| p.decks.sort_by { |d| d.side_id } }
+                            .sort_by(&:name)
+                            .flat_map { |p| p.decks.sort_by(&:side_id) }
                             .map { |d| d.as_view(current_user) }
   end
 
   def download_streaming
     authorize @tournament, :update?
     render json: @tournament.players.active
-                            .sort_by { |p| p.name }
-                            .map { |p| {
-                              name: p.name_with_pronouns,
-                              include_in_stream: p.include_in_stream?
-                            } }
+                            .sort_by(&:name)
+                            .map { |p|
+                   {
+                     name: p.name_with_pronouns,
+                     include_in_stream: p.include_in_stream?
+                   }
+                 }
   end
 
   def create
@@ -37,16 +41,12 @@ class PlayersController < ApplicationController
     end
 
     params = player_params
-    unless is_organiser_view
-      params[:user_id] = current_user.id
-    end
+    params[:user_id] = current_user.id unless organiser_view?
 
     player = @tournament.players.create(params.except(:corp_deck, :runner_deck))
-    unless @tournament.current_stage.nil?
-      @tournament.current_stage.players << player
-    end
+    @tournament.current_stage.players << player unless @tournament.current_stage.nil?
     @tournament.update(any_player_unlocked: true,
-                       all_players_unlocked: @tournament.locked_players.count == 0)
+                       all_players_unlocked: @tournament.locked_players.count.zero?)
 
     if player.user_id
       if @tournament.nrdb_deck_registration?
@@ -62,7 +62,7 @@ class PlayersController < ApplicationController
   def update
     authorize @player
 
-    if is_organiser_view
+    if organiser_view?
       if params.require(:player)[:registration_view]
         redirect_to registration_tournament_player_path(@tournament, @player)
       else
@@ -71,33 +71,33 @@ class PlayersController < ApplicationController
       update = player_params
     else
       redirect_to tournament_path(@tournament)
-      if @player.registration_locked?
-        update = params.require(:player).permit(:include_in_stream)
-      else
-        update = player_params
-      end
+      update = if @player.registration_locked?
+                 params.require(:player).permit(:include_in_stream)
+               else
+                 player_params
+               end
       update[:user_id] = current_user.id
     end
 
     @player.update(update.except(:corp_deck, :runner_deck))
-    if @tournament.nrdb_deck_registration?
-      save_deck(update, :corp_deck, 'corp')
-      save_deck(update, :runner_deck, 'runner')
-    end
+    return unless @tournament.nrdb_deck_registration?
+
+    save_deck(update, :corp_deck, 'corp')
+    save_deck(update, :runner_deck, 'runner')
   end
 
   def save_deck(params, param, side)
-    return unless params.has_key?(param)
+    return unless params.key?(param)
+
     begin
       request = JSON.parse(params[param])
-    rescue
+    rescue StandardError
       @player.decks.destroy_by(side_id: side)
       return
     end
     details = request['details']
-    if details['user_id'] && details['user_id'] != current_user.id
-      return
-    end
+    return if details['user_id'] && details['user_id'] != current_user.id
+
     details.keep_if { |key| Deck.column_names.include? key }
     details['side_id'] = side
     details['user_id'] = current_user.id
@@ -110,8 +110,8 @@ class PlayersController < ApplicationController
     authorize @tournament, :update?
 
     @player.destroy
-    @tournament.update(any_player_unlocked: @tournament.unlocked_players.count > 0,
-                       all_players_unlocked: @tournament.locked_players.count == 0)
+    @tournament.update(any_player_unlocked: @tournament.unlocked_players.count.positive?,
+                       all_players_unlocked: @tournament.locked_players.count.zero?)
 
     redirect_to tournament_players_path(@tournament)
   end
@@ -127,22 +127,23 @@ class PlayersController < ApplicationController
   def standings_data
     authorize @tournament, :show?
     stages = @tournament.stages.includes(
-      rounds: [pairings: [:player1, :player2]],
-      registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, registrations: [:stage]]],
-      standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref, registrations: [:stage]]]
+      rounds: [pairings: %i[player1 player2]],
+      registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]],
+      standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]]
     )
-    double_elim = stages.select { |stage| stage.double_elim? }.first
+    double_elim = stages.select(&:double_elim?).first
     render json: {
       is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
       manual_seed: @tournament.manual_seed?,
-      stages: stages.reverse.map { |stage|
+      stages: stages.reverse.map do |stage|
         {
           format: stage.format,
-          rounds_complete: stage.rounds.select { |round| round.completed? }.count,
-          any_decks_viewable: stage.decks_visible_to(current_user) || double_elim&.decks_visible_to(current_user) ? true : false,
-          standings: render_standings_for_stage(stage),
+          rounds_complete: stage.rounds.select(&:completed?).count,
+          any_decks_viewable: stage.decks_visible_to(current_user) ||
+            (double_elim&.decks_visible_to(current_user) ? true : false),
+          standings: render_standings_for_stage(stage)
         }
-      }
+      end
     }
   end
 
@@ -151,56 +152,62 @@ class PlayersController < ApplicationController
       # Compute standings on the fly during cut
       return compute_and_render_cut_standings stage
     end
-    if stage.rounds.select { |round| round.completed? }.any?
+    if stage.rounds.select(&:completed?).any?
       # Standings are stored explicitly at the end of a swiss round, so load those
       return render_completed_standings stage
     end
+
     # No standings during player meeting or first round, so list players
     render_player_list_for_standings stage
   end
 
   def compute_and_render_cut_standings(stage)
     seed_by_player = stage.registrations.map { |r| [r.player_id, r.seed] }.to_h
-    stage.standings.each_with_index.map { |standing, i| {
-      player: standings_player(standing.player),
-      policy: standings_policy(standing.player),
-      position: i + 1,
-      seed: seed_by_player[standing.player&.id]
-    } }
+    stage.standings.each_with_index.map do |standing, i|
+      {
+        player: standings_player(standing.player),
+        policy: standings_policy(standing.player),
+        position: i + 1,
+        seed: seed_by_player[standing.player&.id]
+      }
+    end
   end
 
   def render_completed_standings(stage)
-    stage.standing_rows.map { |row| {
-      player: standings_player(row.player),
-      policy: standings_policy(row.player),
-      position: row.position,
-      points: row.points,
-      sos: row.sos,
-      extended_sos: row.extended_sos,
-      corp_points: row.corp_points || 0,
-      runner_points: row.runner_points || 0,
-      manual_seed: row.manual_seed,
-    } }
+    stage.standing_rows.map do |row|
+      {
+        player: standings_player(row.player),
+        policy: standings_policy(row.player),
+        position: row.position,
+        points: row.points,
+        sos: row.sos,
+        extended_sos: row.extended_sos,
+        corp_points: row.corp_points || 0,
+        runner_points: row.runner_points || 0,
+        manual_seed: row.manual_seed
+      }
+    end
   end
 
   def render_player_list_for_standings(stage)
-    stage.players.sort.each_with_index.map { |player, i| {
-      player: standings_player(player, show_ids = false),
-      policy: standings_policy(player),
-      position: i + 1,
-      points: 0,
-      sos: 0,
-      extended_sos: 0,
-      corp_points: 0,
-      runner_points: 0,
-      manual_seed: player.manual_seed,
-    } }
+    stage.players.sort.each_with_index.map do |player, i|
+      {
+        player: standings_player(player, show_ids: false),
+        policy: standings_policy(player),
+        position: i + 1,
+        points: 0,
+        sos: 0,
+        extended_sos: 0,
+        corp_points: 0,
+        runner_points: 0,
+        manual_seed: player.manual_seed
+      }
+    end
   end
 
-  def standings_player(player, show_ids = true)
-    unless player
-      return nil
-    end
+  def standings_player(player, show_ids: true)
+    return nil unless player
+
     {
       id: player.id,
       name_with_pronouns: player.name_with_pronouns,
@@ -217,6 +224,7 @@ class PlayersController < ApplicationController
 
   def standings_identity(identity)
     return nil unless identity
+
     {
       name: identity.name,
       faction: identity.faction
@@ -236,7 +244,7 @@ class PlayersController < ApplicationController
 
     @player.update(registration_locked: true)
     @tournament.update(all_players_unlocked: false,
-                       any_player_unlocked: @tournament.unlocked_players.count > 0)
+                       any_player_unlocked: @tournament.unlocked_players.count.positive?)
 
     redirect_to tournament_players_path(@tournament)
   end
@@ -246,7 +254,7 @@ class PlayersController < ApplicationController
 
     @player.update(registration_locked: false)
     @tournament.update(any_player_unlocked: true,
-                       all_players_unlocked: @tournament.locked_players.count == 0)
+                       all_players_unlocked: @tournament.locked_players.count.zero?)
 
     redirect_to tournament_players_path(@tournament)
   end
@@ -266,12 +274,12 @@ class PlayersController < ApplicationController
   def registration
     authorize @tournament, :update?
     @edit_decks = params[:edit_decks]
-    if @edit_decks
-      begin
-        @decks = Nrdb::Connection.new(current_user).decks
-      rescue
-        redirect_to login_path(:return_to => request.fullpath)
-      end
+    return unless @edit_decks
+
+    begin
+      @decks = Nrdb::Connection.new(current_user).decks
+    rescue StandardError
+      redirect_to login_path(return_to: request.fullpath)
     end
   end
 
@@ -287,7 +295,7 @@ class PlayersController < ApplicationController
                   :first_round_bye, :manual_seed, :include_in_stream)
   end
 
-  def is_organiser_view
+  def organiser_view?
     params.require(:player)[:organiser_view] && @tournament.user_id == current_user.id
   end
 

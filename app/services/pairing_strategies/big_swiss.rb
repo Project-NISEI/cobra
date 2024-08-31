@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 module PairingStrategies
   class BigSwiss
     # this class is not a real pairing strategy but a special-case class that
     # is used for very large fields to improve performance
     attr_reader :stage
 
-    def initialize(stage)
+    def initialize(stage, base_pairing_strategy = PairingStrategies::Swiss)
       @stage = stage
+      @base_pairing_strategy = base_pairing_strategy
 
       @overflow = []
     end
@@ -20,7 +23,7 @@ module PairingStrategies
         @overflow += to_pair - paired.flatten
 
         paired
-      end.sum + panic_pair(@overflow)
+      end.sum([]) + panic_pair(@overflow)
     end
 
     private
@@ -55,19 +58,15 @@ module PairingStrategies
 
     def pair_batch(players)
       chunk(players).map do |batch|
-        Swissper.pair(
-          batch,
-          delta_key: :points,
-          exclude_key: :unpairable_opponents
-        )
-      end.sum
+        @base_pairing_strategy.get_pairings(batch)
+      end.sum([])
     end
 
     def panic_pair(players)
       # last chance to add players who fell through the cracks, this bit needs
       # human intervention really so just naively do the easiest thing
       @overflow = []
-      players.shuffle.in_groups_of(2, Swissper::Bye)
+      players.shuffle.in_groups_of(2, SwissImplementation::Bye)
     end
 
     def chunk(players)

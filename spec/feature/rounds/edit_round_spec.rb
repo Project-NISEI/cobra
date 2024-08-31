@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'making advanced round edits' do
   let(:round) { create(:round, weight: 1.0) }
 

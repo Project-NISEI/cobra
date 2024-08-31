@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bracket
   module Engine
     def self.included(base)
@@ -12,15 +14,15 @@ module Bracket
             player1: p1,
             player2: p2,
             round: options[:round],
-            number: number
+            number:
           }
         end
       end
 
-      %w(seed winner loser seed_of winner_if_also_winner loser_if_also_winner).each do |method|
+      %w[seed winner loser seed_of winner_if_also_winner loser_if_also_winner].each do |method|
         define_method method do |*args|
           args.unshift(method)
-          lambda { |context| context.send(*args) }
+          ->(context) { context.send(*args) }
         end
       end
     end
@@ -30,7 +32,7 @@ module Bracket
     end
 
     def games_for_round(number)
-      games.select{ |g| g[:round] == number }
+      games.select { |g| g[:round] == number }
     end
   end
 end

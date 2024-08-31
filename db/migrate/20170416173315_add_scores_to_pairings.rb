@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddScoresToPairings < ActiveRecord::Migration[5.0]
   def change
     add_column :pairings, :score1, :integer

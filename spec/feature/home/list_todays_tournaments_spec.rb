@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "list today's tournaments" do
   let!(:today) do
     create(:tournament, date: Date.current.beginning_of_day, name: 'TodayGNK', slug: 'TEST')
@@ -38,7 +40,7 @@ RSpec.describe "list today's tournaments" do
       fill_in :slug, with: 'TEST'
       click_button 'Go to tournament'
 
-      expect(page.current_path).to eq(tournament_path(today))
+      expect(page).to have_current_path(tournament_path(today), ignore_query: true)
     end
 
     it 'handles invalid shortcode' do

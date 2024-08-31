@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StandingRow < ApplicationRecord
   belongs_to :stage
   belongs_to :player
@@ -13,5 +15,4 @@ class StandingRow < ApplicationRecord
   def runner_identity
     player.runner_identity_object
   end
-
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'showing player standings' do
   let(:tournament) { create(:tournament) }
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AbrUpload
   attr_reader :tournament
 
@@ -16,12 +18,13 @@ class AbrUpload
 
   private
 
-  def send_data()
-    Faraday.new do |conn|
+  def send_data
+    r = Faraday.new do |conn|
       conn.request :multipart
       conn.adapter :net_http
-      conn.request :basic_auth, 'cobra', Rails.application.secrets.abr_auth
-    end.post endpoint do |req|
+      conn.request :basic_auth, 'cobra', Rails.configuration.abr_auth
+    end
+    r.post endpoint do |req|
       upload = Faraday::UploadIO.new(StringIO.new(json(@tournament, @tournament_url)), 'text/json')
       req.body = { jsonresults: upload }
     end.body
@@ -31,7 +34,7 @@ class AbrUpload
     "#{Rails.configuration.abr_host}/api/nrtm"
   end
 
-  def json(tournament, tournament_url)
+  def json(_tournament, _tournament_url)
     NrtmJson.new(@tournament).data(@tournament_url).to_json
   end
 end

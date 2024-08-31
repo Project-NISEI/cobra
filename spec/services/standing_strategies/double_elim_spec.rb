@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe StandingStrategies::DoubleElim do
   let(:stage) { tournament.current_stage }
   let(:strategy) { described_class.new(stage) }
@@ -5,7 +7,7 @@ RSpec.describe StandingStrategies::DoubleElim do
   describe '#calculate!' do
     context 'with four players' do
       let(:tournament) { create(:tournament, player_count: 4) }
-      let(:bracket) { instance_double('Bracket::Top4', standings: nil) }
+      let(:bracket) { instance_double(Bracket::Top4, standings: nil) }
 
       before do
         allow(Bracket::Top4).to receive(:new).and_return(bracket)
@@ -21,7 +23,7 @@ RSpec.describe StandingStrategies::DoubleElim do
 
     context 'with eight players' do
       let(:tournament) { create(:tournament, player_count: 8) }
-      let(:bracket) { instance_double('Bracket::Top8', standings: nil) }
+      let(:bracket) { instance_double(Bracket::Top8, standings: nil) }
 
       before do
         allow(Bracket::Top8).to receive(:new).and_return(bracket)

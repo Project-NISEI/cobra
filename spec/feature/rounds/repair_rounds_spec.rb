@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 RSpec.describe 'Re-pairing rounds' do
   let(:tournament) { create(:tournament) }
   let(:round) { create(:round, stage: tournament.current_stage) }
-  let!(:player1) { create(:player, tournament: tournament) }
-  let!(:player2) { create(:player, tournament: tournament) }
+  let!(:player1) { create(:player, tournament:) }
+  let!(:player2) { create(:player, tournament:) }
 
   before do
     sign_in round.tournament.user

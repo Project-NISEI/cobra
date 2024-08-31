@@ -1,20 +1,22 @@
+# frozen_string_literal: true
+
 RSpec.describe SideDeterminer do
   let(:stage) { create(:stage) }
   let(:decision) { described_class.determine_sides(player1, player2, stage) }
   let(:player1) { create(:player) }
   let(:player2) { create(:player) }
-  let(:round) { create(:round, stage: stage) }
+  let(:round) { create(:round, stage:) }
 
   context 'no games' do
     it 'does not set sides' do
-      expect(decision).to eq(nil)
+      expect(decision).to be_nil
     end
   end
 
   context 'difference' do
     before do
-      create(:pairing, player1: player1, side: :player1_is_corp, score1: 3, round: round)
-      create(:pairing, player1: player2, side: :player1_is_runner, score1: 3, round: round)
+      create(:pairing, player1:, side: :player1_is_corp, score1: 3, round:)
+      create(:pairing, player1: player2, side: :player1_is_runner, score1: 3, round:)
     end
 
     it 'determines weaker side' do
@@ -24,9 +26,9 @@ RSpec.describe SideDeterminer do
 
   context 'imbalance' do
     before do
-      create(:pairing, player1: player1, side: :player1_is_corp, score1: 3, round: round)
-      create(:pairing, player1: player2, side: :player1_is_corp, score1: 3, round: round)
-      create(:pairing, player1: player2, side: :player1_is_corp, score1: 3, round: round)
+      create(:pairing, player1:, side: :player1_is_corp, score1: 3, round:)
+      create(:pairing, player1: player2, side: :player1_is_corp, score1: 3, round:)
+      create(:pairing, player1: player2, side: :player1_is_corp, score1: 3, round:)
     end
 
     it 'picks player who has played the overplayed side least' do
@@ -36,12 +38,12 @@ RSpec.describe SideDeterminer do
 
   context 'some games played but tied' do
     before do
-      create(:pairing, player1: player1, side: :player1_is_corp, score1: 3, round: round)
-      create(:pairing, player1: player2, side: :player1_is_corp, score1: 3, round: round)
+      create(:pairing, player1:, side: :player1_is_corp, score1: 3, round:)
+      create(:pairing, player1: player2, side: :player1_is_corp, score1: 3, round:)
     end
 
     it 'randomly picks sides' do
-      expect(decision).not_to eq(nil)
+      expect(decision).not_to be_nil
     end
   end
 end

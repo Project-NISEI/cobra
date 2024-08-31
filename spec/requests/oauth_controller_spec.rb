@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 RSpec.describe OauthController do
   describe '#auth' do
     it 'redirects to NRDB' do
-      expect_any_instance_of(ActionDispatch::Request).to receive(:host).at_least(1).times.and_return('localhost')
+      expect_any_instance_of(ActionDispatch::Request).to receive(:host).at_least(:once).and_return('localhost')
 
       get login_path
 
@@ -14,13 +16,13 @@ RSpec.describe OauthController do
     let(:make_request) { get oauth_callback_path, params: { code: :some_code } }
     let(:token_data) { { access_token: 'ABC123', refresh_token: 'DEF456' } }
     let(:connection) do
-      double('Nrdb::Connection', player_info: [{ id: 12, username: 'jack' }])
+      instance_double(Nrdb::Connection, player_info: [{ id: 12, username: 'jack' }])
     end
 
     before do
-      expect_any_instance_of(ActionDispatch::Request).to receive(:host).at_least(1).times.and_return('localhost')
+      expect_any_instance_of(ActionDispatch::Request).to receive(:host).at_least(:once).and_return('localhost') # rubocop:disable RSpec/ExpectInHook
       allow(Nrdb::Oauth).to receive(:get_access_token)
-        .with('some_code', 'localhost')
+        .with('some_code')
         .and_return(token_data)
       allow(Nrdb::Connection).to receive(:new)
         .with(nil, 'ABC123')

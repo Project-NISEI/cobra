@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'updating players' do
   let(:tournament) { create(:tournament, manual_seed: true) }
 
@@ -29,7 +31,7 @@ RSpec.describe 'updating players' do
   end
 
   it 'can update first round bye' do
-    expect(tournament.players.first.first_round_bye).to eq(true)
+    expect(tournament.players.first.first_round_bye).to be(true)
   end
 
   it 'can update manual seed' do
@@ -37,10 +39,10 @@ RSpec.describe 'updating players' do
   end
 
   it 'does not update user id' do
-    expect(tournament.players.first.user_id).to be(nil)
+    expect(tournament.players.first.user_id).to be_nil
   end
 
   it 'redirects to tournament player page' do
-    expect(current_path).to eq tournament_players_path(tournament)
+    expect(page).to have_current_path tournament_players_path(tournament), ignore_query: true
   end
 end

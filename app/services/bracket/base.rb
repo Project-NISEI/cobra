@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bracket
   class Base
     include Engine
@@ -8,7 +10,7 @@ module Bracket
 
     def initialize(stage)
       @stage = stage
-      @pairings = stage.rounds.select { |round| round.completed? }
+      @pairings = stage.rounds.select(&:completed?)
                        .map(&:pairings).flatten
       @seed_by_player = stage.registrations.map { |r| [r.player_id, r.seed] }.to_h
     end
@@ -44,23 +46,26 @@ module Bracket
     end
 
     def seed_of(players, pos)
-      players.map do |lam|
+      p = players.map do |lam|
         lam.call(self)
-      end.tap do |players|
-        return nil unless players.all?
-      end.sort_by do |p|
-        @seed_by_player[p.id]
+      end
+      p = p.tap do |x|
+        return nil unless x.all?
+      end
+      p.sort_by do |x|
+        @seed_by_player[x.id]
       end[pos - 1]
     end
 
     def standings
-      self.class::STANDINGS.map do |lam|
+      s = self.class::STANDINGS.map do |lam|
         if lam.is_a? Array
           lam.map { |l| l.call(self) }.compact.try(:first)
         else
           lam.call(self)
         end
-      end.map { |p| Standing.new(p) }
+      end
+      s.map { |p| Standing.new(p) }
     end
 
     private

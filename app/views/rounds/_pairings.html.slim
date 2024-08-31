@@ -1,5 +1,14 @@
 - single_sided = round.stage.single_sided?
 - round.pairings.each do |pairing|
+  - left_player = @players[pairing.player1_id]
+  - left_player_number = 1
+  - right_player = @players[pairing.player2_id]
+  - right_player_number = 2
+  - if single_sided && !pairing.player1_is_corp?
+    - left_player = @players[pairing.player2_id]
+    - left_player_number = 2
+    - right_player = @players[pairing.player1_id]
+    - right_player_number = 1
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user}"
     .col-sm-2
       | Table #{pairing.table_number}
@@ -24,18 +33,23 @@
         => fa_icon 'eye'
         | View decks
     .col-sm.left_player_name
-      = @players[pairing.player1_id].name_with_pronouns
-      =< render 'player_side', pairing: pairing, player: @players[pairing.player1_id], single_sided: single_sided
-      - if @players[pairing.player1_id].id
+      = left_player.name_with_pronouns
+      <br />
+      =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
+      - if left_player.id
         .ids
-          = render @players[pairing.player1_id].corp_identity_object
-          = render @players[pairing.player1_id].runner_identity_object
+          - if round.stage.single_sided?
+            = render left_player.corp_identity_object
+          - else
+            = render left_player.corp_identity_object
+            = render left_player.runner_identity_object
     - if policy(round.tournament).edit?
       .col-sm-5.centre_score
         .preset_score
           - presets(pairing).each do |data|
             => preset_score_button pairing, data
-          = link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
+          - unless round.stage.single_sided?
+            = link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
         .custom_score
           = simple_form_for pairing, url: report_tournament_round_pairing_path(round.tournament, round, pairing), method: :post, html: { class: 'form-inline' } do |f|
             .mx-auto
@@ -43,35 +57,46 @@
               = f.hidden_field :score1_corp, value: 0
               = f.hidden_field :score2_runner, value: 0
               = f.hidden_field :score2_corp, value: 0
-              = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
+              - if left_player_number == 1
+                = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
+              - else
+                = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               = button_tag type: :submit, class: 'btn btn-primary mx-2' do
                 => fa_icon 'flag-checkered'
                 | Save
-              = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
+              - if right_player_number == 1
+                = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
+              - else
+                = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               =< link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
               div class='form-group'
                 div class='form-check form-check-inline'
                   = f.check_box :intentional_draw, class: 'form-check-input'
-                  = f.label :intentional_draw, 'ID', class: 'form-check-label'
-                div class='form-check form-check-inline'
-                  = f.check_box :two_for_one, class: 'form-check-input' 
-                  = f.label :two_for_one, '2 for 1', class: 'form-check-label'
+                  = f.label :intentional_draw, 'Intentional Draw', class: 'form-check-label'
+                - unless round.stage.single_sided?
+                  div class='form-check form-check-inline'
+                    = f.check_box :two_for_one, class: 'form-check-input'
+                    = f.label :two_for_one, '2 for 1', class: 'form-check-label'
     - else
       .col-sm-2.centre_score
         = readable_score(pairing)
         - if pairing.intentional_draw
-          span class='badge badge-pill badge-secondary score-badge' 
+          span class='badge badge-pill badge-secondary score-badge'
             | ID
         - if pairing.two_for_one
-          span class='badge badge-pill badge-secondary score-badge' 
+          span class='badge badge-pill badge-secondary score-badge'
             | 2 for 1
     .col-sm.right_player_name
-      = @players[pairing.player2_id].name_with_pronouns
-      =< render 'player_side', pairing: pairing, player: @players[pairing.player2_id], single_sided: single_sided
-      - if @players[pairing.player2_id].id
+      = right_player.name_with_pronouns
+      <br />
+      =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided
+      - if right_player.id
         .ids
-          = render @players[pairing.player2_id].corp_identity_object
-          = render @players[pairing.player2_id].runner_identity_object
+          - if round.stage.single_sided?
+            = render right_player.runner_identity_object
+          - else
+            = render right_player.corp_identity_object
+            = render right_player.runner_identity_object
     - if policy(round.tournament).update?
       .col-sm-1
         = link_to tournament_round_pairing_path(round.tournament, round, pairing), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed.' } do

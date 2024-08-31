@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 RSpec.describe 'listing my tournaments' do
   let(:me) { create(:user) }
+
   before do
     create(:tournament, name: 'Some Tournament', user: me)
     create(:tournament, name: 'Private Tournament', private: true, user: me)
@@ -29,7 +32,7 @@ RSpec.describe 'listing my tournaments' do
     it 'redirects away' do
       visit my_tournaments_path
 
-      expect(current_path).to eq(root_path)
+      expect(page).to have_current_path(root_path, ignore_query: true)
     end
   end
 end

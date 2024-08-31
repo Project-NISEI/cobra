@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ConvertPlayerLockedFlags < ActiveRecord::Migration[7.0]
   def change
     rename_column :players, :decks_locked, :registration_locked

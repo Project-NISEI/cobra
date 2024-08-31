@@ -1,10 +1,17 @@
 <script lang="ts">
-    import type {Pairing, Round} from "./PairingsData";
+    import type {Pairing, Round, Stage} from "./PairingsData";
     import PlayerName from "./PlayerName.svelte";
     import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
+    export let stage: Stage;
     export let round: Round;
     export let pairing: Pairing;
+    let left_player = pairing.player1
+    let right_player = pairing.player2
+    if (stage.format == 'single_sided_swiss' && pairing.player2.side == 'corp') {
+        left_player = pairing.player2
+        right_player = pairing.player1
+    }
 </script>
 
 <div class="row m-1 round_pairing align-items-center table_{pairing.table_number}">
@@ -17,7 +24,7 @@
             View decks
         </a>
     {/if}
-    <PlayerName player={pairing.player1} left_or_right="left"/>
+    <PlayerName player={left_player} left_or_right="left"/>
     <div class="col-sm-2 centre_score">
         {pairing.score_label}
         {#if pairing.intentional_draw}
@@ -27,5 +34,5 @@
             <span class="badge badge-pill badge-secondary score-badge">2 for 1</span>
         {/if}
     </div>
-    <PlayerName player={pairing.player2} left_or_right="right"/>
+    <PlayerName player={right_player} left_or_right="right"/>
 </div>

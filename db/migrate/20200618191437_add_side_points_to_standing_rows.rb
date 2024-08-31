@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddSidePointsToStandingRows < ActiveRecord::Migration[5.2]
   def change
     add_column :standing_rows, :corp_points, :integer

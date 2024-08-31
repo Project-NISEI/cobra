@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 RSpec.describe 'destroying players' do
   let(:tournament) { create(:tournament) }
-  let!(:player) { create(:player, tournament: tournament) }
+  let!(:player) { create(:player, tournament:) }
 
   before do
     sign_in tournament.user
-    round = create(:round, tournament: tournament)
-    create(:pairing, round: round, player1: player, player2: nil)
+    round = create(:round, tournament:)
+    create(:pairing, round:, player1: player, player2: nil)
 
     visit tournament_players_path(tournament)
   end
@@ -23,6 +25,6 @@ RSpec.describe 'destroying players' do
   it 'redirects to players page' do
     click_link 'Delete'
 
-    expect(current_path).to eq(tournament_players_path(tournament))
+    expect(page).to have_current_path(tournament_players_path(tournament), ignore_query: true)
   end
 end

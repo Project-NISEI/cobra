@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Standing
   attr_reader :player, :points, :sos, :extended_sos, :corp_points, :runner_points
 

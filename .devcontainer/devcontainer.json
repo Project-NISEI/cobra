@@ -1,0 +1,99 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ruby-rails-postgres
+{
+    "name": "Cobra Devcontainer",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    // Features to add to the dev container. More info: https://containers.dev/features.
+    "features": {
+        "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+            "packages": "libpq-dev, libvips, postgresql-client" // For postgres tooling
+        },
+        "ghcr.io/devcontainers/features/git:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/ruby:1": {
+            "version": "3.2.4" // Change to match Ruby version from Gemfile
+        },
+        "ruby": "3.2.4",
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": 20 // Change Node version as required
+        },
+        "ghcr.io/devcontainers/features/common-utils:2.4.3": {
+            "username": "vscode",
+            "uid": 1000,
+            "gid": 1000,
+            "upgradePackages": true
+        }
+    },
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // This can be used to network with other containers or the host.
+    "forwardPorts": [3000, 5432],
+    // Use 'postCreateCommand' to run commands after the container is created.
+    "postCreateCommand": "bundle install && bundle exec rake db:setup && npm install",
+    // Configure tool-specific properties.
+    "customizations": {
+        "vscode": {
+            // Set *default* container specific settings.json values on container create.
+            "settings": {
+                "workbench.iconTheme": "vscode-icons",
+                "emmet.includeLanguages": {
+                    "erb": "html"
+                },
+                "sqltools.connections": [
+                    {
+                        "name": "Rails Development Database",
+                        "driver": "PostgreSQL",
+                        "previewLimit": 50,
+                        "server": "db",
+                        "port": 5432,
+                        // Keep this updated to match config/database.yml
+                        "database": "cobra_development",
+                        "username": "cobra",
+                        "password": "cobra"
+                    },
+                    {
+                        "name": "Rails Test Database",
+                        "driver": "PostgreSQL",
+                        "previewLimit": 50,
+                        "server": "db",
+                        "port": 5432,
+                        // Keep this updated to match config/database.yml
+                        "database": "cobra_test",
+                        "username": "cobra",
+                        "password": "cobra"
+                    }
+                ],
+                "ruby.format": "rubocop",
+                "rubocop.yjitEnabled": false,
+                "editor.formatOnSave": false,
+                "rubyLsp.rubyExecutablePath": "/usr/local/bin/ruby",
+                "rubyLsp.rubyVersionManager": {
+                  "identifier": "custom"
+                }
+            },
+            "extensions": [
+                "aki77.rails-db-schema",
+                "bung87.rails",
+                "bung87.vscode-gemfile",
+                "connorshea.vscode-ruby-test-adapter",
+                "eamodio.gitlens",
+                "github.vscode-github-actions",
+                "hbenl.vscode-test-explorer",
+                "IBM.output-colorizer",
+                "iliazeus.vscode-ansi",
+                "manuelpuyol.erb-linter",
+                "ms-azuretools.vscode-docker",
+                "mtxr.sqltools-driver-pg",
+                "mtxr.sqltools",
+                "rubocop.vscode-rubocop",
+                "svelte.svelte-vscode",
+                "vscode-icons-team.vscode-icons",
+                "waderyan.gitblame"
+            ]
+        }
+    },
+    // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    // "remoteUser": "root"
+}

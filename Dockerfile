@@ -3,7 +3,7 @@ FROM ruby:3.2.3-alpine3.19 AS base
 
 # Install essential Linux packages and nodejs
 RUN apk -U upgrade && apk add --no-cache \
-  postgresql-client tzdata nodejs gcompat \
+  postgresql-client tzdata nodejs npm gcompat \
   && rm -rf /var/cache/apk/*
 
 # Define where our application will live inside the image
@@ -12,11 +12,11 @@ ENV BUNDLE_ROOT /var/www/bundle
 
 
 #####################################################################
-FROM base as build
+FROM base AS build
 
 # Install build packages
 RUN apk -U upgrade && apk add --no-cache \
-  bash build-base libpq-dev ca-certificates npm \
+  bash build-base libpq-dev ca-certificates \
   && rm -rf /var/cache/apk/*
 
 # Create application home. App server will need the pids dir so just create everything in one shot
@@ -33,10 +33,10 @@ COPY Gemfile Gemfile.lock package.json package-lock.json ./
 # Prevent bundler warnings; ensure that the bundler version executed is >= that which created Gemfile.lock
 RUN gem install bundler
 
-# Finish establishing our Ruby enviornment
+# Finish establishing our Ruby environment
 RUN bundle config set --local path $BUNDLE_ROOT && \
   bundle config set force_ruby_platform true && \
-  bundle install --jobs 4 --retry 3
+  bundle install --verbose
 RUN npm install
 
 COPY . $RAILS_ROOT/
@@ -56,7 +56,8 @@ COPY --from=build $RAILS_ROOT $RAILS_ROOT/
 COPY --from=build $BUNDLE_ROOT $BUNDLE_ROOT/
 
 EXPOSE 3000
+RUN chmod +x ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
 
-# Define the script we want run once the container boots
-# Use the "exec" form of CMD so our script shuts down gracefully on SIGTERM (i.e. `docker stop`)
-CMD [ "/bin/sh", "-c", "bundle exec unicorn -c config/containers/unicorn.rb -E $RAILS_ENV"]
+# Start the main process.
+CMD ["/bin/sh", "-c", "bundle exec puma"]

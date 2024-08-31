@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class AddDeckUserId < ActiveRecord::Migration[7.0]
   def change
     add_reference :decks, :user
-    Deck.all.each do |deck|
+    Deck.all.find_each do |deck|
       deck.update(user_id: deck.player.user_id)
     end
   end

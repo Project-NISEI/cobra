@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'creating a tournament' do
   before do
     sign_in create(:user)
@@ -23,15 +25,15 @@ RSpec.describe 'creating a tournament' do
     aggregate_failures do
       expect(subject.name).to eq('Test Tournament')
       expect(subject.stream_url).to eq('https://twitch.tv')
-      expect(subject.created_at).not_to eq(nil)
-      expect(subject.manual_seed?).to eq(true)
+      expect(subject.created_at).not_to be_nil
+      expect(subject.manual_seed?).to be(true)
     end
   end
 
   it 'redirects to tournament page' do
     click_button 'Create'
 
-    expect(page.current_path).to eq(tournament_path(Tournament.last))
+    expect(page).to have_current_path(tournament_path(Tournament.last), ignore_query: true)
     expect(page).to have_content('Test Tournament')
   end
 end

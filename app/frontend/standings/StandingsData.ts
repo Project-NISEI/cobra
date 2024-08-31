@@ -1,5 +1,19 @@
 import type {Identity} from "../identities/Identity";
 
+declare namespace Routes {
+    function standings_data_tournament_players_path(tournamentId: string): string;
+}
+
+export async function loadStandings(tournamentId: string): Promise<StandingsData> {
+    const response = await fetch(
+        Routes.standings_data_tournament_players_path(tournamentId),
+        {
+            method: 'GET',
+        }
+    );
+    return response.json();
+}
+
 export type StandingsData = {
     manual_seed: boolean;
     stages: Stage[];

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'creating pairings' do
   let(:round) { create(:round) }
   let!(:player1) { create(:player, tournament: round.tournament) }

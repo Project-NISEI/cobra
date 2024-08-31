@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'creating a player' do
   let(:tournament) { create(:tournament) }
 
@@ -25,7 +27,7 @@ RSpec.describe 'creating a player' do
         expect(subject.name).to eq('Jack')
         expect(subject.corp_identity).to eq('Haas-Bioroid: Engineering the Future')
         expect(subject.runner_identity).to eq('Noise')
-        expect(subject.first_round_bye).to eq(true)
+        expect(subject.first_round_bye).to be(true)
         expect(subject.tournament).to eq(tournament)
         expect(subject.user_id).to be_nil
       end
@@ -34,7 +36,7 @@ RSpec.describe 'creating a player' do
     it 'redirects to players page' do
       click_button 'Create'
 
-      expect(page.current_path).to eq(tournament_players_path(tournament))
+      expect(page).to have_current_path(tournament_players_path(tournament), ignore_query: true)
     end
 
     it 'creates registration' do

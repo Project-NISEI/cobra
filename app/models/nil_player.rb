@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NilPlayer
   def to_partial_path
     'players/player'

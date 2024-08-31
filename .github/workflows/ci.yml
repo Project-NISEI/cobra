@@ -5,10 +5,15 @@
 # This workflow will install a prebuilt Ruby version, install dependencies, and
 # run tests and linters.
 name: "CI"
+
 on:
   push:
-    branches: [ main, deploy/** ]
+    branches: [main, deploy/**]
   pull_request:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
 
 env:
   IMAGENAME: registry.digitalocean.com/nsgcr/cobra
@@ -41,7 +46,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
@@ -50,12 +55,11 @@ jobs:
 
       - name: Set up Rails
         run: |
-          cp config/secrets.example.yml config/secrets.yml
           cp config/database.ci.yml config/database.yml
 
       - name: Set up database schema
         run: |
-          bin/rails db:create db:schema:load --trace
+          bin/rails db:reset --trace
 
       - name: Install NPM
         uses: actions/setup-node@v4
@@ -65,8 +69,11 @@ jobs:
       - name: Install NPM dependencies
         run: npm install
 
-      - name: Run tests
+      - name: Run rspec tests
         run: bundle exec rspec
+
+      - name: Run rails tests
+        run: bundle exec rails test
 
       - name: Plan deployment
         id: plan-deployment
@@ -80,50 +87,55 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
       - name: Security audit dependencies
-        run: bundle exec bundler-audit --update
+        # TODO(plural): Remove the bootstrap issue when we move to 5 or a fix is issued.
+        run: bundle exec bundler-audit --update --ignore=CVE-2024-6531
       - name: Security audit application code
         run: bundle exec brakeman -q -w2
-      # - name: Lint Ruby files
-      #   run: bin/rubocop --parallel
+      - name: Lint Ruby files
+        run: bundle exec rubocop --parallel
 
   build_and_push:
     name: Build docker image
-    needs: [ test, lint ]
+    if: (github.ref == 'refs/heads/main') || (github.event_name == 'release')
+
+    needs: [test, lint]
     runs-on: ubuntu-latest
     steps:
 
       - name: Checkout the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build image
-        run: docker build -t $IMAGENAME:latest .
-
       - name: Install doctl
-        if: github.ref == 'refs/heads/main'
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DO Container Registry
-        if: github.ref == 'refs/heads/main'
         run: doctl registry login --expiry-seconds 600
 
-      - name: Tag image with run id
-        if: github.ref == 'refs/heads/main'
-        run: docker tag $IMAGENAME:latest $IMAGENAME:${{ github.run_id }}
+      - name: Build image
+        env:
+          IMAGETAG: ${{ github.ref == 'refs/heads/main' && 'latest' || github.ref_name }}
+        run: docker build -t $IMAGENAME:$IMAGETAG .
 
-      - name: Push image to DO Container Registry
-        if: github.ref == 'refs/heads/main'
-        run: docker push $IMAGENAME:${{ github.run_id }} && docker push $IMAGENAME:latest
+      - name: Tag image
+        env:
+          IMAGETAG: ${{ github.ref == 'refs/heads/main' && 'latest' || github.ref_name }}
+        run: docker tag $IMAGENAME:$IMAGETAG $IMAGENAME:${{ github.run_id }}
+
+      - name: Publish image to container registry
+        env:
+          IMAGETAG: ${{ github.ref == 'refs/heads/main' && 'latest' || github.ref_name }}
+        run: docker push -a $IMAGENAME
 
   deploy:
     name: Deploy
@@ -135,7 +147,7 @@ jobs:
         working-directory: deploy
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -144,7 +156,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Pulumi up
         id: pulumi
-        uses: pulumi/actions@v3
+        uses: pulumi/actions@v5
         with:
           command: up
           stack-name: ${{ needs.test.outputs.deploy-stack }}
@@ -157,5 +169,15 @@ jobs:
         run: |
           bin/scan-droplet-ssh
           bin/wait-for-cloud-init
-      - name: Deploy code
-        run: bin/github-actions-deploy-in-droplet
+      - name: Set droplet environment variables
+        run: bin/github-actions-set-droplet-env
+      - name: Update Git repositories
+        run: bin/github-actions-redirect-to-droplet bin/in-droplet/update-git
+      - name: Deploy NGINX
+        run: bin/github-actions-redirect-to-droplet bin/in-droplet/deploy-nginx
+      - name: Configure Cobra
+        run: bin/github-actions-redirect-to-droplet bin/in-droplet/configure-cobra
+      - name: Build Cobra
+        run: bin/github-actions-ssh cobra/bin/build
+      - name: Deploy Cobra
+        run: bin/github-actions-ssh cobra/bin/deploy

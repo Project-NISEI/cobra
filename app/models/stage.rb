@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Stage < ApplicationRecord
   belongs_to :tournament, touch: true
   has_many :rounds, dependent: :destroy
@@ -10,16 +12,17 @@ class Stage < ApplicationRecord
 
   enum format: {
     swiss: 0,
-    double_elim: 1
+    double_elim: 1,
+    single_sided_swiss: 2
   }
 
   def pair_new_round!
-    new_round!.tap { |round| round.pair! }
+    new_round!.tap(&:pair!)
   end
 
   def new_round!
     number = (rounds.pluck(:number).max || 0) + 1
-    rounds.create(number: number, length_minutes: default_round_minutes)
+    rounds.create(number:, length_minutes: default_round_minutes)
   end
 
   def standings
@@ -35,11 +38,11 @@ class Stage < ApplicationRecord
   end
 
   def single_sided?
-    double_elim?
+    double_elim? || single_sided_swiss?
   end
 
   def default_round_minutes
-    if double_elim?
+    if single_sided?
       40
     else
       65

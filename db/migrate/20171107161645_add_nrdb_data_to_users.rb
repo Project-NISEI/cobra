@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddNrdbDataToUsers < ActiveRecord::Migration[5.0]
   def change
     add_column :users, :nrdb_id, :integer

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :pairing do
     round
@@ -5,5 +7,6 @@ FactoryBot.define do
     association :player2, factory: :player
     score1 { 0 }
     score2 { 0 }
+    side { nil }
   end
 end

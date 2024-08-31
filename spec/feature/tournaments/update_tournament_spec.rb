@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'updating tournament' do
   let(:tournament) do
     create(:tournament, name: 'Old Tournament Name')
@@ -23,8 +25,8 @@ RSpec.describe 'updating tournament' do
       expect(tournament.name).to eq('New Tournament Name')
       expect(tournament.date.to_s).to eq('2017-01-01')
       expect(tournament.stream_url).to eq('https://twitch.tv')
-      expect(tournament.private?).to eq(true)
-      expect(tournament.manual_seed?).to eq(true)
+      expect(tournament.private?).to be(true)
+      expect(tournament.manual_seed?).to be(true)
     end
   end
 end

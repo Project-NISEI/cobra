@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'listing rounds' do
   let(:tournament) { create(:tournament) }
 
@@ -37,8 +39,9 @@ RSpec.describe 'listing rounds' do
           expect(page).not_to have_content('Round 1')
           expect(page).to have_content('Round 2')
           expect(page).to have_content(
-                            'Due to the number of players, only the most recent round will be ' \
-                              'displayed on this page to help page load.')
+            'Due to the number of players, only the most recent round will be ' \
+              'displayed on this page to help page load.'
+          )
         end
       end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NilStage
   def players
     Player.none

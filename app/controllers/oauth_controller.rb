@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OauthController < ApplicationController
   before_action :skip_authorization
 
@@ -14,7 +16,7 @@ class OauthController < ApplicationController
 
   def callback
     if callback_code
-      token_data = Nrdb::Oauth.get_access_token(callback_code, request.host)
+      token_data = Nrdb::Oauth.get_access_token(callback_code)
 
       user_data = Nrdb::Connection.new(nil, token_data[:access_token]).player_info.first
 
@@ -27,13 +29,9 @@ class OauthController < ApplicationController
 
       session[:user_id] = user.id
 
-      if session[:return_to]
-        redirect_to session[:return_to]
-      else
-        redirect_to root_path
-      end
+      redirect_to session[:return_to] || root_path
     else
-      render json: { message: :failed }, status: 500
+      render json: { message: :failed }, status: :internal_server_error
     end
   end
 
