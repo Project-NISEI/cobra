@@ -41,10 +41,8 @@ RUN npm install
 
 COPY . $RAILS_ROOT/
 RUN cp $RAILS_ROOT/config/database.build.yml $RAILS_ROOT/config/database.yml \
-    && cp $RAILS_ROOT/config/secrets.build.yml $RAILS_ROOT/config/secrets.yml \
     && RAILS_ENV=production bundle exec rake assets:precompile --trace \
-    && rm $RAILS_ROOT/config/database.yml \
-    && rm $RAILS_ROOT/config/secrets.yml
+    && rm $RAILS_ROOT/config/database.yml
 
 
 #####################################################################

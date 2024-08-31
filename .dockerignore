@@ -25,5 +25,4 @@
 /config/database*
 /config/secrets*
 !/config/database.build.yml
-!/config/secrets.build.yml
 /data
