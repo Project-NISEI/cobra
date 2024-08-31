@@ -91,7 +91,7 @@ Rails.application.configure do
   config.nrdb = {
     client_id: ENV['NRDB_CLIENT'],
     client_secret: ENV['NRDB_SECRET'],
-    redirect_uri: ENV['NRDB_REDIRECT_URI']
+    redirect_uri: "https://#{ENV['COBRA_DOMAIN']}/oauth/callback"
   }
   config.nrdb_api_host = 'https://api.netrunnerdb.com'
 
