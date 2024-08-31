@@ -40,6 +40,9 @@ RUN bundle config set --local path $BUNDLE_ROOT && \
 RUN npm install
 
 COPY . $RAILS_ROOT/
+
+# Precompile assets with dummy values for secret key base and database connection (these will not be used elsewhere)
+ENV SECRET_KEY_BASE=55ca41d1c22ee9842aeef2aa5641c063f369e142723586958bd3b36921ca7026bdbf8b98a78376510bd351f790ed99c308e8cf5633b6e4ac678a0e8ef998f6dc
 RUN cp $RAILS_ROOT/config/database.build.yml $RAILS_ROOT/config/database.yml \
     && RAILS_ENV=production bundle exec rake assets:precompile --trace \
     && rm $RAILS_ROOT/config/database.yml
