@@ -29,7 +29,13 @@ run_as_app() {
 }
 
 compose_for_deploy up -d db
-compose_for_deploy exec -T db bash < "${DB_SCRIPTS_DIR}/wait-for-postgres.sh"
+
+RETRIES=10
+until compose_for_deploy exec -T db bash -c "psql --username=postgres -c \"select 1\" > /dev/null 2>&1" || [ $RETRIES -eq 0 ]; do
+  echo "Waiting for postgres server, $((RETRIES--)) remaining attempts..."
+  sleep 5
+done
+echo "Found postgres server"
 
 COBRA_DB_FOUND=$(compose_for_deploy exec db psql --username=postgres \
   -c "SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('$DB_NAME');" --csv \
