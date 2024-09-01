@@ -33,6 +33,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'vite_rails'
 
 group :development, :test do
+  gem 'bullet'
   gem 'brakeman', '~> 5.2'
   gem 'pry'
 end

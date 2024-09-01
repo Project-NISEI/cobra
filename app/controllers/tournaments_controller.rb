@@ -10,7 +10,8 @@ class TournamentsController < ApplicationController
   def index
     authorize Tournament
 
-    @tournaments = Tournament.where(private: false)
+    @tournaments = Tournament.includes(:user)
+                             .where(private: false)
                              .order(date: :desc)
                              .limit(20)
   end
@@ -108,7 +109,7 @@ class TournamentsController < ApplicationController
   def destroy
     authorize @tournament
 
-    @tournament.destroy!
+    Tournament.includes(players: %i[decks registrations standing_rows]).find(@tournament.id).destroy!
 
     redirect_to tournaments_path
   end

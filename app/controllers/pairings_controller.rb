@@ -7,7 +7,7 @@ class PairingsController < ApplicationController
   def index
     authorize @tournament, :show?
 
-    @pairings = round.pairings.inject([]) do |pairings, p|
+    @pairings = round.pairings.includes(:player1, :player2).inject([]) do |pairings, p|
       pairings << {
         table_number: p.table_number,
         player1_name: p.player1.name_with_pronouns,
