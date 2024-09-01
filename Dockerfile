@@ -41,6 +41,12 @@ RUN npm install
 
 COPY . $RAILS_ROOT/
 
+# Precompile assets with dummy values for secret key base and database connection (these will not be used elsewhere)
+ENV SECRET_KEY_BASE_DUMMY=precompile-assets-only
+RUN cp $RAILS_ROOT/config/database.build.yml $RAILS_ROOT/config/database.yml \
+    && RAILS_ENV=production bundle exec rake assets:precompile --trace \
+    && rm $RAILS_ROOT/config/database.yml
+
 
 #####################################################################
 FROM base AS final

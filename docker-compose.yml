@@ -21,8 +21,6 @@ services:
     volumes:
       - ./config/database.yml:/var/www/cobra/config/database.yml
       - cobra-logs:/var/www/cobra/log
-      - cobra-assets:/var/www/cobra/public/assets
-      - cobra-vite:/var/www/cobra/public/vite
       - cobra-tmp:/var/www/cobra/tmp
 
   # service configuration for our database
@@ -42,8 +40,6 @@ services:
       - ./postgres-docker-init.sql:/docker-entrypoint-initdb.d/postgres-docker-init.sql
 
 volumes:
-  cobra-assets:
-  cobra-vite:
   cobra-logs:
   cobra-postgres:
   cobra-tmp:

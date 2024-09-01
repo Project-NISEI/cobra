@@ -29,9 +29,6 @@ compose_for_deploy build app
 echo "Initialising DB..."
 bin/init-db app-in-docker
 
-echo "Precompiling assets..."
-compose_for_deploy run --rm app bundle exec rake assets:precompile --trace
-
 if [ "$COMPOSE_FILE_TYPE" == "prod" ]; then
   compose_for_deploy up -d app --force-recreate
 elif [ "$COMPOSE_FILE_TYPE" == "staging" ]; then
