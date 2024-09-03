@@ -29,6 +29,9 @@ h3.mt-2.col-12 Unpaired players
   - @round.unpaired_players.each do |player|
     = render player
   h3.mt-2.col-12 Create pairing
+  - if @round.stage.single_sided?
+    .mt-2.col-12 This is a round for a single-sided stage so you will need to set sides after creating pairings.
+    .mt-2.col-12
   = simple_form_for @round.pairings.build, url: tournament_round_pairings_path(@round.tournament, @round), html: { class: 'form-inline col-12' } do |f|
     = f.text_field :table_number, placeholder: 'Table number', class: 'form-control'
     = pairing_player_select(f, :player1_id, @round)
