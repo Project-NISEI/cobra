@@ -34,6 +34,7 @@ gem 'vite_rails'
 
 group :development, :test do
   gem 'brakeman', '~> 5.2'
+  gem 'bullet'
   gem 'pry'
 end
 

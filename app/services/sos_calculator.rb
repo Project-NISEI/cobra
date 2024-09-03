@@ -2,7 +2,7 @@
 
 class SosCalculator
   def self.calculate!(stage)
-    players = stage.players.index_by(&:id)
+    players = stage.players.includes(:tournament).index_by(&:id)
 
     # calculate points and cache values for sos calculations
     points = {}
