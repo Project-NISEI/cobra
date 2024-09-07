@@ -49,7 +49,7 @@
                         "server": "db",
                         "port": 5432,
                         // Keep this updated to match config/database.yml
-                        "database": "cobra_development",
+                        "database": "cobra",
                         "username": "cobra",
                         "password": "cobra"
                     },
