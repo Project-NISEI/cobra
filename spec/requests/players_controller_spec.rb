@@ -563,7 +563,8 @@ RSpec.describe PlayersController do
       'extended_sos' => 0,
       'runner_points' => 0,
       'corp_points' => 0,
-      'manual_seed' => nil
+      'manual_seed' => nil,
+      'side_bias' => nil
     }
   end
 
@@ -577,7 +578,8 @@ RSpec.describe PlayersController do
       'extended_sos' => extended_sos,
       'runner_points' => 0,
       'corp_points' => 0,
-      'manual_seed' => nil
+      'manual_seed' => nil,
+      'side_bias' => nil
     }
   end
 

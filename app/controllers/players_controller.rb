@@ -184,7 +184,8 @@ class PlayersController < ApplicationController
         extended_sos: row.extended_sos,
         corp_points: row.corp_points || 0,
         runner_points: row.runner_points || 0,
-        manual_seed: row.manual_seed
+        manual_seed: row.manual_seed,
+        side_bias: stage.format == 'single_sided_swiss' ? row.player.side_bias : nil
       }
     end
   end
@@ -200,7 +201,8 @@ class PlayersController < ApplicationController
         extended_sos: 0,
         corp_points: 0,
         runner_points: 0,
-        manual_seed: player.manual_seed
+        manual_seed: player.manual_seed,
+        side_bias: stage.format == 'single_sided_swiss' ? player.side_bias : nil
       }
     end
   end
