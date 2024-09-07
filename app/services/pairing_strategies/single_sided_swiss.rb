@@ -2,6 +2,11 @@
 
 module PairingStrategies
   class SingleSidedSwiss < Swiss
+    def initialize(round, random = Random)
+      super
+      @BYE_WINNER_SCORE = 3
+    end
+
     def pair!
       super
 

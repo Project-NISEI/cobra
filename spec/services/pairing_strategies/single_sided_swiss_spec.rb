@@ -286,6 +286,16 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
         round.reload
         expect(round.pairings.count).to eq(2)
         expect(round.pairings.map(&:players).flatten).to contain_exactly(snap, crackle, pop, nil_player)
+        # Byes for Single-sided swiss are only worth 3 points.
+        round.pairings.each do |pairing|
+          if pairing.players.include? nil_player
+            if pairing.player1_id.nil?
+              expect(pairing.score2).to eq(3)
+            else
+              expect(pairing.score1).to eq(3)
+            end
+          end
+        end
       end
 
       it 'assigns sides' do
