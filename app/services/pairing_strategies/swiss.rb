@@ -4,8 +4,8 @@ module PairingStrategies
   class Swiss < Base
     def initialize(round, random = Random)
       super
-      @BYE_WINNER_SCORE = 6
-      @BYE_LOSER_SCORE = 0
+      @bye_winner_score = 6
+      @bye_loser_score = 0
     end
 
     def pair!
@@ -33,8 +33,8 @@ module PairingStrategies
         round.pairings.create(
           player1: player,
           player2: nil,
-          score1: @BYE_WINNER_SCORE,
-          score2: @BYE_LOSER_SCORE
+          score1: @bye_winner_score,
+          score2: @bye_loser_score
         )
       end
     end
@@ -65,7 +65,7 @@ module PairingStrategies
     def auto_score(pairing, player_index)
       return unless pairing[0] == SwissImplementation::Bye || pairing[1] == SwissImplementation::Bye
 
-      pairing[player_index] == SwissImplementation::Bye ? @BYE_LOSER_SCORE : @BYE_WINNER_SCORE
+      pairing[player_index] == SwissImplementation::Bye ? @bye_loser_score : @bye_winner_score
     end
 
     def apply_numbers!(sorter)
