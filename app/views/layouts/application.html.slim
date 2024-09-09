@@ -50,7 +50,7 @@ html
                 => fa_icon 'video-camera'
           .col.col-md-auto.mb-md-0.mb-2
             = link_to timer_tournament_path(@tournament)
-              = render 'rounds/round_timer', round: @tournament.rounds.last
+              = render 'rounds/round_timer', round: @tournament.rounds.includes([:round_timer_activations]).last
         ul.nav.nav-tabs.dontprint
           - if policy(@tournament).show?
             li.nav-item= link_to tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name != 'edit'}" do
