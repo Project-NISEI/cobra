@@ -110,6 +110,10 @@ class Pairing < ApplicationRecord
     player1 == player ? player1_side : player2_side
   end
 
+  def table_label
+    stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}"
+  end
+
   private
 
   def normalise_scores_before_save

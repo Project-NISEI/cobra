@@ -6,17 +6,17 @@
     export let stage: Stage;
     export let round: Round;
     export let pairing: Pairing;
-    let left_player = pairing.player1
-    let right_player = pairing.player2
+    let left_player = pairing.player1;
+    let right_player = pairing.player2;
     if (stage.format == 'single_sided_swiss' && pairing.player2.side == 'corp') {
-        left_player = pairing.player2
-        right_player = pairing.player1
+        left_player = pairing.player2;
+        right_player = pairing.player1;
     }
 </script>
 
 <div class="row m-1 round_pairing align-items-center table_{pairing.table_number}">
     <div class="col-sm-2">
-        Table {pairing.table_number}
+        {pairing.table_label}
     </div>
     {#if pairing.policy.view_decks}
         <a href="{round.id}/pairings/{pairing.id}/view_decks">

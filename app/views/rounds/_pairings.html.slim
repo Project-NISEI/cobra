@@ -11,7 +11,7 @@
     - right_player_number = 1
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user}"
     .col-sm-2
-      | Table #{pairing.table_number}
+      | #{pairing.table_label}
       - if @tournament.allow_streaming_opt_out? && policy(round.tournament).edit?
         - if pairing.player_ids.all? { |player_id| @players[player_id].include_in_stream? }
           = fa_icon 'video-camera',
