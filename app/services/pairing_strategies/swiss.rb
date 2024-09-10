@@ -81,7 +81,7 @@ module PairingStrategies
         pairing.update(table_number:)
       end
 
-      round.pairings.bye.each_with_index do |pairing, i|
+      round.pairings.bye.each do |pairing|
         fixed_table = pairing.fixed_table_number
         if fixed_table
           table_number = fixed_table
