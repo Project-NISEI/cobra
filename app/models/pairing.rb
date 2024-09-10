@@ -114,6 +114,11 @@ class Pairing < ApplicationRecord
     stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}"
   end
 
+  def fixed_table_number
+    players.each { |player| return player.fixed_table_number if player.fixed_table_number? }
+    nil
+  end
+
   private
 
   def normalise_scores_before_save

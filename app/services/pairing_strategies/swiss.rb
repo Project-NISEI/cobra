@@ -69,13 +69,27 @@ module PairingStrategies
     end
 
     def apply_numbers!(sorter)
-      sorter.sort(round.pairings.non_bye).each_with_index do |pairing, i|
-        pairing.update(table_number: i + 1)
+      next_table = 1
+      sorter.sort(round.pairings.non_bye).each do |pairing|
+        fixed_table = pairing.fixed_table_number
+        if fixed_table
+          table_number = fixed_table
+        else
+          table_number = next_table
+          next_table += 1
+        end
+        pairing.update(table_number:)
       end
 
-      non_bye_tables = round.pairings.non_bye.count
       round.pairings.bye.each_with_index do |pairing, i|
-        pairing.update(table_number: i + non_bye_tables + 1)
+        fixed_table = pairing.fixed_table_number
+        if fixed_table
+          table_number = fixed_table
+        else
+          table_number = next_table
+          next_table += 1
+        end
+        pairing.update(table_number:)
       end
     end
 
