@@ -66,12 +66,14 @@ RSpec.describe RoundsController do
                            'player1' => player_with_no_ids('Charlie (she/her)'),
                            'player2' => player_with_no_ids('Bob (he/him)'),
                            'policy' => { 'view_decks' => false },
-                           'score_label' => ' - ', 'table_number' => 1, 'two_for_one' => false },
+                           'score_label' => ' - ', 'two_for_one' => false,
+                           'table_label' => 'Table 1', 'table_number' => 1 },
                          { 'intentional_draw' => false,
                            'player1' => player_with_no_ids('Alice (she/her)'),
                            'player2' => bye_player,
                            'policy' => { 'view_decks' => false },
-                           'score_label' => '6 - 0', 'table_number' => 2, 'two_for_one' => false }
+                           'score_label' => '6 - 0', 'two_for_one' => false,
+                           'table_label' => 'Table 2', 'table_number' => 2 }
                        ], 'pairings_reported' => 1
                      }
                    ] }]
@@ -93,12 +95,14 @@ RSpec.describe RoundsController do
                            'player1' => player_with_no_ids('Charlie (she/her)'),
                            'player2' => player_with_no_ids('Bob (he/him)'),
                            'policy' => { 'view_decks' => false }, # sees player view as a player
-                           'score_label' => ' - ', 'table_number' => 1, 'two_for_one' => false },
+                           'score_label' => ' - ', 'two_for_one' => false,
+                           'table_label' => 'Table 1', 'table_number' => 1 },
                          { 'intentional_draw' => false,
                            'player1' => player_with_no_ids('Alice (she/her)'),
                            'player2' => bye_player,
                            'policy' => { 'view_decks' => false }, # sees player view as a player
-                           'score_label' => '6 - 0', 'table_number' => 2, 'two_for_one' => false }
+                           'score_label' => '6 - 0', 'two_for_one' => false,
+                           'table_label' => 'Table 2', 'table_number' => 2 }
                        ], 'pairings_reported' => 1
                      }
                    ] }]
@@ -129,12 +133,14 @@ RSpec.describe RoundsController do
                              'player1' => player_with_no_ids('Charlie (she/her)'),
                              'player2' => player_with_no_ids('Bob (he/him)'),
                              'policy' => { 'view_decks' => false },
-                             'score_label' => ' - ', 'table_number' => 1, 'two_for_one' => false },
+                             'score_label' => ' - ', 'two_for_one' => false,
+                             'table_label' => 'Table 1', 'table_number' => 1 },
                            { 'intentional_draw' => false,
                              'player1' => player_with_no_ids('Alice (she/her)'),
                              'player2' => bye_player,
                              'policy' => { 'view_decks' => false },
-                             'score_label' => '6 - 0', 'table_number' => 2, 'two_for_one' => false }
+                             'score_label' => '6 - 0', 'two_for_one' => false,
+                             'table_label' => 'Table 2', 'table_number' => 2 }
                          ], 'pairings_reported' => 1
                        }
                      ] },
@@ -146,7 +152,8 @@ RSpec.describe RoundsController do
                              'player1' => player_with_no_ids('Bob (he/him)'),
                              'player2' => player_with_no_ids('Charlie (she/her)'),
                              'policy' => { 'view_decks' => false },
-                             'score_label' => ' - ', 'table_number' => 1, 'two_for_one' => false }
+                             'score_label' => ' - ', 'two_for_one' => false,
+                             'table_label' => 'Game 1', 'table_number' => 1 }
                          ], 'pairings_reported' => 0
                        }
                      ] }
