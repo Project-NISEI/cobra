@@ -15,7 +15,7 @@ module PairingStrategies
         round.pairings.create(pairing_params(pairing))
       end
 
-      apply_numbers!(PairingSorters::Ranked)
+      apply_numbers!
     end
 
     def self.get_pairings(players)
@@ -68,9 +68,9 @@ module PairingStrategies
       pairing[player_index] == SwissImplementation::Bye ? @bye_loser_score : @bye_winner_score
     end
 
-    def apply_numbers!(sorter)
+    def apply_numbers!
       next_table = 1
-      sorter.sort(round.pairings.non_bye).each do |pairing|
+      PairingSorters::Ranked.sort(round.pairings.non_bye).each do |pairing|
         fixed_table = pairing.fixed_table_number
         if fixed_table
           table_number = fixed_table
