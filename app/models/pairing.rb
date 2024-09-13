@@ -114,9 +114,16 @@ class Pairing < ApplicationRecord
     stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}"
   end
 
+  def fixed_table_number?
+    players.any?(&:fixed_table_number?)
+  end
+
   def fixed_table_number
-    players.each { |player| return player.fixed_table_number if player.fixed_table_number? }
-    nil
+    players.filter(&:fixed_table_number?).map(&:fixed_table_number).min
+  end
+
+  def bye?
+    !(player1_id? && player2_id?)
   end
 
   private
