@@ -43,24 +43,36 @@ RSpec.describe SwissTables do
       alice_florence.update(score1: 6, score2: 0)
       bob_charlie.update(score1: 6, score2: 0)
       dave_eddie.update(score1: 6, score2: 0)
-      pairings = [alice_bob, charlie_dave, eddie_florence].freeze
+      pairings = [alice_bob, charlie_dave, eddie_florence].freeze # 12 points, 6 points, 0 points
 
       described_class.assign_table_numbers! pairings
 
       expect(pairings.map(&:table_number)).to contain_exactly(1, 5, 2)
     end
 
-    it 'chooses lowest fixed table number' do
+    it 'chooses lowest fixed table number for a pairing' do
       alice.update(fixed_table_number: 5)
       bob.update(fixed_table_number: 6)
       alice_florence.update(score1: 6, score2: 0)
       bob_charlie.update(score1: 6, score2: 0)
       dave_eddie.update(score1: 6, score2: 0)
-      pairings = [alice_bob, charlie_dave, eddie_florence].freeze
+      pairings = [alice_bob, charlie_dave, eddie_florence].freeze # 12 points, 6 points, 0 points
 
       described_class.assign_table_numbers! pairings
 
       expect(pairings.map(&:table_number)).to contain_exactly(5, 1, 2)
+    end
+
+    it 'excludes fixed table numbers when assigning other tables' do
+      alice.update(fixed_table_number: 2)
+      alice_florence.update(score1: 6, score2: 0)
+      bob_charlie.update(score1: 6, score2: 0)
+      dave_eddie.update(score1: 6, score2: 0)
+      pairings = [alice_bob, charlie_dave, eddie_florence].freeze # 12 points, 6 points, 0 points
+
+      described_class.assign_table_numbers! pairings
+
+      expect(pairings.map(&:table_number)).to contain_exactly(2, 1, 3)
     end
   end
 
