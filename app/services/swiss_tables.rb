@@ -38,7 +38,6 @@ module SwissTables
   end
 
   class Numbers
-
     def initialize
       @fixed_numbers = Set[]
       @next_number = 1
