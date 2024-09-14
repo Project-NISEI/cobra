@@ -18,7 +18,6 @@ RSpec.describe SwissTables do
   let(:dave_eddie) { create(:pairing, player1: dave, player2: eddie) }
 
   describe '#assign_table_numbers!' do
-
     it 'sorts non-bye pairings by number of points' do
       alice_florence.update(score1: 0, score2: 6)
       bob_charlie.update(score1: 6, score2: 0)
@@ -75,5 +74,4 @@ RSpec.describe SwissTables do
       expect(pairings.map(&:table_number)).to contain_exactly(2, 1, 3)
     end
   end
-
 end
