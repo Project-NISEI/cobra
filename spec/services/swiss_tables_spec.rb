@@ -19,40 +19,48 @@ RSpec.describe SwissTables do
 
   describe '#assign_table_numbers!' do
 
-    it 'sets numbers for non-bye pairings' do
-      pairings = [alice_bob, charlie_dave]
+    it 'sorts non-bye pairings by number of points' do
+      alice_florence.update(score1: 0, score2: 6)
+      bob_charlie.update(score1: 6, score2: 0)
+      dave_eddie.update(score1: 0, score2: 6)
+      pairings = [alice_bob, charlie_dave, eddie_florence].freeze # 6 points, 0 points, 12 points
 
       described_class.assign_table_numbers! pairings
 
-      expect(pairings.map(&:table_number)).to contain_exactly(1, 2)
+      expect(pairings.map(&:table_number)).to contain_exactly(2, 3, 1)
     end
 
     it 'puts bye pairing at the end' do
-      pairings = [alice_bye, bob_charlie]
+      pairings = [alice_bye, bob_charlie].freeze
 
       described_class.assign_table_numbers! pairings
 
       expect(pairings.map(&:table_number)).to contain_exactly(2, 1)
     end
 
-    it 'sorts by number of points' do
-      alice_florence.update(score1: 0, score2: 6)
-      bob_charlie.update(score1: 0, score2: 6)
-      dave_eddie.update(score1: 0, score2: 6)
-      pairings = [alice_bob, charlie_dave, eddie_florence] # 0 points, 6 points, 12 points
-
-      described_class.assign_table_numbers! pairings
-
-      expect(pairings.map(&:table_number)).to contain_exactly(3, 2, 1)
-    end
-
     it 'sets fixed table number' do
       charlie.update(fixed_table_number: 5)
-      pairings = [alice_bob, charlie_dave, eddie_florence]
+      alice_florence.update(score1: 6, score2: 0)
+      bob_charlie.update(score1: 6, score2: 0)
+      dave_eddie.update(score1: 6, score2: 0)
+      pairings = [alice_bob, charlie_dave, eddie_florence].freeze
 
       described_class.assign_table_numbers! pairings
 
       expect(pairings.map(&:table_number)).to contain_exactly(1, 5, 2)
+    end
+
+    it 'chooses lowest fixed table number' do
+      alice.update(fixed_table_number: 5)
+      bob.update(fixed_table_number: 6)
+      alice_florence.update(score1: 6, score2: 0)
+      bob_charlie.update(score1: 6, score2: 0)
+      dave_eddie.update(score1: 6, score2: 0)
+      pairings = [alice_bob, charlie_dave, eddie_florence].freeze
+
+      described_class.assign_table_numbers! pairings
+
+      expect(pairings.map(&:table_number)).to contain_exactly(5, 1, 2)
     end
   end
 
