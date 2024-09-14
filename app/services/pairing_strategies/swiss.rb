@@ -15,7 +15,7 @@ module PairingStrategies
         round.pairings.create(pairing_params(pairing))
       end
 
-      SwissTables::PairingOrder.new(round.pairings).apply_numbers!
+      SwissTables.assign_table_numbers!(round.pairings)
     end
 
     def self.get_pairings(players)

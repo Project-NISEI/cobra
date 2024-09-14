@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module SwissTables
+  def self.assign_table_numbers!(pairings)
+    PairingOrder.new(pairings).apply_numbers!
+  end
+
   class PairingOrder
     def initialize(pairings)
       @non_byes = []
