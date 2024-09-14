@@ -50,8 +50,8 @@ RSpec.describe SwissTables do
     end
 
     it 'chooses lowest fixed table number for a pairing' do
-      alice.update(fixed_table_number: 5)
-      bob.update(fixed_table_number: 6)
+      alice.update(fixed_table_number: 6)
+      bob.update(fixed_table_number: 5)
       alice_florence.update(score1: 6, score2: 0)
       bob_charlie.update(score1: 6, score2: 0)
       dave_eddie.update(score1: 6, score2: 0)
