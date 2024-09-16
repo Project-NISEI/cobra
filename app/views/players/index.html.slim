@@ -6,9 +6,15 @@
 
   .alert.alert-secondary.mt-4
     h5.mb-3 Register New Player
-    = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline d-block' } do |f|
+    = simple_form_for :player, url: tournament_players_path(@tournament), html: { class: 'form-inline d-block register-player' } do |f|
       = render 'form', f: f, organiser_view: true, new_registration: true
       .mt-2.text-right
+        a.btn.btn-link.text-info.mr-2.assign-table-number onclick="assignTableNumber()"
+          => fa_icon 'wheelchair'
+          | Assign table number
+        a.btn.btn-link.text-warning.mr-2.unassign-table-number.d-none onclick="unassignTableNumber()"
+          => fa_icon 'wheelchair'
+          | Unassign table number
         = button_tag type: :submit, class: 'btn btn-success',
                 data: { confirm: @tournament.registration_closed? ? 'Tournament is closed, add new player anyway?' : nil } do
           => fa_icon 'plus'
