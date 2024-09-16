@@ -38,6 +38,11 @@
               readonly: @tournament.nrdb_deck_registration?,
               placeholder: (@tournament.nrdb_deck_registration? ? '' : 'Search for runner ID'),
               class: 'form-control runner_identities'
+    .form-group.table-number class="#{defined?(player) ? player.fixed_table_number? ? '' : 'd-none' : 'd-none'}"
+      label.d-block for="player_fixed_table_number" Table number
+      = f.input_field :fixed_table_number,
+              placeholder: 'Enter table number',
+              class: 'form-control'
   - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
     .form-group
       label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
