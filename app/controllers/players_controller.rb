@@ -201,7 +201,8 @@ class PlayersController < ApplicationController
         extended_sos: 0,
         corp_points: 0,
         runner_points: 0,
-        manual_seed: player.manual_seed
+        manual_seed: player.manual_seed,
+        side_bias: nil
       }
     end
   end
