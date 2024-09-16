@@ -12,7 +12,7 @@ RSpec.describe SwissTables do
   let(:charlie_dave) { create(:pairing, player1: charlie, player2: dave) }
   let(:eddie_florence) { create(:pairing, player1: eddie, player2: florence) }
 
-  let(:alice_bye) { create(:pairing, player1: alice) }
+  let(:alice_bye) { create(:pairing, player1: alice, player2: nil) }
   let(:alice_florence) { create(:pairing, player1: alice, player2: florence) }
   let(:bob_charlie) { create(:pairing, player1: bob, player2: charlie) }
   let(:dave_eddie) { create(:pairing, player1: dave, player2: eddie) }
@@ -26,15 +26,16 @@ RSpec.describe SwissTables do
 
       described_class.assign_table_numbers! pairings
 
-      expect(pairings.map(&:table_number)).to contain_exactly(2, 3, 1)
+      expect(pairings.map(&:table_number)).to eq [2, 3, 1]
     end
 
     it 'puts bye pairing at the end' do
+      alice_bob.update(score1: 6, score2: 0)
       pairings = [alice_bye, bob_charlie].freeze
 
       described_class.assign_table_numbers! pairings
 
-      expect(pairings.map(&:table_number)).to contain_exactly(2, 1)
+      expect(pairings.map(&:table_number)).to eq [2, 1]
     end
 
     it 'sets fixed table number' do
@@ -46,7 +47,7 @@ RSpec.describe SwissTables do
 
       described_class.assign_table_numbers! pairings
 
-      expect(pairings.map(&:table_number)).to contain_exactly(1, 5, 2)
+      expect(pairings.map(&:table_number)).to eq [1, 5, 2]
     end
 
     it 'chooses lowest fixed table number for a pairing' do
@@ -59,7 +60,7 @@ RSpec.describe SwissTables do
 
       described_class.assign_table_numbers! pairings
 
-      expect(pairings.map(&:table_number)).to contain_exactly(5, 1, 2)
+      expect(pairings.map(&:table_number)).to eq [5, 1, 2]
     end
 
     it 'excludes fixed table numbers when assigning other tables' do
@@ -71,7 +72,18 @@ RSpec.describe SwissTables do
 
       described_class.assign_table_numbers! pairings
 
-      expect(pairings.map(&:table_number)).to contain_exactly(2, 1, 3)
+      expect(pairings.map(&:table_number)).to eq [2, 1, 3]
+    end
+
+    it 'puts bye before fixed tables' do
+      bob.update(fixed_table_number: 10)
+      alice_bob.update(score1: 6, score2: 0)
+      charlie_dave.update(score1: 3, score2: 3)
+      pairings = [alice_bye, bob_charlie, dave_eddie].freeze
+
+      described_class.assign_table_numbers! pairings
+
+      expect(pairings.map(&:table_number)).to eq [2, 10, 1]
     end
   end
 end
