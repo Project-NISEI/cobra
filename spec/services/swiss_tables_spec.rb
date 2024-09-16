@@ -75,7 +75,7 @@ RSpec.describe SwissTables do
       expect(pairings.map(&:table_number)).to eq [2, 1, 3]
     end
 
-    it 'puts bye before fixed tables' do
+    it 'puts bye after non-byes when followed by fixed tables' do
       bob.update(fixed_table_number: 10)
       alice_bob.update(score1: 6, score2: 0)
       charlie_dave.update(score1: 3, score2: 3)
@@ -84,6 +84,17 @@ RSpec.describe SwissTables do
       described_class.assign_table_numbers! pairings
 
       expect(pairings.map(&:table_number)).to eq [2, 10, 1]
+    end
+
+    it 'puts bye after non-byes when mixed with fixed tables' do
+      bob.update(fixed_table_number: 2)
+      alice_bob.update(score1: 6, score2: 0)
+      charlie_dave.update(score1: 3, score2: 3)
+      pairings = [alice_bye, bob_charlie, dave_eddie].freeze
+
+      described_class.assign_table_numbers! pairings
+
+      expect(pairings.map(&:table_number)).to eq [3, 2, 1]
     end
   end
 end
