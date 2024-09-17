@@ -10,10 +10,10 @@
       = render 'form', f: f, organiser_view: true, new_registration: true
       .mt-2.text-right
         a.btn.btn-link.text-info.mr-2.assign-table-number onclick="assignTableNumber()"
-          => fa_icon 'wheelchair'
+          => fa_icon 'bookmark'
           | Assign table number
         a.btn.btn-link.text-warning.mr-2.unassign-table-number.d-none onclick="unassignTableNumber()"
-          => fa_icon 'wheelchair'
+          => fa_icon 'bookmark'
           | Unassign table number
         = button_tag type: :submit, class: 'btn btn-success',
                 data: { confirm: @tournament.registration_closed? ? 'Tournament is closed, add new player anyway?' : nil } do
@@ -111,10 +111,10 @@
               => fa_icon 'eye'
               | View decks
           a.btn.btn-link.text-info.mr-2.assign-table-number onclick="assignTableNumber(#{player.id})" class="#{player.fixed_table_number? ? 'd-none' : ''}"
-            => fa_icon 'wheelchair'
+            => fa_icon 'bookmark'
             | Assign table number
           a.btn.btn-link.text-warning.mr-2.unassign-table-number onclick="unassignTableNumber(#{player.id})" class="#{player.fixed_table_number? ? '' : 'd-none'}"
-            => fa_icon 'wheelchair'
+            => fa_icon 'bookmark'
             | Unassign table number
           = button_tag type: :submit, class: 'btn btn-link text-success mr-2' do
             => fa_icon 'floppy-o'
