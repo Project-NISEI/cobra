@@ -6,6 +6,16 @@
     export let stage: SwissStage;
     export let manual_seed: boolean;
 
+    function printSideBias(sideBias: number) {
+        if (sideBias === 0) {
+            return 'Balanced';
+        } else if (sideBias > 0) {
+            return `Corp +${sideBias}`;
+        } else {
+            return `Runner +${-sideBias}`;
+        }
+    }
+
     function printSOS(sos: string) {
         return parseFloat(sos).toLocaleString(undefined, {
             minimumFractionDigits: 4,
@@ -29,8 +39,11 @@
         {#if manual_seed}
             <th>Seed</th>
         {/if}
-        <th>SOS</th>
-        <th>Extended SOS</th>
+        <th>SoS</th>
+        <th>ESoS</th>
+        {#if stage.format == 'single_sided_swiss' }
+        <th>Side Bias</th>
+        {/if}
     </tr>
     </thead>
     <tbody>
@@ -62,6 +75,9 @@
             {/if}
             <td>{printSOS(standing.sos)}</td>
             <td>{printSOS(standing.extended_sos)}</td>
+            {#if stage.format == 'single_sided_swiss' }
+            <td>{printSideBias(standing.side_bias)}</td>
+            {/if}
         </tr>
     {/each}
     </tbody>

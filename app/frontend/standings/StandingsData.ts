@@ -44,6 +44,7 @@ export type SwissStanding = {
     corp_points: number;
     runner_points: number;
     manual_seed: number | null;
+    side_bias: number | null;
 }
 
 export type CutStanding = {

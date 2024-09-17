@@ -158,7 +158,7 @@ class PlayersController < ApplicationController
     end
 
     # No standings during player meeting or first round, so list players
-    render_player_list_for_standings stage
+    render_player_list_for_player_meeting stage
   end
 
   def compute_and_render_cut_standings(stage)
@@ -184,12 +184,13 @@ class PlayersController < ApplicationController
         extended_sos: row.extended_sos,
         corp_points: row.corp_points || 0,
         runner_points: row.runner_points || 0,
-        manual_seed: row.manual_seed
+        manual_seed: row.manual_seed,
+        side_bias: stage.format == 'single_sided_swiss' ? row.player.side_bias : nil
       }
     end
   end
 
-  def render_player_list_for_standings(stage)
+  def render_player_list_for_player_meeting(stage)
     stage.players.sort.each_with_index.map do |player, i|
       {
         player: standings_player(player, show_ids: false),
@@ -200,7 +201,8 @@ class PlayersController < ApplicationController
         extended_sos: 0,
         corp_points: 0,
         runner_points: 0,
-        manual_seed: player.manual_seed
+        manual_seed: player.manual_seed,
+        side_bias: nil
       }
     end
   end
