@@ -5,7 +5,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
   let(:round) { create(:round, number: 1, stage:) }
   let(:stage) { tournament.current_stage }
   let(:tournament) { create(:tournament, swiss_format: :single_sided) }
-  let(:nil_player) { instance_double(NilPlayer, id: nil, points: 0) }
+  let(:nil_player) { NilPlayer.new }
 
   before do
     allow(NilPlayer).to receive(:new).and_return(nil_player)

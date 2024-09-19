@@ -14,6 +14,7 @@ RSpec.describe 'updating players' do
       fill_in :player_runner_identity, with: 'Gabriel Santiago'
       check :player_first_round_bye
       fill_in :player_manual_seed, with: 3
+      fill_in :player_fixed_table_number, with: 20
       click_button 'Save'
     end
   end
@@ -36,6 +37,10 @@ RSpec.describe 'updating players' do
 
   it 'can update manual seed' do
     expect(tournament.players.first.manual_seed).to eq(3)
+  end
+
+  it 'can update fixed table' do
+    expect(tournament.players.first.fixed_table_number).to eq(20)
   end
 
   it 'does not update user id' do

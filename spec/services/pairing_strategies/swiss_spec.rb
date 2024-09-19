@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe PairingStrategies::Swiss do
-  let(:pairer) { described_class.new(round) }
+  let(:pairer) { described_class.new(round, Random.new(1000)) }
   let(:round) { create(:round, number: 1, stage:) }
   let(:stage) { tournament.current_stage }
   let(:tournament) { create(:tournament) }
-  let(:nil_player) { instance_double(NilPlayer, id: nil, points: 0) }
+  let(:nil_player) { NilPlayer.new }
 
   before do
     allow(NilPlayer).to receive(:new).and_return(nil_player)
@@ -104,6 +104,31 @@ RSpec.describe PairingStrategies::Swiss do
           expect(pairing.players).to contain_exactly(jack, gretel) if pairing.players.include? jack
           expect(pairing.players).to contain_exactly(jill, hansel) if pairing.players.include? jill
         end
+      end
+    end
+
+    context 'with a player with a fixed table number' do
+      before do
+        jack.update fixed_table_number: 42
+      end
+
+      it 'creates pairings' do
+        pairer.pair!
+
+        round.reload
+
+        expect(pairings_table_by_player(round.pairings))
+          .to eq jack.name => 42, jill.name => 42, hansel.name => 1, gretel.name => 1
+      end
+
+      it 'creates first round bye' do
+        jack.update first_round_bye: true
+        pairer.pair!
+
+        round.reload
+
+        expect(pairings_table_by_player(round.pairings))
+          .to eq hansel.name => 1, gretel.name => 1, jill.name => 2, jack.name => 42
       end
     end
   end
@@ -222,5 +247,15 @@ RSpec.describe PairingStrategies::Swiss do
         expect(strategy).to have_received(:pair!)
       end
     end
+  end
+
+  def pairings_table_by_player(pairings)
+    index = {}
+    pairings.each do |pairing|
+      pairing.players.each do |player|
+        index[player.name] = pairing.table_number if player.id
+      end
+    end
+    index
   end
 end

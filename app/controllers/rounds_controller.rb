@@ -42,6 +42,7 @@ class RoundsController < ApplicationController
                                   {
                                     id: pairing.id,
                                     table_number: pairing.table_number,
+                                    table_label: pairing.table_label,
                                     policy: {
                                       view_decks:
                                     },

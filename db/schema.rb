@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_26_082848) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_09_235836) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -137,6 +137,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_26_082848) do
     t.boolean "include_in_stream", default: true
     t.bigint "corp_identity_ref_id"
     t.bigint "runner_identity_ref_id"
+    t.integer "fixed_table_number"
     t.index ["corp_identity_ref_id"], name: "index_players_on_corp_identity_ref_id"
     t.index ["runner_identity_ref_id"], name: "index_players_on_runner_identity_ref_id"
     t.index ["tournament_id"], name: "index_players_on_tournament_id"

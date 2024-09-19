@@ -63,7 +63,11 @@
             input_html: { class: 'mr-1' },
             wrapper_html: { class: 'align-middle mr-3' }
     - if @tournament.manual_seed
-      = f.input :manual_seed, placeholder: 'Set seed', inline_label: 'Manual Seed', required: false, as: :string,
+      = f.input :manual_seed, placeholder: 'Set seed', label: 'Manual Seed', required: false, as: :string,
               wrapper_html: { class: 'form-group my-2' },
-              input_html: { class: 'form-control manual_seed' },
+              input_html: { class: 'form-control manual-seed' },
               label_html: { class: 'align-middle d-inline-block mr-1' }
+    = f.input :fixed_table_number, placeholder: 'Enter table number', label: 'Table Number', required: false, as: :string,
+            wrapper_html: { class: "form-group my-2 table-number #{defined?(player) && player.fixed_table_number? ? '' : 'd-none'}" },
+            input_html: { class: 'form-control table-number' },
+            label_html: { class: 'align-middle d-inline-block mr-1' }

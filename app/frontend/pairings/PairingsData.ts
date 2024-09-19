@@ -40,6 +40,7 @@ export type Round = {
 export type Pairing = {
     id: number;
     table_number: number;
+    table_label: string;
     policy: PairingPolicies;
     player1: Player;
     player2: Player;

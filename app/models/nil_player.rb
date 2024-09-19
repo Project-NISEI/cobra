@@ -44,4 +44,12 @@ class NilPlayer
   def include_in_stream?
     true
   end
+
+  def fixed_table_number
+    nil
+  end
+
+  def fixed_table_number?
+    false
+  end
 end
