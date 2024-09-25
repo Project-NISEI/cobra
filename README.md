@@ -3,16 +3,21 @@
 ## Requirements
 To deploy Cobra, you only need Docker Compose and a way of getting the repository onto your server (such as git).
 
-For local development, you will need:
-- Ruby 2.4.2 (or a Ruby version manager - e.g. rvm or rbenv - with access to 2.4.2)
-- Bundler
+For local development, you can either use Docker, and potentially Devcontainers, or you can use your own installation of
+Ruby and/or PostgreSQL. The included setup can deploy these in Docker containers rather than needing to install them.
+Depending on your IDE or code editor, you may prefer to install Ruby locally.
+
+Either installed or in Docker, you will need:
+- Ruby (or a Ruby version manager - e.g. rvm or rbenv), matching the version declared in [.ruby-version](.ruby-version).
+- Bundler:
 ```
 $ gem install bundler
 ```
-- Postgres (installed or in Docker)
+- PostgreSQL
 - Git
 
-## Set up for local development
+## Set up for development with local Ruby installation
+
 - Get the project
 ```
 $ git clone https://github.com/Project-NISEI/cobra.git
@@ -24,9 +29,18 @@ $ bundle
 ```
 - Set up config files
 ```
-$ cp config/database.example.yml config/database.yml
+$ cp config/database.example.app-in-host.yml config/database.yml
 ```
-- Set up database
+- Set up database in Docker
+```
+$ echo "POSTGRES_PASSWORD=cobra" > .env
+$ echo "RAILS_ENV=development" >> .env
+$ bin/init-db-from-host
+```
+
+This will create a Docker container running PostgreSQL and set up the database there.
+If you prefer to install PostgreSQL locally instead, you can set up the database like this:
+
 ```
 $ psql postgres
     # create user cobra with password 'cobra' CREATEDB;
@@ -34,16 +48,7 @@ $ psql postgres
 $ rake db:create db:migrate
 ```
 
-If you prefer to use PostgreSQL in Docker instead of a local installation,
-you can set that up like this:
-
-```
-$ echo "POSTGRES_PASSWORD=cobra" > .env
-$ echo "RAILS_ENV=development" >> .env
-$ bin/init-db
-```
-
-- Start local server
+- Start local server in your IDE, or with the Rails CLI (this was installed when you ran `bundle`):
 ```
 $ rails server
 ```
@@ -60,6 +65,7 @@ $ rake ids:update
 ```
 This rake task queries the NRDB API and creates/updates identities as appropriate.
 Identities not in the database are stripped out of ABR uploads to avoid errors.
+This is run automatically by `bin/deploy` and `bin/init-db-*`.
 
 ## Feature flags
 
@@ -92,7 +98,7 @@ end
 
 - Set up config files
 ```shell
-cat config/database.example.yml | sed s/localhost/db/ > config/database.yml
+cat config/database.example.app-in-docker.yml | sed s/localhost/db/ > config/database.yml
 echo "POSTGRES_PASSWORD=cobra" > .env
 echo "RAILS_ENV=development" >> .env
 ```
@@ -126,7 +132,7 @@ cd cobra
 ```
 - Set up config files
 ```shell
-cp config/database.example.yml config/database.yml
+cp config/database.example.app-in-docker.yml config/database.yml
 echo "RAILS_ENV=production" > .env
 echo "COMPOSE_FILE_TYPE=prod" >> .env
 echo "POSTGRES_PASSWORD=some-good-password" >> .env
@@ -182,31 +188,3 @@ your GitHub to Pulumi and DigitalOcean. With a Pulumi stack set up as above, fol
 The whole deployment job should take about 10 minutes starting with an empty Pulumi stack. If the Actions deploy job was
 successful, you can point your DNS to the new droplet, or assign it a reserved IP that your domain already points to.
 You can SSH to the resulting droplet with `deploy/bin/ssh-to-droplet`.
-
-## :bug: Troubleshooting
-
-### Rails doesn't start
-The rails app may not start after running `docker compose up`. You might see logs like:
-
-```
-Starting cobra_db_1 ... done
-Starting cobra_app_1 ... done
-Attaching to cobra_db_1, cobra_app_1
-db_1   | LOG:  database system was interrupted; last known up at 2022-01-30 22:12:19 UTC
-db_1   | LOG:  database system was not properly shut down; automatic recovery in progress
-db_1   | LOG:  record with zero length at 0/19D93F8
-db_1   | LOG:  redo is not required
-db_1   | LOG:  MultiXact member wraparound protections are now enabled
-db_1   | LOG:  database system is ready to accept connections
-db_1   | LOG:  autovacuum launcher started
-cobra_app_1 exited with code 1
-```
-
-In this case, one of your rails dependencies, `unicorn`, is corrupted from an ungraceful shutdown.
-To remedy this you'll need to delete the unicorn `pid` file. Simply run this command:
-
-```
-docker run -v cobra_cobra-tmp:/cobra/tmp ubuntu rm /cobra/tmp/pids/unicorn.pid
-```
-
-Then you should be able to start up the app again with `docker compose up` as normal.

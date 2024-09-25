@@ -1,0 +1,23 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  username: cobra
+  password: cobra
+  host: localhost
+  min_messages: warning
+
+development:
+  <<: *default
+  database: cobra
+
+test:
+  <<: *default
+  database: cobra_test
+
+production:
+  <<: *default
+  port: 5432
+  username: postgres
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
+  database: cobra
