@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'active_support'
-require 'active_support/core_ext/hash'
-
 class RoundsController < ApplicationController
   before_action :set_tournament
   before_action :set_round, only: %i[edit update destroy repair complete update_timer]
@@ -48,35 +45,35 @@ class RoundsController < ApplicationController
     end
   end
 
-  def player1_side(pairing)
-    if pairing[:side].nil?
+  def player1_side(side)
+    if side.nil?
       nil
     else
-      (pairing[:side] == 'player1_is_corp' ? 'corp' : 'runner')
+      (side == 'player1_is_corp' ? 'corp' : 'runner')
     end
   end
 
-  def player1_side_label(player)
-    if player[:side].nil?
+  def player1_side_label(side)
+    if side.nil?
       nil
     else
-      "(#{(player[:side] == 'player1_is_corp' ? 'corp' : 'runner').to_s.titleize})"
+      "(#{(side == 'player1_is_corp' ? 'corp' : 'runner').to_s.titleize})"
     end
   end
 
-  def player2_side(pairing)
-    if pairing[:side].nil?
+  def player2_side(side)
+    if side.nil?
       nil
     else
-      (pairing[:side] == 'player1_is_corp' ? 'runner' : 'corp')
+      (side == 'player1_is_corp' ? 'runner' : 'corp')
     end
   end
 
-  def player2_side_label(player)
-    if player[:side].nil?
+  def player2_side_label(side)
+    if side.nil?
       nil
     else
-      "(#{(player[:side] == 'player1_is_corp' ? 'runner' : 'corp').to_s.titleize})"
+      "(#{(side == 'player1_is_corp' ? 'runner' : 'corp').to_s.titleize})"
     end
   end
 
@@ -131,43 +128,37 @@ class RoundsController < ApplicationController
 
         pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
                              two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
-        pairings = r.pairings.order(:table_number).pluck(pairings_fields).map do | # rubocop:disable Metrics/ParameterLists
-          id, table_number, player1_id, player2_id, side, intentional_draw,
-          two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner| {
-            id:, table_number:, player1_id:, player2_id:, side:, intentional_draw:,
-            two_for_one:, score1:, score1_corp:, score1_runner:, score2:, score2_corp:, score2_runner:
-          }
-        end
-
-        pairings.each do |p|
-          round[:pairings_reported] += p[:score1].nil? && p[:score2].nil? ? 0 : 1
-          player1 = players[p[:player1_id]]
-          player2 = players[p[:player2_id]]
+        r.pairings.order(:table_number).pluck(pairings_fields).each do | # rubocop:disable Metrics/ParameterLists
+            id, table_number, player1_id, player2_id, side, intentional_draw,
+            two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
+          round[:pairings_reported] += score1.nil? && score2.nil? ? 0 : 1
+          player1 = players[player1_id]
+          player2 = players[player2_id]
           round[:pairings] << {
-            id: p[:id],
-            table_number: p[:table_number],
-            table_label: stage.double_elim? ? "Game #{p[:table_number]}" : "Table #{p[:table_number]}",
+            id:,
+            table_number:,
+            table_label: stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}",
             policy: {
               view_decks:
             },
             player1: {
               name_with_pronouns: name_with_pronouns(player1),
-              side: player1_side(p),
-              side_label: player1_side_label(p),
+              side: player1_side(side),
+              side_label: player1_side_label(side),
               corp_id: corp_id(player1),
               runner_id: runner_id(player1)
             },
             player2: {
               name_with_pronouns: name_with_pronouns(player2),
-              side: player2_side(p),
-              side_label: player2_side_label(p),
+              side: player2_side(side),
+              side_label: player2_side_label(side),
               corp_id: corp_id(player2),
               runner_id: runner_id(player2)
             },
-            score_label: score_label(p[:score1], p[:score1_corp], p[:score1_runner], p[:score2], p[:score2_corp],
-                                     p[:score2_runner]),
-            intentional_draw: p[:intentional_draw],
-            two_for_one: p[:two_for_one]
+            score_label: score_label(score1, score1_corp, score1_runner, score2, score2_corp,
+                                     score2_runner),
+            intentional_draw:,
+            two_for_one:
           }
         end
 
