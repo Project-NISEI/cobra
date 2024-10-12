@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'active_support'
+require 'active_support/core_ext/hash'
+
 class RoundsController < ApplicationController
   before_action :set_tournament
   before_action :set_round, only: %i[edit update destroy repair complete update_timer]
@@ -16,6 +19,65 @@ class RoundsController < ApplicationController
 
   def view_pairings
     authorize @tournament, :show?
+  end
+
+  def name_with_pronouns(player)
+    if player.nil?
+      '(Bye)'
+    else
+      !player['pronouns'].empty? ? "#{player['name']} (#{player['pronouns']})" : player['name']
+    end
+  end
+
+  def corp_id(player)
+    id(player, 'corp')
+  end
+
+  def runner_id(player)
+    id(player, 'runner')
+  end
+
+  def id(player, side)
+    if player.nil?
+      nil
+    else
+      {
+        "name": player["#{side}_identity"],
+        "faction": player["#{side}_faction"]
+      }
+    end
+  end
+
+  def player1_side(pairing)
+    if pairing[:side].nil?
+      nil
+    else
+      (pairing[:side] == 'player1_is_corp' ? 'corp' : 'runner')
+    end
+  end
+
+  def player1_side_label(player)
+    if player[:side].nil?
+      nil
+    else
+      "(#{(player[:side] == 'player1_is_corp' ? 'corp' : 'runner').to_s.titleize})"
+    end
+  end
+
+  def player2_side(pairing)
+    if pairing[:side].nil?
+      nil
+    else
+      (pairing[:side] == 'player1_is_corp' ? 'runner' : 'corp')
+    end
+  end
+
+  def player2_side_label(player)
+    if player[:side].nil?
+      nil
+    else
+      "(#{(player[:side] == 'player1_is_corp' ? 'runner' : 'corp').to_s.titleize})"
+    end
   end
 
   def pairings_data
@@ -43,16 +105,12 @@ class RoundsController < ApplicationController
     end
 
     stages = @tournament.stages.includes(:rounds)
-    # .includes(
-    #  rounds: [pairings: %i[player1 player2 stage]],
-    #  registrations: [player: %i[user corp_identity_ref runner_identity_ref]]
-    # )
 
     output = {
       policy: {
         update: @tournament.user == current_user
       },
-      is_player_meeting: (@tournament.round_ids.size == 0),
+      is_player_meeting: @tournament.round_ids.empty?,
       stages: []
     }
 
@@ -64,147 +122,61 @@ class RoundsController < ApplicationController
         rounds: []
       }
       stage.rounds.each do |r|
-        # stage.rounds.pluck(%i[id number]).each do |id, num|
         round = {
           id: r.id,
           number: r.number,
           pairings: [],
           pairings_reported: 0
         }
-        r.pairings.order(:table_number).pluck(%i[id table_number player1_id player2_id side intentional_draw
-                                                 two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]).each do |id, number, player1_id, player2_id, side, intentional_draw, two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
-          round[:pairings_reported] += (score1.nil? and score2.nil?) ? 0 : 1
-          player1 = players[player1_id]
-          player2 = players[player2_id]
+
+        pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
+                             two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
+        pairings = r.pairings.order(:table_number).pluck(pairings_fields).map do | # rubocop:disable Metrics/ParameterLists
+          id, table_number, player1_id, player2_id, side, intentional_draw,
+          two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner| {
+            id:, table_number:, player1_id:, player2_id:, side:, intentional_draw:,
+            two_for_one:, score1:, score1_corp:, score1_runner:, score2:, score2_corp:, score2_runner:
+          }
+        end
+
+        pairings.each do |p|
+          round[:pairings_reported] += p[:score1].nil? && p[:score2].nil? ? 0 : 1
+          player1 = players[p[:player1_id]]
+          player2 = players[p[:player2_id]]
           round[:pairings] << {
-            id:,
-            table_number: number,
-            table_label: stage.double_elim? ? "Game #{number}" : "Table #{number}",
+            id: p[:id],
+            table_number: p[:table_number],
+            table_label: stage.double_elim? ? "Game #{p[:table_number]}" : "Table #{p[:table_number]}",
             policy: {
               view_decks:
             },
             player1: {
-              "name_with_pronouns": if player1.nil?
-                                      '(Bye)'
-                                    else
-                                      !player1['pronouns'].empty? ? "#{player1['name']} (#{player1['pronouns']})" : player1['name']
-                                    end,
-              side: if side.nil?
-                      nil
-                    else
-                      (side == 'player1_is_corp' ? 'corp' : 'runner')
-                    end,
-              side_label: if side.nil?
-                            nil
-                          else
-                            "(#{(side == 'player1_is_corp' ? 'corp' : 'runner').to_s.titleize})"
-                          end,
-              "corp_id": if player1.nil?
-                           nil
-                         else
-                           {
-                             "name": player1['corp_identity'],
-                             "faction": player1['corp_faction']
-                           }
-                         end,
-              "runner_id": if player1.nil?
-                             nil
-                           else
-                             {
-                               "name": player1['runner_identity'],
-                               "faction": player1['runner_faction']
-                             }
-                           end
+              name_with_pronouns: name_with_pronouns(player1),
+              side: player1_side(p),
+              side_label: player1_side_label(p),
+              corp_id: corp_id(player1),
+              runner_id: runner_id(player1)
             },
             player2: {
-              "name_with_pronouns": if player2.nil?
-                                      '(Bye)'
-                                    else
-                                      !player2['pronouns'].empty? ? "#{player2['name']} (#{player2['pronouns']})" : player2['name']
-                                    end,
-              side: if side.nil?
-                      nil
-                    else
-                      (side == 'player1_is_corp' ? 'runner' : 'corp')
-                    end,
-              side_label: if side.nil?
-                            nil
-                          else
-                            "(#{(side == 'player1_is_corp' ? 'runner' : 'corp').to_s.titleize})"
-                          end,
-              "corp_id": if player2.nil?
-                           nil
-                         else
-                           {
-                             "name": player2['corp_identity'],
-                             "faction": player2['corp_faction']
-                           }
-                         end,
-              "runner_id": if player2.nil?
-                             nil
-                           else
-                             {
-                               "name": player2['runner_identity'],
-                               "faction": player2['runner_faction']
-                             }
-                           end
+              name_with_pronouns: name_with_pronouns(player2),
+              side: player2_side(p),
+              side_label: player2_side_label(p),
+              corp_id: corp_id(player2),
+              runner_id: runner_id(player2)
             },
-            score_label: score_label(score1, score1_corp, score1_runner, score2, score2_corp,
-                                     score2_runner),
-            intentional_draw:,
-            two_for_one:
+            score_label: score_label(p[:score1], p[:score1_corp], p[:score1_runner], p[:score2], p[:score2_corp],
+                                     p[:score2_runner]),
+            intentional_draw: p[:intentional_draw],
+            two_for_one: p[:two_for_one]
           }
         end
 
-        # def table_label
-        #   stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}"
-        # end
-
-        #  pairings: round.pairings.map do |pairing|
-        #                         {
-        #                           table_label: pairing.table_label,
-        #                           player1: pairing_player1(stage, pairing),
-        #                           player2: pairing_player2(stage, pairing),
-        #                         }
-        #                       end,
-        #             pairings_reported: round.pairings.select { |p| p.score1 && p.score2 }.count
         stage_out[:rounds] << round
       end
       output[:stages] << stage_out
     end
 
     render json: output
-    # {
-    # stages: stages.map do |stage|
-    # view_decks: stage.decks_visible_to(current_user) ? true : false
-    # {
-    #   name: stage.format.titleize,
-    #   format: stage.format
-    # rounds: stage.rounds.map do |round|
-    #           {
-    #             id: round.id,
-    #             number: round.number,
-    #             pairings: round.pairings.map do |pairing|
-    #                         {
-    #                           id: pairing.id,
-    #                           table_number: pairing.table_number,
-    #                           table_label: pairing.table_label,
-    #                           policy: {
-    #                             view_decks:
-    #                           },
-    #                           player1: pairing_player1(stage, pairing),
-    #                           player2: pairing_player2(stage, pairing),
-    #                           score_label: score_label(pairing),
-    #                           intentional_draw: pairing.intentional_d raw,
-    #                           two_for_one: pairing.two_for_one
-    #                         }
-    #                       end,
-    #             pairings_reported: round.pairings.select { |p| p.score1 && p.score2 }.count
-    #           }
-    #         end
-    # }
-    #        end
-    # }
   end
 
   def show
@@ -321,7 +293,7 @@ class RoundsController < ApplicationController
     }
   end
 
-  def score_label(score1, score1_corp, score1_runner, score2, score2_corp, score2_runner)
+  def score_label(score1, score1_corp, score1_runner, score2, score2_corp, score2_runner) # rubocop:disable Metrics/ParameterLists
     return '-' if score1 == 0 && score2 == 0 # rubocop:disable Style/NumericPredicate
 
     ws = winning_side(score1_corp, score1_runner, score2_corp, score2_runner)
