@@ -18,65 +18,6 @@ class RoundsController < ApplicationController
     authorize @tournament, :show?
   end
 
-  def name_with_pronouns(player)
-    if player.nil?
-      '(Bye)'
-    else
-      !player['pronouns'].empty? ? "#{player['name']} (#{player['pronouns']})" : player['name']
-    end
-  end
-
-  def corp_id(player)
-    id(player, 'corp')
-  end
-
-  def runner_id(player)
-    id(player, 'runner')
-  end
-
-  def id(player, side)
-    if player.nil?
-      nil
-    else
-      {
-        "name": player["#{side}_identity"],
-        "faction": player["#{side}_faction"]
-      }
-    end
-  end
-
-  def player1_side(side)
-    if side.nil?
-      nil
-    else
-      (side == 'player1_is_corp' ? 'corp' : 'runner')
-    end
-  end
-
-  def player1_side_label(side)
-    if side.nil?
-      nil
-    else
-      "(#{(side == 'player1_is_corp' ? 'corp' : 'runner').to_s.titleize})"
-    end
-  end
-
-  def player2_side(side)
-    if side.nil?
-      nil
-    else
-      (side == 'player1_is_corp' ? 'runner' : 'corp')
-    end
-  end
-
-  def player2_side_label(side)
-    if side.nil?
-      nil
-    else
-      "(#{(side == 'player1_is_corp' ? 'runner' : 'corp').to_s.titleize})"
-    end
-  end
-
   def pairings_data
     authorize @tournament, :show?
 
@@ -111,6 +52,9 @@ class RoundsController < ApplicationController
       stages: []
     }
 
+    pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
+                         two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
+
     stages.map do |stage|
       view_decks = stage.decks_visible_to(current_user) ? true : false
       stage_out = {
@@ -126,8 +70,6 @@ class RoundsController < ApplicationController
           pairings_reported: 0
         }
 
-        pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
-                             two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
         r.pairings.order(:table_number).pluck(pairings_fields).each do | # rubocop:disable Metrics/ParameterLists
             id, table_number, player1_id, player2_id, side, intentional_draw,
             two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
@@ -304,6 +246,65 @@ class RoundsController < ApplicationController
       'R'
     else
       'C'
+    end
+  end
+
+  def name_with_pronouns(player)
+    if player.nil?
+      '(Bye)'
+    else
+      !player['pronouns'].empty? ? "#{player['name']} (#{player['pronouns']})" : player['name']
+    end
+  end
+
+  def corp_id(player)
+    id(player, 'corp')
+  end
+
+  def runner_id(player)
+    id(player, 'runner')
+  end
+
+  def id(player, side)
+    if player.nil?
+      nil
+    else
+      {
+        "name": player["#{side}_identity"],
+        "faction": player["#{side}_faction"]
+      }
+    end
+  end
+
+  def player1_side(side)
+    if side.nil?
+      nil
+    else
+      (side == 'player1_is_corp' ? 'corp' : 'runner')
+    end
+  end
+
+  def player1_side_label(side)
+    if side.nil?
+      nil
+    else
+      "(#{(side == 'player1_is_corp' ? 'corp' : 'runner').to_s.titleize})"
+    end
+  end
+
+  def player2_side(side)
+    if side.nil?
+      nil
+    else
+      (side == 'player1_is_corp' ? 'runner' : 'corp')
+    end
+  end
+
+  def player2_side_label(side)
+    if side.nil?
+      nil
+    else
+      "(#{(side == 'player1_is_corp' ? 'runner' : 'corp').to_s.titleize})"
     end
   end
 end
