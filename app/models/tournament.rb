@@ -6,27 +6,13 @@ class Tournament < ApplicationRecord
   has_many :stages, -> { order(:number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   has_many :rounds, through: :stages
 
-  enum stage: {
-    swiss: 0,
-    double_elim: 1
-  }
+  enum :stage, { swiss: 0, double_elim: 1 }
 
-  enum cut_deck_visibility: {
-    cut_decks_private: 0,
-    cut_decks_open: 1,
-    cut_decks_public: 2
-  }
+  enum :cut_deck_visibility, { cut_decks_private: 0, cut_decks_open: 1, cut_decks_public: 2 }
 
-  enum swiss_deck_visibility: {
-    swiss_decks_private: 0,
-    swiss_decks_open: 1,
-    swiss_decks_public: 2
-  }
+  enum :swiss_deck_visibility, { swiss_decks_private: 0, swiss_decks_open: 1, swiss_decks_public: 2 }
 
-  enum swiss_format: {
-    double_sided: 0,
-    single_sided: 1
-  }
+  enum :swiss_format, { double_sided: 0, single_sided: 1 }
 
   delegate :new_round!, to: :current_stage
   delegate :pair_new_round!, to: :current_stage
