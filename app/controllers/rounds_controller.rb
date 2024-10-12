@@ -193,39 +193,6 @@ class RoundsController < ApplicationController
     params.require(:round).permit(:weight)
   end
 
-  def pairing_player1(stage, pairing)
-    pairing_player(stage, pairing.player1, pairing.player1_side)
-  end
-
-  def pairing_player2(stage, pairing)
-    pairing_player(stage, pairing.player2, pairing.player2_side)
-  end
-
-  def pairing_player(stage, player, side)
-    {
-      name_with_pronouns: player.name_with_pronouns,
-      side:,
-      side_label: side_label(stage, side),
-      corp_id: pairing_identity(player.corp_identity_object),
-      runner_id: pairing_identity(player.runner_identity_object)
-    }
-  end
-
-  def side_label(stage, side)
-    return nil unless stage.single_sided? && side
-
-    "(#{side.to_s.titleize})"
-  end
-
-  def pairing_identity(identity)
-    return nil unless identity
-
-    {
-      name: identity.name,
-      faction: identity.faction
-    }
-  end
-
   def score_label(score1, score1_corp, score1_runner, score2, score2_corp, score2_runner) # rubocop:disable Metrics/ParameterLists
     return '-' if score1 == 0 && score2 == 0 # rubocop:disable Style/NumericPredicate
 
