@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 class Identity < ApplicationRecord
-  enum side: {
-    corp: 1,
-    runner: 2
-  }
+  enum :side, { corp: 1, runner: 2 }
 
   ALIASES = {
     ci: '03001',

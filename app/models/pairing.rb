@@ -21,10 +21,7 @@ class Pairing < ApplicationRecord
   after_update :cache_standings!, if: proc { round.completed? }
   delegate :cache_standings!, to: :stage
 
-  enum side: {
-    player1_is_corp: 1,
-    player1_is_runner: 2
-  }
+  enum :side, { player1_is_corp: 1, player1_is_runner: 2 }
 
   def players
     [player1, player2]
