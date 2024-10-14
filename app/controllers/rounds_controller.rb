@@ -114,11 +114,10 @@ class RoundsController < ApplicationController
   def pairings_data_stages
     players = pairings_data_players
     @tournament.stages.includes(:rounds).map do |stage|
-      view_decks = stage.decks_visible_to(current_user) ? true : false
       {
         name: stage.format.titleize,
         format: stage.format,
-        rounds: pairings_data_rounds(stage, players, view_decks)
+        rounds: pairings_data_rounds(stage, players)
       }
     end
   end
@@ -147,9 +146,10 @@ class RoundsController < ApplicationController
     players
   end
 
-  def pairings_data_rounds(stage, players, view_decks)
+  def pairings_data_rounds(stage, players)
     pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
                          two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
+    view_decks = stage.decks_visible_to(current_user) ? true : false
     stage.rounds.map do |r|
       round = {
         id: r.id,
