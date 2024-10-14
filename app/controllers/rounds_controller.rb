@@ -147,38 +147,42 @@ class RoundsController < ApplicationController
   end
 
   def pairings_data_rounds(stage, players)
+    view_decks = stage.decks_visible_to(current_user) ? true : false
+    stage.rounds.map do |round|
+      pairings_data_round(stage, players, view_decks, round)
+    end
+  end
+
+  def pairings_data_round(stage, players, view_decks, round)
+    pairings = []
+    pairings_reported = 0
     pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
                          two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
-    view_decks = stage.decks_visible_to(current_user) ? true : false
-    stage.rounds.map do |r|
-      pairings = []
-      pairings_reported = 0
-      r.pairings.order(:table_number).pluck(pairings_fields).each do | # rubocop:disable Metrics/ParameterLists
-          id, table_number, player1_id, player2_id, side, intentional_draw,
-          two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
-        pairings_reported += score1.nil? && score2.nil? ? 0 : 1
-        pairings << {
-          id:,
-          table_number:,
-          table_label: stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}",
-          policy: {
-            view_decks:
-          },
-          player1: pairings_data_player(players[player1_id], player1_side(side)),
-          player2: pairings_data_player(players[player2_id], player2_side(side)),
-          score_label: score_label(score1, score1_corp, score1_runner,
-                                   score2, score2_corp, score2_runner),
-          intentional_draw:,
-          two_for_one:
-        }
-      end
-      {
-        id: r.id,
-        number: r.number,
-        pairings:,
-        pairings_reported:
+    round.pairings.order(:table_number).pluck(pairings_fields).each do | # rubocop:disable Metrics/ParameterLists
+        id, table_number, player1_id, player2_id, side, intentional_draw,
+        two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
+      pairings_reported += score1.nil? && score2.nil? ? 0 : 1
+      pairings << {
+        id:,
+        table_number:,
+        table_label: stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}",
+        policy: {
+          view_decks:
+        },
+        player1: pairings_data_player(players[player1_id], player1_side(side)),
+        player2: pairings_data_player(players[player2_id], player2_side(side)),
+        score_label: score_label(score1, score1_corp, score1_runner,
+                                 score2, score2_corp, score2_runner),
+        intentional_draw:,
+        two_for_one:
       }
     end
+    {
+      id: round.id,
+      number: round.number,
+      pairings:,
+      pairings_reported:
+    }
   end
 
   def pairings_data_player(player, side)
