@@ -151,20 +151,15 @@ class RoundsController < ApplicationController
                          two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
     view_decks = stage.decks_visible_to(current_user) ? true : false
     stage.rounds.map do |r|
-      round = {
-        id: r.id,
-        number: r.number,
-        pairings: [],
-        pairings_reported: 0
-      }
-
+      pairings = []
+      pairings_reported = 0
       r.pairings.order(:table_number).pluck(pairings_fields).each do | # rubocop:disable Metrics/ParameterLists
-      id, table_number, player1_id, player2_id, side, intentional_draw,
-        two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
-        round[:pairings_reported] += score1.nil? && score2.nil? ? 0 : 1
+          id, table_number, player1_id, player2_id, side, intentional_draw,
+          two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
+        pairings_reported += score1.nil? && score2.nil? ? 0 : 1
         player1 = players[player1_id]
         player2 = players[player2_id]
-        round[:pairings] << {
+        pairings << {
           id:,
           table_number:,
           table_label: stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}",
@@ -191,7 +186,12 @@ class RoundsController < ApplicationController
           two_for_one:
         }
       end
-      round
+      {
+        id: r.id,
+        number: r.number,
+        pairings:,
+        pairings_reported:
+      }
     end
   end
 
