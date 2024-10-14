@@ -184,8 +184,8 @@ RSpec.describe RoundsController do
                        'number' => 1,
                        'pairings' => [
                          { 'intentional_draw' => false,
-                           'player1' => player_with_no_ids('Charlie (she/her)', side: 'corp', side_label: 'Corp'),
-                           'player2' => player_with_no_ids('Bob (he/him)', side: 'runner', side_label: 'Runner'),
+                           'player1' => player_with_no_ids('Charlie (she/her)', side: 'corp', side_label: '(Corp)'),
+                           'player2' => player_with_no_ids('Bob (he/him)', side: 'runner', side_label: '(Runner)'),
                            'policy' => { 'view_decks' => false },
                            'score_label' => '3 - 0 (C)', 'two_for_one' => false,
                            'table_label' => 'Table 1', 'table_number' => 1 },

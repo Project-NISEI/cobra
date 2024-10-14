@@ -189,7 +189,7 @@ class RoundsController < ApplicationController
     {
       name_with_pronouns: name_with_pronouns(player),
       side:,
-      side_label: side&.to_s&.titleize,
+      side_label: side_label(side),
       corp_id: id(player, 'corp'),
       runner_id: id(player, 'runner')
     }
@@ -237,19 +237,27 @@ class RoundsController < ApplicationController
     end
   end
 
-  def player1_side(side)
-    if side.nil?
+  def player1_side(pairing_side)
+    if pairing_side.nil?
       nil
     else
-      (side == 'player1_is_corp' ? 'corp' : 'runner')
+      (pairing_side == 'player1_is_corp' ? 'corp' : 'runner')
     end
   end
 
-  def player2_side(side)
+  def player2_side(pairing_side)
+    if pairing_side.nil?
+      nil
+    else
+      (pairing_side == 'player1_is_corp' ? 'runner' : 'corp')
+    end
+  end
+
+  def side_label(side)
     if side.nil?
       nil
     else
-      (side == 'player1_is_corp' ? 'runner' : 'corp')
+      "(#{side.to_s.titleize})"
     end
   end
 end
