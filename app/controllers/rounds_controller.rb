@@ -112,61 +112,14 @@ class RoundsController < ApplicationController
   end
 
   def pairings_data_stages
-    pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
-                         two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
     players = pairings_data_players
     @tournament.stages.includes(:rounds).map do |stage|
       view_decks = stage.decks_visible_to(current_user) ? true : false
-      stage_out = {
+      {
         name: stage.format.titleize,
         format: stage.format,
-        rounds: []
+        rounds: pairings_data_rounds(stage, players, view_decks)
       }
-      stage.rounds.each do |r|
-        round = {
-          id: r.id,
-          number: r.number,
-          pairings: [],
-          pairings_reported: 0
-        }
-
-        r.pairings.order(:table_number).pluck(pairings_fields).each do | # rubocop:disable Metrics/ParameterLists
-        id, table_number, player1_id, player2_id, side, intentional_draw,
-          two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
-          round[:pairings_reported] += score1.nil? && score2.nil? ? 0 : 1
-          player1 = players[player1_id]
-          player2 = players[player2_id]
-          round[:pairings] << {
-            id:,
-            table_number:,
-            table_label: stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}",
-            policy: {
-              view_decks:
-            },
-            player1: {
-              name_with_pronouns: name_with_pronouns(player1),
-              side: player1_side(side),
-              side_label: player1_side_label(side),
-              corp_id: corp_id(player1),
-              runner_id: runner_id(player1)
-            },
-            player2: {
-              name_with_pronouns: name_with_pronouns(player2),
-              side: player2_side(side),
-              side_label: player2_side_label(side),
-              corp_id: corp_id(player2),
-              runner_id: runner_id(player2)
-            },
-            score_label: score_label(score1, score1_corp, score1_runner, score2, score2_corp,
-                                     score2_runner),
-            intentional_draw:,
-            two_for_one:
-          }
-        end
-
-        stage_out[:rounds] << round
-      end
-      stage_out
     end
   end
 
@@ -192,6 +145,54 @@ class RoundsController < ApplicationController
       players[p['id']] = p
     end
     players
+  end
+
+  def pairings_data_rounds(stage, players, view_decks)
+    pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
+                         two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
+    stage.rounds.map do |r|
+      round = {
+        id: r.id,
+        number: r.number,
+        pairings: [],
+        pairings_reported: 0
+      }
+
+      r.pairings.order(:table_number).pluck(pairings_fields).each do | # rubocop:disable Metrics/ParameterLists
+      id, table_number, player1_id, player2_id, side, intentional_draw,
+        two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
+        round[:pairings_reported] += score1.nil? && score2.nil? ? 0 : 1
+        player1 = players[player1_id]
+        player2 = players[player2_id]
+        round[:pairings] << {
+          id:,
+          table_number:,
+          table_label: stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}",
+          policy: {
+            view_decks:
+          },
+          player1: {
+            name_with_pronouns: name_with_pronouns(player1),
+            side: player1_side(side),
+            side_label: player1_side_label(side),
+            corp_id: corp_id(player1),
+            runner_id: runner_id(player1)
+          },
+          player2: {
+            name_with_pronouns: name_with_pronouns(player2),
+            side: player2_side(side),
+            side_label: player2_side_label(side),
+            corp_id: corp_id(player2),
+            runner_id: runner_id(player2)
+          },
+          score_label: score_label(score1, score1_corp, score1_runner, score2, score2_corp,
+                                   score2_runner),
+          intentional_draw:,
+          two_for_one:
+        }
+      end
+      round
+    end
   end
 
   def score_label(score1, score1_corp, score1_runner, score2, score2_corp, score2_runner) # rubocop:disable Metrics/ParameterLists
