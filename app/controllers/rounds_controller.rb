@@ -166,8 +166,8 @@ class RoundsController < ApplicationController
           },
           player1: pairings_data_player(players[player1_id], player1_side(side)),
           player2: pairings_data_player(players[player2_id], player2_side(side)),
-          score_label: score_label(score1, score1_corp, score1_runner, score2, score2_corp,
-                                   score2_runner),
+          score_label: score_label(score1, score1_corp, score1_runner,
+                                   score2, score2_corp, score2_runner),
           intentional_draw:,
           two_for_one:
         }
