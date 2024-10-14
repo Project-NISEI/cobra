@@ -157,8 +157,6 @@ class RoundsController < ApplicationController
           id, table_number, player1_id, player2_id, side, intentional_draw,
           two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
         pairings_reported += score1.nil? && score2.nil? ? 0 : 1
-        player1 = players[player1_id]
-        player2 = players[player2_id]
         pairings << {
           id:,
           table_number:,
@@ -166,20 +164,8 @@ class RoundsController < ApplicationController
           policy: {
             view_decks:
           },
-          player1: {
-            name_with_pronouns: name_with_pronouns(player1),
-            side: player1_side(side),
-            side_label: player1_side_label(side),
-            corp_id: corp_id(player1),
-            runner_id: runner_id(player1)
-          },
-          player2: {
-            name_with_pronouns: name_with_pronouns(player2),
-            side: player2_side(side),
-            side_label: player2_side_label(side),
-            corp_id: corp_id(player2),
-            runner_id: runner_id(player2)
-          },
+          player1: pairings_data_player(players[player1_id], player1_side(side)),
+          player2: pairings_data_player(players[player2_id], player2_side(side)),
           score_label: score_label(score1, score1_corp, score1_runner, score2, score2_corp,
                                    score2_runner),
           intentional_draw:,
@@ -193,6 +179,16 @@ class RoundsController < ApplicationController
         pairings_reported:
       }
     end
+  end
+
+  def pairings_data_player(player, side)
+    {
+      name_with_pronouns: name_with_pronouns(player),
+      side:,
+      side_label: side&.to_s&.titleize,
+      corp_id: id(player, 'corp'),
+      runner_id: id(player, 'runner')
+    }
   end
 
   def score_label(score1, score1_corp, score1_runner, score2, score2_corp, score2_runner) # rubocop:disable Metrics/ParameterLists
@@ -226,14 +222,6 @@ class RoundsController < ApplicationController
     end
   end
 
-  def corp_id(player)
-    id(player, 'corp')
-  end
-
-  def runner_id(player)
-    id(player, 'runner')
-  end
-
   def id(player, side)
     if player.nil?
       nil
@@ -253,27 +241,11 @@ class RoundsController < ApplicationController
     end
   end
 
-  def player1_side_label(side)
-    if side.nil?
-      nil
-    else
-      "(#{(side == 'player1_is_corp' ? 'corp' : 'runner').to_s.titleize})"
-    end
-  end
-
   def player2_side(side)
     if side.nil?
       nil
     else
       (side == 'player1_is_corp' ? 'runner' : 'corp')
-    end
-  end
-
-  def player2_side_label(side)
-    if side.nil?
-      nil
-    else
-      "(#{(side == 'player1_is_corp' ? 'runner' : 'corp').to_s.titleize})"
     end
   end
 end
