@@ -221,8 +221,10 @@ class RoundsController < ApplicationController
   def name_with_pronouns(player)
     if player.nil?
       '(Bye)'
+    elsif player['pronouns']
+      "#{player['name']} (#{player['pronouns']})"
     else
-      !player['pronouns'].empty? ? "#{player['name']} (#{player['pronouns']})" : player['name']
+      player['name']
     end
   end
 
