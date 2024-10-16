@@ -119,7 +119,7 @@ module PairingsHelper
   end
 
   def readable_score(pairing)
-    return '-' if (pairing.score1.nil? && pairing.score2.nil?) || (pairing.score1.zero? && pairing.score2.zero?)
+    return '-' if pairing.score1&.zero? && pairing.score2&.zero?
 
     ws = winning_side(pairing)
 
