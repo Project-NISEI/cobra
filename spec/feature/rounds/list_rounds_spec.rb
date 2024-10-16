@@ -31,20 +31,6 @@ RSpec.describe 'listing rounds' do
         round1.stage.players == create_list(:player, 120)
       end
 
-      it 'lists only last round' do
-        sign_in nil
-        visit tournament_rounds_path(tournament)
-
-        aggregate_failures do
-          expect(page).not_to have_content('Round 1')
-          expect(page).to have_content('Round 2')
-          expect(page).to have_content(
-            'Due to the number of players, only the most recent round will be ' \
-              'displayed on this page to help page load.'
-          )
-        end
-      end
-
       it 'lists all rounds when logged in as TO' do
         visit tournament_rounds_path(tournament)
 
@@ -52,6 +38,16 @@ RSpec.describe 'listing rounds' do
           expect(page).to have_content('Round 1')
           expect(page).to have_content('Round 2')
           expect(page).not_to have_content('only the most recent round')
+        end
+      end
+
+      it 'is inaccessible when not logged in as TO' do
+        sign_in nil
+        visit tournament_rounds_path(tournament)
+
+        aggregate_failures do
+          expect(page).to have_current_path(root_path, ignore_query: true)
+          expect(page).to have_content("Sorry, you can't do that")
         end
       end
     end
