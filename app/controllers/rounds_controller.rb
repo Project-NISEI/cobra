@@ -5,7 +5,7 @@ class RoundsController < ApplicationController
   before_action :set_round, only: %i[edit update destroy repair complete update_timer]
 
   def index
-    authorize @tournament, :show?
+    authorize @tournament, :update?
     @stages = @tournament.stages.includes(
       :tournament, rounds: [:tournament, :stage, { pairings: %i[tournament stage round] }]
     )
