@@ -44,7 +44,9 @@ module PairingStrategies
         return @paired_players ||= players_to_pair.to_a.shuffle(random:).in_groups_of(2,
                                                                                       SwissImplementation::Bye)
       end
-      return @paired_players ||= PairingStrategies::BigSwiss.new(stage, self.class).pair! if players.count > 60
+      if Flipper.enabled?(:big_swiss) && players.count > (60)
+        return @paired_players ||= PairingStrategies::BigSwiss.new(stage, self.class).pair!
+      end
 
       @paired_players ||= self.class.get_pairings(players_to_pair.to_a)
     end

@@ -215,13 +215,14 @@ RSpec.describe PairingStrategies::Swiss do
     end
   end
 
-  context 'with over 60 players' do
+  context 'with over 60 players & BigSwiss enabled' do
     let(:strategy) { instance_double(described_class) }
 
     before do
       create_list(:player, 61, tournament:)
       allow(PairingStrategies::BigSwiss).to receive(:new).and_return(strategy)
       allow(strategy).to receive(:pair!).and_return([])
+      Flipper.enable(:big_swiss)
     end
 
     context 'first round' do
