@@ -119,13 +119,11 @@ module PairingsHelper
   end
 
   def readable_score(pairing)
-    return '-' if (pairing.score1.nil? && pairing.score2.nil?) || (pairing.score1.zero? && pairing.score2.zero?)
+    return '-' if pairing.score1&.zero? && pairing.score2&.zero?
 
     ws = winning_side(pairing)
 
     if pairing.stage.single_sided_swiss?
-      left_score = 0
-      right_score = 0
       if pairing.player1_is_corp?
         left_score = pairing.score1
         right_score = pairing.score2
