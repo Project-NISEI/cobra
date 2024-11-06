@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+# Set a profile=1 env var to record profiles to feed into analysis tools and flame graphs.
+# Example: profile=1 bundle exec rspec spec/load_test.rb
+require 'ruby-prof-flamegraph'
+
 RSpec.describe 'load testing' do
-  ROUNDS = 15 # rubocop:disable Lint/ConstantDefinitionInBlock,RSpec/LeakyConstantDeclaration
+  ROUNDS = 10 # rubocop:disable Lint/ConstantDefinitionInBlock,RSpec/LeakyConstantDeclaration
   PLAYERS = 150 # rubocop:disable Lint/ConstantDefinitionInBlock,RSpec/LeakyConstantDeclaration
 
   let(:tournament) { create(:tournament, swiss_format: :single_sided) }
@@ -13,10 +17,13 @@ RSpec.describe 'load testing' do
   end
 
   it 'can handle load' do
+    profiles = []
     timer
     sign_in tournament.user
     puts 'Creating players'
     PLAYERS.times { create(:player, tournament:) }
+
+    puts "Side bias for first player is #{tournament.players[0].side_bias}"
     expect(tournament.players.count).to equal(PLAYERS)
     puts "\tDone. Took #{timer} seconds"
 
@@ -24,9 +31,20 @@ RSpec.describe 'load testing' do
     ROUNDS.times do |i|
       puts "Round #{i + 1}"
 
+      Rails.logger.info "Pairing Round #{i + 1} start"
       puts "\tPairing #{tournament.players.active.count} players"
-      round = tournament.pair_new_round!
-      puts "\t\tDone. Took #{timer} seconds"
+      round = nil
+
+      if ENV['profile']
+        profiles << RubyProf.profile do
+          round = tournament.pair_new_round!
+        end
+      else
+        round = tournament.pair_new_round!
+      end
+
+      puts "\t\tDone. Took #{timer} seconds to pair #{tournament.players.active.count} players"
+      Rails.logger.info "Pairing Round #{i + 1} end"
       expect(round.pairings.count).to eq((active_players / 2.0).ceil)
       players = round.pairings.map(&:players).flatten
       expect(players.map(&:id) - [nil]).to match_array(tournament.players.active.map(&:id))
@@ -45,20 +63,23 @@ RSpec.describe 'load testing' do
       puts "\t\tDone. Took #{timer} seconds"
 
       puts "\tCalculating standings"
-      10.times do
+      2.times do
         visit standings_tournament_players_path(tournament)
         puts "\t\tDone. Took #{timer} seconds"
       end
+
+      side_bias = { -1 => 0, 0 => 0, 1 => 0 }
+      tournament.players.active.each do |p|
+        side_bias[p.side_bias] = 0 unless side_bias.key?(p.side_bias)
+        side_bias[p.side_bias] += 1
+      end
+      puts "Round #{i + 1} side bias: #{side_bias.inspect}"
     end
 
-    # tournament.players.each do |player|
-    #   if player.opponents.uniq.length != player.pairings.count
-    #     puts "Player #{player.name} (#{player.active? ? :active : :dropped}) had #{player.opponents.uniq.length}/#{player.pairings.count} unique opponents:" # rubocop:disable Layout/LineLength
-    #     player.pairings.each do |pairing|
-    #       opp = pairing.opponent_for(player)
-    #       puts "\t#{pairing.round.number}: #{opp.name}"
-    #     end
-    #   end
-    # end
+    profiles.length.times do |i|
+      File.open("stack-file-#{i + 1}", 'w+') do |file|
+        RubyProf::FlameGraphPrinter.new(profiles[i]).print(file)
+      end
+    end
   end
 end

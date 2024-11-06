@@ -57,5 +57,6 @@ group :development do
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
   gem 'rubocop-rspec_rails'
+  gem 'ruby-prof-flamegraph'
   gem 'spring'
 end
