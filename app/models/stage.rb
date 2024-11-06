@@ -10,11 +10,7 @@ class Stage < ApplicationRecord
 
   delegate :top, to: :standings
 
-  enum format: {
-    swiss: 0,
-    double_elim: 1,
-    single_sided_swiss: 2
-  }
+  enum :format, { swiss: 0, double_elim: 1, single_sided_swiss: 2 }
 
   def pair_new_round!
     new_round!.tap(&:pair!)
