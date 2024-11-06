@@ -73,7 +73,7 @@ RSpec.describe 'load testing' do
         side_bias[p.side_bias] = 0 unless side_bias.key?(p.side_bias)
         side_bias[p.side_bias] += 1
       end
-      puts "Round #{i + 1} side bias: #{side_bias.inspect}"
+      puts "\tRound #{i + 1} side bias: #{side_bias.inspect}"
     end
 
     profiles.length.times do |i|
