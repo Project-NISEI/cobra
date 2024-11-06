@@ -10,7 +10,7 @@ class Stage < ApplicationRecord
 
   delegate :top, to: :standings
 
-  enum :format, {
+  enum format: {
     swiss: 0,
     double_elim: 1,
     single_sided_swiss: 2
@@ -21,7 +21,7 @@ class Stage < ApplicationRecord
   end
 
   def new_round!
-    number = (rounds.pluck(:number).max || 0) + 1
+    number = (rounds.maximum(:number) || 0) + 1
     rounds.create(number:, length_minutes: default_round_minutes)
   end
 
