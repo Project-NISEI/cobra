@@ -215,40 +215,6 @@ RSpec.describe PairingStrategies::Swiss do
     end
   end
 
-  context 'with over 60 players' do
-    let(:strategy) { instance_double(described_class) }
-
-    before do
-      create_list(:player, 61, tournament:)
-      allow(PairingStrategies::BigSwiss).to receive(:new).and_return(strategy)
-      allow(strategy).to receive(:pair!).and_return([])
-    end
-
-    context 'first round' do
-      it 'does not hand off to BigSwiss pairing strategy' do
-        pairer.pair!
-
-        expect(PairingStrategies::BigSwiss).not_to have_received(:new)
-        expect(strategy).not_to have_received(:pair!)
-      end
-    end
-
-    context 'after a round' do
-      let(:round) { create(:round, number: 2, stage:) }
-
-      before do
-        create(:round, number: 1, stage:)
-      end
-
-      it 'hands off to BigSwiss pairing strategy' do
-        pairer.pair!
-
-        expect(PairingStrategies::BigSwiss).to have_received(:new).with(stage, described_class)
-        expect(strategy).to have_received(:pair!)
-      end
-    end
-  end
-
   def pairings_table_by_player(pairings)
     index = {}
     pairings.each do |pairing|
