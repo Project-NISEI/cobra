@@ -6,6 +6,8 @@ module PairingStrategies
       super
       @bye_winner_score = 3
       @bye_loser_score = 0
+      # @cached_data will hold a data structure for pairing information that is cheaper than the ActiveRecord objects.
+      @cached_data = nil
     end
 
     def pair!
@@ -21,21 +23,7 @@ module PairingStrategies
       apply_sides!
     end
 
-    def self.get_pairings(players)
-      cached_data = Hash[players.map do |player|
-        [
-          player.id,
-          {
-            points: player.points,
-            side_bias: player.side_bias,
-            opponents: player.pairings.each_with_object({}) do |pairing, output|
-              output[pairing.opponent_for(player).id] ||= []
-              output[pairing.opponent_for(player).id] << pairing.side_for(player)
-            end
-          }
-        ]
-      end]
-
+    def self.get_pairings(players, cached_data)
       SwissImplementation.pair(players.to_a) do |player1, player2|
         # handle logic if one of the players is the bye
         if [player1, player2].include?(SwissImplementation::Bye)
@@ -92,6 +80,85 @@ module PairingStrategies
 
     private
 
+    def nilToZero(val)
+      val.nil? ? 0 : val
+    end
+
+    def maybe_build_cached_data
+      return unless @cached_data.nil?
+
+      @cached_data = {}
+      # puts "Populating @cached_data for tournament_id #{round.stage.tournament_id}"
+      # TODO: optimize away the indirection to get tournament id
+      player_summary = ActiveRecord::Base.connection.select_all("
+          SELECT
+            p.id,
+            p.side,
+            p.player1_id,
+            COALESCE(p.score1, 0) AS score1,
+            p.player2_id,
+            COALESCE(p.score2, 0) AS score2
+          FROM
+            pairings AS p
+            INNER JOIN rounds AS r ON p.round_id = r.id
+            INNER JOIN stages AS s ON r.stage_id = s.id
+          WHERE s.tournament_id = #{@round.stage.tournament_id}")
+
+      # puts "player_summary.length is #{player_summary.length}"
+      player_summary.each do |p|
+        # %w[player1_id player2_id].each do |pk|
+        # Initialize entries for each player if missing.
+        player1 = p['player1_id']
+        player2 = p['player2_id']
+        score1 = nilToZero(p['score1'])
+        score2 = nilToZero(p['score2'])
+
+        if !player1.nil? && !@cached_data.key?(player1)
+          @cached_data[player1] = { points: 0, side_bias: 0, opponents: {} }
+        end
+        if !player2.nil? && !@cached_data.key?(player2)
+          @cached_data[player2] = { points: 0, side_bias: 0, opponents: {} }
+        end
+
+        @cached_data[player1][:points] += score1 unless player1.nil?
+        @cached_data[player2][:points] += score2 unless player2.nil?
+
+        # Set side bias
+        if p['side'] == 1
+          @cached_data[player1][:side_bias] += 1
+          @cached_data[player2][:side_bias] -= 1
+        elsif p['side'] == 2
+          @cached_data[player2][:side_bias] += 1
+          @cached_data[player1][:side_bias] -= 1
+        end
+
+        # Set side if not a bye. For a bye, set side to nil.
+        player1_side = if player1.nil?
+                         nil
+                       else
+                         (p['side'] == :player1_is_corp ? :corp : :runner)
+                       end
+        player2_side = if player2.nil?
+                         nil
+                       else
+                         (p['side'] == :player1_is_corp ? :runner : :corp)
+                       end
+
+        unless player1.nil?
+          @cached_data[player1][:opponents][player2] = [] unless @cached_data[player1][:opponents].key?(player2)
+          @cached_data[player1][:opponents][player2] << player2_side
+        end
+
+        unless player2.nil? # rubocop:disable Style/Next
+          opponents = @cached_data[player2][:opponents]
+          opponents[player1] = [] unless opponents.key?(player1)
+          opponents[player1] << player1_side
+        end
+      end
+      # puts 'Done populating @cached_data'
+      # puts @cached_data
+    end
+
     def assign_byes!
       players_with_byes.each do |player|
         round.pairings.create(
@@ -109,7 +176,8 @@ module PairingStrategies
                                                                                       SwissImplementation::Bye)
       end
 
-      @paired_players ||= self.class.get_pairings(players_to_pair.to_a)
+      maybe_build_cached_data
+      @paired_players ||= self.class.get_pairings(players_to_pair.to_a, @cached_data)
     end
 
     def pairing_params(pairing)
@@ -146,8 +214,12 @@ module PairingStrategies
     end
 
     def apply_sides!
+      maybe_build_cached_data
       round.pairings.non_bye.each do |pairing|
-        preference = self.class.preferred_player1_side(pairing.player1.side_bias, pairing.player2.side_bias)
+        preference = self.class.preferred_player1_side(
+          @cached_data[pairing.player1_id].nil? ? 0 : @cached_data[pairing.player1_id][:side_bias],
+          @cached_data[pairing.player2_id].nil? ? 0 : @cached_data[pairing.player2_id][:side_bias]
+        )
         pairing.update(side: :player1_is_runner) if preference == :runner
         pairing.update(side: :player1_is_corp) if preference == :corp
         pairing.update(side: %i[player1_is_corp player1_is_runner].sample) if preference.nil?
