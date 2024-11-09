@@ -24,6 +24,23 @@ module PairingStrategies
     end
 
     def self.get_pairings(players, cached_data)
+      old_cached_data = Hash[players.map do |player|
+        [
+          player.id,
+          {
+            points: player.points,
+            side_bias: player.side_bias,
+            opponents: player.pairings.each_with_object({}) do |pairing, output|
+              output[pairing.opponent_for(player).id] ||= []
+              output[pairing.opponent_for(player).id] << pairing.side_for(player)
+            end
+          }
+        ]
+      end]
+
+      puts "old_cached_data:  #{old_cached_data}"
+      puts "new_cached_data:  #{cached_data}"
+
       SwissImplementation.pair(players.to_a) do |player1, player2|
         # handle logic if one of the players is the bye
         if [player1, player2].include?(SwissImplementation::Bye)
@@ -120,6 +137,8 @@ module PairingStrategies
           @cached_data[player2] = { points: 0, side_bias: 0, opponents: {} }
         end
 
+        # puts p
+        # puts "#{player1} vs #{player2} : #{p['score1']} - #{p['score2']}"
         @cached_data[player1][:points] += score1 unless player1.nil?
         @cached_data[player2][:points] += score2 unless player2.nil?
 
