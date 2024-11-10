@@ -51,6 +51,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: 3.3.6
           bundler-cache: true
 
       - name: Set up Rails
@@ -91,6 +92,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: 3.3.6
           bundler-cache: true
       - name: Security audit dependencies
         # TODO(plural): Remove the bootstrap issue when we move to 5 or a fix is issued.
