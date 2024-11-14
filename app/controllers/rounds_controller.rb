@@ -171,7 +171,8 @@ class RoundsController < ApplicationController
         },
         player1: pairings_data_player(players[player1_id], player1_side(side)),
         player2: pairings_data_player(players[player2_id], player2_side(side)),
-        score_label: score_label(score1, score1_corp, score1_runner,
+        score_label: score_label(@tournament.swiss_format, player1_side(side),
+                                 score1, score1_corp, score1_runner,
                                  score2, score2_corp, score2_runner),
         intentional_draw:,
         two_for_one:
@@ -195,12 +196,22 @@ class RoundsController < ApplicationController
     }
   end
 
-  def score_label(score1, score1_corp, score1_runner, score2, score2_corp, score2_runner) # rubocop:disable Metrics/ParameterLists
+  def score_label(swiss_format, player1_side, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner) # rubocop:disable Metrics/ParameterLists
+    # No scores reported.
     return '-' if score1 == 0 && score2 == 0 # rubocop:disable Style/NumericPredicate
 
     ws = winning_side(score1_corp, score1_runner, score2_corp, score2_runner)
 
+    # No winning side means double-sided swiss.
     return "#{score1} - #{score2}" unless ws
+
+    if swiss_format == 'single_sided'
+      # Player 1 is on the right when corp.
+      return "#{score1} - #{score2} (#{ws})" if player1_side == 'corp'
+
+      return "#{score2} - #{score1} (#{ws})"
+
+    end
 
     "#{score1} - #{score2} (#{ws})"
   end

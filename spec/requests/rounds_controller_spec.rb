@@ -201,6 +201,46 @@ RSpec.describe RoundsController do
                  })
       end
     end
+
+    describe 'during single sided swiss after first round results - player1 is runner' do
+      before do
+        tournament.update(swiss_format: :single_sided)
+        Pairer.new(tournament.new_round!, Random.new(0)).pair!
+        pairings = tournament.stages.last.rounds.last.pairings
+        pairings.first.update(side: :player1_is_runner,
+                              score1: 3, score1_corp: 0, score1_runner: 3,
+                              score2: 0, score2_corp: 0, score2_runner: 0)
+      end
+
+      it 'displays player 1 score on the right (runner) side' do
+        sign_in nil
+        get pairings_data_tournament_rounds_path(tournament)
+        expect(compare_body(response))
+          .to eq({
+                   'is_player_meeting' => false,
+                   'policy' => { 'update' => false },
+                   'stages' => [{ 'name' => 'Swiss', 'format' => 'swiss', 'rounds' => [
+                     {
+                       'number' => 1,
+                       'pairings' => [
+                         { 'intentional_draw' => false,
+                           'player1' => player_with_no_ids('Charlie (she/her)', side: 'runner', side_label: '(Runner)'),
+                           'player2' => player_with_no_ids('Bob (he/him)', side: 'corp', side_label: '(Corp)'),
+                           'policy' => { 'view_decks' => false },
+                           'score_label' => '0 - 3 (R)', 'two_for_one' => false,
+                           'table_label' => 'Table 1', 'table_number' => 1 },
+                         { 'intentional_draw' => false,
+                           'player1' => player_with_no_ids('Alice (she/her)'),
+                           'player2' => bye_player,
+                           'policy' => { 'view_decks' => false },
+                           'score_label' => '6 - 0', 'two_for_one' => false,
+                           'table_label' => 'Table 2', 'table_number' => 2 }
+                       ], 'pairings_reported' => 2
+                     }
+                   ] }]
+                 })
+      end
+    end
   end
 
   def compare_body(response)
