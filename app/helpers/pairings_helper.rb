@@ -10,6 +10,15 @@ module PairingsHelper
                input_html: { class: 'form-control mx-2' }
   end
 
+  def pairing_player1_side_select(form, label)
+    form.input label,
+               collection: { 'Corp' => 'player1_is_corp', 'Runner' => 'player1_is_runner' },
+               include_blank: 'Player 1 Side',
+               label: false,
+               wrapper: false,
+               input_html: { class: 'form-control mx-2' }
+  end
+
   def preset_score_button(pairing, data)
     link_to data[:label],
             report_tournament_round_pairing_path(
