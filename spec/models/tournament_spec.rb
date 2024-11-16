@@ -154,23 +154,102 @@ RSpec.describe Tournament do
     let!(:orbital) { create(:player, tournament:, name: 'Orbital Tangent') }
     let!(:the_king) { create(:player, tournament:, name: 'The King') }
 
-    it 'has player counts and defaults for first round' do
-      puts tournament.inspect
-      tournament.players.each do |p|
-        puts "  Player: #{p.inspect}"
-      end
+    it 'has player counts and defaults before any pairings' do
       thin_stuff = tournament.build_thin_stuff
-      puts "thin_stuff is #{thin_stuff}"
+
+      expect(thin_stuff).to eq([
+                                 ThinPlayer.new(plural.id, plural.name, true, true, 0, {}, 0),
+                                 ThinPlayer.new(gorphax.id, gorphax.name, true, false, 0, {}, 0),
+                                 ThinPlayer.new(cranked.id, cranked.name, true, false, 0, {}, 0),
+                                 ThinPlayer.new(orbital.id, orbital.name, true, false, 0, {}, 0),
+                                 ThinPlayer.new(the_king.id, the_king.name, true, false, 0, {}, 0)
+                               ])
+    end
+
+    it 'has player counts and defaults for incomplete first round' do
+      round = create(:round, stage:, tournament:, completed: false)
+
+      create(:pairing, round:, player1: cranked, player2: the_king, side: 1)
+      create(:pairing, round:, player1: gorphax, player2: orbital, side: 2)
+      create(:pairing, round:, player1: plural, player2: nil)
+
+      thin_stuff = tournament.build_thin_stuff
+
+      expect(thin_stuff).to eq([
+                                 ThinPlayer.new(plural.id, plural.name, true, true, 0, {}, 0),
+                                 ThinPlayer.new(gorphax.id, gorphax.name, true, false, 0, {}, 0),
+                                 ThinPlayer.new(cranked.id, cranked.name, true, false, 0, {}, 0),
+                                 ThinPlayer.new(orbital.id, orbital.name, true, false, 0, {}, 0),
+                                 ThinPlayer.new(the_king.id, the_king.name, true, false, 0, {}, 0)
+                               ])
+    end
+
+    it 'has player counts, scores and opponents for completed first round' do
+      round = create(:round, stage:, tournament:, completed: true)
+
+      create(:pairing, round:, player1: cranked, player2: the_king, side: 1, score1: 0, score2: 3)
+      create(:pairing, round:, player1: gorphax, player2: orbital, side: 2, score1: 3, score2: 0)
+      create(:pairing, round:, player1: plural, player2: nil, score1: 3)
+
+      thin_stuff = tournament.build_thin_stuff
 
       expect(thin_stuff).to eq(
-        { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, intentional_draw: false,
-          label: 'Corp Win' },
-        { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: false,
-          label: 'Tie' },
-        { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: true,
-          label: 'Intentional Draw' },
-        { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, intentional_draw: false,
-          label: 'Runner Win' }
+        [
+          ThinPlayer.new(plural.id, plural.name, true, true, 3, {}, 0),
+          ThinPlayer.new(gorphax.id, gorphax.name, true, false, 3, { orbital.id => ['runner'] }, -1),
+          ThinPlayer.new(cranked.id, cranked.name, true, false, 0, { the_king.id => ['corp'] }, 1),
+          ThinPlayer.new(orbital.id, orbital.name, true, false, 0, { gorphax.id => ['corp'] }, 1),
+          ThinPlayer.new(the_king.id, the_king.name, true, false, 3, { cranked.id => ['runner'] }, -1)
+        ]
+      )
+    end
+
+    it 'is unchanged for incomplete round >=1' do
+      round1 = create(:round, stage:, tournament:, completed: true)
+      create(:pairing, round: round1, player1: cranked, player2: the_king, side: 1, score1: 0, score2: 3)
+      create(:pairing, round: round1, player1: gorphax, player2: orbital, side: 2, score1: 3, score2: 0)
+      create(:pairing, round: round1, player1: plural, player2: nil, score1: 3)
+      round2 = create(:round, stage:, tournament:, completed: false)
+      create(:pairing, round: round2, player1: gorphax, player2: the_king, side: 2)
+      create(:pairing, round: round2, player1: plural, player2: cranked, side: 1)
+      create(:pairing, round: round2, player1: orbital, player2: nil)
+
+      thin_stuff = tournament.build_thin_stuff
+
+      expect(thin_stuff).to eq(
+        [
+          ThinPlayer.new(plural.id, plural.name, true, true, 3, {}, 0),
+          ThinPlayer.new(gorphax.id, gorphax.name, true, false, 3, { orbital.id => ['runner'] }, -1),
+          ThinPlayer.new(cranked.id, cranked.name, true, false, 0, { the_king.id => ['corp'] }, 1),
+          ThinPlayer.new(orbital.id, orbital.name, true, false, 0, { gorphax.id => ['corp'] }, 1),
+          ThinPlayer.new(the_king.id, the_king.name, true, false, 3, { cranked.id => ['runner'] }, -1)
+        ]
+      )
+    end
+
+    it 'is updated for completed round 2' do
+      round1 = create(:round, stage:, tournament:, completed: true)
+      create(:pairing, round: round1, player1: cranked, player2: the_king, side: 1, score1: 0, score2: 3)
+      create(:pairing, round: round1, player1: gorphax, player2: orbital, side: 2, score1: 3, score2: 0)
+      create(:pairing, round: round1, player1: plural, player2: nil, score1: 3)
+      round2 = create(:round, stage:, tournament:, completed: true)
+      create(:pairing, round: round2, player1: gorphax, player2: the_king, side: 1, score1: 3, score2: 0)
+      create(:pairing, round: round2, player1: plural, player2: cranked, side: 1, score1: 0, score2: 3)
+      create(:pairing, round: round2, player1: orbital, player2: nil, score1: 3, score2: 0)
+
+      thin_stuff = tournament.build_thin_stuff
+
+      expect(thin_stuff).to eq(
+        [
+          ThinPlayer.new(plural.id, plural.name, true, true, 3, { cranked.id => ['corp'] }, 1),
+          ThinPlayer.new(gorphax.id, gorphax.name, true, false, 6,
+                         { orbital.id => ['runner'], the_king.id => ['corp'] }, 0),
+          ThinPlayer.new(cranked.id, cranked.name, true, false, 3,
+                         { the_king.id => ['corp'], plural.id => ['runner'] }, 0),
+          ThinPlayer.new(orbital.id, orbital.name, true, false, 3, { gorphax.id => ['corp'] }, 1),
+          ThinPlayer.new(the_king.id, the_king.name, true, false, 3,
+                         { cranked.id => ['runner'], gorphax.id => ['runner'] }, -2)
+        ]
       )
     end
   end
