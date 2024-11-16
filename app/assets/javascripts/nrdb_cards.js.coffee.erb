@@ -19,7 +19,7 @@ $(document).on 'turbolinks:load', ->
         data: {
           'filter[search]': query,
           'filter[distinct_cards]': '',
-          'page[limit]': 10
+          'page[size]': 10000
         },
         success: (response) =>
           for nrdbPrinting from response.data
@@ -37,7 +37,7 @@ $(document).on 'turbolinks:load', ->
     loadNrdbPrintings = (callback) =>
       getPrintings({
         data: {
-          'page[limit]': 10000
+          'page[size]': 10000
         },
         success: (response) =>
           for nrdbPrinting from response.data
