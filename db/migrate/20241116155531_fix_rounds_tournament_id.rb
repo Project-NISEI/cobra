@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FixRoundsTournamentId < ActiveRecord::Migration[7.2]
   def up
     # Set tournament id which had been missing.
