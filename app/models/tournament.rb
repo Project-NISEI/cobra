@@ -4,7 +4,7 @@ class Tournament < ApplicationRecord
   has_many :players, -> { order(:id) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   belongs_to :user
   has_many :stages, -> { order(:number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
-  has_many :rounds, through: :stages
+  has_many :rounds
 
   enum :stage, { swiss: 0, double_elim: 1 }
 
