@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :round do
     number { 1 }
+    tournament
     stage
     completed { false }
     weight { 1.0 }

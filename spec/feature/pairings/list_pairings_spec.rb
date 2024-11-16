@@ -2,7 +2,9 @@
 
 RSpec.describe 'list pairings for a round' do
   context 'with swiss tournament' do
-    let(:round) { create(:round) }
+    let(:tournament) { create(:tournament) }
+    let(:stage) { create(:stage, tournament:) }
+    let(:round) { create(:round, tournament:, stage:) }
     let!(:jack) { create(:player, name: 'Jack', tournament: round.tournament) }
     let!(:jill) { create(:player, name: 'Jill', tournament: round.tournament) }
     let!(:snap) { create(:player, name: 'Snap', tournament: round.tournament) }

@@ -4,7 +4,7 @@ RSpec.describe 'round.current?' do
   let(:tournament) { create(:tournament, player_count: 4) }
 
   context 'round is in swiss' do
-    let(:round) { create(:round, stage: tournament.current_stage) }
+    let(:round) { create(:round, tournament:, stage: tournament.current_stage) }
 
     it 'should find round is current when in last round of swiss' do
       expect(round.current?).to be(true)

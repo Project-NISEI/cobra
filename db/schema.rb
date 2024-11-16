@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_09_235836) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_16_155531) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -162,7 +162,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_09_235836) do
   end
 
   create_table "rounds", id: :serial, force: :cascade do |t|
-    t.integer "tournament_id"
+    t.integer "tournament_id", null: false
     t.integer "number"
     t.boolean "completed", default: false
     t.decimal "weight", default: "1.0"

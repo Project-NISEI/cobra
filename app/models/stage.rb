@@ -22,7 +22,7 @@ class Stage < ApplicationRecord
 
   def new_round!
     number = (rounds.pluck(:number).max || 0) + 1
-    rounds.create(number:, length_minutes: default_round_minutes)
+    rounds.create(number:, tournament_id:, length_minutes: default_round_minutes)
   end
 
   def standings
