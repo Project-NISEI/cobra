@@ -144,4 +144,34 @@ RSpec.describe Tournament do
       expect(tournament.current_stage).to eq(new_stage)
     end
   end
+
+  describe '#build_thin_stuff' do
+    let!(:tournament) { create(:tournament, swiss_format: :single_sided) }
+    let!(:stage) { create(:stage, tournament:) }
+    let!(:plural) { create(:player, tournament:, name: 'plural', first_round_bye: true) }
+    let!(:gorphax) { create(:player, tournament:, name: 'gorphax') }
+    let!(:cranked) { create(:player, tournament:, name: 'cranked') }
+    let!(:orbital) { create(:player, tournament:, name: 'Orbital Tangent') }
+    let!(:the_king) { create(:player, tournament:, name: 'The King') }
+
+    it 'has player counts and defaults for first round' do
+      puts tournament.inspect
+      tournament.players.each do |p|
+        puts "  Player: #{p.inspect}"
+      end
+      thin_stuff = tournament.build_thin_stuff
+      puts "thin_stuff is #{thin_stuff}"
+
+      expect(thin_stuff).to eq(
+        { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+          label: 'Corp Win' },
+        { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+          label: 'Tie' },
+        { score1_corp: 1, score2_runner: 1, score1_runner: 0, score2_corp: 0, intentional_draw: true,
+          label: 'Intentional Draw' },
+        { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, intentional_draw: false,
+          label: 'Runner Win' }
+      )
+    end
+  end
 end

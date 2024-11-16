@@ -198,6 +198,86 @@ class Tournament < ApplicationRecord
       'decklists, they may be shared with participants or made public.'
   end
 
+  def build_thin_stuff
+    # SQL to use as input for building up scoring and pairing data efficiently.
+    completed_pairings_sql = "
+      SELECT
+        p.id,
+        p.side,
+        p.player1_id,
+        p1.active as player1_active,
+        p1.name as player1_name,
+        p1.first_round_bye as player1_first_round_bye,
+        COALESCE(p.score1, 0) AS score1,
+        p.player2_id,
+        p2.active as player2_active,
+        p2.name as player2_name,
+        p2.first_round_bye as player2_first_round_bye,
+        COALESCE(p.score2, 0) AS score2
+      FROM
+        pairings AS p
+        INNER JOIN rounds AS r ON p.round_id = r.id
+        INNER JOIN stages AS s ON r.stage_id = s.id
+        LEFT JOIN players AS p1 ON p.player1_id = p1.id
+        LEFT JOIN players AS p2 ON p.player2_id = p2.id
+      WHERE r.completed
+        AND s.tournament_id = #{id}"
+    puts "Completed pairings SQL is #{completed_pairings_sql}"
+
+    results = ActiveRecord::Base.connection.select_all(completed_pairings_sql)
+
+    player_summary = {}
+    results.each do |p|
+      # Initialize entries for each player if missing.
+      unless !p['player1_id'].nil? && player_summary.key?(p['player1_id'])
+        player_summary[p['player1_id']] =
+          { name: p['player1_name'], active: p['player1_active'], first_round_bye: p['player1_first_round_bye'],
+            points: 0, side_bias: 0, opponents: {} }
+      end
+      unless !p['player2_id'].nil? && player_summary.key?(p['player2_id'])
+        player_summary[p['player2_id']] =
+          { name: p['player2_name'], active: p['player2_active'], first_round_bye: p['player2_first_round_bye'],
+            points: 0, side_bias: 0, opponents: {} }
+      end
+      # Set scores
+      player_summary[p['player1_id']][:points] += p['score1'] unless p['player1_id'].nil? && p['score1'].nil?
+      player_summary[p['player2_id']][:points] += p['score2'] unless p['player2_id'].nil? && p['score2'].nil?
+
+      # Set side bias
+      if p['side'] == 1
+        player_summary[p['player1_id']][:side_bias] += 1
+        player_summary[p['player2_id']][:side_bias] -= 1
+      elsif p['side'] == 2
+        player_summary[p['player2_id']][:side_bias] += 1
+        player_summary[p['player1_id']][:side_bias] -= 1
+      end
+
+      # Set opponents iff there is no bye in this pairing
+      next if p['player1_id'].nil? || p['player2_id'].nil?
+
+      player1_side = p['side'] == 1 ? :corp : :runner
+      player2_side = p['side'] == 1 ? :runner : :corp
+
+      unless player_summary[p['player1_id']][:opponents].key?(p['player2_id'])
+        player_summary[p['player1_id']][:opponents][p['player2_id']] = []
+      end
+      player_summary[p['player1_id']][:opponents][p['player2_id']] << player2_side
+
+      unless player_summary[p['player2_id']][:opponents].key?(p['player1_id'])
+        player_summary[p['player2_id']][:opponents][p['player1_id']] = []
+      end
+      player_summary[p['player2_id']][:opponents][p['player1_id']] << player1_side
+    end
+
+    thin_players = []
+    player_summary.each do |player_id, data|
+      thin_players << ThinPlayer.new(player_id, data[:name], data[:active], data[:first_round_bye], data[:points],
+                                     data[:opponents])
+    end
+
+    thin_players
+  end
+
   private
 
   def default_date
