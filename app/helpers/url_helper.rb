@@ -12,7 +12,6 @@ module UrlHelper
 
     @qr_code ||= RQRCode::QRCode.new(
       tournament_url(slug, request),
-      size: 4,
       level: :h
     )
   end
