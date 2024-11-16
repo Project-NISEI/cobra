@@ -3,7 +3,7 @@
 RSpec.describe 'reporting scores for pairings' do
   let(:tournament) { create(:tournament) }
   let(:stage) { tournament.current_stage }
-  let(:round) { create(:round, stage:) }
+  let(:round) { create(:round, tournament:, stage:) }
   let(:pairing) { round.pairings.last }
 
   before do

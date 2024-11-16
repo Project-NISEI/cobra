@@ -2,6 +2,7 @@
 
 RSpec.describe 'listing rounds' do
   let(:tournament) { create(:tournament) }
+  let(:stage) { create(:stage, tournament:) }
 
   before do
     sign_in tournament.user
@@ -14,8 +15,8 @@ RSpec.describe 'listing rounds' do
   end
 
   context 'with multiple rounds' do
-    let!(:round1) { create(:round, stage: tournament.current_stage, number: 1) }
-    let!(:round2) { create(:round, stage: tournament.current_stage, number: 2) }
+    let!(:round1) { create(:round, tournament:, stage: tournament.current_stage, number: 1) }
+    let!(:round2) { create(:round, tournament:, stage: tournament.current_stage, number: 2) }
 
     it 'lists all rounds' do
       visit tournament_rounds_path(tournament)

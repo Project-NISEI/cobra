@@ -2,7 +2,7 @@
 
 RSpec.describe 'round timer' do
   let(:tournament) { create(:tournament) }
-  let(:round) { create(:round, stage: tournament.current_stage) }
+  let(:round) { create(:round, tournament:, stage: tournament.current_stage) }
 
   context 'viewing tournament rounds as the tournament creator' do
     before do

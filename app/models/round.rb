@@ -2,7 +2,7 @@
 
 class Round < ApplicationRecord
   belongs_to :stage, touch: true
-  has_one :tournament, through: :stage
+  belongs_to :tournament, touch: true
   has_many :pairings, -> { order(:table_number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   has_many :round_timer_activations, dependent: :destroy
 

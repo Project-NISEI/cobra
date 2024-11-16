@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Completing rounds' do
-  let(:round) { create(:round, completed: false) }
+  let(:tournament) { create(:tournament) }
+  let(:stage) { create(:stage, tournament:) }
+  let(:round) { create(:round, tournament:, stage:, completed: false) }
   let(:player1) { create(:player, tournament: round.tournament) }
   let(:player2) { create(:player, tournament: round.tournament) }
   let!(:pairing) do
