@@ -198,7 +198,7 @@ class Tournament < ApplicationRecord
       'decklists, they may be shared with participants or made public.'
   end
 
-  def build_thin_stuff
+  def build_thin_stuff # rubocop:disable Metrics/MethodLength
     # SQL to use as input for building up scoring and pairing data efficiently.
     _old_completed_pairings_sql = "
       SELECT
@@ -313,10 +313,12 @@ ORDER BY p.id, up.round_id;
       summary[:opponents][p['opponent_id']] << p['side']
     end
 
-    thin_players = []
+    thin_players = {}
     player_summary.each do |player_id, data|
-      thin_players << ThinPlayer.new(player_id, data[:name], data[:active], data[:first_round_bye], data[:points],
-                                     data[:opponents], data[:side_bias])
+      thin_players[player_id] = ThinPlayer.new(
+        player_id, data[:name], data[:active], data[:first_round_bye], data[:points],
+        data[:opponents], data[:side_bias]
+      )
     end
 
     thin_players

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ThinPlayer
-  def initialize(id, name, active, first_round_bye, points, opponents, side_bias)
+  def initialize(id, name, active, first_round_bye, points, opponents, side_bias) # rubocop:disable Metrics/ParameterLists
     @id = id
     @name = name
     @active = active
