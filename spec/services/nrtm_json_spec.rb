@@ -94,6 +94,44 @@ RSpec.describe NrtmJson do
       end
     end
 
+    context 'with single-sided and fancy quotes' do
+      let(:swiss_format) { :single_sided }
+      let(:kit_player) do
+        create(:player, name: 'Kit Fan 100', corp_identity: 'RP', runner_identity: 'Rielle “Kit” Peddler: Transhuman',
+                        id: 1008)
+      end
+
+      let(:loup_player) do
+        create(:player, name: 'Loup Fan 1000', corp_identity: 'PE',
+                        runner_identity: 'René “Loup” Arcemont: Party Animal', id: 1009)
+      end
+
+      before do
+        create(:identity, name: 'René “Loup” Arcemont: Party Animal')
+        create(:identity, name: 'Rielle “Kit” Peddler: Transhuman')
+
+        round.pairings << create(:pairing, player1: loup_player, player2: kit_player, table_number: 1, score1_runner: 3,
+                                           score2_corp: 0, side: :player1_is_runner)
+        allow(StandingStrategies::Swiss)
+          .to receive(:new)
+          .with(tournament.current_stage)
+          .and_return(
+            instance_double(
+              StandingStrategies::Swiss,
+              calculate!: [
+                Standing.new(loup_player, points: 3, sos: 1.5, extended_sos: 2.5),
+                Standing.new(kit_player, points: 0, sos: 1.6, extended_sos: 2.6)
+              ]
+            )
+          )
+      end
+
+      it 'returns data with fancy quotes swapped with regular double quotes' do
+        expect(json.data('https://server/SLUG').with_indifferent_access)
+          .to eq(JSON.parse(file_fixture('nrtm_json_single_sided_fancy_quotes.json').read))
+      end
+    end
+
     context 'with single-sided tournament' do
       let(:swiss_format) { :single_sided }
 

@@ -1,0 +1,43 @@
+{
+    "name": "Some Tournament",
+    "date": "2017-01-01",
+    "cutToTop": 0,
+    "preliminaryRounds": 1,
+    "tournamentOrganiser": {
+      "nrdbId": 123,
+      "nrdbUsername": "username"
+    },
+    "players": [
+      {
+        "id": 1009, "name": "Loup Fan 1000", "rank": 1, "corpIdentity": "PE",
+        "runnerIdentity": "René \"Loup\" Arcemont: Party Animal",
+        "matchPoints": 3, "strengthOfSchedule": 1.5, 
+        "extendedStrengthOfSchedule": 2.5
+      },
+      {
+        "id": 1008, "name": "Kit Fan 100", "rank": 2, "corpIdentity": "RP",
+        "runnerIdentity": "Rielle \"Kit\" Peddler: Transhuman",
+        "matchPoints": 0, "strengthOfSchedule": 1.6,
+        "extendedStrengthOfSchedule": 2.6
+      }
+    ],
+    "eliminationPlayers": [],
+    "rounds": [
+      [
+        {
+          "table": 1,
+          "player1": { "id": 1009, "role": "runner", "runnerScore": 3, "corpScore": null, "combinedScore": 3 },
+          "player2": { "id": 1008, "role": "corp", "runnerScore": null, "corpScore": 0, "combinedScore": 0 },
+          "intentionalDraw": false,
+          "twoForOne": false,
+          "eliminationGame": false
+        }
+      ]
+    ],
+    "uploadedFrom": "Cobra",
+    "links": [
+      { "rel": "schemaderivedfrom", "href": "http://steffens.org/nrtm/nrtm-schema.json" },
+      { "rel": "uploadedfrom", "href": "https://server/SLUG" }
+    ]
+  }
+  
