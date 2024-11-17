@@ -9,11 +9,14 @@ class ThinPlayer
     @points = points
     @opponents = opponents
     @side_bias = side_bias
+    @fixed_table_number = false
   end
 
-  attr_accessor :id, :name, :active, :first_round_bye, :opponents, :points, :side_bias
+  attr_accessor :id, :name, :active, :first_round_bye, :opponents, :points, :side_bias, :fixed_table_number
 
   def ==(other)
+    return false if other.class != self.class
+
     @id == other.id &&
       @name == other.name &&
       @active == other.active &&
