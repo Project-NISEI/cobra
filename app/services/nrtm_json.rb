@@ -19,8 +19,8 @@ class NrtmJson
           id: standing.player.id,
           name: standing.name,
           rank: i + 1,
-          corpIdentity: (standing.corp_identity.name if standing.corp_identity.id),
-          runnerIdentity: (standing.runner_identity.name if standing.runner_identity.id),
+          corpIdentity: (standing.corp_identity.name.gsub(/[“”]/, '"') if standing.corp_identity.id),
+          runnerIdentity: (standing.runner_identity.name.gsub(/[“”]/, '"') if standing.runner_identity.id),
           matchPoints: standing.points,
           strengthOfSchedule: standing.sos,
           extendedStrengthOfSchedule: standing.extended_sos
