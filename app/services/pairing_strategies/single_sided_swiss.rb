@@ -6,66 +6,98 @@ module PairingStrategies
       super
       @bye_winner_score = 3
       @bye_loser_score = 0
+
+      @thin_pairings = []
     end
 
     def pair!
       assign_byes!
 
       paired_players.each do |pairing|
-        round.pairings.create(pairing_params(pairing))
+        pp = pairing_params(pairing)
+        @thin_pairings << ThinPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
+        # round.pairings.create
       end
 
-      SwissTables.assign_table_numbers!(round.pairings)
+      SwissTables.assign_table_numbers!(@thin_pairings) # round.pairings)
 
       # Set player sides for the pairings.
       apply_sides!
+
+      puts 'At the end of pair!'
+      # puts @thin_pairings.inspect
+
+      puts 'Saving pairings'
+
+      ActiveRecord::Base.transaction do
+        @thin_pairings.each do |tp|
+          # puts tp.inspect
+          p = Pairing.new(round:, player1_id: tp.player1&.id, player2_id: tp.player2&.id, table_number: tp.table_number)
+          if tp.bye?
+            if tp.player1.nil?
+              p.score2 = @bye_winner_score
+            else
+              p.score1 = @bye_winner_score
+            end
+          end
+          # Don't set a side for byes.
+          unless tp.bye?
+            # TODO(plural): Make some better enums available.
+            p.side = tp.player1_side == 'corp' ? 1 : 2
+          end
+
+          p.save
+          # puts tp.inspect
+          # puts p.inspect
+        end
+      end
     end
 
     def self.get_pairings(players)
-      cached_data = Hash[players.map do |player|
-        [
-          player.id,
-          {
-            points: player.points,
-            side_bias: player.side_bias,
-            opponents: player.pairings.each_with_object({}) do |pairing, output|
-              output[pairing.opponent_for(player).id] ||= []
-              output[pairing.opponent_for(player).id] << pairing.side_for(player)
-            end
-          }
-        ]
-      end]
+      # cached_data = Hash[players.map do |player|
+      #   [
+      #     player.id,
+      #     {
+      #       points: player.points,
+      #       side_bias: player.side_bias,
+      #       opponents: player.pairings.each_with_object({}) do |pairing, output|
+      #         output[pairing.opponent_for(player).id] ||= []
+      #         output[pairing.opponent_for(player).id] << pairing.side_for(player)
+      #       end
+      #     }
+      #   ]
+      # end]
 
       SwissImplementation.pair(players.to_a) do |player1, player2|
+        # puts 'Inside SwissImplementation.pair in SSS'
+        # puts player1.inspect
+        # puts player2.inspect
+
         # handle logic if one of the players is the bye
         if [player1, player2].include?(SwissImplementation::Bye)
           real_player = [player1, player2].difference([SwissImplementation::Bye]).first
 
           # return nil (no pairing possible) if player has already received bye
-          next nil if cached_data[real_player.id][:opponents].keys.include?(nil)
+          # TODO(plural): Handle the "had a bye" use case more deliberately and probably correctly.
+          next nil if real_player.opponents.keys.include?(nil)
 
-          next points_weight(cached_data[real_player.id][:points], -1)
+          next points_weight(real_player.points, -1)
         end
 
         # return nil (no pairing possible) if players have already played twice
-        if cached_data[player1.id][:opponents].keys.include?(player2.id) &&
-           cached_data[player1.id][:opponents][player2.id].count >= 2
-          next nil
-        end
+        next nil if player1.opponents.key?(player2.id) && player1.opponents[player2.id].count >= 2
 
-        preferred_side = preferred_player1_side(
-          cached_data[player1.id][:side_bias],
-          cached_data[player2.id][:side_bias]
-        )
+        preferred_side = preferred_player1_side(player1.side_bias, player2.side_bias)
+
         # return nil (no pairing possible) if the sides would repeat the previous pairing
-        if preferred_side && cached_data[player1.id][:opponents][player2.id] &&
-           cached_data[player1.id][:opponents][player2.id].include?(preferred_side)
+        if preferred_side && player1.opponents[player2.id] &&
+           player1.opponents[player2.id].include?(preferred_side)
           next nil
         end
 
-        points_weight(cached_data[player1.id][:points], cached_data[player2.id][:points]) +
-          side_bias_weight(cached_data[player1.id][:side_bias], cached_data[player2.id][:side_bias]) +
-          rematch_bias_weight(cached_data[player1.id][:opponents].keys.include?(player2.id))
+        points_weight(player1.points, player2.points) +
+          side_bias_weight(player1.side_bias, player2.side_bias) +
+          rematch_bias_weight(player1.opponents.keys.include?(player2.id))
       end
     end
 
@@ -95,7 +127,7 @@ module PairingStrategies
     def assign_byes!
       players_with_byes.each do |player|
         round.pairings.create(
-          player1: player,
+          player1_id: player.id,
           player2: nil,
           score1: @bye_winner_score,
           score2: @bye_loser_score
@@ -105,8 +137,10 @@ module PairingStrategies
 
     def paired_players
       if first_round?
-        return @paired_players ||= players_to_pair.to_a.shuffle(random:).in_groups_of(2,
-                                                                                      SwissImplementation::Bye)
+        @paired_players ||= players_to_pair.to_a.shuffle(random:).in_groups_of(2,
+                                                                               nil)
+        # puts @paired_players.inspect
+        return @paired_players
       end
 
       @paired_players ||= self.class.get_pairings(players_to_pair.to_a)
@@ -132,13 +166,13 @@ module PairingStrategies
     end
 
     def players_with_byes
-      return players.with_first_round_bye if first_round?
+      return players.select { |_, v| v.first_round_bye } if first_round?
 
-      []
+      {}
     end
 
     def players_to_pair
-      @players_to_pair ||= players - players_with_byes
+      @players_to_pair ||= players.filter_map { |k, v| v unless players_with_byes.key?(k) }
     end
 
     def first_round?
@@ -146,11 +180,13 @@ module PairingStrategies
     end
 
     def apply_sides!
-      round.pairings.non_bye.each do |pairing|
+      @thin_pairings.each do |pairing|
+        next if pairing.bye?
+
         preference = self.class.preferred_player1_side(pairing.player1.side_bias, pairing.player2.side_bias)
-        pairing.update(side: :player1_is_runner) if preference == :runner
-        pairing.update(side: :player1_is_corp) if preference == :corp
-        pairing.update(side: %i[player1_is_corp player1_is_runner].sample) if preference.nil?
+        pairing.player1_side = 'runner' if preference == :runner
+        pairing.player1_side = 'corp' if preference == :corp
+        pairing.player1_side = %w[corp runner].sample if preference.nil?
       end
     end
   end

@@ -5,7 +5,7 @@ module PairingSorters
     def self.sort(pairings, player_summary = nil)
       if player_summary.nil?
         pairings.sort do |a, b|
-          b.players.sum(&:points) <=> a.players.sum(&:points)
+          b.combined_points <=> a.combined_points
         end
       else
         pairings.sort do |a, b|

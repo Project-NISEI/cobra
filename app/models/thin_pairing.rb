@@ -15,7 +15,7 @@ class ThinPairing
   end
 
   def fixed_table_number?
-    player1.fixed_table_number or player2.fixed_table_number
+    (!player1.nil? && player1.fixed_table_number) or (!player2.nil? && player2.fixed_table_number)
   end
 
   def combined_points
