@@ -307,7 +307,7 @@ ORDER BY p.id, up.round_id;
         end
       end
 
-      summary[:had_bye] = true if p['is_bye'] || p['opponent_id'].nil?
+      summary[:had_bye] = true if p['is_bye'] || p['first_round_bye']
 
       # Set opponents iff there is no bye in this pairing
       next if p['is_bye'] || p['opponent_id'].nil?
