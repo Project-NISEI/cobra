@@ -12,7 +12,7 @@ module PairingStrategies
     end
 
     def players
-      @players ||= round.tournament.build_thin_stuff.select { |_, v| v.active }
+      @players ||= round.tournament.build_player_summary.select { |_, v| v.active }
     end
   end
 end

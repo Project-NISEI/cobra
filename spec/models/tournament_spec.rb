@@ -145,7 +145,7 @@ RSpec.describe Tournament do
     end
   end
 
-  describe '#build_thin_stuff' do
+  describe '#build_player_summary' do
     let!(:tournament) { create(:tournament, swiss_format: :single_sided) }
     let!(:stage) { create(:stage, tournament:) }
     let!(:plural) { create(:player, tournament:, name: 'plural', first_round_bye: true) }
@@ -155,7 +155,7 @@ RSpec.describe Tournament do
     let!(:the_king) { create(:player, tournament:, name: 'The King') }
 
     it 'has player counts and defaults before any pairings' do
-      thin_stuff = tournament.build_thin_stuff
+      thin_stuff = tournament.build_player_summary
 
       expect(thin_stuff).to eq({
                                  plural.id => ThinPlayer.new(plural.id, plural.name, true, true, 0, {}, 0, true),
@@ -173,7 +173,7 @@ RSpec.describe Tournament do
       create(:pairing, round:, player1: gorphax, player2: orbital, side: 2)
       create(:pairing, round:, player1: plural, player2: nil)
 
-      thin_stuff = tournament.build_thin_stuff
+      thin_stuff = tournament.build_player_summary
 
       expect(thin_stuff).to eq({
                                  plural.id => ThinPlayer.new(plural.id, plural.name, true, true, 0, {}, 0, true),
@@ -191,7 +191,7 @@ RSpec.describe Tournament do
       create(:pairing, round:, player1: gorphax, player2: orbital, side: 2, score1: 3, score2: 0)
       create(:pairing, round:, player1: plural, player2: nil, score1: 3)
 
-      thin_stuff = tournament.build_thin_stuff
+      thin_stuff = tournament.build_player_summary
 
       expect(thin_stuff).to eq(
         {
@@ -216,7 +216,7 @@ RSpec.describe Tournament do
       create(:pairing, round: round2, player1: plural, player2: cranked, side: 1)
       create(:pairing, round: round2, player1: orbital, player2: nil)
 
-      thin_stuff = tournament.build_thin_stuff
+      thin_stuff = tournament.build_player_summary
 
       expect(thin_stuff).to eq(
         {
@@ -241,7 +241,7 @@ RSpec.describe Tournament do
       create(:pairing, round: round2, player1: plural, player2: cranked, side: 1, score1: 0, score2: 3)
       create(:pairing, round: round2, player1: orbital, player2: nil, score1: 3, score2: 0)
 
-      thin_stuff = tournament.build_thin_stuff
+      thin_stuff = tournament.build_player_summary
 
       expect(thin_stuff).to eq(
         {

@@ -198,7 +198,7 @@ class Tournament < ApplicationRecord
       'decklists, they may be shared with participants or made public.'
   end
 
-  def build_thin_stuff # rubocop:disable Metrics/MethodLength
+  def build_player_summary # rubocop:disable Metrics/MethodLength
     # SQL to use as input for building up scoring and pairing data efficiently.
     _old_completed_pairings_sql = "
       SELECT
