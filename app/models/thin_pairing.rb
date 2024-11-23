@@ -21,11 +21,7 @@ class ThinPairing
   def fixed_table_number
     return nil unless fixed_table_number?
 
-    [ftn(player1), ftn(player2)].min
-
-    # fixed_table_1 = 999_999
-    # fixed_table_1 = player1.fixed_table_number if !player1.nil? && !player1.fixed_table_number.nil?
-    # (player1.nil? ? 999_999 : player1.fixed_table_number).floor(player2.nil? ? 999_999 : player2.fixed_table_number)
+    [big_num_if_nil(player1), big_num_if_nil(player2)].min
   end
 
   def combined_points
@@ -34,7 +30,8 @@ class ThinPairing
 
   private
 
-  def ftn(player)
+  # Use a Very Large Number if the player is nil to aid picking the lowest (numerical) table number for fixed tables.
+  def big_num_if_nil(player)
     return 999_999 if player.nil? || player&.fixed_table_number.nil?
 
     player.fixed_table_number
