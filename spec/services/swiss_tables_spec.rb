@@ -13,18 +13,17 @@ RSpec.describe SwissTables do
   let(:eddie) { ThinPlayer.new(5, 'Eddie', true, false, 6, {}, 0, nil) }
   let(:florence) { ThinPlayer.new(6, 'Florence', true, false, 6, {}, 0, nil) }
 
-  let(:alice_bob) { ThinPairing.new(alice, 0, bob, 0) } # create(:pairing, player1: alice, player2: bob) }
-  let(:charlie_dave) { ThinPairing.new(charlie, 0, dave, 0) } # create(:pairing, player1: charlie, player2: dave) }
-  let(:eddie_florence) { ThinPairing.new(eddie, 0, florence, 0) } # create(:pairing, player1: eddie, player2: florence) }
+  let(:alice_bob) { ThinPairing.new(alice, 0, bob, 0) }
+  let(:charlie_dave) { ThinPairing.new(charlie, 0, dave, 0) }
+  let(:eddie_florence) { ThinPairing.new(eddie, 0, florence, 0) }
 
-  let(:alice_bye) { ThinPairing.new(alice, 0, nil, 0) } # create(:pairing, player1: alice, player2: nil) }
-  let(:alice_florence) { ThinPairing.new(alice, 0, florence, 0) } # create(:pairing, player1: alice, player2: florence) }
-  let(:bob_charlie) { ThinPairing.new(bob, 0, charlie, 0) } # create(:pairing, player1: bob, player2: charlie) }
-  let(:dave_eddie) { ThinPairing.new(dave, 0, eddie, 0) } # create(:pairing, player1: dave, player2: eddie) }
+  let(:alice_bye) { ThinPairing.new(alice, 0, nil, 0) }
+  let(:alice_florence) { ThinPairing.new(alice, 0, florence, 0) }
+  let(:bob_charlie) { ThinPairing.new(bob, 0, charlie, 0) }
+  let(:dave_eddie) { ThinPairing.new(dave, 0, eddie, 0) }
 
   describe '#assign_table_numbers!' do
     it 'sorts non-bye pairings by number of points' do
-      # TODO(plural): Leave points unset above, but set them in each test.
       pairings = [alice_bob, charlie_dave, eddie_florence].freeze # 6 points, 0 points, 12 points
 
       described_class.assign_table_numbers! pairings
