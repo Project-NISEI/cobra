@@ -15,8 +15,6 @@ module PairingSorters
       end
     end
 
-    private_class_method points
-
     def self.points(player_summary, player_id)
       if player_summary.key?(player_id)
         player_summary[player_id].points
