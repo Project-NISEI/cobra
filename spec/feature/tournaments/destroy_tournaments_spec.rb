@@ -2,7 +2,7 @@
 
 RSpec.describe 'destroying tournaments' do
   let(:tournament) { create(:tournament) }
-  let(:round) { create(:round, stage: tournament.current_stage) }
+  let(:round) { create(:round, tournament:, stage: tournament.current_stage) }
 
   before do
     create(:player, tournament:)

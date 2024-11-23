@@ -3,7 +3,7 @@
 RSpec.describe SwissImplementation do
   describe '#pair' do
     10.times do |i|
-      let("player#{i}") { SwissImplementation::Player.new("player#{i}") }
+      let("player#{i}") { SwissImplementation::Player.new(i, "player#{i}") }
     end
 
     let(:players) do
@@ -49,9 +49,14 @@ RSpec.describe SwissImplementation do
     end
 
     context 'with some matchups excluded' do
+      # Pull a list of just the ids and any Byes.
+      def exclude_list(players)
+        players.map { |p| p == SwissImplementation::Bye ? p : p.id }
+      end
+
       before do
-        player1.exclude = (players - [player0, player1])
-        player2.exclude = [player1]
+        player1.exclude = (exclude_list(players) - exclude_list([player0, player1]))
+        player2.exclude = exclude_list([player1])
       end
 
       let(:paired) { described_class.pair(players) }
@@ -64,8 +69,10 @@ RSpec.describe SwissImplementation do
     end
 
     context 'with odd number of players' do
+      i = 0
       %i[snap crackle pop].each do |name|
-        let(name) { SwissImplementation::Player.new }
+        i += 1
+        let(name) { SwissImplementation::Player.new(i) }
       end
       let(:players) { [snap, crackle, pop] }
 

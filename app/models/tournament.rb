@@ -246,7 +246,7 @@ WITH player1_pairings AS (
 player2_pairings AS (
     SELECT p.round_id,
         p.player2_id AS player_id,
-        p.player2_id IS NULL
+        p.player1_id IS NULL
         OR p.player2_id IS NULL AS is_bye,
         -- flip the logic since this is player 2
         CASE
@@ -274,7 +274,8 @@ SELECT p.id as player_id,
     p.name as player_name,
     p.active,
     p.first_round_bye,
-    up.is_bye,
+    p.fixed_table_number,
+    COALESCE(up.is_bye, FALSE) as is_bye,
     up.side,
     COALESCE(up.score, 0) AS score,
     up.opponent_id,
@@ -292,7 +293,7 @@ ORDER BY p.id, up.round_id;
       unless player_summary.key?(player_id)
         player_summary[player_id] =
           { name: p['player_name'], active: p['active'], first_round_bye: p['first_round_bye'],
-            points: 0, side_bias: 0, opponents: {} }
+            points: 0, side_bias: 0, opponents: {}, fixed_table_number: p['fixed_table_number'], had_bye: false }
       end
 
       summary = player_summary[player_id]
@@ -306,6 +307,8 @@ ORDER BY p.id, up.round_id;
         end
       end
 
+      summary[:had_bye] = true if p['is_bye'] || p['opponent_id'].nil?
+
       # Set opponents iff there is no bye in this pairing
       next if p['is_bye'] || p['opponent_id'].nil?
 
@@ -315,9 +318,10 @@ ORDER BY p.id, up.round_id;
 
     thin_players = {}
     player_summary.each do |player_id, data|
+      # TODO(plural): Use more setters or a builder instead of loading up the constructor
       thin_players[player_id] = ThinPlayer.new(
         player_id, data[:name], data[:active], data[:first_round_bye], data[:points],
-        data[:opponents], data[:side_bias]
+        data[:opponents], data[:side_bias], data[:had_bye], data[:fixed_table_number]
       )
     end
 

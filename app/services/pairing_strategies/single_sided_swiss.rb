@@ -16,22 +16,15 @@ module PairingStrategies
       paired_players.each do |pairing|
         pp = pairing_params(pairing)
         @thin_pairings << ThinPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
-        # round.pairings.create
       end
 
-      SwissTables.assign_table_numbers!(@thin_pairings) # round.pairings)
+      SwissTables.assign_table_numbers!(@thin_pairings)
 
       # Set player sides for the pairings.
       apply_sides!
 
-      puts 'At the end of pair!'
-      # puts @thin_pairings.inspect
-
-      puts 'Saving pairings'
-
       ActiveRecord::Base.transaction do
         @thin_pairings.each do |tp|
-          # puts tp.inspect
           p = Pairing.new(round:, player1_id: tp.player1&.id, player2_id: tp.player2&.id, table_number: tp.table_number)
           if tp.bye?
             if tp.player1.nil?
@@ -47,39 +40,19 @@ module PairingStrategies
           end
 
           p.save
-          # puts tp.inspect
-          # puts p.inspect
         end
       end
     end
 
     def self.get_pairings(players)
-      # cached_data = Hash[players.map do |player|
-      #   [
-      #     player.id,
-      #     {
-      #       points: player.points,
-      #       side_bias: player.side_bias,
-      #       opponents: player.pairings.each_with_object({}) do |pairing, output|
-      #         output[pairing.opponent_for(player).id] ||= []
-      #         output[pairing.opponent_for(player).id] << pairing.side_for(player)
-      #       end
-      #     }
-      #   ]
-      # end]
-
       SwissImplementation.pair(players.to_a) do |player1, player2|
-        # puts 'Inside SwissImplementation.pair in SSS'
-        # puts player1.inspect
-        # puts player2.inspect
-
         # handle logic if one of the players is the bye
         if [player1, player2].include?(SwissImplementation::Bye)
           real_player = [player1, player2].difference([SwissImplementation::Bye]).first
 
           # return nil (no pairing possible) if player has already received bye
           # TODO(plural): Handle the "had a bye" use case more deliberately and probably correctly.
-          next nil if real_player.opponents.keys.include?(nil)
+          next nil if real_player.had_bye # real_player.opponents.keys.include?(nil)
 
           next points_weight(real_player.points, -1)
         end
@@ -126,12 +99,7 @@ module PairingStrategies
 
     def assign_byes!
       players_with_byes.each do |player|
-        round.pairings.create(
-          player1_id: player.id,
-          player2: nil,
-          score1: @bye_winner_score,
-          score2: @bye_loser_score
-        )
+        @thin_pairings << ThinPairing.new(@players[player.id], @bye_winner_score, nil, @bye_loser_score)
       end
     end
 
@@ -139,7 +107,6 @@ module PairingStrategies
       if first_round?
         @paired_players ||= players_to_pair.to_a.shuffle(random:).in_groups_of(2,
                                                                                nil)
-        # puts @paired_players.inspect
         return @paired_players
       end
 

@@ -4,7 +4,7 @@ RSpec.describe 'load testing' do
   ROUNDS = 15 # rubocop:disable Lint/ConstantDefinitionInBlock,RSpec/LeakyConstantDeclaration
   PLAYERS = 150 # rubocop:disable Lint/ConstantDefinitionInBlock,RSpec/LeakyConstantDeclaration
 
-  let(:tournament) { create(:tournament, swiss_format: :single_sided) }
+  let(:tournament) { create(:tournament, swiss_format: :double_sided) }
 
   def timer
     (Time.zone.now - (@start || Time.zone.now)).seconds.tap do
