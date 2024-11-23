@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe SwissTables do
-  # thin_players[player_id] = ThinPlayer.new(
-  #   player_id, data[:name], data[:active], data[:first_round_bye], data[:points],
-  #   data[:opponents], data[:side_bias], data[:fixed_table_number]
-  # )
-
   let(:alice) { ThinPlayer.new(1, 'Alice', true, false, 0, {}, 0, nil) }
   let(:bob) { ThinPlayer.new(2, 'Bob', true, false, 6, {}, 0, nil) }
   let(:charlie) { ThinPlayer.new(3, 'Charlie', true, false, 0, {}, 0, nil) }
