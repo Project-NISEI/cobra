@@ -198,122 +198,101 @@ class Tournament < ApplicationRecord
       'decklists, they may be shared with participants or made public.'
   end
 
-  def build_player_summary # rubocop:disable Metrics/MethodLength
+  def build_player_summary
     # SQL to use as input for building up scoring and pairing data efficiently.
-    _old_completed_pairings_sql = "
-      SELECT
-        p.id,
-        p.side,
-        p.player1_id,
-        p1.active as player1_active,
-        p1.name as player1_name,
-        p1.first_round_bye as player1_first_round_bye,
-        COALESCE(p.score1, 0) AS score1,
-        p.player2_id,
-        p2.active as player2_active,
-        p2.name as player2_name,
-        p2.first_round_bye as player2_first_round_bye,
-        COALESCE(p.score2, 0) AS score2
-      FROM
-        pairings AS p
-        INNER JOIN rounds AS r ON p.round_id = r.id
-        INNER JOIN stages AS s ON r.stage_id = s.id
-        LEFT JOIN players AS p1 ON p.player1_id = p1.id
-        LEFT JOIN players AS p2 ON p.player2_id = p2.id
-      WHERE r.completed
-        AND s.tournament_id = #{id}"
-
     player_summary_sql = "
-WITH player1_pairings AS (
-    SELECT p.round_id,
-        p.player1_id AS player_id,
-        p.player1_id IS NULL
-        OR p.player2_id IS NULL AS is_bye,
-        CASE
-            WHEN p.side = 1 THEN 'corp'
-            ELSE 'runner'
-        END AS side,
-        p.score1 AS score,
-        p.player2_id AS opponent_id,
-        CASE
-            WHEN p.side = 1 THEN 'runnner'
-            ELSE 'corp'
-        END AS opponent_side
-    FROM pairings AS p
-        INNER JOIN rounds AS r ON p.round_id = r.id
-    WHERE r.tournament_id = #{id} AND r.completed
-),
-player2_pairings AS (
-    SELECT p.round_id,
-        p.player2_id AS player_id,
-        p.player1_id IS NULL
-        OR p.player2_id IS NULL AS is_bye,
-        -- flip the logic since this is player 2
-        CASE
-            WHEN p.side = 1 THEN 'runner'
-            ELSE 'corp'
-        END AS side,
-        p.score2 AS score,
-        p.player1_id AS opponent_id,
-        CASE
-            WHEN p.side = 1 THEN 'corp'
-            ELSE 'runner'
-        END AS opponent_side
-    FROM pairings AS p
-        INNER JOIN rounds AS r ON p.round_id = r.id
-    WHERE r.tournament_id = #{id} AND r.completed
-),
-unified_pairings AS (
-    SELECT *
-    FROM player1_pairings
-    UNION ALL
-    SELECT *
-    FROM player2_pairings
-)
-SELECT p.id as player_id,
-    p.name as player_name,
-    p.active,
-    p.first_round_bye,
-    p.fixed_table_number,
-    COALESCE(up.is_bye, FALSE) as is_bye,
-    up.side,
-    COALESCE(up.score, 0) AS score,
-    up.opponent_id,
-    up.opponent_side
-FROM players AS p
-    LEFT JOIN unified_pairings AS up ON p.id = up.player_id
-WHERE p.tournament_id = #{id}
-ORDER BY p.id, up.round_id;
+      WITH player1_pairings AS (
+          SELECT p.round_id,
+              p.player1_id AS player_id,
+              p.player1_id IS NULL
+              OR p.player2_id IS NULL AS is_bye,
+              CASE
+                  WHEN p.side = 1 THEN 'corp'
+                  ELSE 'runner'
+              END AS side,
+              p.score1 AS score,
+              p.player2_id AS opponent_id,
+              CASE
+                  WHEN p.side = 1 THEN 'runnner'
+                  ELSE 'corp'
+              END AS opponent_side
+          FROM pairings AS p
+              INNER JOIN rounds AS r ON p.round_id = r.id
+          WHERE r.tournament_id = #{id} AND r.completed
+      ),
+      player2_pairings AS (
+          SELECT p.round_id,
+              p.player2_id AS player_id,
+              p.player1_id IS NULL
+              OR p.player2_id IS NULL AS is_bye,
+              -- flip the logic since this is player 2
+              CASE
+                  WHEN p.side = 1 THEN 'runner'
+                  ELSE 'corp'
+              END AS side,
+              p.score2 AS score,
+              p.player1_id AS opponent_id,
+              CASE
+                  WHEN p.side = 1 THEN 'corp'
+                  ELSE 'runner'
+              END AS opponent_side
+          FROM pairings AS p
+              INNER JOIN rounds AS r ON p.round_id = r.id
+          WHERE r.tournament_id = #{id} AND r.completed
+      ),
+      unified_pairings AS (
+          SELECT *
+          FROM player1_pairings
+          UNION ALL
+          SELECT *
+          FROM player2_pairings
+      )
+      SELECT
+          p.id as player_id,
+          p.name as player_name,
+          p.active,
+          p.first_round_bye,
+          p.fixed_table_number,
+          COALESCE(up.is_bye, FALSE) as is_bye,
+          up.side,
+          COALESCE(up.score, 0) AS score,
+          up.opponent_id,
+          up.opponent_side
+      FROM
+          players AS p
+          LEFT JOIN unified_pairings AS up ON p.id = up.player_id
+      WHERE p.tournament_id = #{id}
     "
     results = ActiveRecord::Base.connection.select_all(player_summary_sql)
 
     player_summary = {}
     results.each do |p|
-      player_id = p['player_id']
+      p.symbolize_keys!
+      player_id = p[:player_id]
       unless player_summary.key?(player_id)
         player_summary[player_id] =
-          { name: p['player_name'], active: p['active'], first_round_bye: p['first_round_bye'],
-            points: 0, side_bias: 0, opponents: {}, fixed_table_number: p['fixed_table_number'], had_bye: false }
+          { name: p[:player_name], active: p[:active], first_round_bye: p[:first_round_bye],
+            points: 0, side_bias: 0, opponents: {}, fixed_table_number: p[:fixed_table_number], had_bye: false }
       end
 
       summary = player_summary[player_id]
-      summary[:points] += p['score']
+      summary[:points] += p[:score]
 
-      unless p['is_bye'] || p['opponent_id'].nil?
-        if p['side'] == 'corp'
+      unless p[:is_bye] || p[:opponent_id].nil?
+        if p[:side] == 'corp'
           summary[:side_bias] += 1
         else
           summary[:side_bias] -= 1
         end
       end
 
-      summary[:had_bye] = true if p['is_bye'] || p['first_round_bye']
+      summary[:had_bye] = true if p[:is_bye] || p[:first_round_bye]
 
       # Set opponents iff there is no bye in this pairing
-      next if p['is_bye'] || p['opponent_id'].nil?
+      next if p[:is_bye] || p[:opponent_id].nil?
 
-      summary[:opponents][p['opponent_id']] = [] unless summary[:opponents].key?(p['opponent_id'])
-      summary[:opponents][p['opponent_id']] << p['side']
+      summary[:opponents][p[:opponent_id]] = [] unless summary[:opponents].key?(p[:opponent_id])
+      summary[:opponents][p[:opponent_id]] << p[:side]
     end
 
     thin_players = {}
