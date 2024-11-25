@@ -200,6 +200,16 @@ class Tournament < ApplicationRecord
 
   def build_player_summary
     # SQL to use as input for building up scoring and pairing data efficiently.
+    # This does 2 main things:
+    #   Gives us a single pass over all the players in the tournament
+    #   Gives us a row per player, per pairing, if there are any pairings yet.
+    #   Since pairings have 2 players, either the SQL or the ruby code need to
+    #   normalize things by player.
+    #   Doing this in the SQL means we can make a single pass over the results and build up
+    #   the appropriate summary for the player, including:
+    #   - id, name
+    #   - first round bye and fixed table number (if present)
+    #   - side, opponent info and score for each pairing.
     player_summary_sql = "
       WITH player1_pairings AS (
           SELECT p.round_id,
