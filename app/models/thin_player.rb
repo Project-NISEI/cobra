@@ -1,19 +1,26 @@
 # frozen_string_literal: true
 
 class ThinPlayer
-  def initialize(id, name, active, first_round_bye, points, opponents, side_bias, had_bye, fixed_table_number = nil) # rubocop:disable Metrics/ParameterLists
+  def initialize(id, name, active, first_round_bye, # rubocop:disable Metrics/ParameterLists
+                 points: 0, opponents: {}, side_bias: 0, fixed_table_number: nil, had_bye: false)
     @id = id
     @name = name
     @active = active
     @first_round_bye = first_round_bye
+    # If the player has a first round bye, they will have had a bye;
+    @had_bye = first_round_bye || had_bye
     @points = points
     @opponents = opponents
     @side_bias = side_bias
-    @had_bye = had_bye
     @fixed_table_number = fixed_table_number
   end
 
   attr_accessor :id, :name, :active, :first_round_bye, :opponents, :points, :side_bias, :had_bye, :fixed_table_number
+
+  def add_opponent(opponent_id, side)
+    @opponents[opponent_id] = [] unless @opponents.key?(opponent_id)
+    @opponents[opponent_id] << side
+  end
 
   # Returns a list of opponent player ids and the Bye sentinel if present.
   # Used by SwissImplementation to aid pairing logic in SingleSidedSwiss for byes and previous opponents.

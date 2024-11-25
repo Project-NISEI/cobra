@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe PairingSorters::Ranked do
-  let(:player1) { ThinPlayer.new(1, 'Jason', true, false, 3, {}, 0, false) }
-  let(:player2) { ThinPlayer.new(2, 'Mike', true, false, 1, {}, 0, false) }
-  let(:player3) { ThinPlayer.new(3, 'Amy', true, false, 6, {}, 0, false) }
-  let(:player4) { ThinPlayer.new(4, 'Disha', true, false, 0, {}, 0, false) }
-  let(:player5) { ThinPlayer.new(5, 'Sabrina', true, false, 3, {}, 0, false) }
-  let(:player6) { ThinPlayer.new(6, 'Danny', true, false, 2, {}, 0, false) }
+  let(:player1) { ThinPlayer.new(1, 'Jason', true, false, points: 3) }
+  let(:player2) { ThinPlayer.new(2, 'Mike', true, false, points: 1) }
+  let(:player3) { ThinPlayer.new(3, 'Amy', true, false, points: 6) }
+  let(:player4) { ThinPlayer.new(4, 'Disha', true, false) }
+  let(:player5) { ThinPlayer.new(5, 'Sabrina', true, false, points: 3) }
+  let(:player6) { ThinPlayer.new(6, 'Danny', true, false, points: 2) }
 
   let(:pairing1) { ThinPairing.new(player1, 0, player2, 0) }
   let(:pairing2) { ThinPairing.new(player3, 0, player4, 0) }

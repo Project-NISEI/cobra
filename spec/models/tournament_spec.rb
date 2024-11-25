@@ -158,11 +158,11 @@ RSpec.describe Tournament do
       thin_stuff = tournament.build_player_summary
 
       expect(thin_stuff).to eq({
-                                 plural.id => ThinPlayer.new(plural.id, plural.name, true, true, 0, {}, 0, true),
-                                 gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false, 0, {}, 0, false),
-                                 cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false, 0, {}, 0, false),
-                                 orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false, 0, {}, 0, false),
-                                 the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false, 0, {}, 0, false)
+                                 plural.id => ThinPlayer.new(plural.id, plural.name, true, true),
+                                 gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false),
+                                 cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false),
+                                 orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false),
+                                 the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false)
                                })
     end
 
@@ -176,11 +176,11 @@ RSpec.describe Tournament do
       thin_stuff = tournament.build_player_summary
 
       expect(thin_stuff).to eq({
-                                 plural.id => ThinPlayer.new(plural.id, plural.name, true, true, 0, {}, 0, true),
-                                 gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false, 0, {}, 0, false),
-                                 cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false, 0, {}, 0, false),
-                                 orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false, 0, {}, 0, false),
-                                 the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false, 0, {}, 0, false)
+                                 plural.id => ThinPlayer.new(plural.id, plural.name, true, true),
+                                 gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false),
+                                 cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false),
+                                 orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false),
+                                 the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false)
                                })
     end
 
@@ -195,13 +195,15 @@ RSpec.describe Tournament do
 
       expect(thin_stuff).to eq(
         {
-          plural.id => ThinPlayer.new(plural.id, plural.name, true, true, 3, {}, 0, true),
-          gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false, 3, { orbital.id => ['runner'] }, -1,
-                                       false),
-          cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false, 0, { the_king.id => ['corp'] }, 1, false),
-          orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false, 0, { gorphax.id => ['corp'] }, 1, false),
-          the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false, 3, { cranked.id => ['runner'] }, -1,
-                                        false)
+          plural.id => ThinPlayer.new(plural.id, plural.name, true, true, points: 3),
+          gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false,
+                                       opponents: { orbital.id => ['runner'] }, points: 3, side_bias: -1),
+          cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false,
+                                       opponents: { the_king.id => ['corp'] }, side_bias: 1),
+          orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false,
+                                       opponents: { gorphax.id => ['corp'] }, side_bias: 1),
+          the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false,
+                                        opponents: { cranked.id => ['runner'] }, side_bias: -1, points: 3)
         }
       )
     end
@@ -220,13 +222,15 @@ RSpec.describe Tournament do
 
       expect(thin_stuff).to eq(
         {
-          plural.id => ThinPlayer.new(plural.id, plural.name, true, true, 3, {}, 0, true),
-          gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false, 3, { orbital.id => ['runner'] }, -1,
-                                       false),
-          cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false, 0, { the_king.id => ['corp'] }, 1, false),
-          orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false, 0, { gorphax.id => ['corp'] }, 1, false),
-          the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false, 3, { cranked.id => ['runner'] }, -1,
-                                        false)
+          plural.id => ThinPlayer.new(plural.id, plural.name, true, true, points: 3),
+          gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false,
+                                       opponents: { orbital.id => ['runner'] }, points: 3, side_bias: -1),
+          cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false,
+                                       opponents: { the_king.id => ['corp'] }, side_bias: 1),
+          orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false,
+                                       opponents: { gorphax.id => ['corp'] }, side_bias: 1),
+          the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false,
+                                        opponents: { cranked.id => ['runner'] }, points: 3, side_bias: -1)
         }
       )
     end
@@ -245,14 +249,17 @@ RSpec.describe Tournament do
 
       expect(thin_stuff).to eq(
         {
-          plural.id => ThinPlayer.new(plural.id, plural.name, true, true, 3, { cranked.id => ['corp'] }, 1, true),
-          gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false, 6,
-                                       { orbital.id => ['runner'], the_king.id => ['corp'] }, 0, false),
-          cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false, 3,
-                                       { the_king.id => ['corp'], plural.id => ['runner'] }, 0, false),
-          orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false, 3, { gorphax.id => ['corp'] }, 1, true),
-          the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false, 3,
-                                        { cranked.id => ['runner'], gorphax.id => ['runner'] }, -2, false)
+          plural.id => ThinPlayer.new(plural.id, plural.name, true, true,
+                                      opponents: { cranked.id => ['corp'] }, side_bias: 1, points: 3),
+          gorphax.id => ThinPlayer.new(gorphax.id, gorphax.name, true, false,
+                                       opponents: { orbital.id => ['runner'], the_king.id => ['corp'] }, points: 6),
+          cranked.id => ThinPlayer.new(cranked.id, cranked.name, true, false,
+                                       opponents: { the_king.id => ['corp'], plural.id => ['runner'] }, points: 3),
+          orbital.id => ThinPlayer.new(orbital.id, orbital.name, true, false,
+                                       opponents: { gorphax.id => ['corp'] }, points: 3, side_bias: 1, had_bye: true),
+          the_king.id => ThinPlayer.new(the_king.id, the_king.name, true, false,
+                                        opponents: { cranked.id => ['runner'], gorphax.id => ['runner'] },
+                                        side_bias: -2, points: 3)
         }
       )
     end

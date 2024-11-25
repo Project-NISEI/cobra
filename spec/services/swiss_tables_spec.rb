@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe SwissTables do
-  let(:alice) { ThinPlayer.new(1, 'Alice', true, false, 0, {}, 0, nil) }
-  let(:bob) { ThinPlayer.new(2, 'Bob', true, false, 6, {}, 0, nil) }
-  let(:charlie) { ThinPlayer.new(3, 'Charlie', true, false, 0, {}, 0, nil) }
-  let(:dave) { ThinPlayer.new(4, 'Dave', true, false, 0, {}, 0, nil) }
-  let(:eddie) { ThinPlayer.new(5, 'Eddie', true, false, 6, {}, 0, nil) }
-  let(:florence) { ThinPlayer.new(6, 'Florence', true, false, 6, {}, 0, nil) }
+  let(:alice) { ThinPlayer.new(1, 'Alice', true, false) }
+  let(:bob) { ThinPlayer.new(2, 'Bob', true, false, points: 6) }
+  let(:charlie) { ThinPlayer.new(3, 'Charlie', true, false) }
+  let(:dave) { ThinPlayer.new(4, 'Dave', true, false) }
+  let(:eddie) { ThinPlayer.new(5, 'Eddie', true, false, points: 6) }
+  let(:florence) { ThinPlayer.new(6, 'Florence', true, false, points: 6) }
 
   let(:alice_bob) { ThinPairing.new(alice, 0, bob, 0) }
   let(:charlie_dave) { ThinPairing.new(charlie, 0, dave, 0) }

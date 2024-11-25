@@ -198,123 +198,110 @@ class Tournament < ApplicationRecord
       'decklists, they may be shared with participants or made public.'
   end
 
-  def build_player_summary
-    # SQL to use as input for building up scoring and pairing data efficiently.
-    # This does 2 main things:
-    #   Gives us a single pass over all the players in the tournament
-    #   Gives us a row per player, per pairing, if there are any pairings yet.
-    #   Since pairings have 2 players, either the SQL or the ruby code need to
-    #   normalize things by player.
-    #   Doing this in the SQL means we can make a single pass over the results and build up
-    #   the appropriate summary for the player, including:
-    #   - id, name
-    #   - first round bye and fixed table number (if present)
-    #   - side, opponent info and score for each pairing.
-    player_summary_sql = "
-      WITH player1_pairings AS (
-          SELECT p.round_id,
-              p.player1_id AS player_id,
-              p.player1_id IS NULL
-              OR p.player2_id IS NULL AS is_bye,
-              CASE
-                  WHEN p.side = 1 THEN 'corp'
-                  ELSE 'runner'
-              END AS side,
-              p.score1 AS score,
-              p.player2_id AS opponent_id,
-              CASE
-                  WHEN p.side = 1 THEN 'runnner'
-                  ELSE 'corp'
-              END AS opponent_side
-          FROM pairings AS p
-              INNER JOIN rounds AS r ON p.round_id = r.id
-          WHERE r.tournament_id = #{id} AND r.completed
-      ),
-      player2_pairings AS (
-          SELECT p.round_id,
-              p.player2_id AS player_id,
-              p.player1_id IS NULL
-              OR p.player2_id IS NULL AS is_bye,
-              -- flip the logic since this is player 2
-              CASE
-                  WHEN p.side = 1 THEN 'runner'
-                  ELSE 'corp'
-              END AS side,
-              p.score2 AS score,
-              p.player1_id AS opponent_id,
-              CASE
-                  WHEN p.side = 1 THEN 'corp'
-                  ELSE 'runner'
-              END AS opponent_side
-          FROM pairings AS p
-              INNER JOIN rounds AS r ON p.round_id = r.id
-          WHERE r.tournament_id = #{id} AND r.completed
-      ),
-      unified_pairings AS (
-          SELECT *
-          FROM player1_pairings
-          UNION ALL
-          SELECT *
-          FROM player2_pairings
-      )
+  # SQL to use as input for building up scoring and pairing data efficiently.
+  # This does 2 main things:
+  #   Gives us a single pass over all the players in the tournament
+  #   Gives us a row per player, per pairing, if there are any pairings yet.
+  #   Since pairings have 2 players, either the SQL or the ruby code need to
+  #   normalize things by player.
+  #   Doing this in the SQL means we can make a single pass over the results and build up
+  #   the appropriate summary for the player, including:
+  #   - id, name
+  #   - first round bye and fixed table number (if present)
+  #   - side, opponent info and score for each pairing.
+  PLAYER_SUMMARY_SQL = "
+    WITH player1_pairings AS (
       SELECT
-          p.id as player_id,
-          p.name as player_name,
-          p.active,
-          p.first_round_bye,
-          p.fixed_table_number,
-          COALESCE(up.is_bye, FALSE) as is_bye,
-          up.side,
-          COALESCE(up.score, 0) AS score,
-          up.opponent_id,
-          up.opponent_side
+        p.round_id,
+        p.player1_id AS player_id,
+        p.player1_id IS NULL
+        OR p.player2_id IS NULL AS is_bye,
+        CASE
+            WHEN p.side = 1 THEN 'corp'
+            ELSE 'runner'
+        END AS side,
+        p.score1 AS score,
+        p.player2_id AS opponent_id,
+        CASE
+            WHEN p.side = 1 THEN 'runnner'
+            ELSE 'corp'
+        END AS opponent_side
       FROM
-          players AS p
-          LEFT JOIN unified_pairings AS up ON p.id = up.player_id
-      WHERE p.tournament_id = #{id}
+        pairings AS p
+        INNER JOIN rounds AS r ON p.round_id = r.id
+      WHERE r.tournament_id = $1 AND r.completed
+    ),
+    player2_pairings AS (
+      SELECT
+        p.round_id,
+        p.player2_id AS player_id,
+        p.player1_id IS NULL
+        OR p.player2_id IS NULL AS is_bye,
+        -- flip the logic since this is player 2
+        CASE
+            WHEN p.side = 1 THEN 'runner'
+            ELSE 'corp'
+        END AS side,
+        p.score2 AS score,
+        p.player1_id AS opponent_id,
+        CASE
+            WHEN p.side = 1 THEN 'corp'
+            ELSE 'runner'
+        END AS opponent_side
+      FROM
+        pairings AS p
+        INNER JOIN rounds AS r ON p.round_id = r.id
+      WHERE r.tournament_id = $1 AND r.completed
+    ),
+    unified_pairings AS (
+      SELECT *
+      FROM player1_pairings
+      UNION ALL
+      SELECT *
+      FROM player2_pairings
+    )
+    SELECT
+      p.id as player_id,
+      p.name as player_name,
+      p.active,
+      p.first_round_bye,
+      p.fixed_table_number,
+      COALESCE(up.is_bye, FALSE) as is_bye,
+      up.side,
+      COALESCE(up.score, 0) AS score,
+      up.opponent_id,
+      up.opponent_side
+    FROM
+      players AS p
+      LEFT JOIN unified_pairings AS up ON p.id = up.player_id
+    WHERE p.tournament_id = $1
     "
-    results = ActiveRecord::Base.connection.select_all(player_summary_sql)
+
+  def build_player_summary
+    results = ActiveRecord::Base.connection.select_all(PLAYER_SUMMARY_SQL, nil, [id])
 
     player_summary = {}
     results.each do |p|
       p.symbolize_keys!
-      player_id = p[:player_id]
-      unless player_summary.key?(player_id)
-        player_summary[player_id] =
-          { name: p[:player_name], active: p[:active], first_round_bye: p[:first_round_bye],
-            points: 0, side_bias: 0, opponents: {}, fixed_table_number: p[:fixed_table_number], had_bye: false }
+
+      unless player_summary.key?(p[:player_id])
+        player_summary[p[:player_id]] =
+          ThinPlayer.new(p[:player_id], p[:player_name], p[:active], p[:first_round_bye])
       end
 
-      summary = player_summary[player_id]
-      summary[:points] += p[:score]
+      thin_player = player_summary[p[:player_id]]
+      thin_player.points += p[:score]
+      thin_player.had_bye = true if p[:is_bye]
+      thin_player.fixed_table_number = p[:fixed_table_number] unless p[:fixed_table_number].nil?
 
-      unless p[:is_bye] || p[:opponent_id].nil?
-        if p[:side] == 'corp'
-          summary[:side_bias] += 1
-        else
-          summary[:side_bias] -= 1
-        end
-      end
-
-      summary[:had_bye] = true if p[:is_bye] || p[:first_round_bye]
-
-      # Set opponents iff there is no bye in this pairing
+      # Byes don't affect side bias or the opponents hash.
       next if p[:is_bye] || p[:opponent_id].nil?
 
-      summary[:opponents][p[:opponent_id]] = [] unless summary[:opponents].key?(p[:opponent_id])
-      summary[:opponents][p[:opponent_id]] << p[:side]
+      thin_player.side_bias += (p[:side] == 'corp' ? 1 : -1)
+      thin_player.add_opponent(p[:opponent_id], p[:side])
     end
 
-    thin_players = {}
-    player_summary.each do |player_id, data|
-      # TODO(plural): Use more setters or a builder instead of loading up the constructor
-      thin_players[player_id] = ThinPlayer.new(
-        player_id, data[:name], data[:active], data[:first_round_bye], data[:points],
-        data[:opponents], data[:side_bias], data[:had_bye], data[:fixed_table_number]
-      )
-    end
-
-    thin_players
+    player_summary
   end
 
   private
