@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 RSpec.describe SwissTables do
-  let(:alice) { ThinPlayer.new(1, 'Alice', true, false) }
-  let(:bob) { ThinPlayer.new(2, 'Bob', true, false, points: 6) }
-  let(:charlie) { ThinPlayer.new(3, 'Charlie', true, false) }
-  let(:dave) { ThinPlayer.new(4, 'Dave', true, false) }
-  let(:eddie) { ThinPlayer.new(5, 'Eddie', true, false, points: 6) }
-  let(:florence) { ThinPlayer.new(6, 'Florence', true, false, points: 6) }
+  let(:alice) { PlainPlayer.new(1, 'Alice', true, false) }
+  let(:bob) { PlainPlayer.new(2, 'Bob', true, false, points: 6) }
+  let(:charlie) { PlainPlayer.new(3, 'Charlie', true, false) }
+  let(:dave) { PlainPlayer.new(4, 'Dave', true, false) }
+  let(:eddie) { PlainPlayer.new(5, 'Eddie', true, false, points: 6) }
+  let(:florence) { PlainPlayer.new(6, 'Florence', true, false, points: 6) }
 
-  let(:alice_bob) { ThinPairing.new(alice, 0, bob, 0) }
-  let(:charlie_dave) { ThinPairing.new(charlie, 0, dave, 0) }
-  let(:eddie_florence) { ThinPairing.new(eddie, 0, florence, 0) }
+  let(:alice_bob) { PlainPairing.new(alice, 0, bob, 0) }
+  let(:charlie_dave) { PlainPairing.new(charlie, 0, dave, 0) }
+  let(:eddie_florence) { PlainPairing.new(eddie, 0, florence, 0) }
 
-  let(:alice_bye) { ThinPairing.new(alice, 0, nil, 0) }
-  let(:alice_florence) { ThinPairing.new(alice, 0, florence, 0) }
-  let(:bob_charlie) { ThinPairing.new(bob, 0, charlie, 0) }
-  let(:dave_eddie) { ThinPairing.new(dave, 0, eddie, 0) }
+  let(:alice_bye) { PlainPairing.new(alice, 0, nil, 0) }
+  let(:alice_florence) { PlainPairing.new(alice, 0, florence, 0) }
+  let(:bob_charlie) { PlainPairing.new(bob, 0, charlie, 0) }
+  let(:dave_eddie) { PlainPairing.new(dave, 0, eddie, 0) }
 
   describe '#assign_table_numbers!' do
     it 'sorts non-bye pairings by number of points' do

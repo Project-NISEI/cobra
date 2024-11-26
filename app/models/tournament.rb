@@ -286,19 +286,19 @@ class Tournament < ApplicationRecord
 
       unless player_summary.key?(p[:player_id])
         player_summary[p[:player_id]] =
-          ThinPlayer.new(p[:player_id], p[:player_name], p[:active], p[:first_round_bye])
+          PlainPlayer.new(p[:player_id], p[:player_name], p[:active], p[:first_round_bye])
       end
 
-      thin_player = player_summary[p[:player_id]]
-      thin_player.points += p[:score]
-      thin_player.had_bye = true if p[:is_bye]
-      thin_player.fixed_table_number = p[:fixed_table_number] unless p[:fixed_table_number].nil?
+      plain_player = player_summary[p[:player_id]]
+      plain_player.points += p[:score]
+      plain_player.had_bye = true if p[:is_bye]
+      plain_player.fixed_table_number = p[:fixed_table_number] unless p[:fixed_table_number].nil?
 
       # Byes don't affect side bias or the opponents hash.
       next if p[:is_bye] || p[:opponent_id].nil?
 
-      thin_player.side_bias += (p[:side] == 'corp' ? 1 : -1)
-      thin_player.add_opponent(p[:opponent_id], p[:side])
+      plain_player.side_bias += (p[:side] == 'corp' ? 1 : -1)
+      plain_player.add_opponent(p[:opponent_id], p[:side])
     end
 
     player_summary

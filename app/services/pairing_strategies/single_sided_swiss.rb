@@ -15,7 +15,7 @@ module PairingStrategies
 
       paired_players.each do |pairing|
         pp = pairing_params(pairing)
-        @thin_pairings << ThinPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
+        @thin_pairings << PlainPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
       end
 
       SwissTables.assign_table_numbers!(@thin_pairings)
@@ -99,7 +99,7 @@ module PairingStrategies
 
     def assign_byes!
       players_with_byes.each do |player|
-        @thin_pairings << ThinPairing.new(@players[player.id], @bye_winner_score, nil, @bye_loser_score)
+        @thin_pairings << PlainPairing.new(@players[player.id], @bye_winner_score, nil, @bye_loser_score)
       end
     end
 
