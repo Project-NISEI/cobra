@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# ThinPlayer is a Plain Ruby model object that provides a Pairing representation
+# without the full overhead of the ActiveRecord Player object. This exists to keep
+# the pairing logic light on memory and object allocation / GC overhead.
 class ThinPlayer
   def initialize(id, name, active, first_round_bye, # rubocop:disable Metrics/ParameterLists
                  points: 0, opponents: {}, side_bias: 0, fixed_table_number: nil, had_bye: false)

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# ThinPairing is a Plain Ruby model object that provides a Pairing representation
+# without the full overhead of the ActiveRecord Pairing object. This exists to keep
+# the pairing logic light on memory and object allocation / GC overhead.
 class ThinPairing
   def initialize(player1, player1_score, player2, player2_score)
     @player1 = player1
