@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 RSpec.describe SwissTables do
-  let(:alice) { PlainPlayer.new(1, 'Alice', true, false) }
-  let(:bob) { PlainPlayer.new(2, 'Bob', true, false, points: 6) }
-  let(:charlie) { PlainPlayer.new(3, 'Charlie', true, false) }
-  let(:dave) { PlainPlayer.new(4, 'Dave', true, false) }
-  let(:eddie) { PlainPlayer.new(5, 'Eddie', true, false, points: 6) }
-  let(:florence) { PlainPlayer.new(6, 'Florence', true, false, points: 6) }
+  let(:alice) { PairingStrategies::PlainPlayer.new(1, 'Alice', true, false) }
+  let(:bob) { PairingStrategies::PlainPlayer.new(2, 'Bob', true, false, points: 6) }
+  let(:charlie) { PairingStrategies::PlainPlayer.new(3, 'Charlie', true, false) }
+  let(:dave) { PairingStrategies::PlainPlayer.new(4, 'Dave', true, false) }
+  let(:eddie) { PairingStrategies::PlainPlayer.new(5, 'Eddie', true, false, points: 6) }
+  let(:florence) { PairingStrategies::PlainPlayer.new(6, 'Florence', true, false, points: 6) }
 
-  let(:alice_bob) { PlainPairing.new(alice, 0, bob, 0) }
-  let(:charlie_dave) { PlainPairing.new(charlie, 0, dave, 0) }
-  let(:eddie_florence) { PlainPairing.new(eddie, 0, florence, 0) }
+  let(:alice_bob) { PairingStrategies::PlainPairing.new(alice, 0, bob, 0) }
+  let(:charlie_dave) { PairingStrategies::PlainPairing.new(charlie, 0, dave, 0) }
+  let(:eddie_florence) { PairingStrategies::PlainPairing.new(eddie, 0, florence, 0) }
 
-  let(:alice_bye) { PlainPairing.new(alice, 0, nil, 0) }
-  let(:alice_florence) { PlainPairing.new(alice, 0, florence, 0) }
-  let(:bob_charlie) { PlainPairing.new(bob, 0, charlie, 0) }
-  let(:dave_eddie) { PlainPairing.new(dave, 0, eddie, 0) }
+  let(:alice_bye) { PairingStrategies::PlainPairing.new(alice, 0, nil, 0) }
+  let(:alice_florence) { PairingStrategies::PlainPairing.new(alice, 0, florence, 0) }
+  let(:bob_charlie) { PairingStrategies::PlainPairing.new(bob, 0, charlie, 0) }
+  let(:dave_eddie) { PairingStrategies::PlainPairing.new(dave, 0, eddie, 0) }
 
   describe '#assign_table_numbers!' do
     it 'sorts non-bye pairings by number of points' do
