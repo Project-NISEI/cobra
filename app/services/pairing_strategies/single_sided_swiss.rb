@@ -51,8 +51,7 @@ module PairingStrategies
           real_player = [player1, player2].difference([SwissImplementation::Bye]).first
 
           # return nil (no pairing possible) if player has already received bye
-          # TODO(plural): Handle the "had a bye" use case more deliberately and probably correctly.
-          next nil if real_player.had_bye # real_player.opponents.keys.include?(nil)
+          next nil if real_player.had_bye
 
           next points_weight(real_player.points, -1)
         end
