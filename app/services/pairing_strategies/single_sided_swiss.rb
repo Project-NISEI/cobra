@@ -139,7 +139,7 @@ module PairingStrategies
     end
 
     def players_to_pair
-      @players_to_pair ||= players.filter_map { |k, v| v unless players_with_byes.key?(k) }.to_a.sort_by { |p| p.id }
+      @players_to_pair ||= players.filter_map { |k, v| v unless players_with_byes.key?(k) }.to_a.sort_by(&:id)
     end
 
     def first_round?

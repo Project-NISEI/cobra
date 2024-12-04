@@ -431,9 +431,6 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
           #   Pop vs Crackle
           #   Snap (Bye)
 
-          # expect(pairing.side_for(snap)).to eq(:runner) if pairing.players.include? snap
-          # expect(pairing.side_for(crackle)).to be_nil if pairing.players.include? crackle
-
           create(:pairing, round: round2, player1: snap, player2: pop, score1: 3, score2: 0, side: :player1_is_runner)
           create(:pairing, round: round2, player1: crackle, player2: nil, score1: 3)
 

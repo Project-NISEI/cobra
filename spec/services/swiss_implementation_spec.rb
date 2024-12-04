@@ -49,14 +49,9 @@ RSpec.describe SwissImplementation do
     end
 
     context 'with some matchups excluded' do
-      # Pull a list of just the ids and any Byes.
-      def exclude_list(players)
-        players.map { |p| p == SwissImplementation::Bye ? p : p.id }
-      end
-
       before do
-        player1.exclude = (exclude_list(players) - exclude_list([player0, player1]))
-        player2.exclude = exclude_list([player1])
+        player1.exclude = [2, 3, 4, 5, 6, 7, 8, 9]
+        player2.exclude = [1]
       end
 
       let(:paired) { described_class.pair(players) }

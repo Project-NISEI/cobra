@@ -54,8 +54,7 @@ module PairingStrategies
 
     def paired_players
       if first_round?
-        @paired_players ||= players_to_pair.shuffle(random:).in_groups_of(2,
-                                                                               nil)
+        @paired_players ||= players_to_pair.shuffle(random:).in_groups_of(2, nil)
 
         return @paired_players
       end
