@@ -13,15 +13,6 @@ RSpec.describe PairingSorters::Ranked do
   let(:pairing3) { PairingStrategies::PlainPairing.new(player5, 0, player6, 0) }
   let(:pairings) { [pairing1, pairing2, pairing3] }
 
-  before do
-    allow(player1).to receive(:points).and_return(3)
-    allow(player2).to receive(:points).and_return(1)
-    allow(player3).to receive(:points).and_return(6)
-    allow(player4).to receive(:points).and_return(0)
-    allow(player5).to receive(:points).and_return(3)
-    allow(player6).to receive(:points).and_return(2)
-  end
-
   it 'sorts pairings by highest-scoring participant' do
     expect(described_class.sort(pairings)).to eq([pairing2, pairing3, pairing1])
   end
