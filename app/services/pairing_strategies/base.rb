@@ -38,11 +38,7 @@ module PairingStrategies
               ELSE 'runner'
           END AS side,
           p.score1 AS score,
-          p.player2_id AS opponent_id,
-          CASE
-              WHEN p.side = 1 THEN 'runnner'
-              ELSE 'corp'
-          END AS opponent_side
+          p.player2_id AS opponent_id
         FROM
           pairings AS p
           INNER JOIN rounds AS r ON p.round_id = r.id
@@ -60,11 +56,7 @@ module PairingStrategies
               ELSE 'corp'
           END AS side,
           p.score2 AS score,
-          p.player1_id AS opponent_id,
-          CASE
-              WHEN p.side = 1 THEN 'corp'
-              ELSE 'runner'
-          END AS opponent_side
+          p.player1_id AS opponent_id
         FROM
           pairings AS p
           INNER JOIN rounds AS r ON p.round_id = r.id
@@ -86,8 +78,7 @@ module PairingStrategies
         COALESCE(up.is_bye, FALSE) as is_bye,
         up.side,
         COALESCE(up.score, 0) AS score,
-        up.opponent_id,
-        up.opponent_side
+        up.opponent_id
       FROM
         players AS p
         LEFT JOIN unified_pairings AS up ON p.id = up.player_id
