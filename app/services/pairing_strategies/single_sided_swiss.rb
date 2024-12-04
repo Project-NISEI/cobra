@@ -2,6 +2,9 @@
 
 module PairingStrategies
   class SingleSidedSwiss < Base
+    CORP = 1
+    RUNNER = 2
+
     def initialize(round, random = Random)
       super
       @bye_winner_score = 3
@@ -35,8 +38,7 @@ module PairingStrategies
           end
           # Don't set a side for byes.
           unless pp.bye?
-            # TODO(plural): Make some better enums available.
-            p.side = pp.player1_side == 'corp' ? 1 : 2
+            p.side = pp.player1_side == 'corp' ? CORP : RUNNER
           end
 
           p.save
