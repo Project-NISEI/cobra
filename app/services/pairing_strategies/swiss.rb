@@ -54,13 +54,13 @@ module PairingStrategies
 
     def paired_players
       if first_round?
-        @paired_players ||= players_to_pair.to_a.shuffle(random:).in_groups_of(2,
+        @paired_players ||= players_to_pair.shuffle(random:).in_groups_of(2,
                                                                                nil)
 
         return @paired_players
       end
 
-      @paired_players ||= self.class.get_pairings(players_to_pair.to_a)
+      @paired_players ||= self.class.get_pairings(players_to_pair)
     end
 
     def pairing_params(pairing)
@@ -89,7 +89,8 @@ module PairingStrategies
     end
 
     def players_to_pair
-      @players_to_pair ||= players.filter_map { |k, v| v unless players_with_byes.key?(k) }
+      # To stabilize tests a bit, sort by player id.
+      @players_to_pair ||= players.filter_map { |k, v| v unless players_with_byes.key?(k) }.to_a.sort_by(&:id)
     end
 
     def first_round?
