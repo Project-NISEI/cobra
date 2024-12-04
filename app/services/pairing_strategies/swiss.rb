@@ -21,10 +21,10 @@ module PairingStrategies
       SwissTables.assign_table_numbers!(@thin_pairings)
 
       ActiveRecord::Base.transaction do
-        @thin_pairings.each do |tp|
-          p = Pairing.new(round:, player1_id: tp.player1&.id, player2_id: tp.player2&.id, table_number: tp.table_number)
-          if tp.bye?
-            if tp.player1.nil?
+        @thin_pairings.each do |pp|
+          p = Pairing.new(round:, player1_id: pp.player1&.id, player2_id: pp.player2&.id, table_number: pp.table_number)
+          if pp.bye?
+            if pp.player1.nil?
               p.score2 = @bye_winner_score
             else
               p.score1 = @bye_winner_score
