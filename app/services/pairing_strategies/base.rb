@@ -12,7 +12,7 @@ module PairingStrategies
     end
 
     def players
-      @players ||= build_player_summary.select { |_, v| v.active }
+      @players ||= build_player_summary
     end
 
     # SQL to use as input for building up scoring and pairing data efficiently.
@@ -91,7 +91,7 @@ module PairingStrategies
       FROM
         players AS p
         LEFT JOIN unified_pairings AS up ON p.id = up.player_id
-      WHERE p.tournament_id = $1
+      WHERE p.active AND p.tournament_id = $1
       "
 
     def build_player_summary
