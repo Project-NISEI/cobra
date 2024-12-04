@@ -33,6 +33,10 @@ module PairingStrategies
       opponents.keys + (@had_bye ? [SwissImplementation::Bye] : [])
     end
 
+    def fixed_table_number?
+      !fixed_table_number.nil?
+    end
+
     # Value equality
     def ==(other)
       return false if other.class != self.class

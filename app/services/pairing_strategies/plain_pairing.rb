@@ -14,31 +14,24 @@ module PairingStrategies
 
     attr_accessor :player1, :player1_score, :player2, :player2_score, :player1_side, :table_number
 
+    def players
+      [player1, player2]
+    end
+
     def bye?
       player1.nil? or player2.nil?
     end
 
     def fixed_table_number?
-      (!player1.nil? && player1.fixed_table_number) or (!player2.nil? && player2.fixed_table_number)
+      players.compact.any?(&:fixed_table_number?)
     end
 
     def fixed_table_number
-      return nil unless fixed_table_number?
-
-      [big_num_if_nil(player1), big_num_if_nil(player2)].min
+      fixed_table_number? ? players.compact.filter(&:fixed_table_number?).map(&:fixed_table_number).min : nil
     end
 
     def combined_points
       (player1.nil? ? 0 : player1.points) + (player2.nil? ? 0 : player2.points)
-    end
-
-    private
-
-    # Use a Very Large Number if the player is nil to aid picking the lowest (numerical) table number for fixed tables.
-    def big_num_if_nil(player)
-      return 999_999 if player.nil? || player&.fixed_table_number.nil?
-
-      player.fixed_table_number
     end
   end
 end
