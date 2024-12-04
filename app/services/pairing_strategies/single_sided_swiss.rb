@@ -7,7 +7,7 @@ module PairingStrategies
       @bye_winner_score = 3
       @bye_loser_score = 0
 
-      @thin_pairings = []
+      @plain_pairings = []
     end
 
     def pair!
@@ -15,28 +15,28 @@ module PairingStrategies
 
       paired_players.each do |pairing|
         pp = pairing_params(pairing)
-        @thin_pairings << PlainPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
+        @plain_pairings << PlainPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
       end
 
-      SwissTables.assign_table_numbers!(@thin_pairings)
+      SwissTables.assign_table_numbers!(@plain_pairings)
 
       # Set player sides for the pairings.
       apply_sides!
 
       ActiveRecord::Base.transaction do
-        @thin_pairings.each do |tp|
-          p = Pairing.new(round:, player1_id: tp.player1&.id, player2_id: tp.player2&.id, table_number: tp.table_number)
-          if tp.bye?
-            if tp.player1.nil?
+        @plain_pairings.each do |pp|
+          p = Pairing.new(round:, player1_id: pp.player1&.id, player2_id: pp.player2&.id, table_number: pp.table_number)
+          if pp.bye?
+            if pp.player1.nil?
               p.score2 = @bye_winner_score
             else
               p.score1 = @bye_winner_score
             end
           end
           # Don't set a side for byes.
-          unless tp.bye?
+          unless pp.bye?
             # TODO(plural): Make some better enums available.
-            p.side = tp.player1_side == 'corp' ? 1 : 2
+            p.side = pp.player1_side == 'corp' ? 1 : 2
           end
 
           p.save
@@ -98,7 +98,7 @@ module PairingStrategies
 
     def assign_byes!
       players_with_byes.each do |player|
-        @thin_pairings << PlainPairing.new(@players[player.id], @bye_winner_score, nil, @bye_loser_score)
+        @plain_pairings << PlainPairing.new(@players[player.id], @bye_winner_score, nil, @bye_loser_score)
       end
     end
 
@@ -146,7 +146,7 @@ module PairingStrategies
     end
 
     def apply_sides!
-      @thin_pairings.each do |pairing|
+      @plain_pairings.each do |pairing|
         next if pairing.bye?
 
         preference = self.class.preferred_player1_side(pairing.player1.side_bias, pairing.player2.side_bias)
