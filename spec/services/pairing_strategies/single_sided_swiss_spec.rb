@@ -355,8 +355,47 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
           end
         end
 
-        # This shouldn't be in the second round context - it needs at least 2 completed rounds to test.
-        # TODO(plural): Move this out.
+        it 'avoids second bye when real pairing was a tie' do
+          # Round 1:
+          #   Snap (1) vs Crackle (1) - tie so neither player gets the bye only on points.
+          #   Pop (bye)
+          # Standings
+          #   Pop     3 (bye)
+          #   Snap    1
+          #   Crackle 1
+          # Round 2:
+          #   Pop (3) vs Crackle|Snap
+          #   Crackle|Snap: Bye
+
+          round1.pairings.delete_all
+          create(:pairing, round: round1, player1: snap, player2: crackle, score1: 1, score2: 1,
+                           side: :player1_is_runner)
+          create(:pairing, round: round1, player1: pop, player2: nil, score1: 3)
+
+          pairer.pair!
+
+          round2.pairings.each do |pairing|
+            expect(pairing.players).not_to include(pop) if pairing.players.include? nil_player
+          end
+        end
+      end
+
+      context 'when in third round' do
+        let(:round1) { create(:round, tournament:, stage:, number: 1, completed: true) }
+        let(:round2) { create(:round, tournament:, stage:, number: 2) }
+        let(:pairer) { described_class.new(round2) }
+
+        before do
+          create(:pairing, round: round1,
+                           player1: snap, player2: crackle,
+                           score1: 3, score2: 0,
+                           side: :player1_is_corp)
+          create(:pairing, round: round1,
+                           player1: pop, player2: nil,
+                           score1: 3, score2: 0,
+                           side: nil)
+        end
+
         it 'avoids third matchups' do
           # Round 1:
           # Snap (R) vs Crackle (C)
@@ -388,31 +427,7 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
           end
         end
 
-        it 'avoids second bye when real pairing was a tie' do
-          # Round 1:
-          #   Snap (1) vs Crackle (1) - tie so neither player gets the bye only on points.
-          #   Pop (bye)
-          # Standings
-          #   Pop     3 (bye)
-          #   Snap    1
-          #   Crackle 1
-          # Round 2:
-          #   Pop (3) vs Crackle|Snap
-          #   Crackle|Snap: Bye
-
-          round1.pairings.delete_all
-          create(:pairing, round: round1, player1: snap, player2: crackle, score1: 1, score2: 1,
-                           side: :player1_is_runner)
-          create(:pairing, round: round1, player1: pop, player2: nil, score1: 3)
-
-          pairer.pair!
-
-          round2.pairings.each do |pairing|
-            expect(pairing.players).not_to include(pop) if pairing.players.include? nil_player
-          end
-        end
-
-        it 'avoids second bye really in the third round.' do
+        it 'avoids second bye in > 2nd round.' do
           # Round 1:
           #   Snap (3) vs Crackle (0)
           #   Pop (bye)
