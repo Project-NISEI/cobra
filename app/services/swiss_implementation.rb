@@ -8,9 +8,10 @@ module SwissImplementation
   end
 
   class Player
-    attr_accessor :delta, :exclude, :label
+    attr_accessor :id, :delta, :exclude, :label
 
-    def initialize(label = '')
+    def initialize(id, label = '')
+      @id = id
       @delta = 0
       @exclude = []
       @label = label
@@ -64,11 +65,16 @@ module SwissImplementation
     end
 
     def targets(player)
-      players - [player] - excluded_opponents(player)
+      out = players - [player]
+
+      excluded = excluded_opponents(player)
+
+      out.reject { |p| excluded.include?(p == SwissImplementation::Bye ? p : p.id) }
     end
 
     def delta_value(player)
       return player.send(delta_key) if player.respond_to?(delta_key)
+
       return bye_delta if player == Bye
 
       0

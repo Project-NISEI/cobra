@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe PairingStrategies::Swiss do
-  let(:pairer) { described_class.new(round, Random.new(1000)) }
-  let(:round) { create(:round, number: 1, stage:) }
-  let(:stage) { tournament.current_stage }
   let(:tournament) { create(:tournament) }
+  let(:stage) { tournament.current_stage }
+  let(:round) { create(:round, number: 1, stage:, tournament:) }
+  let(:pairer) { described_class.new(round, Random.new(1000)) }
   let(:nil_player) { NilPlayer.new }
 
   before do
@@ -54,7 +54,7 @@ RSpec.describe PairingStrategies::Swiss do
 
       context 'when in second round' do
         let(:round2_pairer) { described_class.new(round2) }
-        let(:round2) { create(:round, number: 2, stage:) }
+        let(:round2) { create(:round, number: 2, stage:, tournament:) }
 
         before do
           pairer.pair!
@@ -74,8 +74,7 @@ RSpec.describe PairingStrategies::Swiss do
     end
 
     context 'when after some rounds' do
-      let(:round1) { create(:round, number: 1, stage:) }
-      let(:round) { create(:round, number: 2, stage:) }
+      let(:round1) { create(:round, number: 1, stage:, tournament:, completed: true) }
 
       before do
         create(:pairing, player1: jack, player2: jill, score1: 6, score2: 0, round: round1)
@@ -83,6 +82,8 @@ RSpec.describe PairingStrategies::Swiss do
       end
 
       it 'pairs based on points' do
+        round = create(:round, number: 2, stage:, tournament:)
+
         pairer.pair!
 
         round.reload
@@ -94,13 +95,24 @@ RSpec.describe PairingStrategies::Swiss do
       end
 
       it 'avoids previous matchups' do
-        create(:pairing, player1: jack, player2: hansel)
+        round2 = create(:round, number: 2, stage:, tournament:, completed: true)
 
+        create(:pairing, player1: jack, player2: hansel, score1: 6, score2: 0, round: round2)
+        create(:pairing, player1: jill, player2: gretel, score1: 1, score2: 1, round: round2)
+
+        # After round 2, standings are:
+        #   jack: 12
+        #   hansel: 4
+        #   gretel: 2
+        #   jill: 1
+        # so pairings will be jack vs gretel and hansel vs. jill.
+
+        round3 = create(:round, number: 2, stage:, tournament:)
         pairer.pair!
 
-        round.reload
+        round3.reload
 
-        round.pairings.each do |pairing|
+        round3.pairings.each do |pairing|
           expect(pairing.players).to contain_exactly(jack, gretel) if pairing.players.include? jack
           expect(pairing.players).to contain_exactly(jill, hansel) if pairing.players.include? jill
         end
@@ -118,7 +130,7 @@ RSpec.describe PairingStrategies::Swiss do
         round.reload
 
         expect(pairings_table_by_player(round.pairings))
-          .to eq jack.name => 42, jill.name => 42, hansel.name => 1, gretel.name => 1
+          .to eq jack.name => 42, jill.name => 1, hansel.name => 1, gretel.name => 42
       end
 
       it 'creates first round bye' do
@@ -171,8 +183,9 @@ RSpec.describe PairingStrategies::Swiss do
     end
 
     context 'when after multiple rounds' do
-      let(:round1) { create(:round, number: 1, stage:) }
-      let(:round) { create(:round, number: 2, stage:) }
+      let(:round1) { create(:round, number: 1, stage:, tournament:, completed: true) }
+      let(:round) { create(:round, number: 2, stage:, tournament:) }
+      let(:pairer) { described_class.new(round, Random.new(1000)) }
 
       before do
         create(:pairing, player1: snap, score1: 6, player2: crackle, score2: 3, round: round1)
