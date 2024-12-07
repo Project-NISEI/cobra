@@ -15,7 +15,7 @@ module PairingStrategies
     attr_accessor :player1, :player1_score, :player2, :player2_score, :player1_side, :table_number
 
     def players
-      [player1, player2]
+      [player1, player2].compact
     end
 
     def bye?
@@ -23,11 +23,11 @@ module PairingStrategies
     end
 
     def fixed_table_number?
-      players.compact.any?(&:fixed_table_number?)
+      players.any?(&:fixed_table_number?)
     end
 
     def fixed_table_number
-      fixed_table_number? ? players.compact.filter(&:fixed_table_number?).map(&:fixed_table_number).min : nil
+      players.filter(&:fixed_table_number?).map(&:fixed_table_number).min
     end
 
     def combined_points
