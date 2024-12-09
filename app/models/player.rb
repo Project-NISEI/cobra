@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Player < ApplicationRecord
-  include Pairable
-
   belongs_to :tournament
   belongs_to :user, optional: true
   belongs_to :previous, class_name: 'Player', optional: true

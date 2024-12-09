@@ -58,4 +58,5 @@ group :development do
   gem 'rubocop-rspec'
   gem 'rubocop-rspec_rails'
   gem 'spring'
+  gem 'stackprof'
 end

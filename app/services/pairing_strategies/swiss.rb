@@ -6,46 +6,61 @@ module PairingStrategies
       super
       @bye_winner_score = 6
       @bye_loser_score = 0
+
+      @plain_pairings = []
     end
 
     def pair!
       assign_byes!
 
       paired_players.each do |pairing|
-        round.pairings.create(pairing_params(pairing))
+        pp = pairing_params(pairing)
+        @plain_pairings << PlainPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
       end
 
-      SwissTables.assign_table_numbers!(round.pairings)
+      SwissTables.assign_table_numbers!(@plain_pairings)
+
+      ActiveRecord::Base.transaction do
+        @plain_pairings.each do |pp|
+          p = Pairing.new(round:, player1_id: pp.player1&.id, player2_id: pp.player2&.id, table_number: pp.table_number)
+          if pp.bye?
+            if pp.player1.nil?
+              p.score2 = @bye_winner_score
+            else
+              p.score1 = @bye_winner_score
+            end
+          end
+
+          p.save
+        end
+      end
     end
 
     def self.get_pairings(players)
       SwissImplementation.pair(
         players,
         delta_key: :points,
-        exclude_key: :unpairable_opponents
+        exclude_key: :double_sided_unpairable_opponents
       )
     end
 
     private
 
     def assign_byes!
-      players_with_byes.each do |player|
-        round.pairings.create(
-          player1: player,
-          player2: nil,
-          score1: @bye_winner_score,
-          score2: @bye_loser_score
-        )
+      players_with_byes.each_key do |player_id|
+        @plain_pairings << PlainPairing.new(@players[player_id], @bye_winner_score,
+                                            nil, @bye_loser_score)
       end
     end
 
     def paired_players
       if first_round?
-        return @paired_players ||= players_to_pair.to_a.shuffle(random:).in_groups_of(2,
-                                                                                      SwissImplementation::Bye)
+        @paired_players ||= players_to_pair.shuffle(random:).in_groups_of(2, nil)
+
+        return @paired_players
       end
 
-      @paired_players ||= self.class.get_pairings(players_to_pair.to_a)
+      @paired_players ||= self.class.get_pairings(players_to_pair)
     end
 
     def pairing_params(pairing)
@@ -68,13 +83,14 @@ module PairingStrategies
     end
 
     def players_with_byes
-      return players.with_first_round_bye if first_round?
+      return players.select { |_, v| v.first_round_bye } if first_round?
 
-      []
+      {}
     end
 
     def players_to_pair
-      @players_to_pair ||= players - players_with_byes
+      # To stabilize tests a bit, sort by player id.
+      @players_to_pair ||= players.filter_map { |k, v| v unless players_with_byes.key?(k) }.to_a.sort_by(&:id)
     end
 
     def first_round?
