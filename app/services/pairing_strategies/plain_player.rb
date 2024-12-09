@@ -28,8 +28,9 @@ module PairingStrategies
     end
 
     # Returns a list of opponent player ids and the Bye sentinel if present.
-    # Used by SwissImplementation to aid pairing logic in SingleSidedSwiss for byes and previous opponents.
-    def unpairable_opponents
+    # This method is only used by double-sided Swiss because SSS allows repeat
+    # matchups as long as the sides are different.
+    def double_sided_unpairable_opponents
       opponents.keys + (@had_bye ? [SwissImplementation::Bye] : [])
     end
 

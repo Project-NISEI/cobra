@@ -40,7 +40,7 @@ module PairingStrategies
       SwissImplementation.pair(
         players,
         delta_key: :points,
-        exclude_key: :unpairable_opponents
+        exclude_key: :double_sided_unpairable_opponents
       )
     end
 
