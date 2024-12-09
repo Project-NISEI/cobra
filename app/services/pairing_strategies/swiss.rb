@@ -7,7 +7,7 @@ module PairingStrategies
       @bye_winner_score = 6
       @bye_loser_score = 0
 
-      @thin_pairings = []
+      @plain_pairings = []
     end
 
     def pair!
@@ -15,13 +15,13 @@ module PairingStrategies
 
       paired_players.each do |pairing|
         pp = pairing_params(pairing)
-        @thin_pairings << PlainPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
+        @plain_pairings << PlainPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
       end
 
-      SwissTables.assign_table_numbers!(@thin_pairings)
+      SwissTables.assign_table_numbers!(@plain_pairings)
 
       ActiveRecord::Base.transaction do
-        @thin_pairings.each do |pp|
+        @plain_pairings.each do |pp|
           p = Pairing.new(round:, player1_id: pp.player1&.id, player2_id: pp.player2&.id, table_number: pp.table_number)
           if pp.bye?
             if pp.player1.nil?
@@ -48,7 +48,8 @@ module PairingStrategies
 
     def assign_byes!
       players_with_byes.each_key do |player_id|
-        @thin_pairings << PlainPairing.new(@players[player_id], @bye_winner_score, nil, @bye_loser_score)
+        @plain_pairings << PlainPairing.new(@players[player_id], @bye_winner_score,
+                                            nil, @bye_loser_score)
       end
     end
 
