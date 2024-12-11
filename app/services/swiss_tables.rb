@@ -26,13 +26,13 @@ module SwissTables
       @fixed_tables.each do |pairing|
         number = pairing.fixed_table_number
         numbers.exclude_fixed number
-        pairing.update(table_number: number)
+        pairing.table_number = number
       end
       PairingSorters::Ranked.sort(@non_byes).each do |pairing|
-        pairing.update(table_number: numbers.next)
+        pairing.table_number = numbers.next
       end
       @byes.each do |pairing|
-        pairing.update(table_number: numbers.next)
+        pairing.table_number = numbers.next
       end
     end
   end
