@@ -3,7 +3,7 @@
 RSpec.describe Pairer do
   let(:tournament) { create(:tournament) }
   let(:stage) { tournament.current_stage }
-  let(:round) { create(:round, number: 1, stage:) }
+  let(:round) { create(:round, number: 1, tournament:, stage:) }
   let(:pairer) { described_class.new(round) }
 
   %i[jack jill hansel gretel].each do |name|

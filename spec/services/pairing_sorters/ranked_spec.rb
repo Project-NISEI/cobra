@@ -1,32 +1,24 @@
 # frozen_string_literal: true
 
 RSpec.describe PairingSorters::Ranked do
-  let(:player1) { create(:player) }
-  let(:player2) { create(:player) }
-  let(:player3) { create(:player) }
-  let(:player4) { create(:player) }
-  let(:player5) { create(:player) }
-  let(:player6) { create(:player) }
-  let(:pairing1) { create(:pairing, player1:, player2:) }
-  let(:pairing2) { create(:pairing, player1: player3, player2: player4) }
-  let(:pairing3) { create(:pairing, player1: player5, player2: player6) }
-  let(:pairings) { [pairing1, pairing2, pairing3] }
+  let(:player1) { PairingStrategies::PlainPlayer.new(1, 'Jason', true, false, points: 3) }
+  let(:player2) { PairingStrategies::PlainPlayer.new(2, 'Mike', true, false, points: 1) }
+  let(:player3) { PairingStrategies::PlainPlayer.new(3, 'Amy', true, false, points: 6) }
+  let(:player4) { PairingStrategies::PlainPlayer.new(4, 'Disha', true, false) }
+  let(:player5) { PairingStrategies::PlainPlayer.new(5, 'Sabrina', true, false, points: 3) }
+  let(:player6) { PairingStrategies::PlainPlayer.new(6, 'Danny', true, false, points: 2) }
 
-  before do
-    allow(player1).to receive(:points).and_return(3)
-    allow(player2).to receive(:points).and_return(1)
-    allow(player3).to receive(:points).and_return(6)
-    allow(player4).to receive(:points).and_return(0)
-    allow(player5).to receive(:points).and_return(3)
-    allow(player6).to receive(:points).and_return(2)
-  end
+  let(:pairing1) { PairingStrategies::PlainPairing.new(player1, 0, player2, 0) }
+  let(:pairing2) { PairingStrategies::PlainPairing.new(player3, 0, player4, 0) }
+  let(:pairing3) { PairingStrategies::PlainPairing.new(player5, 0, player6, 0) }
+  let(:pairings) { [pairing1, pairing2, pairing3] }
 
   it 'sorts pairings by highest-scoring participant' do
     expect(described_class.sort(pairings)).to eq([pairing2, pairing3, pairing1])
   end
 
   context 'odd number of players' do
-    let(:pairing3) { create(:pairing, player1: player5, player2: nil) }
+    let(:pairing3) { PairingStrategies::PlainPairing.new(player5, 0, nil, 0) }
 
     it 'sorts correctly' do
       expect(described_class.sort(pairings)).to eq([pairing2, pairing1, pairing3])
