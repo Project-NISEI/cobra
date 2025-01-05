@@ -6,7 +6,7 @@ class StagesController < ApplicationController
   def create
     authorize @tournament, :update?
 
-    stage = @tournament.stages.create(format: :swiss)
+    stage = @tournament.stages.create(format: (@tournament.single_sided? ? :single_sided_swiss : :swiss))
     @tournament.players.each { |p| stage.players << p }
 
     redirect_to tournament_rounds_path(@tournament)
