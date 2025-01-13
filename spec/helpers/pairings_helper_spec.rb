@@ -23,6 +23,25 @@ RSpec.describe PairingsHelper do
         )
       end
     end
+
+    context 'when player 1 is runner' do
+      let(:pairing) { create(:pairing, stage:, side: :player1_is_runner) }
+
+      it 'returns single-sided swiss defaults' do
+        expect(helper.presets(pairing)).to eq(
+          [
+            { score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 3, intentional_draw: false,
+              label: 'Corp Win' },
+            { score1_corp: 0, score2_runner: 0, score1_runner: 1, score2_corp: 1, intentional_draw: false,
+              label: 'Tie' },
+            { score1_corp: 0, score2_runner: 0, score1_runner: 1, score2_corp: 1, intentional_draw: true,
+              label: 'Intentional Draw' },
+            { score1_corp: 0, score2_runner: 0, score1_runner: 3, score2_corp: 0, intentional_draw: false,
+              label: 'Runner Win' }
+          ]
+        )
+      end
+    end
   end
 
   describe '#presets' do

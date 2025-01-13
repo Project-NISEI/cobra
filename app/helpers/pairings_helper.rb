@@ -83,8 +83,8 @@ module PairingsHelper
         return [
           { score1_corp: 0, score2_corp: 3, score1_runner: 0, score2_runner: 0, intentional_draw: false,
             label: 'Corp Win' },
-          { score1_corp: 1, score2_corp: 0, score1_runner: 0, score2_runner: 1, intentional_draw: false, label: 'Tie' },
-          { score1_corp: 1, score2_corp: 0, score1_runner: 0, score2_runner: 1, intentional_draw: true,
+          { score1_corp: 0, score2_corp: 1, score1_runner: 1, score2_runner: 0, intentional_draw: false, label: 'Tie' },
+          { score1_corp: 0, score2_corp: 1, score1_runner: 1, score2_runner: 0, intentional_draw: true,
             label: 'Intentional Draw' },
           { score1_corp: 0, score2_corp: 0, score1_runner: 3, score2_runner: 0, intentional_draw: false,
             label: 'Runner Win' }
