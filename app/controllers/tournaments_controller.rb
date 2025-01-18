@@ -95,7 +95,9 @@ class TournamentsController < ApplicationController
 
     if params[:swiss_format] != @tournament.swiss_format
       first_stage = @tournament.stages.first
-      if !first_stage.nil? && ((params[:swiss_format] == 'single_sided' && first_stage.swiss?) || (params[:swiss_format] == 'double_sided' && first_stage.single_sided_swiss?))
+      if !first_stage.nil? &&
+         ((params[:swiss_format] == 'single_sided' && first_stage.swiss?) ||
+         (params[:swiss_format] == 'double_sided' && first_stage.single_sided_swiss?))
         if !@tournament.rounds.empty?
           flash[:alert] = "Can't change Swiss format when rounds exist."
           error_found = true
