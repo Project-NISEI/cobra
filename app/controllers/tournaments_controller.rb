@@ -90,18 +90,43 @@ class TournamentsController < ApplicationController
     authorize @tournament
 
     params = tournament_params
-    if params[:swiss_deck_visibility]
-      unless params[:cut_deck_visibility]
-        params[:cut_deck_visibility] = Tournament.max_visibility_cut_or_swiss(
-          @tournament.cut_deck_visibility, params[:swiss_deck_visibility]
+
+    error_found = false
+
+    if params[:swiss_format] != @tournament.swiss_format
+      first_stage = @tournament.stages.first
+      if !first_stage.nil? &&
+         ((params[:swiss_format] == 'single_sided' && first_stage.swiss?) ||
+         (params[:swiss_format] == 'double_sided' && first_stage.single_sided_swiss?))
+        if !@tournament.rounds.empty?
+          flash[:alert] = "Can't change Swiss format when rounds exist."
+          error_found = true
+        else
+          case params[:swiss_format] # rubocop:disable Metrics/BlockNesting
+          when 'single_sided'
+            first_stage.single_sided_swiss!
+          when 'double_sided'
+            first_stage.swiss!
+          end
+          first_stage.save
+        end
+      end
+    end
+
+    unless error_found
+      if params[:swiss_deck_visibility]
+        unless params[:cut_deck_visibility]
+          params[:cut_deck_visibility] = Tournament.max_visibility_cut_or_swiss(
+            @tournament.cut_deck_visibility, params[:swiss_deck_visibility]
+          )
+        end
+      elsif params[:cut_deck_visibility]
+        params[:swiss_deck_visibility] = Tournament.min_visibility_swiss_or_cut(
+          @tournament.swiss_deck_visibility, params[:cut_deck_visibility]
         )
       end
-    elsif params[:cut_deck_visibility]
-      params[:swiss_deck_visibility] = Tournament.min_visibility_swiss_or_cut(
-        @tournament.swiss_deck_visibility, params[:cut_deck_visibility]
-      )
+      @tournament.update(params)
     end
-    @tournament.update(params)
 
     redirect_back_or_to edit_tournament_path(@tournament)
   end
