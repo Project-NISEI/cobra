@@ -7,7 +7,7 @@
     export let manual_seed: boolean;
 
     function printSideBias(sideBias: number) {
-        if (sideBias === 0) {
+        if (sideBias == null || sideBias === 0) {
             return 'Balanced';
         } else if (sideBias > 0) {
             return `Corp +${sideBias}`;
