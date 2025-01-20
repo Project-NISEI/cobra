@@ -2,10 +2,25 @@
 
 RSpec.describe TournamentsController do
   let(:tournament) { create(:tournament, name: 'My Tournament') }
-  let(:player1) { create(:player, tournament:) }
-  let(:player2) { create(:player, tournament:) }
-  let(:player3) { create(:player, tournament:) }
-  let(:player4) { create(:player, tournament:) }
+
+  let(:btl) { create(:identity, name: 'Builder of Nations', faction: 'weyland-consortium') }
+  let(:hoshiko) { create(:identity, name: 'Hoshiko', faction: 'anarch') }
+  let(:sable) { create(:identity, name: 'Sable', faction: 'criminal') }
+  let(:az) { create(:identity, name: 'Az', faction: 'criminal') }
+
+  let(:player1) do
+    create(:player, tournament:, corp_identity: btl.name, corp_identity_ref_id: btl.id, runner_identity: hoshiko.name,
+                    runner_identity_ref_id: hoshiko.id)
+  end
+  let(:player2) do
+    create(:player, tournament:, runner_identity: sable.name,
+                    runner_identity_ref_id: sable.id)
+  end
+  let(:player3) do
+    create(:player, tournament:, corp_identity: btl.name, corp_identity_ref_id: btl.id, runner_identity: az.name,
+                    runner_identity_ref_id: az.id)
+  end
+  let(:player4) { create(:player, tournament:, corp_identity: btl.name, corp_identity_ref_id: btl.id) }
 
   describe '#save_json' do
     before do
@@ -68,6 +83,47 @@ RSpec.describe TournamentsController do
 
       # Format is unchanged
       expect(tournament.swiss?).to be(true)
+    end
+  end
+
+  describe '#id_and_faction_data' do
+    it 'returns correct id_and_faction_data JSON' do
+      player1.save
+      player2.save
+      player3.save
+      player4.save
+      # puts tournament.name
+      puts tournament.players.size
+
+      get id_and_faction_data_tournament_path(tournament)
+
+      expect(JSON.parse(response.body))
+        .to eq(
+          'num_players' => 4,
+          'corp' => {
+            'factions' => {
+              'weyland-consortium' => 3,
+              'unknown' => 1
+            },
+            'ids' => {
+              'Builder of Nations' => 3,
+              'Unknown' => 1
+            }
+          },
+          'runner' => {
+            'factions' => {
+              'unknown' => 1,
+              'anarch' => 1,
+              'criminal' => 2
+            },
+            'ids' => {
+              'Az' => 1,
+              'Hoshiko' => 1,
+              'Sable' => 1,
+              'Unknown' => 1
+            }
+          }
+        )
     end
   end
 end

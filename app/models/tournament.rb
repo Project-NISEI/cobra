@@ -104,6 +104,63 @@ class Tournament < ApplicationRecord
     end.sort_by(&:last).reverse
   end
 
+  def id_and_faction_data
+    sql = <<~SQL
+        WITH corp_ids AS (
+          SELECT
+            1 AS side,
+            COALESCE(corp_ids.name, 'Unknown') as id,
+            COALESCE(corp_ids.faction, 'unknown') AS faction
+          FROM
+            players AS p
+            LEFT JOIN identities AS corp_ids
+              ON p.corp_identity_ref_id = corp_ids.id
+          WHERE p.tournament_id = ?
+      ),
+      runner_ids AS (
+          SELECT
+            2 AS side,
+            COALESCE(runner_ids.name, 'Unknown') as id,
+            COALESCE(runner_ids.faction, 'unknown') AS faction
+          FROM
+            players AS p
+            LEFT JOIN identities AS runner_ids
+              ON p.runner_identity_ref_id = runner_ids.id
+          WHERE p.tournament_id = ?
+      )
+      SELECT side, id, faction, COUNT(*) AS num_ids FROM corp_ids GROUP BY 1,2,3
+      UNION ALL
+      SELECT side, id, faction, COUNT(*) AS num_ids FROM runner_ids GROUP BY 1,2,3
+    SQL
+    sql = ActiveRecord::Base.sanitize_sql([sql, id, id])
+
+    results = {
+      num_players: 0,
+      corp: {
+        ids: {},
+        factions: {}
+      },
+      runner: {
+        ids: {},
+        factions: {}
+      }
+    }
+    ActiveRecord::Base.connection.exec_query(sql).each do |row|
+      side = row['side'] == 1 ? :corp : :runner
+
+      # We only need to use 1 side to get the total number of players
+      results[:num_players] += row['num_ids'] if side == :corp
+
+      # Only 1 row per id
+      results[side][:ids][row['id']] = row['num_ids']
+
+      # Multiple rows per faction so we need to sum them up
+      results[side][:factions][row['faction']] ||= 0
+      results[side][:factions][row['faction']] += row['num_ids']
+    end
+    results
+  end
+
   def generate_slug
     self.slug = rand(Integer(36**4)).to_s(36).upcase
     generate_slug if Tournament.exists?(slug:)
