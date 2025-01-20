@@ -39,6 +39,7 @@ Rails.application.routes.draw do
     resources :stages, only: %i[create destroy]
     post :upload_to_abr, on: :member
     get :save_json, on: :member
+    get :id_and_faction_data, on: :member
     post :cut, on: :member
     get :qr, on: :member
     get :registration, on: :member
