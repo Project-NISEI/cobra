@@ -92,8 +92,6 @@ RSpec.describe TournamentsController do
       player2.save
       player3.save
       player4.save
-      # puts tournament.name
-      puts tournament.players.size
 
       get id_and_faction_data_tournament_path(tournament)
 
