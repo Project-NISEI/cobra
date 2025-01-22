@@ -87,21 +87,25 @@ class Tournament < ApplicationRecord
   end
 
   def corp_counts
+    total_players = players.count
     players.group_by(&:corp_identity).map do |id, players|
       [
         Identity.find_or_initialize_by(name: id),
-        players.count
+        players.count,
+        total_players
       ]
-    end.sort_by(&:last).reverse
+    end.sort_by { |element| element[1] }.reverse # rubocop:disable Style/MultilineBlockChain
   end
 
   def runner_counts
+    total_players = players.count
     players.group_by(&:runner_identity).map do |id, players|
       [
         Identity.find_or_initialize_by(name: id),
-        players.count
+        players.count,
+        total_players
       ]
-    end.sort_by(&:last).reverse
+    end.sort_by { |element| element[1] }.reverse # rubocop:disable Style/MultilineBlockChain
   end
 
   def id_and_faction_data
@@ -109,8 +113,8 @@ class Tournament < ApplicationRecord
         WITH corp_ids AS (
           SELECT
             1 AS side,
-            COALESCE(corp_ids.name, 'Unknown') as id,
-            COALESCE(corp_ids.faction, 'unknown') AS faction
+            COALESCE(corp_ids.name, 'Unspecified') as id,
+            COALESCE(corp_ids.faction, 'unspecified') AS faction
           FROM
             players AS p
             LEFT JOIN identities AS corp_ids
@@ -120,8 +124,8 @@ class Tournament < ApplicationRecord
       runner_ids AS (
           SELECT
             2 AS side,
-            COALESCE(runner_ids.name, 'Unknown') as id,
-            COALESCE(runner_ids.faction, 'unknown') AS faction
+            COALESCE(runner_ids.name, 'Unspecified') as id,
+            COALESCE(runner_ids.faction, 'unspecified') AS faction
           FROM
             players AS p
             LEFT JOIN identities AS runner_ids
@@ -152,7 +156,7 @@ class Tournament < ApplicationRecord
       results[:num_players] += row['num_ids'] if side == :corp
 
       # Only 1 row per id
-      results[side][:ids][row['id']] = row['num_ids']
+      results[side][:ids][row['id']] = { count: row['num_ids'], faction: row['faction'] }
 
       # Multiple rows per faction so we need to sum them up
       results[side][:factions][row['faction']] ||= 0

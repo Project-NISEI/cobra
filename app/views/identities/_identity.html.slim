@@ -1,6 +1,11 @@
 .div class="#{identity.faction}"
-  i.fa.icon class="icon-#{identity.faction}"
-  =< identity.name
+
+  - if identity.name.nil?
+    i.fa.icon class="icon-interrupt"
+    =< "Unspecified"
+  - else
+    i.fa.icon class="icon-#{identity.faction}"
+    =< identity.name
   - if local_assigns[:points]
     = side if identity.name&.empty? && local_assigns[:side]
     = " (#{points})"
