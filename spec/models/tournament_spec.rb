@@ -72,8 +72,8 @@ RSpec.describe Tournament do
 
     it 'returns counts' do
       expect(tournament.corp_counts).to eq([
-                                             [identity, 2],
-                                             [other_identity, 1]
+                                             [identity, 2, 3],
+                                             [other_identity, 1, 3]
                                            ])
     end
   end
@@ -89,7 +89,7 @@ RSpec.describe Tournament do
 
     it 'returns counts' do
       expect(tournament.runner_counts).to eq([
-                                               [identity, 1]
+                                               [identity, 1, 1]
                                              ])
     end
   end

@@ -101,24 +101,24 @@ RSpec.describe TournamentsController do
           'corp' => {
             'factions' => {
               'weyland-consortium' => 3,
-              'unknown' => 1
+              'unspecified' => 1
             },
             'ids' => {
-              'Builder of Nations' => 3,
-              'Unknown' => 1
+              'Builder of Nations' => { 'count' => 3, 'faction' => 'weyland-consortium' },
+              'Unspecified' => { 'count' => 1, 'faction' => 'unspecified' }
             }
           },
           'runner' => {
             'factions' => {
-              'unknown' => 1,
+              'unspecified' => 1,
               'anarch' => 1,
               'criminal' => 2
             },
             'ids' => {
-              'Az' => 1,
-              'Hoshiko' => 1,
-              'Sable' => 1,
-              'Unknown' => 1
+              'Az' => { 'count' => 1, 'faction' => 'criminal' },
+              'Hoshiko' => { 'count' => 1, 'faction' => 'anarch' },
+              'Sable' => { 'count' => 1, 'faction' => 'criminal' },
+              'Unspecified' => { 'count' => 1, 'faction' => 'unspecified' }
             }
           }
         )
