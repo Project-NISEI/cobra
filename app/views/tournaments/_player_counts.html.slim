@@ -43,21 +43,6 @@
               td= render id
               td= "#{count} (#{"%0.1f" % (count / total.to_f * 100)}%)"
   javascript:
-    const factionColors = new Map([
-      ['anarch', 'orangered'],
-      ['criminal', 'royalblue'],
-      ['shaper', 'limegreen'],
-      ['adam', 'olive'],
-      ['apex', '#C25048'],
-      ['sunny-lebeau', '#886E8F'],
-      ['haas-bioroid', 'blueviolet'],
-      ['jinteki', 'crimson'],
-      ['neutral-corp', 'lightgrey'],
-      ['neutral-runner', 'lightgrey'],
-      ['nbn', 'darkorange'],
-      ['weyland-consortium', 'darkgreen'],
-      ['unspecified', 'charcoal'],
-    ]);
     function drawPieChart(element, series, labels, colors=null) {
       const options = {
         chart: {
@@ -99,6 +84,21 @@
     fetch('/tournaments/#{@tournament.id}/id_and_faction_data')
       .then(response => response.json())
       .then(data => {
+        const factionColors = new Map([
+          ['anarch', 'orangered'],
+          ['criminal', 'royalblue'],
+          ['shaper', 'limegreen'],
+          ['adam', 'olive'],
+          ['apex', '#C25048'],
+          ['sunny-lebeau', '#886E8F'],
+          ['haas-bioroid', 'blueviolet'],
+          ['jinteki', 'crimson'],
+          ['neutral-corp', 'lightgrey'],
+          ['neutral-runner', 'lightgrey'],
+          ['nbn', 'darkorange'],
+          ['weyland-consortium', 'darkgreen'],
+          ['unspecified', 'charcoal'],
+        ]);
         let corpFactionSeries = [];
         let corpFactionLabels = [];
         let corpFactionColors = [];
