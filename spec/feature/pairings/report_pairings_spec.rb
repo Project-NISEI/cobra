@@ -134,26 +134,9 @@ RSpec.describe 'reporting scores for pairings' do
           visit tournament_rounds_path(tournament)
         end
 
-        describe 'player 1 wins' do
+        describe 'corp player wins' do
           it 'stores score' do
             click_link '3-0'
-
-            pairing.reload
-
-            aggregate_failures do
-              expect(pairing.score1).to eq(3)
-              expect(pairing.score1_corp).to eq(0)
-              expect(pairing.score1_runner).to eq(3)
-              expect(pairing.score2).to eq(0)
-              expect(pairing.score2_corp).to eq(0)
-              expect(pairing.score2_runner).to eq(0)
-            end
-          end
-        end
-
-        describe 'player 2 wins' do
-          it 'stores score' do
-            click_link '0-3'
 
             pairing.reload
 
@@ -167,12 +150,36 @@ RSpec.describe 'reporting scores for pairings' do
             end
           end
         end
+
+        describe 'runner player wins' do
+          it 'stores score' do
+            click_link '0-3'
+
+            pairing.reload
+
+            aggregate_failures do
+              expect(pairing.score1).to eq(3)
+              expect(pairing.score1_corp).to eq(0)
+              expect(pairing.score1_runner).to eq(3)
+              expect(pairing.score2).to eq(0)
+              expect(pairing.score2_corp).to eq(0)
+              expect(pairing.score2_runner).to eq(0)
+            end
+          end
+        end
       end
     end
   end
 
   describe 'custom scores' do
+    # Scores only show up after sides are selected.
+    before do
+      pairing.update(side: :player1_is_corp)
+      visit tournament_rounds_path(tournament)
+    end
+
     it 'stores score' do
+      all(:link, '...')[0].click
       fill_in :pairing_score1, with: '4'
       fill_in :pairing_score2, with: '1'
       click_button 'Save'
