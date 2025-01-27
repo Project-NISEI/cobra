@@ -11,7 +11,7 @@ class Stage < ApplicationRecord
   delegate :top, to: :standings
 
   enum :format, {
-    swiss: 0,
+    swiss: 0, # Double-Sided Swiss
     double_elim: 1,
     single_sided_swiss: 2
   }

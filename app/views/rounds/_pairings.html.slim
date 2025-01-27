@@ -1,10 +1,11 @@
 - single_sided = round.stage.single_sided?
 - round.pairings.each do |pairing|
+  - is_side_set = !pairing.side.nil?
   - left_player = @players[pairing.player1_id]
   - left_player_number = 1
   - right_player = @players[pairing.player2_id]
   - right_player_number = 2
-  - if single_sided && !pairing.player1_is_corp?
+  - if single_sided && is_side_set && !pairing.player1_is_corp?
     - left_player = @players[pairing.player2_id]
     - left_player_number = 2
     - right_player = @players[pairing.player1_id]
@@ -43,7 +44,7 @@
           - else
             = render left_player.corp_identity_object
             = render left_player.runner_identity_object
-    - if policy(round.tournament).edit?
+    - if policy(round.tournament).edit? && (!single_sided || (single_sided && is_side_set))
       .col-sm-5.centre_score
         .preset_score
           - presets(pairing).each do |data|
@@ -53,20 +54,26 @@
         .custom_score
           = simple_form_for pairing, url: report_tournament_round_pairing_path(round.tournament, round, pairing), method: :post, html: { class: 'form-inline' } do |f|
             .mx-auto
-              = f.hidden_field :score1_runner, value: 0
-              = f.hidden_field :score1_corp, value: 0
-              = f.hidden_field :score2_runner, value: 0
-              = f.hidden_field :score2_corp, value: 0
+              | By Number #{pairing.score1} - #{pairing.score2}
+              | Left Player number is #{left_player_number} and Right Player number is #{right_player_number}
+              = f.text_field :score1_runner, value: 0
+              = f.text_field :score1_corp, value: 0
+              = f.text_field :score2_runner, value: 0
+              = f.text_field :score2_corp, value: 0
               - if left_player_number == 1
+                | Left Player Number 1 #{ pairing.score1 }
                 = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
               - else
+                | Left Player Number 2 #{ pairing.score2 }
                 = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               = button_tag type: :submit, class: 'btn btn-primary mx-2' do
                 => fa_icon 'flag-checkered'
                 | Save
               - if right_player_number == 1
-                = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
+                | Right Player Number 1 #{ pairing.score1 }
+                = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control', label: 'Hi'
               - else
+                | Right Player Number 2 #{ pairing.score2 }
                 = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               =< link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
               div class='form-group'
