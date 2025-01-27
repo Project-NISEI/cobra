@@ -43,6 +43,18 @@ class PairingsController < ApplicationController
 
     pairing.update(score_params)
 
+    if score_params.key?('side') && pairing.reported?
+      score1_corp = pairing.score1_corp
+      pairing.score1_corp = pairing.score1_runner
+      pairing.score1_runner = score1_corp
+
+      score2_corp = pairing.score2_corp
+      pairing.score2_corp = pairing.score2_runner
+      pairing.score2_runner = score2_corp
+
+      pairing.save
+    end
+
     redirect_back(fallback_location: tournament_rounds_path(tournament))
   end
 

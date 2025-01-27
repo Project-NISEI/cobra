@@ -58,7 +58,7 @@ module PairingsHelper
 
   def presets(pairing)
     # Double-sided round
-    unless pairing.stage.single_sided?
+    if pairing.stage.swiss?
       return [
         { score1_corp: 3, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '6-0' },
         { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '3-3 (C)' },
@@ -93,20 +93,22 @@ module PairingsHelper
     end
 
     # Single-sided elimination round
-    if pairing.player1_is_corp?
-      return [
-        { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
-        { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
-      ]
+    if pairing.stage.double_elim? && !pairing.side.nil?
+      if pairing.player1_is_corp?
+        return [
+          { score1: 3, score2: 0, score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
+          { score1: 0, score2: 3, score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
+        ]
+      else
+        # Player 1 is runner
+        return [
+          { score1: 0, score1_corp: 0, score1_runner: 0, score2: 3, score2_corp: 3, score2_runner: 0, label: '3-0' },
+          { score1: 3, score1_corp: 0, score1_runner: 3, score2: 0, score2_corp: 0, score2_runner: 0, label: '0-3' }
+        ]
+      end
     end
 
-    if pairing.player1_is_runner?
-      return [
-        { score1_corp: 0, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '3-0' },
-        { score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '0-3' }
-      ]
-    end
-
+    # Will only reach thus fallback case if it's a single-sided pairing with no side set (not allowed by the UI now).
     [
       { score1: 3, score2: 0, score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
       { score1: 0, score2: 3, score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '0-3' }
