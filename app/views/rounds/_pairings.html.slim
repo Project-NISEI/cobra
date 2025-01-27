@@ -54,26 +54,20 @@
         .custom_score
           = simple_form_for pairing, url: report_tournament_round_pairing_path(round.tournament, round, pairing), method: :post, html: { class: 'form-inline' } do |f|
             .mx-auto
-              | By Number #{pairing.score1} - #{pairing.score2}
-              | Left Player number is #{left_player_number} and Right Player number is #{right_player_number}
-              = f.text_field :score1_runner, value: 0
-              = f.text_field :score1_corp, value: 0
-              = f.text_field :score2_runner, value: 0
-              = f.text_field :score2_corp, value: 0
+              = f.hidden_field :score1_runner
+              = f.hidden_field :score1_corp
+              = f.hidden_field :score2_runner
+              = f.hidden_field :score2_corp
               - if left_player_number == 1
-                | Left Player Number 1 #{ pairing.score1 }
                 = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
               - else
-                | Left Player Number 2 #{ pairing.score2 }
                 = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               = button_tag type: :submit, class: 'btn btn-primary mx-2' do
                 => fa_icon 'flag-checkered'
                 | Save
               - if right_player_number == 1
-                | Right Player Number 1 #{ pairing.score1 }
-                = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control', label: 'Hi'
+                = f.text_field :score1, style: 'width: 2.5em;', class: 'form-control'
               - else
-                | Right Player Number 2 #{ pairing.score2 }
                 = f.text_field :score2, style: 'width: 2.5em;', class: 'form-control'
               =< link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
               div class='form-group'

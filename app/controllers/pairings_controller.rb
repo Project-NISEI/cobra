@@ -41,25 +41,18 @@ class PairingsController < ApplicationController
   def report
     authorize @tournament, :update?
 
-    Rails.logger.info "Before: #{pairing.inspect}"
     pairing.update(score_params)
-    Rails.logger.info "After normal update: #{pairing.inspect}"
 
     if score_params.key?('side') && pairing.reported?
-      score2 = pairing.score2
+      score1_corp = pairing.score1_corp
+      pairing.score1_corp = pairing.score1_runner
+      pairing.score1_runner = score1_corp
+
       score2_corp = pairing.score2_corp
-      score2_runner = pairing.score2_runner
-
-      pairing.score2 = pairing.score1
-      pairing.score2_corp = pairing.score1_corp
-      pairing.score2_runner = pairing.score1_runner
-
-      pairing.score1 = score2
-      pairing.score1_corp = score2_corp
-      pairing.score1_runner = score2_runner
+      pairing.score2_corp = pairing.score2_runner
+      pairing.score2_runner = score2_corp
 
       pairing.save
-      Rails.logger.info "After score swap: #{pairing.inspect}"
     end
 
     redirect_back(fallback_location: tournament_rounds_path(tournament))
