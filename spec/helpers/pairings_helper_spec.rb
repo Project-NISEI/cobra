@@ -83,8 +83,9 @@ RSpec.describe PairingsHelper do
         it 'returns double elim defaults' do
           expect(helper.presets(pairing)).to eq(
             [
-              { score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
-              { score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
+              { score1: 3, score1_corp: 3, score1_runner: 0, score2: 0, score2_corp: 0, score2_runner: 0,
+                label: '3-0' },
+              { score1: 0, score1_corp: 0, score1_runner: 0, score2: 3, score2_corp: 0, score2_runner: 3, label: '0-3' }
             ]
           )
         end
@@ -96,8 +97,10 @@ RSpec.describe PairingsHelper do
         it 'returns double elim defaults' do
           expect(helper.presets(pairing)).to eq(
             [
-              { score1_corp: 0, score2_runner: 0, score1_runner: 3, score2_corp: 0, label: '3-0' },
-              { score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 3, label: '0-3' }
+              { score1: 0, score1_corp: 0, score1_runner: 0, score2: 3, score2_corp: 3, score2_runner: 0,
+                label: '3-0' },
+              { score1: 3, score1_corp: 0, score1_runner: 3, score2: 0, score2_corp: 0, score2_runner: 0,
+                label: '0-3' }
             ]
           )
         end

@@ -93,27 +93,26 @@ module PairingsHelper
     end
 
     # Single-sided elimination round
-    if pairing.stage.double_elim?
+    if pairing.stage.double_elim? && !pairing.side.nil?
       if pairing.player1_is_corp?
         return [
           { score1: 3, score2: 0, score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
-          { score1: 0, score2: 0, score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
+          { score1: 0, score2: 3, score1_corp: 0, score2_runner: 3, score1_runner: 0, score2_corp: 0, label: '0-3' }
         ]
       else
         # Player 1 is runner
         return [
           { score1: 0, score1_corp: 0, score1_runner: 0, score2: 3, score2_corp: 3, score2_runner: 0, label: '3-0' },
-          { score1: 0, score1_corp: 0, score1_runner: 0, score2: 3, score2_corp: 0, score2_runner: 3, label: '0-3' }
+          { score1: 3, score1_corp: 0, score1_runner: 3, score2: 0, score2_corp: 0, score2_runner: 0, label: '0-3' }
         ]
       end
     end
 
-    # Will only reach thus fallback case if it's a single-sided pairing with no side set (not allowed).
-    []
-    # [
-    #   { score1: 3, score2: 0, score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '32-0' },
-    #   { score1: 0, score2: 3, score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '0-32' }
-    # ]
+    # Will only reach thus fallback case if it's a single-sided pairing with no side set (not allowed by the UI now).
+    [
+      { score1: 3, score2: 0, score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },
+      { score1: 0, score2: 3, score1_corp: 0, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '0-3' }
+    ]
   end
 
   def side_options
