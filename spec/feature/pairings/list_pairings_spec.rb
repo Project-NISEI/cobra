@@ -68,7 +68,18 @@ RSpec.describe 'list pairings for a round' do
       expect(page).to have_content('CorpRunner')
     end
 
-    it 'displays preset score options' do
+    it 'does not display preset score options before side selection' do
+      sign_in tournament.user
+      visit tournament_rounds_path(tournament)
+
+      expect(page).not_to have_content('3-0 0-3')
+    end
+
+    it 'displays preset score options after side selection' do
+      round = tournament.rounds.last
+      round.pairings.each do |pairing|
+        pairing.update(side: 1)
+      end
       sign_in tournament.user
       visit tournament_rounds_path(tournament)
 
