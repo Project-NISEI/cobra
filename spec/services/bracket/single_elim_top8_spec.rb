@@ -20,7 +20,7 @@ RSpec.describe Bracket::SingleElimTop8 do
     create(:registration, player: hotel, stage:, seed: 8)
   end
 
-  describe '#pair' do
+  describe '#bracket' do
     context 'when round 1' do
       let(:pair) { bracket.pair(1) }
 
@@ -29,6 +29,12 @@ RSpec.describe Bracket::SingleElimTop8 do
                                         { table_number: 2, player1: bravo, player2: golf },
                                         { table_number: 3, player1: charlie, player2: foxtrot },
                                         { table_number: 4, player1: delta, player2: echo })
+      end
+
+      it 'returns correct standings' do
+        expect(bracket.standings.map(&:player)).to eq(
+          [nil, nil, nil, nil, nil, nil, nil, nil]
+        )
       end
     end
 
@@ -46,6 +52,12 @@ RSpec.describe Bracket::SingleElimTop8 do
       it 'returns correct pairings' do
         expect(pair).to contain_exactly({ table_number: 5, player1: alpha, player2: golf },
                                         { table_number: 6, player1: delta, player2: foxtrot })
+      end
+
+      it 'returns correct standings' do
+        expect(bracket.standings.map(&:player)).to eq(
+          [nil, nil, nil, nil, bravo, charlie, echo, hotel]
+        )
       end
     end
 
@@ -67,11 +79,15 @@ RSpec.describe Bracket::SingleElimTop8 do
       it 'returns correct pairings' do
         expect(pair).to contain_exactly({ table_number: 7, player1: foxtrot, player2: golf })
       end
-    end
-  end
 
-  describe '#standings' do
-    context 'when complete bracket' do
+      it 'returns correct standings' do
+        expect(bracket.standings.map(&:player)).to eq(
+          [nil, nil, alpha, delta, bravo, charlie, echo, hotel]
+        )
+      end
+    end
+
+    context 'when bracket is complete' do
       before do
         r1 = create(:round, stage:, completed: true)
         report r1, 1, alpha, 3, hotel, 0
@@ -91,46 +107,6 @@ RSpec.describe Bracket::SingleElimTop8 do
         expect(bracket.standings.map(&:player)).to eq(
           [golf, foxtrot, alpha, delta, bravo, charlie, echo, hotel]
         )
-      end
-    end
-
-    context 'when second round still to play' do
-      before do
-        r1 = create(:round, stage:, completed: true)
-        report r1, 1, alpha, 3, hotel, 0
-        report r1, 2, bravo, 0, golf, 3
-        report r1, 3, charlie, 0, foxtrot, 3
-        report r1, 4, delta, 3, echo, 0
-      end
-
-      context 'top 4 standings are unknown' do
-        it 'returns ambiguous top two' do
-          expect(bracket.standings.map(&:player)).to eq(
-            [nil, nil, nil, nil, bravo, charlie, echo, hotel]
-          )
-        end
-      end
-    end
-
-    context 'when final round still to play' do
-      before do
-        r1 = create(:round, stage:, completed: true)
-        report r1, 1, alpha, 3, hotel, 0
-        report r1, 2, bravo, 0, golf, 3
-        report r1, 3, charlie, 0, foxtrot, 3
-        report r1, 4, delta, 3, echo, 0
-
-        r2 = create(:round, stage:, completed: true)
-        report r2, 5, alpha, 0, golf, 3
-        report r2, 6, delta, 0, foxtrot, 3
-      end
-
-      context 'top 2 standings are unknown' do
-        it 'returns ambiguous top two' do
-          expect(bracket.standings.map(&:player)).to eq(
-            [nil, nil, alpha, delta, bravo, charlie, echo, hotel]
-          )
-        end
       end
     end
   end

@@ -16,13 +16,19 @@ RSpec.describe Bracket::SingleElimTop4 do
     create(:registration, player: delta, stage:, seed: 4)
   end
 
-  describe '#pair' do
+  describe '#bracket' do
     context 'when round 1' do
       let(:pair) { bracket.pair(1) }
 
       it 'returns correct pairings' do
         expect(pair).to contain_exactly({ table_number: 1, player1: alpha, player2: delta },
                                         { table_number: 2, player1: bravo, player2: charlie })
+      end
+
+      it 'returns correct standings' do
+        expect(bracket.standings.map(&:player)).to eq(
+          [nil, nil, nil, nil]
+        )
       end
     end
 
@@ -38,40 +44,28 @@ RSpec.describe Bracket::SingleElimTop4 do
       it 'returns correct pairings' do
         expect(pair).to contain_exactly({ table_number: 3, player1: alpha, player2: bravo })
       end
-    end
-  end
-
-  describe '#standings' do
-    context 'when complete bracket' do
-      before do
-        r1 = create(:round, stage:, completed: true)
-        report r1, 1, alpha, 0, delta, 3
-        report r1, 2, bravo, 3, charlie, 0
-
-        r2 = create(:round, stage:, completed: true)
-        report r2, 3, delta, 3, bravo, 0
-      end
 
       it 'returns correct standings' do
         expect(bracket.standings.map(&:player)).to eq(
-          [delta, bravo, alpha, charlie]
+          [nil, nil, charlie, delta]
         )
       end
     end
 
-    context 'when second match still to play' do
+    context 'when bracket is compelte' do
       before do
         r1 = create(:round, stage:, completed: true)
         report r1, 1, alpha, 3, delta, 0
-        report r1, 2, bravo, 0, charlie, 3
+        report r1, 2, bravo, 3, charlie, 0
+
+        r2 = create(:round, stage:, completed: true)
+        report r2, 3, alpha, 0, bravo, 3
       end
 
-      context 'top 2 standings are unknown' do
-        it 'returns ambiguous top two' do
-          expect(bracket.standings.map(&:player)).to eq(
-            [nil, nil, bravo, delta]
-          )
-        end
+      it 'returns correct standings' do
+        expect(bracket.standings.map(&:player)).to eq(
+          [bravo, alpha, charlie, delta]
+        )
       end
     end
   end

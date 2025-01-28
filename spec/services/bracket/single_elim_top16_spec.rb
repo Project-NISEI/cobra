@@ -29,7 +29,7 @@ RSpec.describe Bracket::SingleElimTop16 do
     create(:registration, player: papa, stage:, seed: 16)
   end
 
-  describe '#pair' do
+  describe '#bracket' do
     context 'when round 1' do
       let(:pair) { bracket.pair(1) }
 
@@ -42,6 +42,12 @@ RSpec.describe Bracket::SingleElimTop16 do
                                         { table_number: 6, player1: foxtrot, player2: kilo },
                                         { table_number: 7, player1: golf, player2: juliet },
                                         { table_number: 8, player1: hotel, player2: india })
+      end
+
+      it 'returns correct standings' do
+        expect(bracket.standings.map(&:player)).to eq(
+          [nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil]
+        )
       end
     end
 
@@ -65,6 +71,12 @@ RSpec.describe Bracket::SingleElimTop16 do
                                         { table_number: 10, player1: delta, player2: november },
                                         { table_number: 11, player1: india, player2: lima },
                                         { table_number: 12, player1: juliet, player2: kilo })
+      end
+
+      it 'returns correct standings' do
+        expect(bracket.standings.map(&:player)).to eq(
+          [nil, nil, nil, nil, nil, nil, nil, nil, alpha, charlie, echo, foxtrot, golf, hotel, mike, oscar]
+        )
       end
     end
 
@@ -92,6 +104,12 @@ RSpec.describe Bracket::SingleElimTop16 do
       it 'returns correct pairings' do
         expect(pair).to contain_exactly({ table_number: 13, player1: delta, player2: papa },
                                         { table_number: 14, player1: juliet, player2: lima })
+      end
+
+      it 'returns correct standings' do
+        expect(bracket.standings.map(&:player)).to eq(
+          [nil, nil, nil, nil, bravo, india, kilo, november, alpha, charlie, echo, foxtrot, golf, hotel, mike, oscar]
+        )
       end
     end
 
@@ -123,78 +141,6 @@ RSpec.describe Bracket::SingleElimTop16 do
       it 'returns correct pairings' do
         expect(pair).to contain_exactly({ table_number: 15, player1: juliet, player2: papa })
       end
-    end
-  end
-
-  describe '#standings' do
-    context 'after round 1' do
-      before do
-        r1 = create(:round, stage:, completed: true)
-        report r1, 1, alpha, 0, papa, 3
-        report r1, 2, bravo, 3, oscar, 0
-        report r1, 3, charlie, 0, november, 3
-        report r1, 4, delta, 3, mike, 0
-        report r1, 5, echo, 0, lima, 3
-        report r1, 6, foxtrot, 0, kilo, 3
-        report r1, 7, golf, 0, juliet, 3
-        report r1, 8, hotel, 0, india, 3
-      end
-
-      it 'returns correct standings' do
-        expect(bracket.standings.map(&:player)).to eq(
-          [nil, nil, nil, nil, nil, nil, nil, nil, alpha, charlie, echo, foxtrot, golf, hotel, mike, oscar]
-        )
-      end
-    end
-
-    context 'after round 2' do
-      before do
-        r1 = create(:round, stage:, completed: true)
-        report r1, 1, alpha, 0, papa, 3
-        report r1, 2, bravo, 3, oscar, 0
-        report r1, 3, charlie, 0, november, 3
-        report r1, 4, delta, 3, mike, 0
-        report r1, 5, echo, 0, lima, 3
-        report r1, 6, foxtrot, 0, kilo, 3
-        report r1, 7, golf, 0, juliet, 3
-        report r1, 8, hotel, 0, india, 3
-
-        r2 = create(:round, stage:, completed: true)
-        report r2, 9, bravo, 0, papa, 3
-        report r2, 10, delta, 3, november, 0
-        report r2, 11, india, 0, lima, 3
-        report r2, 12, juliet, 3, kilo, 0
-      end
-
-      it 'returns correct standings' do
-        expect(bracket.standings.map(&:player)).to eq(
-          [nil, nil, nil, nil, bravo, india, kilo, november, alpha, charlie, echo, foxtrot, golf, hotel, mike, oscar]
-        )
-      end
-    end
-
-    context 'when round 3' do
-      before do
-        r1 = create(:round, stage:, completed: true)
-        report r1, 1, alpha, 0, papa, 3
-        report r1, 2, bravo, 3, oscar, 0
-        report r1, 3, charlie, 0, november, 3
-        report r1, 4, delta, 3, mike, 0
-        report r1, 5, echo, 0, lima, 3
-        report r1, 6, foxtrot, 0, kilo, 3
-        report r1, 7, golf, 0, juliet, 3
-        report r1, 8, hotel, 0, india, 3
-
-        r2 = create(:round, stage:, completed: true)
-        report r2, 9, bravo, 0, papa, 3
-        report r2, 10, delta, 3, november, 0
-        report r2, 11, india, 0, lima, 3
-        report r2, 12, juliet, 3, kilo, 0
-
-        r3 = create(:round, stage:, completed: true)
-        report r3, 13, delta, 0, papa, 3
-        report r3, 14, juliet, 3, lima, 0
-      end
 
       it 'returns correct standings' do
         expect(bracket.standings.map(&:player)).to eq(
@@ -203,7 +149,7 @@ RSpec.describe Bracket::SingleElimTop16 do
       end
     end
 
-    context 'completed bracket' do
+    context 'when bracket is complete' do
       before do
         r1 = create(:round, stage:, completed: true)
         report r1, 1, alpha, 0, papa, 3
