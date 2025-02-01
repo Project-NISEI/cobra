@@ -73,7 +73,7 @@ class NrtmJson
   end
 
   def cut_stage
-    tournament.stages.find_by(format: :double_elim) || NilStage.new
+    tournament.stages.find_by(format: :single_elim) || tournament.stages.find_by(format: :double_elim) || NilStage.new
   end
 
   def cut_pairing_data
@@ -120,12 +120,14 @@ class NrtmJson
       }.merge(score_for_pairing(pairing, pairing.player2_side, pairing.score2, pairing.score1)),
       intentionalDraw: pairing.intentional_draw.present?,
       twoForOne: pairing.two_for_one.present?,
-      eliminationGame: pairing.stage.double_elim?
+      eliminationGame: pairing.stage.single_elim? || pairing.stage.double_elim?
     }
   end
 
   def score_for_pairing(pairing, side, score, opp_score)
-    return { winner: (score > opp_score if score && opp_score) } if pairing.stage.double_elim?
+    if pairing.stage.single_elim? || pairing.stage.double_elim?
+      return { winner: (score > opp_score if score && opp_score) }
+    end
 
     hash = { combinedScore: score }
     hash.merge!({ runnerScore: nil, corpScore: score }) if side == :corp

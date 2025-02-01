@@ -131,7 +131,8 @@ class PlayersController < ApplicationController
       registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]],
       standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]]
     )
-    double_elim = stages.select(&:double_elim?).first
+    elimination = stages.select(&:double_elim?).first
+    elimination = stages.select(&:single_elim?).first if elimination.nil?
     render json: {
       is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
       manual_seed: @tournament.manual_seed?,
@@ -140,7 +141,7 @@ class PlayersController < ApplicationController
           format: stage.format,
           rounds_complete: stage.rounds.select(&:completed?).count,
           any_decks_viewable: stage.decks_visible_to(current_user) ||
-            (double_elim&.decks_visible_to(current_user) ? true : false),
+            (elimination&.decks_visible_to(current_user) ? true : false),
           standings: render_standings_for_stage(stage)
         }
       end
@@ -148,8 +149,9 @@ class PlayersController < ApplicationController
   end
 
   def render_standings_for_stage(stage)
-    if stage.double_elim?
+    if stage.single_elim? || stage.double_elim?
       # Compute standings on the fly during cut
+      Rails.logger.info 'Computing cut standings'
       return compute_and_render_cut_standings stage
     end
     if stage.rounds.select(&:completed?).any?

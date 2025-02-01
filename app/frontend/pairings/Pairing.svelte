@@ -9,7 +9,7 @@
     let left_player = pairing.player1;
     let right_player = pairing.player2;
     console.log(`Format: ${stage.format}`);
-    if (pairing.player2.side == 'corp' && ['single_sided_swiss', 'double_elim'].includes(stage.format)) {
+    if (pairing.player2.side == 'corp' && ['single_sided_swiss', 'double_elim', 'single_elim'].includes(stage.format)) {
         console.log(`Swapping players for round ${round.id}...`);
         left_player = pairing.player2;
         right_player = pairing.player1;

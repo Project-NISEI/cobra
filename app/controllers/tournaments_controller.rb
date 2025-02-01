@@ -165,9 +165,10 @@ class TournamentsController < ApplicationController
     authorize @tournament
 
     number = params[:number].to_i
+    format = params[:elimination_type] == 'single' ? :single_elim : :double_elim
     return redirect_to standings_tournament_players_path(@tournament) unless [3, 4, 8, 16].include? number
 
-    @tournament.cut_to!(:double_elim, number)
+    @tournament.cut_to!(format, number)
 
     redirect_to tournament_rounds_path(@tournament)
   end

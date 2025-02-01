@@ -17,7 +17,7 @@ class Pairer
   private
 
   def strategy
-    return PairingStrategies::Swiss unless %w[swiss double_elim single_sided_swiss].include? stage.format
+    return PairingStrategies::Swiss unless %w[swiss double_elim single_elim single_sided_swiss].include? stage.format
 
     "PairingStrategies::#{stage.format.camelize}".constantize
   end

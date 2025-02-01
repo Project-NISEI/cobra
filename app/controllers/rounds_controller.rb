@@ -165,7 +165,7 @@ class RoundsController < ApplicationController
       pairings << {
         id:,
         table_number:,
-        table_label: stage.double_elim? ? "Game #{table_number}" : "Table #{table_number}",
+        table_label: stage.double_elim? || stage.single_elim? ? "Game #{table_number}" : "Table #{table_number}",
         policy: {
           view_decks:
         },
