@@ -51,17 +51,27 @@
             => fa_icon 'plus'
             | Pair new round!
           | All rounds must be flagged complete before you can add a new round
-      - unless @stages.last.double_elim?
+      - unless @stages.last.single_elim? || @stages.last.double_elim?
         p
-          => link_to cut_tournament_path(@tournament, number: 3), method: :post, class: 'btn btn-success' do
+          => link_to cut_tournament_path(@tournament, number: 3, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
             => fa_icon 'scissors'
-            | Cut to Top 3
+            | Single-Elimination Top 3
+          => link_to cut_tournament_path(@tournament, number: 4, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+            => fa_icon 'scissors'
+            | Single-Elimination Top 4
+          => link_to cut_tournament_path(@tournament, number: 8, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+            => fa_icon 'scissors'
+            | Single-Elimination Top 8
+          => link_to cut_tournament_path(@tournament, number: 16, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+            => fa_icon 'scissors'
+            | Single-Elimination Top 16
+        p
           => link_to cut_tournament_path(@tournament, number: 4), method: :post, class: 'btn btn-success' do
             => fa_icon 'scissors'
-            | Cut to Top 4
+            | Double-Elimination Top 4
           => link_to cut_tournament_path(@tournament, number: 8), method: :post, class: 'btn btn-success' do
             => fa_icon 'scissors'
-            | Cut to Top 8
+            | Double-Elimination Top 8
           => link_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do
             => fa_icon 'scissors'
-            | Cut to Top 16
+            | Double-Elimination Top 16

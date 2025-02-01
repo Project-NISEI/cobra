@@ -25,7 +25,7 @@
 
 {#if data}
     {#each data.stages as stage}
-        {#if stage.format === 'double_elim' }
+        {#if stage.format === 'single_elim' || stage.format === 'double_elim'}
             <DoubleElimStandings stage={cutStage(stage)}/>
         {:else}
             <SwissStandings stage={swissStage(stage)} manual_seed="{data.manual_seed}"/>

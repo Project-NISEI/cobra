@@ -6,6 +6,7 @@ class Tournament < ApplicationRecord
   has_many :stages, -> { order(:number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   has_many :rounds
 
+  # TODO(plural): Rename double_elim to elimination
   enum :stage, { swiss: 0, double_elim: 1 }
 
   enum :cut_deck_visibility, { cut_decks_private: 0, cut_decks_open: 1, cut_decks_public: 2 }
@@ -67,7 +68,7 @@ class Tournament < ApplicationRecord
   end
 
   def stage_decks_open?(stage)
-    if stage.double_elim?
+    if stage.double_elim? || stage.single_elim?
       cut_decks_open?
     elsif stage.swiss?
       swiss_decks_open?
@@ -77,7 +78,7 @@ class Tournament < ApplicationRecord
   end
 
   def stage_decks_public?(stage)
-    if stage.double_elim?
+    if stage.double_elim? || stage.single_elim?
       cut_decks_public?
     elsif stage.swiss?
       swiss_decks_public?
@@ -172,6 +173,10 @@ class Tournament < ApplicationRecord
 
   def current_stage
     stages.last
+  end
+
+  def single_elim_stage
+    stages.find_by format: :single_elim
   end
 
   def double_elim_stage

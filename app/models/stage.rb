@@ -13,7 +13,8 @@ class Stage < ApplicationRecord
   enum :format, {
     swiss: 0, # Double-Sided Swiss
     double_elim: 1,
-    single_sided_swiss: 2
+    single_sided_swiss: 2,
+    single_elim: 3
   }
 
   def pair_new_round!
@@ -38,7 +39,7 @@ class Stage < ApplicationRecord
   end
 
   def single_sided?
-    double_elim? || single_sided_swiss?
+    double_elim? || single_sided_swiss? || single_elim?
   end
 
   def default_round_minutes

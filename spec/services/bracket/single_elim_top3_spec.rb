@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Bracket::Top3 do
+RSpec.describe Bracket::SingleElimTop3 do
   let(:tournament) { create(:tournament) }
   let(:stage) { tournament.stages.create(format: :double_elim) }
   let(:bracket) { described_class.new(stage) }
