@@ -112,7 +112,7 @@
 
     // Strip dashes and capitalize first letter of each word for display.
     function displayFaction(faction) {
-      return faction.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      return faction.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ').replace('Haas ', 'Haas-');
     }
 
     function buildSeriesData(data, colorsMap) {
