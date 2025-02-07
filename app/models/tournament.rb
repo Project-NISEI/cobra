@@ -110,59 +110,12 @@ class Tournament < ApplicationRecord
   end
 
   def id_and_faction_data
-    sql = <<~SQL
-        WITH corp_ids AS (
-          SELECT
-            1 AS side,
-            COALESCE(corp_ids.name, 'Unspecified') as id,
-            COALESCE(corp_ids.faction, 'unspecified') AS faction
-          FROM
-            players AS p
-            LEFT JOIN identities AS corp_ids
-              ON p.corp_identity_ref_id = corp_ids.id
-          WHERE p.tournament_id = ?
-      ),
-      runner_ids AS (
-          SELECT
-            2 AS side,
-            COALESCE(runner_ids.name, 'Unspecified') as id,
-            COALESCE(runner_ids.faction, 'unspecified') AS faction
-          FROM
-            players AS p
-            LEFT JOIN identities AS runner_ids
-              ON p.runner_identity_ref_id = runner_ids.id
-          WHERE p.tournament_id = ?
-      )
-      SELECT side, id, faction, COUNT(*) AS num_ids FROM corp_ids GROUP BY 1,2,3
-      UNION ALL
-      SELECT side, id, faction, COUNT(*) AS num_ids FROM runner_ids GROUP BY 1,2,3
-    SQL
-    sql = ActiveRecord::Base.sanitize_sql([sql, id, id])
-
-    results = {
-      num_players: 0,
-      corp: {
-        ids: {},
-        factions: {}
-      },
-      runner: {
-        ids: {},
-        factions: {}
-      }
-    }
-    ActiveRecord::Base.connection.exec_query(sql).each do |row|
-      side = row['side'] == 1 ? :corp : :runner
-
-      # We only need to use 1 side to get the total number of players
-      results[:num_players] += row['num_ids'] if side == :corp
-
-      # Only 1 row per id
-      results[side][:ids][row['id']] = { count: row['num_ids'], faction: row['faction'] }
-
-      # Multiple rows per faction so we need to sum them up
-      results[side][:factions][row['faction']] ||= 0
-      results[side][:factions][row['faction']] += row['num_ids']
-    end
+    results = build_id_stats(id)
+    results[:cut] = if stages.last.single_elim? || stages.last.double_elim?
+                      build_id_stats(id, is_cut: true)
+                    else
+                      default_id_stats
+                    end
     results
   end
 
@@ -275,5 +228,83 @@ class Tournament < ApplicationRecord
       number: 1,
       format: single_sided? ? :single_sided_swiss : :swiss
     )
+  end
+
+  # Default data structure for the id and faction data, shared between swiss and elimination stages.
+  def default_id_stats
+    {
+      num_players: 0,
+      corp: {
+        ids: {},
+        factions: {}
+      },
+      runner: {
+        ids: {},
+        factions: {}
+      }
+    }
+  end
+
+  def build_id_stats(id, is_cut: false)
+    results = default_id_stats
+
+    sql = build_id_stats_sql(id, is_cut:)
+    ActiveRecord::Base.connection.exec_query(sql).each do |row|
+      side = row['side'] == 1 ? :corp : :runner
+
+      # We only need to use 1 side to get the total number of players
+      results[:num_players] += row['num_ids'] if side == :corp
+
+      # Only 1 row per id
+      results[side][:ids][row['id']] = { count: row['num_ids'], faction: row['faction'] }
+
+      # Multiple rows per faction so we need to sum them up
+      results[side][:factions][row['faction']] ||= 0
+      results[side][:factions][row['faction']] += row['num_ids']
+    end
+    results
+  end
+
+  def build_id_stats_sql(id, is_cut: false)
+    ids_where = if is_cut
+                  'p.tournament_id = ? AND p.id IN (SELECT player_id FROM registrations WHERE stage_id IN (' \
+                  'SELECT MAX(id) FROM stages WHERE tournament_id = ?))'
+                else
+                  'p.tournament_id = ?'
+                end
+
+    sql = <<~SQL
+      WITH corp_ids AS (
+        SELECT
+          1 AS side,
+          COALESCE(corp_ids.name, 'Unspecified') as id,
+          COALESCE(corp_ids.faction, 'unspecified') AS faction
+        FROM
+          players AS p
+          LEFT JOIN identities AS corp_ids
+            ON p.corp_identity_ref_id = corp_ids.id
+        WHERE #{ids_where}
+      ),
+      runner_ids AS (
+          SELECT
+            2 AS side,
+            COALESCE(runner_ids.name, 'Unspecified') as id,
+            COALESCE(runner_ids.faction, 'unspecified') AS faction
+          FROM
+            players AS p
+            LEFT JOIN identities AS runner_ids
+              ON p.runner_identity_ref_id = runner_ids.id
+          WHERE #{ids_where}
+      )
+      SELECT side, id, faction, COUNT(*) AS num_ids FROM corp_ids GROUP BY 1,2,3
+      UNION ALL
+      SELECT side, id, faction, COUNT(*) AS num_ids FROM runner_ids GROUP BY 1,2,3
+    SQL
+
+    if is_cut
+      ActiveRecord::Base.sanitize_sql([sql, id, id, id, id])
+    else
+      ActiveRecord::Base.sanitize_sql([sql, id, id])
+    end
   end
 end
