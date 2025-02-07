@@ -110,36 +110,19 @@ class Tournament < ApplicationRecord
   end
 
   def id_and_faction_data
-    sql = <<~SQL
-        WITH corp_ids AS (
-          SELECT
-            1 AS side,
-            COALESCE(corp_ids.name, 'Unspecified') as id,
-            COALESCE(corp_ids.faction, 'unspecified') AS faction
-          FROM
-            players AS p
-            LEFT JOIN identities AS corp_ids
-              ON p.corp_identity_ref_id = corp_ids.id
-          WHERE p.tournament_id = ?
-      ),
-      runner_ids AS (
-          SELECT
-            2 AS side,
-            COALESCE(runner_ids.name, 'Unspecified') as id,
-            COALESCE(runner_ids.faction, 'unspecified') AS faction
-          FROM
-            players AS p
-            LEFT JOIN identities AS runner_ids
-              ON p.runner_identity_ref_id = runner_ids.id
-          WHERE p.tournament_id = ?
-      )
-      SELECT side, id, faction, COUNT(*) AS num_ids FROM corp_ids GROUP BY 1,2,3
-      UNION ALL
-      SELECT side, id, faction, COUNT(*) AS num_ids FROM runner_ids GROUP BY 1,2,3
-    SQL
-    sql = ActiveRecord::Base.sanitize_sql([sql, id, id])
+    results = build_id_stats(id)
 
-    results = {
+    # Populate results for the cut as well.
+    results[:cut] = if stages.last.single_elim? || stages.last.double_elim?
+                      build_id_stats(id, is_cut: true)
+                    else
+                      default_id_stats
+                    end
+    results
+  end
+
+  def default_id_stats
+    {
       num_players: 0,
       corp: {
         ids: {},
@@ -150,6 +133,12 @@ class Tournament < ApplicationRecord
         factions: {}
       }
     }
+  end
+
+  def build_id_stats(id, is_cut: false)
+    results = default_id_stats
+
+    sql = build_id_stats_sql(id, is_cut:)
     ActiveRecord::Base.connection.exec_query(sql).each do |row|
       side = row['side'] == 1 ? :corp : :runner
 
@@ -164,6 +153,50 @@ class Tournament < ApplicationRecord
       results[side][:factions][row['faction']] += row['num_ids']
     end
     results
+  end
+
+  def build_id_stats_sql(id, is_cut: false)
+    sql = <<~SQL
+      WITH corp_ids AS (
+        SELECT
+          1 AS side,
+          COALESCE(corp_ids.name, 'Unspecified') as id,
+          COALESCE(corp_ids.faction, 'unspecified') AS faction
+        FROM
+          players AS p
+          LEFT JOIN identities AS corp_ids
+            ON p.corp_identity_ref_id = corp_ids.id
+    SQL
+    if is_cut
+      sql += '      WHERE p.tournament_id = ? AND p.id IN (SELECT player_id FROM registrations WHERE stage_id IN (SELECT MAX(id) FROM stages WHERE tournament_id = ?))'
+    end
+    sql += <<~SQL
+      ),
+      runner_ids AS (
+          SELECT
+            2 AS side,
+            COALESCE(runner_ids.name, 'Unspecified') as id,
+            COALESCE(runner_ids.faction, 'unspecified') AS faction
+          FROM
+            players AS p
+            LEFT JOIN identities AS runner_ids
+              ON p.runner_identity_ref_id = runner_ids.id
+    SQL
+    if is_cut
+      sql += '    WHERE p.tournament_id = ? AND p.id IN (SELECT player_id FROM registrations WHERE stage_id IN (SELECT MAX(id) FROM stages WHERE tournament_id = ?))'
+    end
+    sql += <<~SQL
+      )
+      SELECT side, id, faction, COUNT(*) AS num_ids FROM corp_ids GROUP BY 1,2,3
+      UNION ALL
+      SELECT side, id, faction, COUNT(*) AS num_ids FROM runner_ids GROUP BY 1,2,3
+    SQL
+
+    if is_cut
+      ActiveRecord::Base.sanitize_sql([sql, id, id, id, id])
+    else
+      ActiveRecord::Base.sanitize_sql([sql, id, id])
+    end
   end
 
   def generate_slug

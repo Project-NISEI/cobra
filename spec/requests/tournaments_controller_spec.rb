@@ -120,6 +120,11 @@ RSpec.describe TournamentsController do
               'Sable' => { 'count' => 1, 'faction' => 'criminal' },
               'Unspecified' => { 'count' => 1, 'faction' => 'unspecified' }
             }
+          },
+          'cut' => {
+            'num_players' => 0,
+            'corp' => { 'factions' => {}, 'ids' => {} },
+            'runner' => { 'factions' => {}, 'ids' => {} }
           }
         )
     end

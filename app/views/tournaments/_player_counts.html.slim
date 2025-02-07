@@ -1,4 +1,6 @@
 - if @tournament.rounds.any? || policy(@tournament).edit?
+  p
+  h3 Swiss Rounds
   .row
       .col-md-6
         table.table
@@ -21,27 +23,59 @@
 
   .row.mt-3.dontprint
     .col-md-6
-      table.table
+      table.table id="swiss_corp_table"
         thead
           tr
             th Corp
             th Players
         tbody
-          - @tournament.corp_counts.each do |id, count, total|
-            tr
-              td= render id
-              td= "#{count} (#{"%0.1f" % (count / total.to_f * 100)}%)"
     .col-md-6
-      table.table
+      table.table id="swiss_runner_table"
         thead
           tr
             th Runner
             th Players
         tbody
-          - @tournament.runner_counts.each do |id, count, total|
+
+  - if @tournament.stages.size > 1
+    h3 Elimination Rounds
+    .row
+      .col-md-6
+        table.table
+          thead
             tr
-              td= render id
-              td= "#{count} (#{"%0.1f" % (count / total.to_f * 100)}%)"
+              th Corp Factions
+          tbody
+            tr
+              td
+                div id="cut_corp_faction_chart"
+      .col-md-6
+        table.table
+          thead
+            tr
+              th Runner Factions
+          tbody
+            tr
+              td
+                div id="cut_runner_faction_chart"
+    .row
+      .col-md-6
+        table.table id="cut_corp_table"
+          thead
+            tr
+              th Corp
+              th Players
+          tbody
+
+      .col-md-6
+        table.table id="cut_runner_table"
+          thead
+            tr
+              th Runner
+              th Players
+          tbody
+
+
   javascript:
     function drawPieChart(element, series, labels, colors=null) {
       const options = {
@@ -81,6 +115,51 @@
       return faction.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 
+    function buildSeriesData(data, colorsMap) {
+      results = {
+        series: [],
+        labels: [],
+        colors: [],
+      };
+      for (faction in data) {
+        results.series.push(data[faction]);
+        results.labels.push(displayFaction(faction));
+        results.colors.push(colorsMap.get(faction));
+      }
+      return results;
+    }
+
+    function populateIdRows(data, tableId, numPlayers) {
+      const ids = [];
+      for (id in data) {
+        ids.push({id: id, count: data[id].count, faction: data[id].faction});
+      }
+      // Sort by count in descending order, then by id in ascending order
+      ids.sort((a, b) => {
+        if (b.count !== a.count) {
+          return b.count - a.count; // Descending order by count
+        } else {
+          return a.id.localeCompare(b.id); // Ascending order by id
+        }
+      });
+
+      // Add rows to the tableId table
+      const tableBody = document.querySelector(`#${tableId} tbody`);
+      ids.forEach(id => {
+        const row = document.createElement("tr");
+
+        const idCell = document.createElement("td");
+        idCell.innerHTML = `<div class="div ${id.faction}"><i class="fa icon icon-${id.faction == 'unspecified' ? 'interrupt' : id.faction}"></i> ${id.id}</div>`;
+        row.appendChild(idCell);
+
+        const countCell = document.createElement("td");
+        countCell.innerHTML = `${id.count} (${(id.count / numPlayers * 100).toFixed(1)}%)`;
+        row.appendChild(countCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
     fetch('/tournaments/#{@tournament.id}/id_and_faction_data')
       .then(response => response.json())
       .then(data => {
@@ -99,24 +178,25 @@
           ['weyland-consortium', 'darkgreen'],
           ['unspecified', 'charcoal'],
         ]);
-        let corpFactionSeries = [];
-        let corpFactionLabels = [];
-        let corpFactionColors = [];
-        for (faction in data.corp.factions) {
-          corpFactionSeries.push(data.corp.factions[faction]);
-          corpFactionLabels.push(displayFaction(faction));
-          corpFactionColors.push(factionColors.get(faction));
-        }
-        drawPieChart("#corp_faction_chart", corpFactionSeries, corpFactionLabels, corpFactionColors);
+        const corpSeriesData = buildSeriesData(data.corp.factions, factionColors);
+        drawPieChart("#corp_faction_chart", corpSeriesData.series, corpSeriesData.labels, corpSeriesData.colors);
 
-        let runnerFactionSeries = [];
-        let runnerFactionLabels = [];
-        let runnerFactionColors = [];
-        for (faction in data.runner.factions) {
-          runnerFactionSeries.push(data.runner.factions[faction]);
-          runnerFactionLabels.push(displayFaction(faction));
-          runnerFactionColors.push(factionColors.get(faction));
+        const runnerSeriesData = buildSeriesData(data.runner.factions, factionColors);
+        drawPieChart("#runner_faction_chart", runnerSeriesData.series, runnerSeriesData.labels, runnerSeriesData.colors);
+
+        populateIdRows(data.corp.ids, "swiss_corp_table", data.num_players);
+        populateIdRows(data.runner.ids, "swiss_runner_table", data.num_players);
+
+        if (data.cut.num_players > 0) {
+          const cutCorpSeriesData = buildSeriesData(data.cut.corp.factions, factionColors);
+          drawPieChart("#cut_corp_faction_chart", cutCorpSeriesData.series, cutCorpSeriesData.labels, cutCorpSeriesData.colors);
+
+          const cutRunnerSeriesData = buildSeriesData(data.cut.runner.factions, factionColors);
+          drawPieChart("#cut_runner_faction_chart", cutRunnerSeriesData.series, cutRunnerSeriesData.labels, cutRunnerSeriesData.colors);
+
+          populateIdRows(data.cut.corp.ids, "cut_corp_table", data.cut.num_players);
+          populateIdRows(data.cut.runner.ids, "cut_runner_table", data.cut.num_players);
+
         }
-        drawPieChart("#runner_faction_chart", runnerFactionSeries, runnerFactionLabels, runnerFactionColors);
       })
       .catch(error => console.error('Error:', error));
