@@ -36,6 +36,9 @@ group :development, :test do
   gem 'brakeman', '~> 5.2'
   gem 'bullet'
   gem 'pry'
+  gem 'simplecov'
+  gem 'simplecov-cobertura'
+  gem 'simplecov-html'
 end
 
 group :test do
