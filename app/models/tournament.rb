@@ -111,7 +111,8 @@ class Tournament < ApplicationRecord
 
   def id_and_faction_data
     results = build_id_stats(id)
-    results[:cut] = if stages.last.single_elim? || stages.last.double_elim?
+    latest_stage = stages.last
+    results[:cut] = if !latest_stage.nil? && (stages.last.single_elim? || stages.last.double_elim?)
                       build_id_stats(id, is_cut: true)
                     else
                       default_id_stats
