@@ -122,7 +122,7 @@
           =< link_to drop_tournament_player_path(@tournament, player), method: :patch, class: 'btn btn-link text-warning mr-2' do
             => fa_icon 'arrow-down'
             | Drop
-          =< link_to tournament_player_path(@tournament, player), method: :delete, class: 'btn btn-link text-danger mr-2' do
+          =< link_to tournament_player_path(@tournament, player), method: :delete, class: 'btn btn-link text-danger mr-2', data: { confirm: "Are you sure you want to delete player \"#{player.name}\"?" } do
             => fa_icon 'trash'
             | Delete
 
