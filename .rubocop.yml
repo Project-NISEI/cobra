@@ -5,6 +5,10 @@ require:
   - rubocop-rspec
   - rubocop-rspec_rails
 
+AllCops:
+  Exclude:
+    - 'bin/*'
+    - 'db/schema.rb'
 Metrics/AbcSize:
   Enabled: false
 Metrics/BlockLength:
