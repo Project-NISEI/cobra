@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_16_155531) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_17_194837) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -140,6 +140,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_16_155531) do
     t.integer "fixed_table_number"
     t.index ["corp_identity_ref_id"], name: "index_players_on_corp_identity_ref_id"
     t.index ["runner_identity_ref_id"], name: "index_players_on_runner_identity_ref_id"
+    t.index ["tournament_id", "name"], name: "idx_uniq_players_tournament_id_name", unique: true
     t.index ["tournament_id"], name: "index_players_on_tournament_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end
