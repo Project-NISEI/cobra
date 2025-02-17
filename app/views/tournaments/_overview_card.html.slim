@@ -17,12 +17,11 @@
         .small.text-secondary Players:
         => pluralize(@players.count, 'active player')
         | (#{@dropped.count} dropped)
-      - if policy(@tournament).edit?
-        li.list-group-item
-          .small.text-secondary
-            | QR Code:
-          .row
-            .col-sm-6
-              = link_to qr_tournament_path(@tournament), :target => '_blank' do
-                => fa_icon 'qrcode'
-                | Open Printable QR Code
+      li.list-group-item
+        .small.text-secondary
+          | QR Code:
+        .row
+          .col-sm-6
+            = link_to qr_tournament_path(@tournament), :target => '_blank' do
+              => fa_icon 'qrcode'
+              | Open Printable QR Code

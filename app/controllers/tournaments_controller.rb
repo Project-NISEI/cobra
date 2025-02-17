@@ -192,7 +192,7 @@ class TournamentsController < ApplicationController
   end
 
   def qr
-    authorize @tournament, :edit?
+    authorize @tournament, :show?
   end
 
   def close_registration
