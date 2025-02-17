@@ -1,9 +1,17 @@
 require:
   - rubocop-capybara
   - rubocop-factory_bot
+  - rubocop-rspec_rails
+
+plugins:
   - rubocop-rails
   - rubocop-rspec
-  - rubocop-rspec_rails
+
+AllCops:
+  Exclude:
+    - 'bin/*'
+    - 'db/schema.rb'
+    - 'vendor/**/*'
 
 Metrics/AbcSize:
   Enabled: false
@@ -16,12 +24,14 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Max: 100
 Metrics/ModuleLength:
-  Enabled: false 
+  Enabled: false
 Metrics/PerceivedComplexity:
   Enabled: false
 Naming/MethodParameterName:
   Enabled: false
 Rails/BulkChangeTable:
+  Enabled: false
+Rails/FilePath:
   Enabled: false
 Rails/HasManyOrHasOneDependent:
   Enabled: false
@@ -34,8 +44,6 @@ RSpec/DescribeClass:
 RSpec/ExampleLength:
   Enabled: false
 RSpec/ExampleWording:
-  Enabled: false
-RSpec/FilePath:
   Enabled: false
 RSpec/IndexedLet:
   Enabled: false
