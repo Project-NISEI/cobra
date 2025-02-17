@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MakePlayerNamesUnique < ActiveRecord::Migration[7.2]
   def change
     # Add a "(duplicate #N)"" suffix to any duplicate player names before applying the index.
