@@ -75,6 +75,40 @@
               th Players
           tbody
 
+    h3 Elimination Cut Conversion Rates
+    .row
+      .col-md-6
+        table.table id="cut_corp_faction_conversion_rate"
+          thead
+            tr
+              th Corp Factions
+              th Players
+          tbody
+
+      .col-md-6
+        table.table id="cut_runner_faction_conversion_rate"
+          thead
+            tr
+              th Runner Factions
+              th Players
+          tbody
+
+    .row
+      .col-md-6
+        table.table id="cut_corp_ids_conversion_rate"
+          thead
+            tr
+              th Corp
+              th Players
+          tbody
+
+      .col-md-6
+        table.table id="cut_runner_ids_conversion_rate"
+          thead
+            tr
+              th Runner
+              th Players
+          tbody
 
   javascript:
     function drawPieChart(element, series, labels, colors=null) {
@@ -160,6 +194,94 @@
       });
     }
 
+    function populateFactionCutRows(data, side) {
+      factions = [];
+      for (faction in data) {
+        factions.push({
+          name: faction,
+          num_swiss_players: data[faction].num_swiss_players,
+          num_cut_players: data[faction].num_cut_players,
+          cut_conversion_percentage: data[faction].cut_conversion_percentage,
+        });
+      }
+      factions.sort((a, b) => {
+        if (b.cut_conversion_percentage !== a.cut_conversion_percentage) {
+          return b.cut_conversion_percentage - a.cut_conversion_percentage; // Descending order by cut_conversion_percentage
+        } else {
+          return b.num_cut_players - a.num_cut_players; // Descending order by num_cut_players
+        }
+      });
+
+      console.table(factions);
+
+      let tableId = `cut_${side}_faction_conversion_rate`;
+      const tableBody = document.querySelector(`#${tableId} tbody`);
+      factions.forEach((faction) => {
+        const row = document.createElement("tr");
+
+        const idCell = document.createElement("td");
+        idCell.innerHTML = `<div class="div ${faction.name}"><i class="fa icon icon-${faction.name == 'Unspecified' ? 'interrupt' : faction.name}"></i> ${displayFaction(faction.name)}</div>`;
+        row.appendChild(idCell);
+
+        const countCell = document.createElement("td");
+        countCell.innerHTML = `${faction.num_cut_players} / ${faction.num_swiss_players} (${faction.cut_conversion_percentage.toFixed(1)}%)`;
+        row.appendChild(countCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function populateIdentityCutRows(data, side) {
+      ids = [];
+      for (id in data) {
+        ids.push({
+          name: id,
+          faction: data[id].faction,
+          num_swiss_players: data[id].num_swiss_players,
+          num_cut_players: data[id].num_cut_players,
+          cut_conversion_percentage: data[id].cut_conversion_percentage,
+        });
+      }
+      ids.sort((a, b) => {
+        if (b.cut_conversion_percentage !== a.cut_conversion_percentage) {
+          return b.cut_conversion_percentage - a.cut_conversion_percentage; // Descending order by cut_conversion_percentage
+        } else {
+          return b.num_cut_players - a.num_cut_players; // Descending order by num_cut_players
+        }
+      });
+
+      console.table(ids);
+
+      let tableId = `cut_${side}_ids_conversion_rate`;
+      const tableBody = document.querySelector(`#${tableId} tbody`);
+      ids.forEach((id) => {
+        const row = document.createElement("tr");
+
+        const idCell = document.createElement("td");
+        idCell.innerHTML = `<div class="div ${id.faction}"><i class="fa icon icon-${id.faction == 'Unspecified' ? 'interrupt' : id.faction}"></i> ${id.name}</div>`;
+        row.appendChild(idCell);
+
+        const countCell = document.createElement("td");
+        countCell.innerHTML = `${id.num_cut_players} / ${id.num_swiss_players} (${id.cut_conversion_percentage.toFixed(1)}%)`;
+        row.appendChild(countCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    if (#{@tournament.stages.size} > 1) {
+      fetch('/tournaments/#{@tournament.id}/cut_conversion_rates')
+        .then(response => response.json())
+        .then(data => {
+          populateFactionCutRows(data.factions.corp, 'corp');
+          populateFactionCutRows(data.factions.runner, 'runner');
+
+          populateIdentityCutRows(data.identities.corp, 'corp');
+          populateIdentityCutRows(data.identities.runner, 'runner');
+        })
+        .catch(error => console.error('Error fetching cut conversion rate data:', error));
+    }
+
     fetch('/tournaments/#{@tournament.id}/id_and_faction_data')
       .then(response => response.json())
       .then(data => {
@@ -199,4 +321,4 @@
 
         }
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.error('Error fetching ID and faction data:', error));

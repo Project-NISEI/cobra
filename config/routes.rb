@@ -40,6 +40,7 @@ Rails.application.routes.draw do
     post :upload_to_abr, on: :member
     get :save_json, on: :member
     get :id_and_faction_data, on: :member
+    get :cut_conversion_rates, on: :member
     post :cut, on: :member
     get :qr, on: :member
     get :registration, on: :member

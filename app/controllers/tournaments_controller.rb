@@ -5,7 +5,7 @@ class TournamentsController < ApplicationController
     show edit update destroy
     upload_to_abr save_json cut qr registration timer
     close_registration open_registration lock_player_registrations unlock_player_registrations
-    id_and_faction_data
+    id_and_faction_data cut_conversion_rates
   ]
 
   def index
@@ -221,6 +221,12 @@ class TournamentsController < ApplicationController
 
     @tournament.unlock_player_registrations!
     redirect_back(fallback_location: tournament_rounds_path(@tournament))
+  end
+
+  def cut_conversion_rates
+    authorize @tournament, :show?
+
+    render json: @tournament.cut_conversion_rates_data
   end
 
   def id_and_faction_data
