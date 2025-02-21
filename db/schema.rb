@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_17_212451) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -318,12 +318,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_212451) do
           )
    SELECT s.tournament_id,
       s.side,
+      s.faction,
       s.identity,
       sum(s.num_players) AS num_swiss_players,
       sum(COALESCE(c.num_players, (0)::bigint)) AS num_cut_players,
       ((sum(COALESCE(c.num_players, (0)::bigint)) / sum(s.num_players)) * (100)::numeric) AS cut_conversion_percentage
      FROM (swiss s
-       LEFT JOIN cut c USING (tournament_id, side, identity))
-    GROUP BY s.tournament_id, s.side, s.identity;
+       LEFT JOIN cut c USING (tournament_id, side, identity, faction))
+    GROUP BY s.tournament_id, s.faction, s.side, s.identity;
   SQL
 end
