@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_18_062825) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_01_202703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -289,8 +289,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_18_062825) do
     t.string "event_link"
     t.text "description"
     t.text "additional_prizes_description"
+    t.bigint "official_prize_kit_id"
+    t.string "card_set_id"
+    t.string "time_zone"
+    t.index ["card_set_id"], name: "index_tournaments_on_card_set_id"
     t.index ["deckbuilding_restriction_id"], name: "index_tournaments_on_deckbuilding_restriction_id"
     t.index ["format_id"], name: "index_tournaments_on_format_id"
+    t.index ["official_prize_kit_id"], name: "index_tournaments_on_official_prize_kit_id"
     t.index ["tournament_type_id"], name: "index_tournaments_on_tournament_type_id"
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
@@ -326,8 +331,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_18_062825) do
   add_foreign_key "stages", "tournaments"
   add_foreign_key "standing_rows", "players"
   add_foreign_key "standing_rows", "stages"
+  add_foreign_key "tournaments", "card_sets"
   add_foreign_key "tournaments", "deckbuilding_restrictions"
   add_foreign_key "tournaments", "formats"
+  add_foreign_key "tournaments", "official_prize_kits"
   add_foreign_key "tournaments", "tournament_types"
   add_foreign_key "tournaments", "users"
 
