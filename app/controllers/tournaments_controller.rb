@@ -92,6 +92,8 @@ class TournamentsController < ApplicationController
 
     params = tournament_params
 
+    Rails.logger.info "Updating tournament: #{params.inspect}"
+
     error_found = false
 
     if params[:swiss_format] != @tournament.swiss_format
@@ -244,7 +246,11 @@ class TournamentsController < ApplicationController
   def tournament_params
     params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed,
                                        :self_registration, :allow_streaming_opt_out, :nrdb_deck_registration,
-                                       :cut_deck_visibility, :swiss_deck_visibility, :swiss_format)
+                                       :cut_deck_visibility, :swiss_deck_visibility, :swiss_format,
+                                       :time_zone, :registration_starts, :tournament_starts, :tournament_type_id,
+                                       :card_set_id, :format_id, :deckbuilding_restriction_id, :decklist_required,
+                                       :organizer_contact, :event_link, :description, :official_prize_kit_id,
+                                       :additional_prizes_description)
   end
 
   def set_tournament_view_data

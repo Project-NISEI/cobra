@@ -1,12 +1,59 @@
 .form-group
   = f.input :name, input_html: { class: 'form-control' }, label: 'Tournament name'
-.form-group
-  = f.input :date, html5: true, input_html: { class: 'form-control' }
+
+.row
+  .col-md-6
+    .form-group
+      = f.input :date, html5: true, input_html: { class: 'form-control' }
+  .col-md-6
+    .form-group
+      = f.input :time_zone, input_html: { class: 'form-control' }
+
+.row
+  .col-md-6
+    .form-group
+      = f.input :registration_starts, as: :time, html5: true, input_html: { class: 'form-control' }
+  .col-md-6
+    .form-group
+      = f.input :tournament_starts, as: :time, html5: true, input_html: { class: 'form-control' }
+
+
 - if Flipper.enabled?(:single_sided_swiss, current_user)
   .form-group
     = f.input :swiss_format, collection: Tournament.swiss_formats.keys, input_html: { class: 'form-control' }, include_blank: false, label_method: ->(val) { val.capitalize.tr('_', '-') }
+
+.row
+  .col-md-6
+    .form-group
+      = f.input :tournament_type_id, collection: TournamentType.all, label: "Tournament Type", input_html: { class: 'form-control' }, include_blank: true, label_method: ->(val) { val.name }
+  .col-md-6
+    .form-group
+      = f.input :card_set_id, collection: CardSet.order(date_release: :desc), label: "Legal Cardpool Up To", input_html: { class: 'form-control' }, include_blank: true, label_method: ->(val) { val.name }
+
+.row
+  .col-md-6
+    .form-group
+      = f.input :format_id, collection: Format.order(name: :asc), label: "Play Format", input_html: { class: 'form-control' }, include_blank: true, label_method: ->(val) { val.name }
+  .col-md-6
+    .form-group
+      = f.input :deckbuilding_restriction_id, collection: DeckbuildingRestriction.order(date_start: :desc), label: "Deckbuilding Restriction", input_html: { class: 'form-control' }, include_blank: true, label_method: ->(val) { val.name }
+
 .form-group
-  = f.input :tournament_type_id, collection: TournamentType.all, input_html: { class: 'form-control' }, include_blank: false, label_method: ->(val) { val.name }
+  = f.input :decklist_required, as: :boolean, inline_label: 'Decklist required for event'
+
+.form-group
+  = f.input :organizer_contact, input_html: { class: 'form-control' }, label: 'Organizer Contact Information'
+.form-group
+  = f.input :event_link, input_html: { class: 'form-control' }, label: 'External Event Link'
+.form-group
+  = f.input :description, input_html: { class: 'form-control' }, label: 'Event Description (Markdown format supported)'
+
+.form-group
+  = f.input :official_prize_kit_id, collection: OfficialPrizeKit.order(position: :desc), label: "Official Prize Kit", input_html: { class: 'form-control' }, include_blank: true, label_method: ->(val) { val.name }
+
+.form-group
+  = f.input :additional_prizes_description, input_html: { class: 'form-control' }, label: 'Additional Prize Information (Markdown format supported)'
+
 .form-group
   = f.input :stream_url, input_html: { class: 'form-control' }, label: 'Stream URL'
 .form-group
