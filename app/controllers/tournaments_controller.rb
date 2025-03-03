@@ -5,7 +5,7 @@ class TournamentsController < ApplicationController
     show edit update destroy
     upload_to_abr save_json cut qr registration timer
     close_registration open_registration lock_player_registrations unlock_player_registrations
-    id_and_faction_data
+    id_and_faction_data stats
   ]
 
   def index
@@ -21,6 +21,10 @@ class TournamentsController < ApplicationController
     authorize Tournament
 
     @tournaments = current_user.tournaments.order(date: :desc)
+  end
+
+  def stats
+    authorize @tournament, :show?
   end
 
   def show
