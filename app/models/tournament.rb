@@ -5,6 +5,9 @@ class Tournament < ApplicationRecord
   belongs_to :user
   has_many :stages, -> { order(:number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   has_many :rounds
+  belongs_to :format
+  belongs_to :deckbuilding_restriction
+  belongs_to :official_prize_kit
 
   # TODO(plural): Rename double_elim to elimination
   enum :stage, { swiss: 0, double_elim: 1 }
