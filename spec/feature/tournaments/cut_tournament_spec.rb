@@ -29,7 +29,7 @@ RSpec.describe 'cutting tournament' do
 
       it 'creates double elim stage' do
         expect do
-          click_button 'Cut to Top 4'
+          click_button 'Double-Elimination Top 4'
         end.to change(tournament.stages, :count).by(1)
       end
     end
