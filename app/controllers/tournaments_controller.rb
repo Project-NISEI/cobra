@@ -2,7 +2,7 @@
 
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: %i[
-    show edit update destroy
+    show info edit update destroy
     upload_to_abr save_json cut qr registration timer
     close_registration open_registration lock_player_registrations unlock_player_registrations
     id_and_faction_data cut_conversion_rates
@@ -36,6 +36,10 @@ class TournamentsController < ApplicationController
         render json: NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
       end
     end
+  end
+
+  def info
+    authorize @tournament, :show?
   end
 
   def timer

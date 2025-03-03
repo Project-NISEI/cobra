@@ -11,8 +11,21 @@
           | )
 
       li.list-group-item
+        .small.text-secondary Date:
+        | #{@tournament.date.strftime('%A, %B %e, %Y')}
+        - if @tournament.registration_starts && @tournament.tournament_starts
+          .small.text-secondary Registration & First Round Times:
+          | #{@tournament.registration_starts} / #{@tournament.tournament_starts} #{@tournament.time_zone.nil? ? '' : " (#{@tournament.time_zone})"}
+        - elsif @tournament.registration_starts
+          .small.text-secondary Registration:
+          | #{@tournament.registration_starts} #{@tournament.time_zone.nil? ? '' : " (#{@tournament.time_zone})"}
+        - elsif @tournament.tournament_starts
+          .small.text-secondary First Round:
+          | #{@tournament.tournament_starts} #{@tournament.time_zone.nil? ? '' : " (#{@tournament.time_zone})"}
+
+      li.list-group-item
         .small.text-secondary Organiser:
-        | #{@tournament.user.nrdb_username}
+        | #{@tournament.user.nrdb_username} #{@tournament.organizer_contact.nil? ? 'no' : " – #{@tournament.organizer_contact}"}
       li.list-group-item
         .small.text-secondary Players:
         => pluralize(@players.count, 'active player')
