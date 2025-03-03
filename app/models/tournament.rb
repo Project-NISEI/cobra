@@ -8,6 +8,7 @@ class Tournament < ApplicationRecord
   belongs_to :format
   belongs_to :deckbuilding_restriction
   belongs_to :official_prize_kit
+  belongs_to :tournament_type
 
   # TODO(plural): Rename double_elim to elimination
   enum :stage, { swiss: 0, double_elim: 1 }
