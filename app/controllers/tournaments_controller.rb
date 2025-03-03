@@ -11,8 +11,17 @@ class TournamentsController < ApplicationController
   def index
     authorize Tournament
 
-    @tournaments = Tournament.includes(:user)
-                             .where(private: false)
+    where_clause = 'NOT private'
+    if params['type_id'].present?
+
+      @tournament_type = TournamentType.find_by id: params['type_id']
+      unless @tournament_type.nil?
+        where_clause += ActiveRecord::Base.sanitize_sql([' AND tournament_type_id = ?',
+                                                         params['type_id']])
+      end
+    end
+    @tournaments = Tournament.includes(:user, :tournament_type)
+                             .where(where_clause)
                              .order(date: :desc)
                              .limit(20)
   end
