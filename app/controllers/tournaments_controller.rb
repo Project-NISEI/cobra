@@ -29,7 +29,7 @@ class TournamentsController < ApplicationController
   def my
     authorize Tournament
 
-    @tournaments = current_user.tournaments.order(date: :desc)
+    @tournaments = current_user.tournaments.includes(:tournament_type).order(date: :desc)
   end
 
   def show
