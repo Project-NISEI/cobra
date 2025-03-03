@@ -5,9 +5,15 @@ class Tournament < ApplicationRecord
   belongs_to :user
   has_many :stages, -> { order(:number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   has_many :rounds
-  belongs_to :format
-  belongs_to :deckbuilding_restriction
-  belongs_to :official_prize_kit
+  belongs_to :format, optional: true
+  belongs_to :deckbuilding_restriction, optional: true
+  belongs_to :official_prize_kit, optional: true
+  belongs_to :tournament_type, optional: true
+
+  NULL_ATTRS = %w[organizer_contact event_link description additional_prizes_description time_zone card_set_id
+                  format_id deckbuilding_restriction_id official_prize_kit_id tournament_type_id registration_starts
+                  tournament_starts].freeze
+  before_save :nil_if_blank
 
   # TODO(plural): Rename double_elim to elimination
   enum :stage, { swiss: 0, double_elim: 1 }
@@ -264,6 +270,12 @@ class Tournament < ApplicationRecord
       end
     end
     results
+  end
+
+  protected
+
+  def nil_if_blank
+    NULL_ATTRS.each { |attr| self[attr] = nil if self[attr].blank? }
   end
 
   private
