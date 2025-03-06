@@ -54,7 +54,7 @@ html
               = render 'rounds/round_timer', round: @tournament.rounds.includes([:round_timer_activations]).last
         ul.nav.nav-tabs.dontprint
           - if policy(@tournament).show?
-            li.nav-item= link_to tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name != 'edit'}" do
+            li.nav-item= link_to tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name == 'show'}" do
               => fa_icon 'trophy'
               | Tournament
           - if policy(@tournament).edit?
