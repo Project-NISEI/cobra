@@ -249,9 +249,10 @@ class Tournament < ApplicationRecord
 
       # Identities are already unique, so just insert them into results.
       results[:identities][side][row['identity']] = {
+        faction: row['faction'],
         num_swiss_players: row['num_swiss_players'].to_i,
         num_cut_players: row['num_cut_players'].to_i,
-        cut_conversion_percentage: row['cut_conversion_percentage']
+        cut_conversion_percentage: row['cut_conversion_percentage'].to_f
       }
     end
     results[:factions].each_key do |side|
