@@ -1,9 +1,339 @@
-ul
-  li Corp/Runner win rates for Swiss
-  li Corp/Runner win rates for cut
-  li Corp/Runner win rates for overall
-  li Top Faction players
-  li Top ID players
-  li Graphs from tournament tab
-  li Conversion rate (swiss -> cut) by ID
-  li Conversion rate (swiss -> cut) by Faction
+- if @tournament.rounds.any?
+  ul
+    li ❌ Corp/Runner win rates for Swiss
+    li ❌ Corp/Runner win rates for cut
+    li ❌ Corp/Runner win rates for overall
+    li ❌ Top Faction players
+    li ❌ Top ID players
+    li ✅ Graphs from tournament tab
+    li ✅ Conversion rate (swiss -> cut) by ID
+    li ✅ Conversion rate (swiss -> cut) by Faction
+
+    h3 Swiss Rounds
+    .row
+      .col-md-6
+        table.table
+          thead
+            tr
+              th Corp Factions
+          tbody
+            tr
+              td
+                div id="corp_faction_chart"
+      .col-md-6
+        table.table
+          thead
+            tr
+              th Runner Factions
+          tbody
+            tr
+              td
+                div id="runner_faction_chart"
+
+    .row.mt-3.dontprint
+      .col-md-6
+        table.table id="swiss_corp_table"
+          thead
+            tr
+              th Corp
+              th Players
+          tbody
+      .col-md-6
+        table.table id="swiss_runner_table"
+          thead
+            tr
+              th Runner
+              th Players
+          tbody
+
+    - if @tournament.stages.size > 1
+      h3 Elimination Rounds
+      .row
+        .col-md-6
+          table.table
+            thead
+              tr
+                th Corp Factions
+            tbody
+              tr
+                td
+                  div id="cut_corp_faction_chart"
+        .col-md-6
+          table.table
+            thead
+              tr
+                th Runner Factions
+            tbody
+              tr
+                td
+                  div id="cut_runner_faction_chart"
+      .row
+        .col-md-6
+          table.table id="cut_corp_table"
+            thead
+              tr
+                th Corp
+                th Players
+            tbody
+
+        .col-md-6
+          table.table id="cut_runner_table"
+            thead
+              tr
+                th Runner
+                th Players
+            tbody
+
+    h3 Elimination Cut Conversion Rates
+    .row
+      .col-md-6
+        table.table id="cut_corp_faction_conversion_rate"
+          thead
+            tr
+              th Corp Factions
+              th Players
+          tbody
+
+      .col-md-6
+        table.table id="cut_runner_faction_conversion_rate"
+          thead
+            tr
+              th Runner Factions
+              th Players
+          tbody
+
+    .row
+      .col-md-6
+        table.table id="cut_corp_ids_conversion_rate"
+          thead
+            tr
+              th Corp
+              th Players
+          tbody
+
+      .col-md-6
+        table.table id="cut_runner_ids_conversion_rate"
+          thead
+            tr
+              th Runner
+              th Players
+          tbody
+
+  javascript:
+    function drawPieChart(element, series, labels, colors=null) {
+      const options = {
+        chart: {
+          offsetY: 20,
+          animations: {
+            enabled: false
+          },
+          selection: {
+            enabled: false,
+          },
+          width: '100%',
+          type: 'pie',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+        },
+        legend: {
+          itemMargin: {
+            vertical: 20,
+          },
+          position: 'bottom'
+        },
+        plotOptions: {
+          pie: {
+            expandOnClick: false,
+            dataLabels: {
+                offset: -10,
+            },
+          },
+        },
+        tooltip: {
+          enabled: false,
+        },
+        series: series,
+        labels: labels,
+        colors: colors,
+      }
+      var chart = new ApexCharts(document.querySelector(element), options);
+      chart.render();
+    }
+
+    // Strip dashes and capitalize first letter of each word for display.
+    function displayFaction(faction) {
+      return faction.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ').replace('Haas ', 'Haas-');
+    }
+
+    function buildSeriesData(data, colorsMap) {
+      results = {
+        series: [],
+        labels: [],
+        colors: [],
+      };
+      for (faction in data) {
+        results.series.push(data[faction]);
+        results.labels.push(displayFaction(faction));
+        results.colors.push(colorsMap.get(faction));
+      }
+      return results;
+    }
+
+    function populateIdRows(data, tableId, numPlayers) {
+      const ids = [];
+      for (id in data) {
+        ids.push({id: id, count: data[id].count, faction: data[id].faction});
+      }
+      // Sort by count in descending order, then by id in ascending order
+      ids.sort((a, b) => {
+        if (b.count !== a.count) {
+          return b.count - a.count; // Descending order by count
+        } else {
+          return a.id.localeCompare(b.id); // Ascending order by id
+        }
+      });
+
+      // Add rows to the tableId table
+      const tableBody = document.querySelector(`#${tableId} tbody`);
+      ids.forEach(id => {
+        const row = document.createElement("tr");
+
+        const idCell = document.createElement("td");
+        idCell.innerHTML = `<div class="div ${id.faction}"><i class="fa icon icon-${id.faction == 'unspecified' ? 'interrupt' : id.faction}"></i> ${id.id}</div>`;
+        row.appendChild(idCell);
+
+        const countCell = document.createElement("td");
+        countCell.innerHTML = `${id.count} (${(id.count / numPlayers * 100).toFixed(1)}%)`;
+        row.appendChild(countCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function populateFactionCutRows(data, side) {
+      factions = [];
+      for (faction in data) {
+        factions.push({
+          name: faction,
+          num_swiss_players: data[faction].num_swiss_players,
+          num_cut_players: data[faction].num_cut_players,
+          cut_conversion_percentage: data[faction].cut_conversion_percentage,
+        });
+      }
+      factions.sort((a, b) => {
+        if (b.cut_conversion_percentage !== a.cut_conversion_percentage) {
+          return b.cut_conversion_percentage - a.cut_conversion_percentage; // Descending order by cut_conversion_percentage
+        } else {
+          return b.num_cut_players - a.num_cut_players; // Descending order by num_cut_players
+        }
+      });
+
+      console.table(factions);
+
+      let tableId = `cut_${side}_faction_conversion_rate`;
+      const tableBody = document.querySelector(`#${tableId} tbody`);
+      factions.forEach((faction) => {
+        const row = document.createElement("tr");
+
+        const idCell = document.createElement("td");
+        idCell.innerHTML = `<div class="div ${faction.name}"><i class="fa icon icon-${faction.name == 'Unspecified' ? 'interrupt' : faction.name}"></i> ${displayFaction(faction.name)}</div>`;
+        row.appendChild(idCell);
+
+        const countCell = document.createElement("td");
+        countCell.innerHTML = `${faction.num_cut_players} / ${faction.num_swiss_players} (${faction.cut_conversion_percentage.toFixed(1)}%)`;
+        row.appendChild(countCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function populateIdentityCutRows(data, side) {
+      ids = [];
+      for (id in data) {
+        ids.push({
+          name: id,
+          faction: data[id].faction,
+          num_swiss_players: data[id].num_swiss_players,
+          num_cut_players: data[id].num_cut_players,
+          cut_conversion_percentage: data[id].cut_conversion_percentage,
+        });
+      }
+      ids.sort((a, b) => {
+        if (b.cut_conversion_percentage !== a.cut_conversion_percentage) {
+          return b.cut_conversion_percentage - a.cut_conversion_percentage; // Descending order by cut_conversion_percentage
+        } else {
+          return b.num_cut_players - a.num_cut_players; // Descending order by num_cut_players
+        }
+      });
+
+      console.table(ids);
+
+      let tableId = `cut_${side}_ids_conversion_rate`;
+      const tableBody = document.querySelector(`#${tableId} tbody`);
+      ids.forEach((id) => {
+        const row = document.createElement("tr");
+
+        const idCell = document.createElement("td");
+        idCell.innerHTML = `<div class="div ${id.faction}"><i class="fa icon icon-${id.faction == 'Unspecified' ? 'interrupt' : id.faction}"></i> ${id.name}</div>`;
+        row.appendChild(idCell);
+
+        const countCell = document.createElement("td");
+        countCell.innerHTML = `${id.num_cut_players} / ${id.num_swiss_players} (${id.cut_conversion_percentage.toFixed(1)}%)`;
+        row.appendChild(countCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    if (#{@tournament.stages.size} > 1) {
+      fetch('/tournaments/#{@tournament.id}/cut_conversion_rates')
+        .then(response => response.json())
+        .then(data => {
+          populateFactionCutRows(data.factions.corp, 'corp');
+          populateFactionCutRows(data.factions.runner, 'runner');
+
+          populateIdentityCutRows(data.identities.corp, 'corp');
+          populateIdentityCutRows(data.identities.runner, 'runner');
+        })
+        .catch(error => console.error('Error fetching cut conversion rate data:', error));
+    }
+
+    fetch('/tournaments/#{@tournament.id}/id_and_faction_data')
+      .then(response => response.json())
+      .then(data => {
+        const factionColors = new Map([
+          ['anarch', 'orangered'],
+          ['criminal', 'royalblue'],
+          ['shaper', 'limegreen'],
+          ['adam', 'olive'],
+          ['apex', '#C25048'],
+          ['sunny-lebeau', '#886E8F'],
+          ['haas-bioroid', 'blueviolet'],
+          ['jinteki', 'crimson'],
+          ['neutral-corp', 'lightgrey'],
+          ['neutral-runner', 'lightgrey'],
+          ['nbn', 'darkorange'],
+          ['weyland-consortium', 'darkgreen'],
+          ['unspecified', 'charcoal'],
+        ]);
+        const corpSeriesData = buildSeriesData(data.corp.factions, factionColors);
+        drawPieChart("#corp_faction_chart", corpSeriesData.series, corpSeriesData.labels, corpSeriesData.colors);
+
+        const runnerSeriesData = buildSeriesData(data.runner.factions, factionColors);
+        drawPieChart("#runner_faction_chart", runnerSeriesData.series, runnerSeriesData.labels, runnerSeriesData.colors);
+
+        populateIdRows(data.corp.ids, "swiss_corp_table", data.num_players);
+        populateIdRows(data.runner.ids, "swiss_runner_table", data.num_players);
+
+        if (data.cut.num_players > 0) {
+          const cutCorpSeriesData = buildSeriesData(data.cut.corp.factions, factionColors);
+          drawPieChart("#cut_corp_faction_chart", cutCorpSeriesData.series, cutCorpSeriesData.labels, cutCorpSeriesData.colors);
+
+          const cutRunnerSeriesData = buildSeriesData(data.cut.runner.factions, factionColors);
+          drawPieChart("#cut_runner_faction_chart", cutRunnerSeriesData.series, cutRunnerSeriesData.labels, cutRunnerSeriesData.colors);
+
+          populateIdRows(data.cut.corp.ids, "cut_corp_table", data.cut.num_players);
+          populateIdRows(data.cut.runner.ids, "cut_runner_table", data.cut.num_players);
+
+        }
+      })
+      .catch(error => console.error('Error fetching ID and faction data:', error));
