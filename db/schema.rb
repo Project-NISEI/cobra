@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_06_041348) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -326,5 +326,74 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
      FROM (swiss s
        LEFT JOIN cut c USING (tournament_id, side, identity, faction))
     GROUP BY s.tournament_id, s.faction, s.side, s.identity;
+  SQL
+  create_view "side_win_percentages", sql_definition: <<-SQL
+      WITH base AS (
+           SELECT s.tournament_id,
+              s.number AS stage_number,
+                  CASE
+                      WHEN (s.format = 0) THEN 2
+                      ELSE 1
+                  END AS num_expected_games,
+                  CASE
+                      WHEN ((s.format = 0) AND ((((p.score1_corp + p.score1_runner) + p.score2_corp) + p.score2_runner) > 0)) THEN 2
+                      WHEN ((s.format > 0) AND (p.side > 0) AND ((p.score1 + p.score2) > 0)) THEN 1
+                      ELSE 0
+                  END AS num_valid_games,
+                  CASE
+                      WHEN ((s.format = 0) AND (((p.score1_corp = 3) AND (p.score2_corp = 0)) OR ((p.score1_corp = 0) AND (p.score2_corp = 3)))) THEN 1
+                      WHEN ((s.format = 0) AND (p.score1_corp = 3) AND (p.score2_corp = 3)) THEN 2
+                      WHEN (((s.format > 0) AND (p.score1_corp = 3)) OR (p.score2_corp = 3)) THEN 1
+                      ELSE 0
+                  END AS num_corp_wins,
+                  CASE
+                      WHEN ((s.format = 0) AND (((p.score1_runner = 3) AND (p.score2_runner = 0)) OR ((p.score1_runner = 0) AND (p.score2_runner = 3)))) THEN 1
+                      WHEN ((s.format = 0) AND (p.score1_runner = 3) AND (p.score2_runner = 3)) THEN 2
+                      WHEN (((s.format > 0) AND (p.score1_runner = 3)) OR (p.score2_runner = 3)) THEN 1
+                      ELSE 0
+                  END AS num_runner_wins
+             FROM ((stages s
+               JOIN rounds r ON ((s.id = r.stage_id)))
+               JOIN pairings p ON ((p.round_id = r.id)))
+            WHERE r.completed
+          ), calculated AS (
+           SELECT base.tournament_id,
+              base.stage_number,
+              base.num_expected_games,
+              base.num_valid_games,
+                  CASE
+                      WHEN (base.num_valid_games = 0) THEN 0
+                      ELSE base.num_corp_wins
+                  END AS num_corp_wins,
+                  CASE
+                      WHEN (base.num_valid_games = 0) THEN 0
+                      ELSE base.num_runner_wins
+                  END AS num_runner_wins
+             FROM base
+          )
+   SELECT calculated.tournament_id,
+      calculated.stage_number,
+      sum(calculated.num_expected_games) AS num_games,
+      sum(calculated.num_valid_games) AS num_valid_games,
+      (
+          CASE
+              WHEN (sum(calculated.num_expected_games) > 0) THEN ((sum(calculated.num_valid_games))::double precision / (sum(calculated.num_expected_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS valid_game_percentage,
+      sum(calculated.num_corp_wins) AS num_corp_wins,
+      (
+          CASE
+              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_corp_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS corp_win_percentage,
+      sum(calculated.num_runner_wins) AS num_runner_wins,
+      (
+          CASE
+              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_runner_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS runner_win_percentage
+     FROM calculated
+    GROUP BY calculated.tournament_id, calculated.stage_number
+    ORDER BY calculated.tournament_id, calculated.stage_number;
   SQL
 end

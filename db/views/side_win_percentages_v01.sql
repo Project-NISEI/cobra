@@ -37,6 +37,7 @@ WITH
         FROM stages AS s
             INNER JOIN rounds AS r ON s.id = r.stage_id
         INNER JOIN pairings AS p ON p.round_id = r.id
+        WHERE r.completed
 ),
 calculated AS (
     SELECT
