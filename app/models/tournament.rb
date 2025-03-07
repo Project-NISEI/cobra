@@ -237,7 +237,7 @@ class Tournament < ApplicationRecord
         num_corp_wins: row['num_corp_wins'],
         corp_win_percentage: row['corp_win_percentage'].to_f,
         num_runner_wins: row['num_runner_wins'],
-        runner_win_percentage: row['runner_win_percentge'].to_f
+        runner_win_percentage: row['runner_win_percentage'].to_f
       }
     end
     results
