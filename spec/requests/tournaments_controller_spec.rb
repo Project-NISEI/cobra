@@ -147,4 +147,22 @@ RSpec.describe TournamentsController do
         .to eq([{ 'foo' => 'bar' }, { 'baz' => 'qux' }])
     end
   end
+
+  describe '#side_win_percentages' do
+    before do
+      allow(Tournament).to receive(:find)
+        .with(tournament.to_param)
+        .and_return(tournament)
+      allow(tournament).to receive(:side_win_percentages_data)
+        .and_return([{ foo: 'bar' }, { baz: 'qux' }])
+    end
+
+    # This method just returns what tournament gives it as JSON.
+    it 'returns tournament.side_win_percentages JSON' do
+      get side_win_percentages_tournament_path(tournament)
+
+      expect(JSON.parse(response.body))
+        .to eq([{ 'foo' => 'bar' }, { 'baz' => 'qux' }])
+    end
+  end
 end

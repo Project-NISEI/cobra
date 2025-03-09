@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     get :save_json, on: :member
     get :id_and_faction_data, on: :member
     get :cut_conversion_rates, on: :member
+    get :side_win_percentages, on: :member
     post :cut, on: :member
     get :qr, on: :member
     get :registration, on: :member
