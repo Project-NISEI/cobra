@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_01_202703) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_08_193210) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -338,77 +338,4 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_01_202703) do
   add_foreign_key "tournaments", "tournament_types"
   add_foreign_key "tournaments", "users"
 
-  create_view "cut_conversion_rates", sql_definition: <<-SQL
-      WITH corps AS (
-           SELECT s_1.tournament_id,
-              s_1.number AS stage_number,
-              s_1.id AS stage_id,
-              'corp'::text AS side,
-              COALESCE(id.name, 'Unspecified'::character varying) AS identity,
-              COALESCE(id.faction, 'Unspecified'::character varying) AS faction
-             FROM (((stages s_1
-               JOIN registrations r ON ((s_1.id = r.stage_id)))
-               JOIN players p ON ((r.player_id = p.id)))
-               LEFT JOIN identities id ON ((p.corp_identity_ref_id = id.id)))
-          ), runners AS (
-           SELECT s_1.tournament_id,
-              s_1.number AS stage_number,
-              s_1.id AS stage_id,
-              'runner'::text AS side,
-              COALESCE(id.name, 'Unspecified'::character varying) AS identity,
-              COALESCE(id.faction, 'Unspecified'::character varying) AS faction
-             FROM (((stages s_1
-               JOIN registrations r ON ((s_1.id = r.stage_id)))
-               JOIN players p ON ((r.player_id = p.id)))
-               LEFT JOIN identities id ON ((p.runner_identity_ref_id = id.id)))
-          ), combined AS (
-           SELECT corps.tournament_id,
-              corps.stage_number,
-              corps.stage_id,
-              corps.side,
-              corps.identity,
-              corps.faction
-             FROM corps
-          UNION ALL
-           SELECT runners.tournament_id,
-              runners.stage_number,
-              runners.stage_id,
-              runners.side,
-              runners.identity,
-              runners.faction
-             FROM runners
-          ), swiss AS (
-           SELECT combined.tournament_id,
-              combined.stage_id,
-              combined.stage_number,
-              combined.side,
-              combined.identity,
-              combined.faction,
-              count(*) AS num_players
-             FROM combined
-            WHERE (combined.stage_number = 1)
-            GROUP BY combined.tournament_id, combined.stage_id, combined.stage_number, combined.side, combined.identity, combined.faction
-          ), cut AS (
-           SELECT combined.tournament_id,
-              combined.stage_id,
-              combined.stage_number,
-              combined.side,
-              combined.identity,
-              combined.faction,
-              count(*) AS num_players
-             FROM combined
-            WHERE (combined.stage_number = 2)
-            GROUP BY combined.tournament_id, combined.stage_id, combined.stage_number, combined.side, combined.identity, combined.faction
-          )
-   SELECT s.tournament_id,
-      s.side,
-      s.faction,
-      s.identity,
-      sum(s.num_players) AS num_swiss_players,
-      sum(COALESCE(c.num_players, (0)::bigint)) AS num_cut_players,
-      ((sum(COALESCE(c.num_players, (0)::bigint)) / sum(s.num_players)) * (100)::numeric) AS cut_conversion_percentage
-     FROM (swiss s
-       LEFT JOIN cut c USING (tournament_id, side, identity, faction))
-    GROUP BY s.tournament_id, s.faction, s.side, s.identity;
-  SQL
 end

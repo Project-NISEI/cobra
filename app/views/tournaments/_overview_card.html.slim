@@ -25,7 +25,7 @@
 
       li.list-group-item
         .small.text-secondary Organiser:
-        | #{@tournament.user.nrdb_username} #{@tournament.organizer_contact.nil? ? 'no' : " – #{@tournament.organizer_contact}"}
+        | #{@tournament.user.nrdb_username} #{@tournament.organizer_contact.nil? ? '' : " – #{@tournament.organizer_contact}"}
       li.list-group-item
         .small.text-secondary Players:
         => pluralize(@players.count, 'active player')
