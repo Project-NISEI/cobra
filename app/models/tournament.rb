@@ -251,13 +251,13 @@ class Tournament < ApplicationRecord
       results[:identities][side][row['identity']] = {
         num_swiss_players: row['num_swiss_players'].to_i,
         num_cut_players: row['num_cut_players'].to_i,
-        cut_conversion_percentage: row['cut_conversion_percentage']
+        cut_conversion_percentage: row['cut_conversion_percentage'].to_f.floor(2)
       }
     end
     results[:factions].each_key do |side|
       results[:factions][side].each do |faction, data|
         results[:factions][side][faction][:cut_conversion_percentage] =
-          (data[:num_cut_players].to_f / data[:num_swiss_players]) * 100
+          ((data[:num_cut_players].to_f / data[:num_swiss_players]) * 100).floor(2)
       end
     end
     results
