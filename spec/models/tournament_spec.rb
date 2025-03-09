@@ -263,6 +263,3 @@ RSpec.describe Tournament do
     end
   end
 end
-
-# -:identities => {:corp=>{"Epiphany"=>{:cut_conversion_percentage=>100.0, :num_cut_players=>1, :num_swiss_players=>1}, "Precision Design"=>{:cut_conversion_percentage=>100.0, :num_cut_players=>1, :num_swiss_players=>2}, "Unspecified"=>{:cut_conversion_percentage=>33.33333333333333,  :num_cut_players=>1, :num_swiss_players=>3}}, :runner=>{"Maxx"=>{:cut_conversion_percentage=>100.0, :num_cut_players=>2, :num_swiss_players=>2}, "Smoke"=>{:cut_conversion_percentage=>100.0, :num_cut_players=>1, :num_swiss_players=>1}, "Unspecified"=>{:cut_conversion_percentage=>33.33333333333333,  :num_cut_players=>1, :num_swiss_players=>3}}},
-# +:identities => {:corp=>{"Epiphany"=>{:cut_conversion_percentage=>100.0, :num_cut_players=>1, :num_swiss_players=>1}, "Precision Design"=>{:cut_conversion_percentage=>100.0, :num_cut_players=>2, :num_swiss_players=>2}, "Unspecified"=>{:cut_conversion_percentage=>33.333333333333336, :num_cut_players=>1, :num_swiss_players=>3}}, :runner=>{"Maxx"=>{:cut_conversion_percentage=>100.0, :num_cut_players=>2, :num_swiss_players=>2}, "Smoke"=>{:cut_conversion_percentage=>100.0, :num_cut_players=>1, :num_swiss_players=>1}, "Unspecified"=>{:cut_conversion_percentage=>33.333333333333336, :num_cut_players=>1, :num_swiss_players=>3}}},
