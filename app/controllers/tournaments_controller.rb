@@ -5,7 +5,7 @@ class TournamentsController < ApplicationController
     show info edit update destroy
     upload_to_abr save_json cut qr registration timer
     close_registration open_registration lock_player_registrations unlock_player_registrations
-    id_and_faction_data cut_conversion_rates
+    id_and_faction_data cut_conversion_rates side_win_percentages
   ]
 
   def index
@@ -241,6 +241,12 @@ class TournamentsController < ApplicationController
     authorize @tournament, :show?
 
     render json: @tournament.cut_conversion_rates_data
+  end
+
+  def side_win_percentages
+    authorize @tournament, :show?
+
+    render json: @tournament.side_win_percentages_data
   end
 
   def id_and_faction_data

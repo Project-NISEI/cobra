@@ -338,4 +338,146 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_08_193210) do
   add_foreign_key "tournaments", "tournament_types"
   add_foreign_key "tournaments", "users"
 
+  create_view "side_win_percentages", sql_definition: <<-SQL
+      WITH base AS (
+           SELECT s.tournament_id,
+              s.number AS stage_number,
+                  CASE
+                      WHEN (s.format = 0) THEN 2
+                      ELSE 1
+                  END AS num_expected_games,
+                  CASE
+                      WHEN ((s.format = 0) AND ((((p.score1_corp + p.score1_runner) + p.score2_corp) + p.score2_runner) > 0)) THEN 2
+                      WHEN ((s.format > 0) AND (p.side > 0) AND ((p.score1 + p.score2) > 0)) THEN 1
+                      ELSE 0
+                  END AS num_valid_games,
+                  CASE
+                      WHEN ((s.format = 0) AND (((p.score1_corp = 3) AND (p.score2_corp = 0)) OR ((p.score1_corp = 0) AND (p.score2_corp = 3)))) THEN 1
+                      WHEN ((s.format = 0) AND (p.score1_corp = 3) AND (p.score2_corp = 3)) THEN 2
+                      WHEN (((s.format > 0) AND (p.score1_corp = 3)) OR (p.score2_corp = 3)) THEN 1
+                      ELSE 0
+                  END AS num_corp_wins,
+                  CASE
+                      WHEN ((s.format = 0) AND (((p.score1_runner = 3) AND (p.score2_runner = 0)) OR ((p.score1_runner = 0) AND (p.score2_runner = 3)))) THEN 1
+                      WHEN ((s.format = 0) AND (p.score1_runner = 3) AND (p.score2_runner = 3)) THEN 2
+                      WHEN (((s.format > 0) AND (p.score1_runner = 3)) OR (p.score2_runner = 3)) THEN 1
+                      ELSE 0
+                  END AS num_runner_wins
+             FROM ((stages s
+               JOIN rounds r ON ((s.id = r.stage_id)))
+               JOIN pairings p ON ((p.round_id = r.id)))
+            WHERE r.completed
+          ), calculated AS (
+           SELECT base.tournament_id,
+              base.stage_number,
+              base.num_expected_games,
+              base.num_valid_games,
+                  CASE
+                      WHEN (base.num_valid_games = 0) THEN 0
+                      ELSE base.num_corp_wins
+                  END AS num_corp_wins,
+                  CASE
+                      WHEN (base.num_valid_games = 0) THEN 0
+                      ELSE base.num_runner_wins
+                  END AS num_runner_wins
+             FROM base
+          )
+   SELECT calculated.tournament_id,
+      calculated.stage_number,
+      sum(calculated.num_expected_games) AS num_games,
+      sum(calculated.num_valid_games) AS num_valid_games,
+      (
+          CASE
+              WHEN (sum(calculated.num_expected_games) > 0) THEN ((sum(calculated.num_valid_games))::double precision / (sum(calculated.num_expected_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS valid_game_percentage,
+      sum(calculated.num_corp_wins) AS num_corp_wins,
+      (
+          CASE
+              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_corp_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS corp_win_percentage,
+      sum(calculated.num_runner_wins) AS num_runner_wins,
+      (
+          CASE
+              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_runner_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS runner_win_percentage
+     FROM calculated
+    GROUP BY calculated.tournament_id, calculated.stage_number
+    ORDER BY calculated.tournament_id, calculated.stage_number;
+  SQL
+  create_view "cut_conversion_rates", sql_definition: <<-SQL
+      WITH corps AS (
+           SELECT s_1.tournament_id,
+              s_1.number AS stage_number,
+              s_1.id AS stage_id,
+              'corp'::text AS side,
+              COALESCE(id.name, 'Unspecified'::character varying) AS identity,
+              COALESCE(id.faction, 'Unspecified'::character varying) AS faction
+             FROM (((stages s_1
+               JOIN registrations r ON ((s_1.id = r.stage_id)))
+               JOIN players p ON ((r.player_id = p.id)))
+               LEFT JOIN identities id ON ((p.corp_identity_ref_id = id.id)))
+          ), runners AS (
+           SELECT s_1.tournament_id,
+              s_1.number AS stage_number,
+              s_1.id AS stage_id,
+              'runner'::text AS side,
+              COALESCE(id.name, 'Unspecified'::character varying) AS identity,
+              COALESCE(id.faction, 'Unspecified'::character varying) AS faction
+             FROM (((stages s_1
+               JOIN registrations r ON ((s_1.id = r.stage_id)))
+               JOIN players p ON ((r.player_id = p.id)))
+               LEFT JOIN identities id ON ((p.runner_identity_ref_id = id.id)))
+          ), combined AS (
+           SELECT corps.tournament_id,
+              corps.stage_number,
+              corps.stage_id,
+              corps.side,
+              corps.identity,
+              corps.faction
+             FROM corps
+          UNION ALL
+           SELECT runners.tournament_id,
+              runners.stage_number,
+              runners.stage_id,
+              runners.side,
+              runners.identity,
+              runners.faction
+             FROM runners
+          ), swiss AS (
+           SELECT combined.tournament_id,
+              combined.stage_id,
+              combined.stage_number,
+              combined.side,
+              combined.identity,
+              combined.faction,
+              count(*) AS num_players
+             FROM combined
+            WHERE (combined.stage_number = 1)
+            GROUP BY combined.tournament_id, combined.stage_id, combined.stage_number, combined.side, combined.identity, combined.faction
+          ), cut AS (
+           SELECT combined.tournament_id,
+              combined.stage_id,
+              combined.stage_number,
+              combined.side,
+              combined.identity,
+              combined.faction,
+              count(*) AS num_players
+             FROM combined
+            WHERE (combined.stage_number = 2)
+            GROUP BY combined.tournament_id, combined.stage_id, combined.stage_number, combined.side, combined.identity, combined.faction
+          )
+   SELECT s.tournament_id,
+      s.side,
+      s.faction,
+      s.identity,
+      sum(s.num_players) AS num_swiss_players,
+      sum(COALESCE(c.num_players, (0)::bigint)) AS num_cut_players,
+      ((sum(COALESCE(c.num_players, (0)::bigint)) / sum(s.num_players)) * (100)::numeric) AS cut_conversion_percentage
+     FROM (swiss s
+       LEFT JOIN cut c USING (tournament_id, side, identity, faction))
+    GROUP BY s.tournament_id, s.faction, s.side, s.identity;
+  SQL
 end

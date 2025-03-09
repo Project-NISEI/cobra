@@ -227,6 +227,31 @@ class Tournament < ApplicationRecord
       'decklists, they may be shared with participants or made public.'
   end
 
+  def side_win_percentages_data
+    sql = ActiveRecord::Base.sanitize_sql(
+      ['SELECT * FROM side_win_percentages WHERE tournament_id = ? ORDER BY stage_number ASC', id]
+    )
+    rows = ActiveRecord::Base.connection.exec_query(sql).to_a
+    results = []
+    # Normalize stage numbers to be sequential from 1 to address edge cases where
+    # there are empty stages, followed by valid stages.
+    stage_number = 0
+    rows.each do |row|
+      stage_number += 1
+      results << {
+        stage_number: stage_number,
+        num_games: row['num_games'],
+        num_valid_games: row['num_valid_games'],
+        valid_game_percentage: row['valid_game_percentage'].to_f,
+        num_corp_wins: row['num_corp_wins'],
+        corp_win_percentage: row['corp_win_percentage'].to_f,
+        num_runner_wins: row['num_runner_wins'],
+        runner_win_percentage: row['runner_win_percentage'].to_f
+      }
+    end
+    results
+  end
+
   def cut_conversion_rates_data
     sql = ActiveRecord::Base.sanitize_sql([
                                             'SELECT * FROM cut_conversion_rates WHERE tournament_id = ?', id
@@ -260,13 +285,13 @@ class Tournament < ApplicationRecord
       results[:identities][side][row['identity']] = {
         num_swiss_players: row['num_swiss_players'].to_i,
         num_cut_players: row['num_cut_players'].to_i,
-        cut_conversion_percentage: row['cut_conversion_percentage']
+        cut_conversion_percentage: row['cut_conversion_percentage'].to_f.floor(2)
       }
     end
     results[:factions].each_key do |side|
       results[:factions][side].each do |faction, data|
         results[:factions][side][faction][:cut_conversion_percentage] =
-          (data[:num_cut_players].to_f / data[:num_swiss_players]) * 100
+          ((data[:num_cut_players].to_f / data[:num_swiss_players]) * 100).floor(2)
       end
     end
     results
