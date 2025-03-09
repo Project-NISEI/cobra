@@ -16,15 +16,30 @@
   p= link_to save_json_tournament_path(@tournament), class: 'btn btn-success', target: '_blank' do |f|
     => fa_icon 'arrow-circle-down'
     | Download as JSON
-  p= button_to cut_tournament_path(@tournament, number: 3), method: :post, class: 'btn btn-success' do
+  p= button_to cut_tournament_path(@tournament, number: 3, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
     => fa_icon 'scissors'
-    | Cut to Top 3
+    | Single-Elimination Top 3
+  p= button_to cut_tournament_path(@tournament, number: 4, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+    => fa_icon 'scissors'
+    | Single-Elimination Top 4
+  p= button_to cut_tournament_path(@tournament, number: 8, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+    => fa_icon 'scissors'
+    | Single-Elimination Top 8
+  p= button_to cut_tournament_path(@tournament, number: 16, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+    => fa_icon 'scissors'
+    | Single-Elimination Top 16
   p= button_to cut_tournament_path(@tournament, number: 4), method: :post, class: 'btn btn-success' do
     => fa_icon 'scissors'
-    | Cut to Top 4
+    | Double-Elimination Top 4
   p= button_to cut_tournament_path(@tournament, number: 8), method: :post, class: 'btn btn-success' do
     => fa_icon 'scissors'
-    | Cut to Top 8
+    | Double-Elimination Top 8
   p= button_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do
     => fa_icon 'scissors'
-    | Cut to Top 16
+    | Double-Elimination Top 16
+
+
+
+
+
+
