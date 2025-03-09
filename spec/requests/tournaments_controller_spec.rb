@@ -165,4 +165,22 @@ RSpec.describe TournamentsController do
         .to eq([{ 'foo' => 'bar' }, { 'baz' => 'qux' }])
     end
   end
+
+  describe '#id_and_faction_data' do
+    before do
+      allow(Tournament).to receive(:find)
+        .with(tournament.to_param)
+        .and_return(tournament)
+      allow(tournament).to receive(:id_and_faction_data)
+        .and_return([{ foo: 'bar' }, { baz: 'qux' }])
+    end
+
+    # This method just returns what tournament gives it as JSON.
+    it 'returns tournament.id_and_faction_data JSON' do
+      get id_and_faction_data_tournament_path(tournament)
+
+      expect(JSON.parse(response.body))
+        .to eq([{ 'foo' => 'bar' }, { 'baz' => 'qux' }])
+    end
+  end
 end
