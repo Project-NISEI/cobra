@@ -258,7 +258,6 @@ RSpec.describe Tournament do
     let(:foxtrot) { create(:player, tournament:, name: 'Foxtrot') }
 
     it 'returns correct default data for fresh, empty tournament' do
-      puts tournament.cut_conversion_rates_data.inspect
       expect(tournament.cut_conversion_rates_data).to eq(
         { factions: { corp: {}, runner: {} }, identities: { corp: {}, runner: {} } }
       )
@@ -269,7 +268,6 @@ RSpec.describe Tournament do
       create(:pairing, round:, player1: charlie, player2: delta, score1: 3, score2: 2)
       create(:pairing, round:, player1: echo, player2: foxtrot, score1: 1, score2: 0)
 
-      puts tournament.cut_conversion_rates_data.inspect
       expect(tournament.cut_conversion_rates_data).to eq(
         {
           factions: {
@@ -309,7 +307,6 @@ RSpec.describe Tournament do
 
       cut
 
-      puts tournament.cut_conversion_rates_data.inspect
       expect(tournament.cut_conversion_rates_data).to eq(
         {
           factions: {
