@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_08_193210) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -276,7 +276,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
              FROM (((stages s_1
                JOIN registrations r ON ((s_1.id = r.stage_id)))
                JOIN players p ON ((r.player_id = p.id)))
-               JOIN identities id ON ((p.runner_identity_ref_id = id.id)))
+               LEFT JOIN identities id ON ((p.runner_identity_ref_id = id.id)))
           ), combined AS (
            SELECT corps.tournament_id,
               corps.stage_number,
