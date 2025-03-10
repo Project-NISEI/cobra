@@ -137,6 +137,110 @@ RSpec.describe Tournament do
     end
   end
 
+  describe '#id_and_faction_data' do
+    it 'returns correct default data for fresh, empty tournament' do
+      tournament = create(:tournament)
+      expect(tournament.id_and_faction_data).to eq({
+                                                     corp: { factions: {},
+                                                             ids: {} },
+                                                     cut: { corp: { factions: {}, ids: {} }, num_players: 0,
+                                                            runner: { factions: {}, ids: {} } },
+                                                     num_players: 0,
+                                                     runner: { factions: {},
+                                                               ids: {} }
+                                                   })
+    end
+
+    it 'returns correct data for basic players without identities set' do
+      expect(tournament.id_and_faction_data).to eq({
+                                                     corp: { factions: { 'unspecified' => 4 },
+                                                             ids: { 'Unspecified' => { count: 4,
+                                                                                       faction: 'unspecified' } } },
+                                                     cut: { corp: { factions: {}, ids: {} }, num_players: 0,
+                                                            runner: { factions: {}, ids: {} } },
+                                                     num_players: 4,
+                                                     runner: { factions: { 'unspecified' => 4 },
+                                                               ids: { 'Unspecified' => { count: 4,
+                                                                                         faction: 'unspecified' } } }
+                                                   })
+    end
+
+    it 'returns correct data for swiss and for cut' do
+      precision_design = create(:identity, side: 1, name: 'Precision Design', faction: 'haas-bioroid')
+      epiphany = create(:identity, side: 1, name: 'Epiphany', faction: 'nbn')
+      maxx = create(:identity, side: 2, name: 'Maxx', faction: 'anarch')
+      smoke = create(:identity, side: 2, name: 'Smoke', faction: 'shaper')
+
+      # Add 6 more players with ids in addition to the 4 players already created without ids.
+      alpha = create(:player, tournament:, name: 'Alpha',
+                              corp_identity_ref_id: precision_design.id,
+                              runner_identity_ref_id: smoke.id)
+
+      bravo = create(:player, tournament:, name: 'Bravo',
+                              corp_identity_ref_id: epiphany.id,
+                              runner_identity_ref_id: maxx.id)
+
+      charlie = create(:player, tournament:, name: 'Charlie',
+                                corp_identity_ref_id: precision_design.id,
+                                runner_identity_ref_id: maxx.id)
+
+      delta = create(:player, tournament:, name: 'Delta')
+      echo = create(:player, tournament:, name: 'Echo')
+      foxtrot = create(:player, tournament:, name: 'Foxtrot')
+
+      swiss = tournament.stages.first
+      round = create(:round, stage: swiss, completed: true)
+      create(:pairing, round:, player1: alpha, player2: bravo, score1: 6, score1_corp: 3, score1_runner: 3, score2: 0,
+                       score2_corp: 0, score2_runner: 0)
+      create(:pairing, round:, player1: charlie, player2: delta, score1: 3, score1_corp: 0, score1_runner: 3,
+                       score2: 3, score2_corp: 0, score2_runner: 3)
+      create(:pairing, round:, player1: echo, player2: foxtrot, score1: 1, score2: 0)
+
+      expect(tournament.id_and_faction_data).to eq(
+        {
+          corp: { factions: { 'haas-bioroid' => 2, 'nbn' => 1, 'unspecified' => 7 },
+                  ids: { 'Epiphany' => { count: 1, faction: 'nbn' },
+                         'Precision Design' => { count: 2, faction: 'haas-bioroid' },
+                         'Unspecified' => { count: 7, faction: 'unspecified' } } },
+          cut: { corp: { factions: {}, ids: {} }, num_players: 0,
+                 runner: { factions: {}, ids: {} } },
+          num_players: 10,
+          runner: { factions: { 'anarch' => 2, 'shaper' => 1, 'unspecified' => 7 },
+                    ids: { 'Maxx' => { count: 2, faction: 'anarch' },
+                           'Smoke' => { count: 1, faction: 'shaper' },
+                           'Unspecified' => { count: 7, faction: 'unspecified' } } }
+        }
+      )
+
+      tournament.cut_to! :double_elim, 4
+
+      expect(tournament.id_and_faction_data).to eq(
+        {
+          corp: { factions: { 'haas-bioroid' => 2, 'nbn' => 1, 'unspecified' => 7 },
+                  ids: { 'Epiphany' => { count: 1, faction: 'nbn' },
+                         'Precision Design' => { count: 2, faction: 'haas-bioroid' },
+                         'Unspecified' => { count: 7, faction: 'unspecified' } } },
+          cut: {
+            corp: { factions: { 'haas-bioroid' => 2, 'unspecified' => 2 },
+                    ids: { 'Precision Design' => { count: 2, faction: 'haas-bioroid' },
+                           'Unspecified' => { count: 2,
+                                              faction: 'unspecified' } } },
+            num_players: 4,
+            runner: { factions: { 'anarch' => 1, 'shaper' => 1, 'unspecified' => 2 },
+                      ids: { 'Maxx' => { count: 1, faction: 'anarch' },
+                             'Smoke' => { count: 1, faction: 'shaper' },
+                             'Unspecified' => { count: 2, faction: 'unspecified' } } }
+          },
+          num_players: 10,
+          runner: { factions: { 'anarch' => 2, 'shaper' => 1, 'unspecified' => 7 },
+                    ids: { 'Maxx' => { count: 2, faction: 'anarch' },
+                           'Smoke' => { count: 1, faction: 'shaper' },
+                           'Unspecified' => { count: 7, faction: 'unspecified' } } }
+        }
+      )
+    end
+  end
+
   describe '#side_win_percentages' do
     let(:tournament) { create(:tournament) }
     let(:swiss) { tournament.stages.first }
