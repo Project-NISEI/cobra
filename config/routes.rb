@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       get :pairings_data, on: :collection
     end
     resources :stages, only: %i[create destroy]
+    get :info, on: :member
     post :upload_to_abr, on: :member
     get :save_json, on: :member
     get :id_and_faction_data, on: :member
@@ -53,6 +54,7 @@ Rails.application.routes.draw do
     get :shortlink, on: :collection
     get :not_found, on: :collection
     get :my, on: :collection
+    get 'type/:type_id', to: 'tournaments#index', on: :collection, as: :tournaments_by_type
   end
   resources :identities, only: [:index]
 
