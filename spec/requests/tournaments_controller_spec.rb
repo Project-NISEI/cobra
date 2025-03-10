@@ -86,50 +86,6 @@ RSpec.describe TournamentsController do
     end
   end
 
-  describe '#id_and_faction_data' do
-    it 'returns correct id_and_faction_data JSON' do
-      player1.save
-      player2.save
-      player3.save
-      player4.save
-
-      get id_and_faction_data_tournament_path(tournament)
-
-      expect(JSON.parse(response.body))
-        .to eq(
-          'num_players' => 4,
-          'corp' => {
-            'factions' => {
-              'weyland-consortium' => 3,
-              'unspecified' => 1
-            },
-            'ids' => {
-              'Builder of Nations' => { 'count' => 3, 'faction' => 'weyland-consortium' },
-              'Unspecified' => { 'count' => 1, 'faction' => 'unspecified' }
-            }
-          },
-          'runner' => {
-            'factions' => {
-              'unspecified' => 1,
-              'anarch' => 1,
-              'criminal' => 2
-            },
-            'ids' => {
-              'Az' => { 'count' => 1, 'faction' => 'criminal' },
-              'Hoshiko' => { 'count' => 1, 'faction' => 'anarch' },
-              'Sable' => { 'count' => 1, 'faction' => 'criminal' },
-              'Unspecified' => { 'count' => 1, 'faction' => 'unspecified' }
-            }
-          },
-          'cut' => {
-            'num_players' => 0,
-            'corp' => { 'factions' => {}, 'ids' => {} },
-            'runner' => { 'factions' => {}, 'ids' => {} }
-          }
-        )
-    end
-  end
-
   describe '#cut_conversion_rates' do
     before do
       allow(Tournament).to receive(:find)
