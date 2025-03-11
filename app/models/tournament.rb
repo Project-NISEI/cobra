@@ -10,6 +10,7 @@ class Tournament < ApplicationRecord
   belongs_to :official_prize_kit, optional: true
   belongs_to :tournament_type, optional: true
 
+  # This is a list of attributes that will be replaced with nil if they are blank.
   NULL_ATTRS = %w[organizer_contact event_link description additional_prizes_description time_zone card_set_id
                   format_id deckbuilding_restriction_id official_prize_kit_id tournament_type_id registration_starts
                   tournament_starts].freeze
