@@ -32,8 +32,12 @@ class TournamentsController < ApplicationController
         set_overview_notices
       end
       format.json do
-        headers['Access-Control-Allow-Origin'] = '*'
-        render json: NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
+        if @tournament.registration_closed
+          headers['Access-Control-Allow-Origin'] = '*'
+          render json: NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
+        else
+          redirect_back_or_to tournament_path(@tournament)
+        end
       end
     end
   end
