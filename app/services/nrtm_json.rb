@@ -13,7 +13,6 @@ class NrtmJson
     preliminaryRounds = 0
     players = []
     if swiss_stage
-      Rails.logger.debug swiss_stage
       preliminaryRounds = swiss_stage.rounds.count
       if preliminaryRounds.positive?
         players = swiss_stage.standings.each_with_index.map do |standing, i|
