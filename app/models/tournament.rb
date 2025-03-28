@@ -319,6 +319,8 @@ class Tournament < ApplicationRecord
   def build_id_stats(id, is_cut: false)
     results = default_id_stats
 
+    return results if stages&.first&.rounds&.count&.zero?
+
     sql = build_id_stats_sql(id, is_cut:)
     ActiveRecord::Base.connection.exec_query(sql).each do |row|
       side = row['side'] == 1 ? :corp : :runner
