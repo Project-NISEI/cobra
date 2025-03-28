@@ -111,6 +111,8 @@ class Tournament < ApplicationRecord
 
   def id_and_faction_data
     results = build_id_stats(id)
+    return results unless show_identities?
+
     latest_stage = stages.last
     results[:cut] = if !latest_stage.nil? && (stages.last.single_elim? || stages.last.double_elim?)
                       build_id_stats(id, is_cut: true)
@@ -118,6 +120,13 @@ class Tournament < ApplicationRecord
                       default_id_stats
                     end
     results
+  end
+
+  # Simple helper used when an API or UI needs to check if ids should be exposed.
+  # Before a round is paired, identities should not be visible to players to avoid
+  # any angle-shooting and id choices base on the id choices of other players.
+  def show_identities?
+    current_stage&.rounds&.any?
   end
 
   def generate_slug
@@ -259,6 +268,8 @@ class Tournament < ApplicationRecord
       }
     }
 
+    return results unless show_identities?
+
     rows.each do |row|
       side = row['side'].to_sym
 
@@ -318,6 +329,8 @@ class Tournament < ApplicationRecord
 
   def build_id_stats(id, is_cut: false)
     results = default_id_stats
+
+    return results unless show_identities?
 
     sql = build_id_stats_sql(id, is_cut:)
     ActiveRecord::Base.connection.exec_query(sql).each do |row|
