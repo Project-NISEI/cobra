@@ -110,6 +110,8 @@ class Tournament < ApplicationRecord
   end
 
   def id_and_faction_data
+    return default_id_stats if rounds.empty?
+
     results = build_id_stats(id)
     latest_stage = stages.last
     results[:cut] = if !latest_stage.nil? && (stages.last.single_elim? || stages.last.double_elim?)
