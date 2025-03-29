@@ -12,21 +12,19 @@ class NrtmJson
     # preliminaryRounds must be named in camelCase to match the expected NRTM format.
     preliminaryRounds = 0
     players = []
-    if swiss_stage
-      preliminaryRounds = swiss_stage.rounds.count
-      if preliminaryRounds.positive?
-        players = swiss_stage.standings.each_with_index.map do |standing, i|
-          {
-            id: standing.player.id,
-            name: standing.name,
-            rank: i + 1,
-            corpIdentity: (standing.corp_identity.name.gsub(/[“”]/, '"') if standing.corp_identity.id),
-            runnerIdentity: (standing.runner_identity.name.gsub(/[“”]/, '"') if standing.runner_identity.id),
-            matchPoints: standing.points,
-            strengthOfSchedule: standing.sos,
-            extendedStrengthOfSchedule: standing.extended_sos
-          }
-        end
+    if tournament.show_identities?
+      preliminaryRounds = swiss_stage&.rounds&.count
+      players = swiss_stage&.standings&.each_with_index&.map do |standing, i|
+        {
+          id: standing.player.id,
+          name: standing.name,
+          rank: i + 1,
+          corpIdentity: (standing.corp_identity.name.gsub(/[“”]/, '"') if standing.corp_identity.id),
+          runnerIdentity: (standing.runner_identity.name.gsub(/[“”]/, '"') if standing.runner_identity.id),
+          matchPoints: standing.points,
+          strengthOfSchedule: standing.sos,
+          extendedStrengthOfSchedule: standing.extended_sos
+        }
       end
     end
 
