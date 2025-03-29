@@ -123,7 +123,7 @@ class Tournament < ApplicationRecord
 
   # Simple helper used when an API or UI needs to check if ids should be exposed.
   # Before a round is paired, identities should not be visible to players to avoid
-  # any angle-shooting and id choices base on the id choices of other players.
+  # any angle-shooting and id choices based on the id choices of other players.
   def show_identities?
     stages.first&.rounds&.any?
   end
