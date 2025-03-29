@@ -35,7 +35,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'vite_rails'
 
 group :development, :test do
-  gem 'brakeman', '~> 5.2'
+  gem 'brakeman'
   gem 'bullet'
   gem 'pry'
   gem 'simplecov'
@@ -44,7 +44,7 @@ group :development, :test do
 end
 
 group :test do
-  gem 'bundler-audit', '~> 0.9.0'
+  gem 'bundler-audit'
   gem 'capybara'
   gem 'database_cleaner'
   gem 'factory_bot_rails'

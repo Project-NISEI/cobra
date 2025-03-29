@@ -85,7 +85,8 @@ GEM
       popper_js (>= 1.16.1, < 2)
     bootstrap-datepicker-rails (1.10.0.1)
       railties (>= 3.0)
-    brakeman (5.4.1)
+    brakeman (7.0.0)
+      racc
     builder (3.3.0)
     bullet (8.0.1)
       activesupport (>= 3.0.0)
@@ -428,7 +429,8 @@ GEM
     uniform_notifier (1.16.0)
     uri (1.0.3)
     useragent (0.16.11)
-    vcr (3.0.3)
+    vcr (6.3.1)
+      base64
     vite_rails (3.0.19)
       railties (>= 5.1, < 9)
       vite_ruby (~> 3.0, >= 3.2.2)
@@ -455,9 +457,9 @@ PLATFORMS
 DEPENDENCIES
   bootstrap (~> 4.6)
   bootstrap-datepicker-rails
-  brakeman (~> 5.2)
+  brakeman
   bullet
-  bundler-audit (~> 0.9.0)
+  bundler-audit
   capybara
   coffee-rails
   database_cleaner
