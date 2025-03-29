@@ -16,9 +16,14 @@
               => fa_icon 'pencil'
               | Edit
             - unless round.completed?
-              =< link_to complete_tournament_round_path(round.tournament, round, completed: true), method: :patch, class: 'btn btn-warning' do
-                => fa_icon 'check'
-                | Complete
+              - if round.pairings.reported.count == round.pairings.count
+                =< link_to complete_tournament_round_path(round.tournament, round, completed: true), method: :patch, class: 'btn btn-warning' do
+                  => fa_icon 'check'
+                  | Complete
+              - else
+                =< link_to complete_tournament_round_path(round.tournament, round, completed: true), method: :patch, class: 'btn btn-warning', data: { confirm: "Are you sure you want to complete this round? Are all pairings reported?" } do
+                  => fa_icon 'check'
+                  | Complete
             =< link_to match_slips_tournament_round_pairings_path(round.tournament, round), class: 'btn btn-primary' do
               => fa_icon 'flag-checkered'
               | Match slips
