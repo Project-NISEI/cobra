@@ -406,16 +406,18 @@ RSpec.describe Tournament do
           },
           identities: {
             corp: {
-              'Epiphany' => { num_swiss_players: 1, num_cut_players: 0,
+              'Epiphany' => { faction: 'nbn', num_swiss_players: 1, num_cut_players: 0,
                               cut_conversion_percentage: 0.0 },
-              'Precision Design' => { num_swiss_players: 2, num_cut_players: 0,
+              'Precision Design' => { faction: 'haas-bioroid', num_swiss_players: 2, num_cut_players: 0,
                                       cut_conversion_percentage: 0.0 },
-              'Unspecified' => { num_swiss_players: 3, num_cut_players: 0, cut_conversion_percentage: 0.0 }
+              'Unspecified' => { faction: 'Unspecified', num_swiss_players: 3, num_cut_players: 0,
+                                 cut_conversion_percentage: 0.0 }
             },
             runner: {
-              'Unspecified' => { num_swiss_players: 3, num_cut_players: 0, cut_conversion_percentage: 0.0 },
-              'Maxx' => { num_swiss_players: 2, num_cut_players: 0, cut_conversion_percentage: 0.0 },
-              'Smoke' => { num_swiss_players: 1, num_cut_players: 0, cut_conversion_percentage: 0.0 }
+              'Unspecified' => { faction: 'Unspecified', num_swiss_players: 3, num_cut_players: 0,
+                                 cut_conversion_percentage: 0.0 },
+              'Maxx' => { faction: 'anarch', num_swiss_players: 2, num_cut_players: 0, cut_conversion_percentage: 0.0 },
+              'Smoke' => { faction: 'shaper', num_swiss_players: 1, num_cut_players: 0, cut_conversion_percentage: 0.0 }
             }
           }
         }
@@ -447,18 +449,20 @@ RSpec.describe Tournament do
           },
           identities: {
             corp: {
-              'Epiphany' => { num_swiss_players: 1, num_cut_players: 1,
+              'Epiphany' => { faction: 'nbn', num_swiss_players: 1, num_cut_players: 1,
                               cut_conversion_percentage: 100.0 },
-              'Precision Design' => { num_swiss_players: 2, num_cut_players: 2,
+              'Precision Design' => { faction: 'haas-bioroid', num_swiss_players: 2, num_cut_players: 2,
                                       cut_conversion_percentage: 100.0 },
-              'Unspecified' => { num_swiss_players: 3, num_cut_players: 1,
+              'Unspecified' => { faction: 'Unspecified', num_swiss_players: 3, num_cut_players: 1,
                                  cut_conversion_percentage: ((1 / 3.0) * 100).floor(2) }
             },
             runner: {
-              'Unspecified' => { num_swiss_players: 3, num_cut_players: 1,
+              'Unspecified' => { faction: 'Unspecified', num_swiss_players: 3, num_cut_players: 1,
                                  cut_conversion_percentage: ((1 / 3.0) * 100).floor(2) },
-              'Maxx' => { num_swiss_players: 2, num_cut_players: 2, cut_conversion_percentage: 100.0 },
-              'Smoke' => { num_swiss_players: 1, num_cut_players: 1, cut_conversion_percentage: 100.0 }
+              'Maxx' => { faction: 'anarch', num_swiss_players: 2, num_cut_players: 2,
+                          cut_conversion_percentage: 100.0 },
+              'Smoke' => { faction: 'shaper', num_swiss_players: 1, num_cut_players: 1,
+                           cut_conversion_percentage: 100.0 }
             }
           }
         }
