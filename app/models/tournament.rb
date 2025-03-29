@@ -111,7 +111,6 @@ class Tournament < ApplicationRecord
 
   def id_and_faction_data
     results = build_id_stats(id)
-    return results unless show_identities?
 
     latest_stage = stages.last
     results[:cut] = if !latest_stage.nil? && (stages.last.single_elim? || stages.last.double_elim?)
@@ -126,7 +125,7 @@ class Tournament < ApplicationRecord
   # Before a round is paired, identities should not be visible to players to avoid
   # any angle-shooting and id choices base on the id choices of other players.
   def show_identities?
-    current_stage&.rounds&.any?
+    stages.first&.rounds&.any?
   end
 
   def generate_slug
