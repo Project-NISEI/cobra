@@ -1,0 +1,48 @@
+.col-12
+  - if @tournament.description?
+    h3 Description
+    = markdown(@tournament.description)
+
+  - if @tournament.event_link
+    h3 More Information
+    a href="#{@tournament.event_link}" target="_blank" #{@tournament.event_link}
+
+  h3 Organizer
+  p
+    | #{@tournament.user.nrdb_username}
+    - unless @tournament.organizer_contact.nil?
+        | &nbsp;– #{@tournament.organizer_contact}
+
+  h3 Date & Time
+  p
+  | #{@tournament.date.strftime('%A, %B %e, %Y')}
+  - if @tournament.registration_starts && @tournament.tournament_starts
+    <br />
+    | Registration Starts: #{@tournament.registration_starts} / First Round Starts: #{@tournament.tournament_starts} #{@tournament.time_zone.nil? ? '' : " (#{@tournament.time_zone})"}
+  - elsif @tournament.registration_starts
+    <br />
+    | Registration Starts: #{@tournament.registration_starts} #{@tournament.time_zone.nil? ? '' : " (#{@tournament.time_zone})"}
+  - elsif @tournament.tournament_starts
+    <br />
+    | First Round Starts: #{@tournament.tournament_starts} #{@tournament.time_zone.nil? ? '' : " (#{@tournament.time_zone})"}
+
+
+  h3 Format and Deckbuilding
+  div
+  ul
+    li Swiss Format: #{@tournament.swiss_format.capitalize.tr('_', '-')}
+    - if @tournament.format_id?
+      li Game Format: #{@tournament.format.name}
+    - if @tournament.deckbuilding_restriction_id?
+      li Deckbuilding Restrictions: #{@tournament.deckbuilding_restriction.name}
+    - if @tournament.decklist_required?
+      li Decklist required for event
+
+  -if @tournament.official_prize_kit_id? || @tournament.additional_prizes_description?
+    - if @tournament.official_prize_kit_id?
+      h3 Prizes
+      div
+        p Official Prize Kit: #{@tournament.official_prize_kit.name
+    -if @tournament.additional_prizes_description?
+      h3 Additional Prizes
+      div #{markdown(@tournament.additional_prizes_description)}

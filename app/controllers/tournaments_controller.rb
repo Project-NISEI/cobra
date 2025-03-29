@@ -2,7 +2,7 @@
 
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: %i[
-    show edit update destroy
+    show info edit update destroy
     upload_to_abr save_json cut qr registration timer
     close_registration open_registration lock_player_registrations unlock_player_registrations
     id_and_faction_data cut_conversion_rates side_win_percentages
@@ -11,8 +11,18 @@ class TournamentsController < ApplicationController
   def index
     authorize Tournament
 
-    @tournaments = Tournament.includes(:user)
-                             .where(private: false)
+    where_clause = 'NOT private'
+    if params['type_id'].present?
+
+      @tournament_type = TournamentType.find_by id: params['type_id']
+      unless @tournament_type.nil?
+        where_clause += ActiveRecord::Base.sanitize_sql(
+          [' AND tournament_type_id = ?', params['type_id']]
+        )
+      end
+    end
+    @tournaments = Tournament.includes(:user, :tournament_type)
+                             .where(where_clause)
                              .order(date: :desc)
                              .limit(20)
   end
@@ -20,7 +30,7 @@ class TournamentsController < ApplicationController
   def my
     authorize Tournament
 
-    @tournaments = current_user.tournaments.order(date: :desc)
+    @tournaments = current_user.tournaments.includes(:tournament_type).order(date: :desc)
   end
 
   def show
@@ -36,6 +46,10 @@ class TournamentsController < ApplicationController
         render json: NrtmJson.new(@tournament).data(tournament_url(@tournament.slug, @request))
       end
     end
+  end
+
+  def info
+    authorize @tournament, :show?
   end
 
   def timer
@@ -250,7 +264,11 @@ class TournamentsController < ApplicationController
   def tournament_params
     params.require(:tournament).permit(:name, :date, :private, :stream_url, :manual_seed,
                                        :self_registration, :allow_streaming_opt_out, :nrdb_deck_registration,
-                                       :cut_deck_visibility, :swiss_deck_visibility, :swiss_format)
+                                       :cut_deck_visibility, :swiss_deck_visibility, :swiss_format,
+                                       :time_zone, :registration_starts, :tournament_starts, :tournament_type_id,
+                                       :card_set_id, :format_id, :deckbuilding_restriction_id, :decklist_required,
+                                       :organizer_contact, :event_link, :description, :official_prize_kit_id,
+                                       :additional_prizes_description)
   end
 
   def set_tournament_view_data
