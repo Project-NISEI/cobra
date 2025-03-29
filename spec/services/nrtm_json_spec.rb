@@ -24,6 +24,13 @@ RSpec.describe NrtmJson do
   end
 
   describe '#data' do
+    context 'with players registered but no rounds' do
+      it 'returns hash of data without player information' do
+        expect(json.data('https://server/SLUG').with_indifferent_access)
+          .to eq(JSON.parse(file_fixture('nrtm_json_swiss_before_rounds.json').read))
+      end
+    end
+
     context 'with round data' do
       before do
         round.pairings << create(:pairing, player1: jack, player2: jill, table_number: 1, score1_runner: 3,
