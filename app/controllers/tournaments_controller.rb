@@ -5,7 +5,7 @@ class TournamentsController < ApplicationController
     show info edit update destroy
     upload_to_abr save_json cut qr registration timer
     close_registration open_registration lock_player_registrations unlock_player_registrations
-    id_and_faction_data cut_conversion_rates side_win_percentages
+    id_and_faction_data cut_conversion_rates side_win_percentages stats
   ]
 
   def index
@@ -31,6 +31,10 @@ class TournamentsController < ApplicationController
     authorize Tournament
 
     @tournaments = current_user.tournaments.includes(:tournament_type).order(date: :desc)
+  end
+
+  def stats
+    authorize @tournament, :show?
   end
 
   def show
