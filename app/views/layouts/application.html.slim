@@ -20,6 +20,18 @@ html
             li.nav-item= link_to help_path, class: 'nav-link text-light' do
               => fa_icon 'life-ring'
               | How to
+            li.nav-item.dropdown
+                a.nav-link.dropdown-toggle.text-light href="#" id="tournamentTypeDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  => fa_icon 'trophy'
+                  | Tournament Types
+                div.dropdown-menu.dropdown-menu-right aria-labelledby="tournamentTypeDropdown"
+                  - tournament_types.each do |tournament_type|
+                    = link_to tournaments_by_type_tournaments_path(type_id: tournament_type.id), class: 'dropdown-item' do
+                      - if tournament_type.nsg_format
+                        i.fa.icon class="icon-nsg"
+                        | &nbsp;#{tournament_type.name}
+                      - else
+                        | &nbsp; &nbsp; &nbsp;#{tournament_type.name}
             - if user_signed_in?
               li.nav-item.dropdown
                 a.nav-link.dropdown-toggle.text-light href="#" id="signedInDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"

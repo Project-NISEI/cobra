@@ -21,6 +21,7 @@ class TournamentsController < ApplicationController
         )
       end
     end
+
     @tournaments = Tournament.includes(:user, :tournament_type)
                              .where(where_clause)
                              .order(date: :desc)
