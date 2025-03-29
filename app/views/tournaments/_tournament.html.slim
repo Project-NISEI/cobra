@@ -1,7 +1,8 @@
 = link_to tournament_path(tournament) do
   .tournament.card.m-3
     .card-body
-      h4.card-title= tournament.name
+      h4.card-title #{tournament.name} #{tournament.tournament_type_id? ? "<span style=\"font-size: .7em; position: relative; top: -.1em;\" class=\"badge badge-pill badge-secondary\">#{tournament.tournament_type.name}</span>".html_safe : ''}
+
       h6.card-subtitle.mb-2.text-muted
         => short_date(tournament)
         ' -
@@ -15,3 +16,4 @@
         .delete_action= link_to tournament_path(tournament), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed.' } do
           => fa_icon 'trash-o'
           | Delete
+x

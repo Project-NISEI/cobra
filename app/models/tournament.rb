@@ -5,6 +5,16 @@ class Tournament < ApplicationRecord
   belongs_to :user
   has_many :stages, -> { order(:number) }, dependent: :destroy # rubocop:disable Rails/InverseOf
   has_many :rounds
+  belongs_to :format, optional: true
+  belongs_to :deckbuilding_restriction, optional: true
+  belongs_to :official_prize_kit, optional: true
+  belongs_to :tournament_type, optional: true
+
+  # This is a list of attributes that will be replaced with nil if they are blank.
+  NULL_ATTRS = %w[organizer_contact event_link description additional_prizes_description time_zone card_set_id
+                  format_id deckbuilding_restriction_id official_prize_kit_id tournament_type_id registration_starts
+                  tournament_starts].freeze
+  before_save :nil_if_blank
 
   # TODO(plural): Rename double_elim to elimination
   enum :stage, { swiss: 0, double_elim: 1 }
@@ -111,6 +121,7 @@ class Tournament < ApplicationRecord
 
   def id_and_faction_data
     results = build_id_stats(id)
+
     latest_stage = stages.last
     results[:cut] = if !latest_stage.nil? && (stages.last.single_elim? || stages.last.double_elim?)
                       build_id_stats(id, is_cut: true)
@@ -118,6 +129,13 @@ class Tournament < ApplicationRecord
                       default_id_stats
                     end
     results
+  end
+
+  # Simple helper used when an API or UI needs to check if ids should be exposed.
+  # Before a round is paired, identities should not be visible to players to avoid
+  # any angle-shooting and id choices based on the id choices of other players.
+  def show_identities?
+    stages.first&.rounds&.any?
   end
 
   def generate_slug
@@ -218,6 +236,31 @@ class Tournament < ApplicationRecord
       'decklists, they may be shared with participants or made public.'
   end
 
+  def side_win_percentages_data
+    sql = ActiveRecord::Base.sanitize_sql(
+      ['SELECT * FROM side_win_percentages WHERE tournament_id = ? ORDER BY stage_number ASC', id]
+    )
+    rows = ActiveRecord::Base.connection.exec_query(sql).to_a
+    results = []
+    # Normalize stage numbers to be sequential from 1 to address edge cases where
+    # there are empty stages, followed by valid stages.
+    stage_number = 0
+    rows.each do |row|
+      stage_number += 1
+      results << {
+        stage_number: stage_number,
+        num_games: row['num_games'],
+        num_valid_games: row['num_valid_games'],
+        valid_game_percentage: row['valid_game_percentage'].to_f,
+        num_corp_wins: row['num_corp_wins'],
+        corp_win_percentage: row['corp_win_percentage'].to_f,
+        num_runner_wins: row['num_runner_wins'],
+        runner_win_percentage: row['runner_win_percentage'].to_f
+      }
+    end
+    results
+  end
+
   def cut_conversion_rates_data
     sql = ActiveRecord::Base.sanitize_sql([
                                             'SELECT * FROM cut_conversion_rates WHERE tournament_id = ?', id
@@ -233,6 +276,8 @@ class Tournament < ApplicationRecord
         runner: {}
       }
     }
+
+    return results unless show_identities?
 
     rows.each do |row|
       side = row['side'].to_sym
@@ -252,16 +297,22 @@ class Tournament < ApplicationRecord
         faction: row['faction'],
         num_swiss_players: row['num_swiss_players'].to_i,
         num_cut_players: row['num_cut_players'].to_i,
-        cut_conversion_percentage: row['cut_conversion_percentage'].to_f
+        cut_conversion_percentage: row['cut_conversion_percentage'].to_f.floor(2)
       }
     end
     results[:factions].each_key do |side|
       results[:factions][side].each do |faction, data|
         results[:factions][side][faction][:cut_conversion_percentage] =
-          (data[:num_cut_players].to_f / data[:num_swiss_players]) * 100
+          ((data[:num_cut_players].to_f / data[:num_swiss_players]) * 100).floor(2)
       end
     end
     results
+  end
+
+  protected
+
+  def nil_if_blank
+    NULL_ATTRS.each { |attr| self[attr] = nil if self[attr].blank? }
   end
 
   private
@@ -294,6 +345,8 @@ class Tournament < ApplicationRecord
 
   def build_id_stats(id, is_cut: false)
     results = default_id_stats
+
+    return results unless show_identities?
 
     sql = build_id_stats_sql(id, is_cut:)
     ActiveRecord::Base.connection.exec_query(sql).each do |row|

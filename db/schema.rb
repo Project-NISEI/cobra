@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_08_193210) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,6 +42,25 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "card_sets", id: :string, force: :cascade do |t|
+    t.string "name"
+    t.date "date_release"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_card_sets_on_name", unique: true
+  end
+
+  create_table "custom_prizes", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description"
+    t.string "image_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "tournament_id", null: false
+    t.index ["name"], name: "index_custom_prizes_on_name", unique: true
+    t.index ["tournament_id"], name: "index_custom_prizes_on_tournament_id"
+  end
+
   create_table "deck_cards", force: :cascade do |t|
     t.bigint "deck_id"
     t.string "title"
@@ -55,6 +74,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
     t.string "faction_id"
     t.integer "influence_cost"
     t.index ["deck_id"], name: "index_deck_cards_on_deck_id"
+  end
+
+  create_table "deckbuilding_restrictions", id: :string, force: :cascade do |t|
+    t.string "name"
+    t.date "date_start"
+    t.string "play_format_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_deckbuilding_restrictions_on_name", unique: true
   end
 
   create_table "decks", force: :cascade do |t|
@@ -91,6 +119,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
+  create_table "formats", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_formats_on_name", unique: true
+    t.index ["position"], name: "index_formats_on_position", unique: true
+  end
+
   create_table "identities", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "side"
@@ -98,6 +135,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
     t.string "nrdb_code"
     t.string "autocomplete"
     t.index ["side"], name: "index_identities_on_side"
+  end
+
+  create_table "official_prize_kits", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "link"
+    t.string "image_url"
+    t.string "description"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_official_prize_kits_on_name", unique: true
+    t.index ["position"], name: "index_official_prize_kits_on_position", unique: true
   end
 
   create_table "pairings", id: :serial, force: :cascade do |t|
@@ -197,6 +246,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
     t.index ["stage_id"], name: "index_standing_rows_on_stage_id"
   end
 
+  create_table "tournament_types", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "nsg_format", default: false, null: false
+    t.integer "position", default: 0, null: false
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_tournament_types_on_name", unique: true
+    t.index ["position"], name: "index_tournament_types_on_position", unique: true
+  end
+
   create_table "tournaments", id: :serial, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil
@@ -219,6 +279,24 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
     t.integer "cut_deck_visibility", default: 0, null: false
     t.boolean "allow_streaming_opt_out"
     t.integer "swiss_format", default: 0, null: false
+    t.bigint "tournament_type_id"
+    t.bigint "format_id"
+    t.string "deckbuilding_restriction_id"
+    t.string "registration_starts"
+    t.string "tournament_starts"
+    t.boolean "decklist_required", default: false, null: false
+    t.string "organizer_contact"
+    t.string "event_link"
+    t.text "description"
+    t.text "additional_prizes_description"
+    t.bigint "official_prize_kit_id"
+    t.string "card_set_id"
+    t.string "time_zone"
+    t.index ["card_set_id"], name: "index_tournaments_on_card_set_id"
+    t.index ["deckbuilding_restriction_id"], name: "index_tournaments_on_deckbuilding_restriction_id"
+    t.index ["format_id"], name: "index_tournaments_on_format_id"
+    t.index ["official_prize_kit_id"], name: "index_tournaments_on_official_prize_kit_id"
+    t.index ["tournament_type_id"], name: "index_tournaments_on_tournament_type_id"
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 
@@ -234,6 +312,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "custom_prizes", "tournaments"
   add_foreign_key "deck_cards", "decks"
   add_foreign_key "decks", "players"
   add_foreign_key "pairings", "players", column: "player1_id"
@@ -252,8 +331,82 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
   add_foreign_key "stages", "tournaments"
   add_foreign_key "standing_rows", "players"
   add_foreign_key "standing_rows", "stages"
+  add_foreign_key "tournaments", "card_sets"
+  add_foreign_key "tournaments", "deckbuilding_restrictions"
+  add_foreign_key "tournaments", "formats"
+  add_foreign_key "tournaments", "official_prize_kits"
+  add_foreign_key "tournaments", "tournament_types"
   add_foreign_key "tournaments", "users"
 
+  create_view "side_win_percentages", sql_definition: <<-SQL
+      WITH base AS (
+           SELECT s.tournament_id,
+              s.number AS stage_number,
+                  CASE
+                      WHEN (s.format = 0) THEN 2
+                      ELSE 1
+                  END AS num_expected_games,
+                  CASE
+                      WHEN ((s.format = 0) AND ((((p.score1_corp + p.score1_runner) + p.score2_corp) + p.score2_runner) > 0)) THEN 2
+                      WHEN ((s.format > 0) AND (p.side > 0) AND ((p.score1 + p.score2) > 0)) THEN 1
+                      ELSE 0
+                  END AS num_valid_games,
+                  CASE
+                      WHEN ((s.format = 0) AND (((p.score1_corp = 3) AND (p.score2_corp = 0)) OR ((p.score1_corp = 0) AND (p.score2_corp = 3)))) THEN 1
+                      WHEN ((s.format = 0) AND (p.score1_corp = 3) AND (p.score2_corp = 3)) THEN 2
+                      WHEN (((s.format > 0) AND (p.score1_corp = 3)) OR (p.score2_corp = 3)) THEN 1
+                      ELSE 0
+                  END AS num_corp_wins,
+                  CASE
+                      WHEN ((s.format = 0) AND (((p.score1_runner = 3) AND (p.score2_runner = 0)) OR ((p.score1_runner = 0) AND (p.score2_runner = 3)))) THEN 1
+                      WHEN ((s.format = 0) AND (p.score1_runner = 3) AND (p.score2_runner = 3)) THEN 2
+                      WHEN (((s.format > 0) AND (p.score1_runner = 3)) OR (p.score2_runner = 3)) THEN 1
+                      ELSE 0
+                  END AS num_runner_wins
+             FROM ((stages s
+               JOIN rounds r ON ((s.id = r.stage_id)))
+               JOIN pairings p ON ((p.round_id = r.id)))
+            WHERE r.completed
+          ), calculated AS (
+           SELECT base.tournament_id,
+              base.stage_number,
+              base.num_expected_games,
+              base.num_valid_games,
+                  CASE
+                      WHEN (base.num_valid_games = 0) THEN 0
+                      ELSE base.num_corp_wins
+                  END AS num_corp_wins,
+                  CASE
+                      WHEN (base.num_valid_games = 0) THEN 0
+                      ELSE base.num_runner_wins
+                  END AS num_runner_wins
+             FROM base
+          )
+   SELECT calculated.tournament_id,
+      calculated.stage_number,
+      sum(calculated.num_expected_games) AS num_games,
+      sum(calculated.num_valid_games) AS num_valid_games,
+      (
+          CASE
+              WHEN (sum(calculated.num_expected_games) > 0) THEN ((sum(calculated.num_valid_games))::double precision / (sum(calculated.num_expected_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS valid_game_percentage,
+      sum(calculated.num_corp_wins) AS num_corp_wins,
+      (
+          CASE
+              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_corp_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS corp_win_percentage,
+      sum(calculated.num_runner_wins) AS num_runner_wins,
+      (
+          CASE
+              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_runner_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS runner_win_percentage
+     FROM calculated
+    GROUP BY calculated.tournament_id, calculated.stage_number
+    ORDER BY calculated.tournament_id, calculated.stage_number;
+  SQL
   create_view "cut_conversion_rates", sql_definition: <<-SQL
       WITH corps AS (
            SELECT s_1.tournament_id,
@@ -276,7 +429,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_17_220510) do
              FROM (((stages s_1
                JOIN registrations r ON ((s_1.id = r.stage_id)))
                JOIN players p ON ((r.player_id = p.id)))
-               JOIN identities id ON ((p.runner_identity_ref_id = id.id)))
+               LEFT JOIN identities id ON ((p.runner_identity_ref_id = id.id)))
           ), combined AS (
            SELECT corps.tournament_id,
               corps.stage_number,

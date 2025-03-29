@@ -12,9 +12,9 @@ class NrtmJson
     # preliminaryRounds must be named in camelCase to match the expected NRTM format.
     preliminaryRounds = 0
     players = []
-    if swiss_stage
-      preliminaryRounds = swiss_stage.rounds.count
-      players = swiss_stage.standings.each_with_index.map do |standing, i|
+    if tournament.show_identities?
+      preliminaryRounds = swiss_stage&.rounds&.count
+      players = swiss_stage&.standings&.each_with_index&.map do |standing, i|
         {
           id: standing.player.id,
           name: standing.name,

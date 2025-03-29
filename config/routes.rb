@@ -37,10 +37,12 @@ Rails.application.routes.draw do
       get :pairings_data, on: :collection
     end
     resources :stages, only: %i[create destroy]
+    get :info, on: :member
     post :upload_to_abr, on: :member
     get :save_json, on: :member
     get :id_and_faction_data, on: :member
     get :cut_conversion_rates, on: :member
+    get :side_win_percentages, on: :member
     post :cut, on: :member
     get :qr, on: :member
     get :registration, on: :member
@@ -53,6 +55,7 @@ Rails.application.routes.draw do
     get :not_found, on: :collection
     get :my, on: :collection
     get :stats, on: :member
+    get 'type/:type_id', to: 'tournaments#index', on: :collection, as: :tournaments_by_type
   end
   resources :identities, only: [:index]
 
