@@ -151,7 +151,25 @@ RSpec.describe Tournament do
                                                    })
     end
 
+    it 'returns correct default data for tournament with players before first round is paired' do
+      expect(tournament.players.count).to eq(4)
+      expect(tournament.id_and_faction_data).to eq({
+                                                     corp: { factions: {},
+                                                             ids: {} },
+                                                     cut: { corp: { factions: {}, ids: {} }, num_players: 0,
+                                                            runner: { factions: {}, ids: {} } },
+                                                     num_players: 0,
+                                                     runner: { factions: {},
+                                                               ids: {} }
+                                                   })
+    end
+
     it 'returns correct data for basic players without identities set' do
+      swiss = tournament.stages.first
+      round = create(:round, stage: swiss)
+      create(:pairing, round:, player1: tournament.players[0], player2: tournament.players[1])
+      create(:pairing, round:, player1: tournament.players[2], player2: tournament.players[3])
+
       expect(tournament.id_and_faction_data).to eq({
                                                      corp: { factions: { 'unspecified' => 4 },
                                                              ids: { 'Unspecified' => { count: 4,
