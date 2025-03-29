@@ -119,6 +119,11 @@ class Tournament < ApplicationRecord
     end.sort_by { |element| element[1] }.reverse # rubocop:disable Style/MultilineBlockChain
   end
 
+  def cut_stage?
+    latest_stage = stages.last
+    !latest_stage.nil? && (stages.last.single_elim? || stages.last.double_elim?)
+  end
+
   def id_and_faction_data
     results = build_id_stats(id)
 
