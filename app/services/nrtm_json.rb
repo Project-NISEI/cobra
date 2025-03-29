@@ -14,7 +14,7 @@ class NrtmJson
     players = []
     if tournament.show_identities?
       preliminaryRounds = swiss_stage&.rounds&.count
-      players = swiss_stage.standings.each_with_index.map do |standing, i|
+      players = swiss_stage&.standings&.each_with_index&.map do |standing, i|
         {
           id: standing.player.id,
           name: standing.name,
