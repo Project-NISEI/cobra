@@ -51,7 +51,7 @@ group :test do
   gem 'faker'
   gem 'launchy'
   gem 'rspec-rails'
-  gem 'vcr', '~> 3'
+  gem 'vcr'
 end
 
 group :development do
