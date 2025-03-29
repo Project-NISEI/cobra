@@ -17,4 +17,8 @@ module ApplicationHelper
 
     markdown.render(text).html_safe # rubocop:disable Rails/OutputSafety
   end
+
+  def tournament_types
+    TournamentType.order(nsg_format: :desc, position: :asc)
+  end
 end
