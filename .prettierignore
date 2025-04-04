@@ -1,0 +1,5 @@
+node_modules
+tmp
+public
+app/assets/javascripts/awesomplete.js
+app/assets/javascripts/cable.js
