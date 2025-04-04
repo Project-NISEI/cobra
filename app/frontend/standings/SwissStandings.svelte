@@ -47,7 +47,7 @@
     </tr>
     </thead>
     <tbody>
-    {#each stage.standings as standing}
+    {#each stage.standings as standing (standing.position)}
         <tr>
             <td>{standing.position}</td>
             <td>{standing.player.name_with_pronouns}</td>
