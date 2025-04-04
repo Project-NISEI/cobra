@@ -1,8 +1,8 @@
 import type {Identity} from "../identities/Identity";
 
-declare namespace Routes {
-    function standings_data_tournament_players_path(tournamentId: string): string;
-}
+declare const Routes: {
+    standings_data_tournament_players_path: (tournamentId: string) => string;
+};
 
 export async function loadStandings(tournamentId: string): Promise<StandingsData> {
     const response = await fetch(
