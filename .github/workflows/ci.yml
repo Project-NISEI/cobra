@@ -108,6 +108,8 @@ jobs:
         run: bundle exec rubocop --parallel
       - name: Lint Javascript files
         run: npx eslint .
+      - name: Check style with Prettier
+        run: npx prettier . --check
 
   build_and_push:
     name: Build docker image
