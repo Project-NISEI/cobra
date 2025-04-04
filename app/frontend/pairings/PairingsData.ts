@@ -11,7 +11,7 @@ export async function loadPairings(tournamentId: string): Promise<PairingsData> 
             method: 'GET',
         }
     );
-    return response.json();
+    return await response.json() as PairingsData;
 }
 
 export interface PairingsData {
