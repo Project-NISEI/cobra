@@ -29,7 +29,7 @@
                 <FontAwesomeIcon icon="list-ul"/>
                 Pairings by name
             </a>
-            {#each round.pairings as pairing}
+            {#each round.pairings as pairing (pairing.id)}
                 <Pairing pairing={pairing} round="{round}" stage={stage} />
             {/each}
         </div>

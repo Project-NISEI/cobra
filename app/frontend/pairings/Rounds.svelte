@@ -33,7 +33,7 @@
             </a>
         </p>
     {/if}
-    {#each data.stages as stage, index}
+    {#each data.stages as stage, index (stage.format)}
         <Stage stage={stage} start_expanded={index === data.stages.length - 1}/>
     {/each}
 {:else}

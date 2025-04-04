@@ -20,7 +20,6 @@ export interface StandingsData {
 }
 
 export interface Stage {
-    name: string;
     format: string;
     rounds_complete: number;
     any_decks_viewable: boolean;
