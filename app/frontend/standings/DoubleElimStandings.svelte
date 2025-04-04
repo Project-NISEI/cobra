@@ -32,7 +32,7 @@
                         </a>
                     </td>
                 {:else if stage.any_decks_viewable}
-                    <td/>
+                    <td></td>
                 {/if}
                 <td class="ids">
                     <Identity identity={standing.player.corp_id} name_if_missing="Corp"/>
@@ -44,7 +44,7 @@
                 {#if standing.policy.view_decks}
                     <td>???</td>
                 {:else if stage.any_decks_viewable}
-                    <td/>
+                    <td></td>
                 {/if}
                 <td class="ids">
                     <p>???</p>
