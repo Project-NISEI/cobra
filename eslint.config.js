@@ -3,16 +3,16 @@
 import globals from "globals";
 import eslint from "@eslint/js";
 import svelte from 'eslint-plugin-svelte';
-import tseslint from "typescript-eslint";
+import ts from "typescript-eslint";
 import svelteConfig from './svelte.config.js';
 
 
-export default tseslint.config(
+export default ts.config(
     {
         extends: [
             eslint.configs.recommended,
-            tseslint.configs.strict,
-            tseslint.configs.stylistic,
+            ts.configs.strict,
+            ts.configs.stylistic,
             svelte.configs.recommended,
         ],
         ignores: ["node_modules", "public", "app/assets/javascripts/{awesomplete,cable}.js"],
@@ -27,7 +27,7 @@ export default tseslint.config(
             parserOptions: {
                 projectService: true,
                 extraFileExtensions: ['.svelte'], // Add support for additional file extensions, such as .svelte
-                parser: tseslint.parser,
+                parser: ts.parser,
                 // Specify a parser for each language, if needed:
                 // parser: {
                 //   ts: ts.parser,
