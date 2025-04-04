@@ -11,7 +11,7 @@ export async function loadStandings(tournamentId: string): Promise<StandingsData
             method: 'GET',
         }
     );
-    return response.json();
+    return await response.json() as StandingsData;
 }
 
 export interface StandingsData {

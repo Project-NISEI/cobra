@@ -11,11 +11,18 @@ export default ts.config(
     {
         extends: [
             eslint.configs.recommended,
-            ts.configs.strict,
-            ts.configs.stylistic,
+            ts.configs.strictTypeChecked,
+            ts.configs.stylisticTypeChecked,
             svelte.configs.recommended,
         ],
         ignores: ["node_modules", "public", "app/assets/javascripts/{awesomplete,cable}.js"],
+    },
+    {
+      languageOptions: {
+          parserOptions: {
+              projectService: true,
+          },
+      },
     },
     {
         languageOptions: { globals: globals.browser }
