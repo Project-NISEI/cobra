@@ -1,4 +1,4 @@
 export interface Identity {
-    name: string;
-    faction: string;
+  name: string;
+  faction: string;
 }
