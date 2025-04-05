@@ -93,6 +93,12 @@ jobs:
         with:
           ruby-version: 3.3.6
           bundler-cache: true
+      - name: Install NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install NPM dependencies
+        run: npm install
       - name: Security audit dependencies
         # TODO(plural): Remove the bootstrap issue when we move to 5 or a fix is issued.
         run: bundle exec bundler-audit --update --ignore=CVE-2024-6531
