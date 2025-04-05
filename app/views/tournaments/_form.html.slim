@@ -61,6 +61,9 @@
 - if Flipper.enabled? :nrdb_deck_registration
   .form-group
     = f.input :nrdb_deck_registration, as: :boolean, inline_label: 'Deck registration: Upload decks from NetrunnerDB'
+- if Flipper.enabled? :allow_self_reporting
+  .form-group
+    = f.input :allow_self_reporting, as: :boolean, inline_label: 'Allow logged-in players to report their own match results'
 .form-group
   = f.input :private, as: :boolean, inline_label: 'Private: Only I will be able to view this tournament'
 .form-group
