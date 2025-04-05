@@ -273,7 +273,7 @@ class TournamentsController < ApplicationController
                                        :time_zone, :registration_starts, :tournament_starts, :tournament_type_id,
                                        :card_set_id, :format_id, :deckbuilding_restriction_id, :decklist_required,
                                        :organizer_contact, :event_link, :description, :official_prize_kit_id,
-                                       :additional_prizes_description)
+                                       :additional_prizes_description, :allow_self_reporting)
   end
 
   def set_tournament_view_data

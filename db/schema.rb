@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_08_193210) do
+ActiveRecord::Schema[7.2].define(version: 2025_04_05_034059) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -292,6 +292,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_08_193210) do
     t.bigint "official_prize_kit_id"
     t.string "card_set_id"
     t.string "time_zone"
+    t.boolean "allow_self_reporting", default: false
     t.index ["card_set_id"], name: "index_tournaments_on_card_set_id"
     t.index ["deckbuilding_restriction_id"], name: "index_tournaments_on_deckbuilding_restriction_id"
     t.index ["format_id"], name: "index_tournaments_on_format_id"
