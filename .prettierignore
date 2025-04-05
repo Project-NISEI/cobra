@@ -1,9 +1,10 @@
 node_modules
-tmp
 public
+vendor
+tmp
+venv
 app/assets/*/awesomplete.*
 app/assets/javascripts/cable.js
-venv
 *.md
 *.json
 *.yml
