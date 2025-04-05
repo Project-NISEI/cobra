@@ -19,7 +19,7 @@
     </tr>
     </thead>
     <tbody>
-    {#each stage.standings as standing}
+    {#each stage.standings as standing (standing.position)}
         <tr>
             <td>{standing.position}</td>
             {#if standing.player}

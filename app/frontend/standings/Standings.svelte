@@ -24,7 +24,7 @@
 <h2>Standings</h2>
 
 {#if data}
-    {#each data.stages as stage}
+    {#each data.stages as stage (stage.format)}
         {#if stage.format === 'single_elim' || stage.format === 'double_elim'}
             <DoubleElimStandings stage={cutStage(stage)}/>
         {:else}

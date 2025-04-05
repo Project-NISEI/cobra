@@ -1,8 +1,8 @@
 import type {Identity} from "../identities/Identity";
 
-declare namespace Routes {
-    function standings_data_tournament_players_path(tournamentId: string): string;
-}
+declare const Routes: {
+    standings_data_tournament_players_path: (tournamentId: string) => string;
+};
 
 export async function loadStandings(tournamentId: string): Promise<StandingsData> {
     const response = await fetch(
@@ -11,30 +11,29 @@ export async function loadStandings(tournamentId: string): Promise<StandingsData
             method: 'GET',
         }
     );
-    return response.json();
+    return await response.json() as StandingsData;
 }
 
-export type StandingsData = {
+export interface StandingsData {
     manual_seed: boolean;
     stages: Stage[];
 }
 
-export type Stage = {
-    name: string;
+export interface Stage {
     format: string;
     rounds_complete: number;
     any_decks_viewable: boolean;
 }
 
-export type SwissStage = Stage & {
+export interface SwissStage extends Stage {
     standings: SwissStanding[];
 }
 
-export type CutStage = Stage & {
+export interface CutStage extends Stage {
     standings: CutStanding[];
 }
 
-export type SwissStanding = {
+export interface SwissStanding {
     player: Player;
     policy: StandingPolicies;
     position: number;
@@ -47,20 +46,20 @@ export type SwissStanding = {
     side_bias: number | null;
 }
 
-export type CutStanding = {
+export interface CutStanding {
     player: Player | null;
     policy: StandingPolicies;
     seed: number;
     position: number;
 }
 
-export type Player = {
+export interface Player {
     id: number;
     name_with_pronouns: string;
     corp_id: Identity | null;
     runner_id: Identity | null;
 }
 
-export type StandingPolicies = {
+export interface StandingPolicies {
     view_decks: boolean;
 }
