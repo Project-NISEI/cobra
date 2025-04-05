@@ -1,8 +1,8 @@
 import type {Identity} from "../identities/Identity";
 
-declare namespace Routes {
-    function pairings_data_tournament_rounds_path(tournamentId: string): string;
-}
+declare const Routes: {
+    pairings_data_tournament_rounds_path: (tournamentId: string) => string;
+};
 
 export async function loadPairings(tournamentId: string): Promise<PairingsData> {
     const response = await fetch(
@@ -11,33 +11,33 @@ export async function loadPairings(tournamentId: string): Promise<PairingsData> 
             method: 'GET',
         }
     );
-    return response.json();
+    return await response.json() as PairingsData;
 }
 
-export type PairingsData = {
+export interface PairingsData {
     policy: TournamentPolicies;
     is_player_meeting: boolean;
     stages: Stage[];
 }
 
-export type TournamentPolicies = {
+export interface TournamentPolicies {
     update: boolean;
 }
 
-export type Stage = {
+export interface Stage {
     name: string;
     format: string;
     rounds: Round[];
 }
 
-export type Round = {
+export interface Round {
     id: number;
     number: number;
     pairings: Pairing[];
     pairings_reported: number;
 }
 
-export type Pairing = {
+export interface Pairing {
     id: number;
     table_number: number;
     table_label: string;
@@ -49,11 +49,11 @@ export type Pairing = {
     two_for_one: boolean;
 }
 
-export type PairingPolicies = {
+export interface PairingPolicies {
     view_decks: boolean;
 }
 
-export type Player = {
+export interface Player {
     name_with_pronouns: string;
     side: string | null;
     side_label: string | null;

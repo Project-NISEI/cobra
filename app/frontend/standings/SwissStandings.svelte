@@ -6,13 +6,13 @@
     export let stage: SwissStage;
     export let manual_seed: boolean;
 
-    function printSideBias(sideBias: number) {
+    function printSideBias(sideBias: number | null) {
         if (sideBias == null || sideBias === 0) {
             return 'Balanced';
         } else if (sideBias > 0) {
-            return `Corp +${sideBias}`;
+            return `Corp +${String(sideBias)}`;
         } else {
-            return `Runner +${-sideBias}`;
+            return `Runner +${String(-sideBias)}`;
         }
     }
 
@@ -41,13 +41,13 @@
         {/if}
         <th>SoS</th>
         <th>ESoS</th>
-        {#if stage.format == 'single_sided_swiss' }
+        {#if stage.format === 'single_sided_swiss' }
         <th>Side Bias</th>
         {/if}
     </tr>
     </thead>
     <tbody>
-    {#each stage.standings as standing}
+    {#each stage.standings as standing (standing.position)}
         <tr>
             <td>{standing.position}</td>
             <td>{standing.player.name_with_pronouns}</td>
@@ -75,7 +75,7 @@
             {/if}
             <td>{printSOS(standing.sos)}</td>
             <td>{printSOS(standing.extended_sos)}</td>
-            {#if stage.format == 'single_sided_swiss' }
+            {#if stage.format === 'single_sided_swiss' }
             <td>{printSideBias(standing.side_bias)}</td>
             {/if}
         </tr>

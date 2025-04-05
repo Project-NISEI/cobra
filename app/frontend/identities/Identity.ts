@@ -1,4 +1,4 @@
-export type Identity = {
+export interface Identity {
     name: string;
     faction: string;
 }

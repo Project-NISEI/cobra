@@ -10,7 +10,6 @@ on:
   push:
     branches: [main, deploy/**]
   pull_request:
-    branches: [main]
   release:
     types: [published]
   workflow_dispatch:
@@ -94,6 +93,12 @@ jobs:
         with:
           ruby-version: 3.3.6
           bundler-cache: true
+      - name: Install NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install NPM dependencies
+        run: npm install
       - name: Security audit dependencies
         # TODO(plural): Remove the bootstrap issue when we move to 5 or a fix is issued.
         run: bundle exec bundler-audit --update --ignore=CVE-2024-6531
@@ -101,6 +106,8 @@ jobs:
         run: bundle exec brakeman -q -w2
       - name: Lint Ruby files
         run: bundle exec rubocop --parallel
+      - name: Lint Javascript files
+        run: npx eslint .
 
   build_and_push:
     name: Build docker image
