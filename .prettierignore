@@ -1,0 +1,10 @@
+node_modules
+public
+vendor
+tmp
+venv
+app/assets/*/awesomplete.*
+app/assets/javascripts/cable.js
+*.md
+*.json
+*.yml
