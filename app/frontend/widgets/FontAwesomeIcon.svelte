@@ -2,4 +2,4 @@
     export let icon: string;
 </script>
 
-<i class="fa fa-{icon}"/>
+<i class="fa fa-{icon}"></i>

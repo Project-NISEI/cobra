@@ -8,7 +8,7 @@
 
 {#if identity && (identity.name || name_if_missing)}
     <div class="{identity.faction}">
-        <i class="fa icon icon-{identity.faction}"/>
+        <i class="fa icon icon-{identity.faction}"></i>
         {#if identity.name}
             {identity.name}
         {:else}

@@ -22,7 +22,7 @@
     <FontAwesomeIcon icon="eye-slash"/>
     Show/hide identities
 </button>
-<p/>
+<p></p>
 
 {#if data}
     {#if data.is_player_meeting}
@@ -38,6 +38,6 @@
     {/each}
 {:else}
     <div class="d-flex align-items-center m-2">
-        <div class="spinner-border m-auto"/>
+        <div class="spinner-border m-auto"></div>
     </div>
 {/if}
