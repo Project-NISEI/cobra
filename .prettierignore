@@ -1,6 +1,9 @@
 node_modules
 tmp
 public
-app/assets/javascripts/awesomplete.js
+app/assets/*/awesomplete.*
 app/assets/javascripts/cable.js
 venv
+*.md
+*.json
+*.yml
