@@ -172,6 +172,60 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
   end
 
   describe '#pair!' do
+    context '5 players, 3 with first round bye' do
+      %i[bye_bye_birdie jack jill hansel gretel].each do |name|
+        let!(name) do
+          create(:player, name: name.to_s.humanize, tournament:)
+        end
+      end
+
+      before do
+        bye_bye_birdie.update first_round_bye: true
+        hansel.update first_round_bye: true
+        gretel.update first_round_bye: true
+      end
+
+      it 'returns 3 pairings and bye player has bye' do
+        pairer.pair!
+
+        round.reload
+        expect(round.pairings.count).to eq(4)
+
+        player_pairings = round.pairings.map { |p| [p.player1.name, p.player2.name].sort }
+        expect(player_pairings).to contain_exactly(
+          [jack.name, jill.name],
+          [nil_player.name, bye_bye_birdie.name],
+          [nil_player.name, hansel.name],
+          [nil_player.name, gretel.name]
+        )
+      end
+    end
+
+    context '5 players, 1 with first round bye' do
+      %i[bye_bye_birdie jack jill hansel gretel].each do |name|
+        let!(name) do
+          create(:player, name: name.to_s.humanize, tournament:)
+        end
+      end
+
+      before do
+        bye_bye_birdie.update first_round_bye: true
+      end
+
+      it 'returns 3 pairings and bye player has bye' do
+        pairer.pair!
+
+        round.reload
+        expect(round.pairings.count).to eq(3)
+
+        player_pairings = round.pairings.map { |p| [p.player1.name, p.player2.name] }
+        player_pairings.each do |pairing|
+          # Bye goes to Bye Bye Birdie
+          expect(pairing).to include(bye_bye_birdie.name) if pairing.include? nil_player.name
+        end
+      end
+    end
+
     context 'with four players' do
       %i[jack jill hansel gretel].each do |name|
         let!(name) do
