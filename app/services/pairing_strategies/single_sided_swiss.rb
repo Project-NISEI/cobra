@@ -100,7 +100,8 @@ module PairingStrategies
 
     def assign_byes!
       players_with_byes.each do |player|
-        @plain_pairings << PlainPairing.new(@players[player.id], @bye_winner_score, nil, @bye_loser_score)
+        # player[0] is the player id from the player summary structure
+        @plain_pairings << PlainPairing.new(@players[player[0]], @bye_winner_score, nil, @bye_loser_score)
       end
     end
 
