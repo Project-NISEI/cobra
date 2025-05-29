@@ -172,6 +172,70 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
   end
 
   describe '#pair!' do
+    context '2 players, check pairing sides for second matchup' do
+      %i[bob alice].each do |name|
+        let!(name) do
+          create(:player, name: name.to_s.humanize, tournament:)
+        end
+      end
+
+      let(:round1) { create(:round, tournament:, stage:, number: 1, completed: true) }
+      let(:round2) { create(:round, tournament:, stage:, number: 2) }
+      let(:pairer) { described_class.new(round2) }
+
+      before do
+        create(:pairing, round: round1,
+                         player1: bob, player2: alice,
+                         score1: 3, score2: 0,
+                         side: :player1_is_corp)
+      end
+
+      it 'round 2 has proper sides for second match' do
+        pairer.pair!
+
+        expect(round1.pairings.count).to eq(1)
+        round2.reload
+        expect(round2.pairings.count).to eq(1)
+        p = round2.pairings.first
+        if p.player1 == bob
+          expect(p.side).to eq('player1_is_runner')
+        else
+          expect(p.side).to eq('player1_is_corp')
+        end
+      end
+    end
+
+    context '2 players, check pairing limits for round 3' do
+      %i[bob alice].each do |name|
+        let!(name) do
+          create(:player, name: name.to_s.humanize, tournament:)
+        end
+      end
+
+      let(:round1) { create(:round, tournament:, stage:, number: 1, completed: true) }
+      let(:round2) { create(:round, tournament:, stage:, number: 2, completed: true) }
+      let(:round3) { create(:round, tournament:, stage:, number: 3) }
+      let(:pairer) { described_class.new(round3) }
+
+      before do
+        create(:pairing, round: round1,
+                         player1: bob, player2: alice,
+                         score1: 3, score2: 0,
+                         side: :player1_is_corp)
+        create(:pairing, round: round2,
+                         player1: alice, player2: bob,
+                         score1: 3, score2: 0,
+                         side: :player1_is_corp)
+      end
+
+      it 'round 3 has no valid pairings to make' do
+        pairer.pair!
+
+        round3.reload
+        expect(round3.pairings.count).to eq(0)
+      end
+    end
+
     context '5 players, 3 with first round bye' do
       %i[bye_bye_birdie jack jill hansel gretel].each do |name|
         let!(name) do

@@ -61,9 +61,10 @@ module PairingStrategies
         # return nil (no pairing possible) if players have already played twice
         next nil if player1.opponents.key?(player2.id) && player1.opponents[player2.id].count >= 2
 
+        # Check if either player has a preferred side bias.
         preferred_side = preferred_player1_side(player1.side_bias, player2.side_bias)
 
-        # return nil (no pairing possible) if the sides would repeat the previous pairing
+        # return nil (no pairing possible) if there is a side bias and the sides would repeat the previous pairing
         if preferred_side && player1.opponents[player2.id] &&
            player1.opponents[player2.id].include?(preferred_side)
           next nil
@@ -152,9 +153,16 @@ module PairingStrategies
         next if pairing.bye?
 
         preference = self.class.preferred_player1_side(pairing.player1.side_bias, pairing.player2.side_bias)
-        pairing.player1_side = 'runner' if preference == :runner
-        pairing.player1_side = 'corp' if preference == :corp
-        pairing.player1_side = %w[corp runner].sample if preference.nil?
+        if preference.nil? && pairing.player1.opponents.key?(pairing.player2.id)
+          # Pick the opposite side if this is a repeat matchup for these players.
+          pairing.player1_side = pairing.player1.opponents[pairing.player2.id].first == 'corp' ? 'runner' : 'corp'
+        elsif !preference.nil?
+          pairing.player1_side = 'runner' if preference == :runner
+          pairing.player1_side = 'corp' if preference == :corp
+        elsif preference.nil?
+          # Fall back to random assignment
+          pairing.player1_side = %w[corp runner].sample
+        end
       end
     end
   end
