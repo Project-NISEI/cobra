@@ -38,6 +38,7 @@ group :development, :test do
   gem 'brakeman'
   gem 'bullet'
   gem 'pry'
+  gem 'ruby-lsp-rspec', require: false
   gem 'simplecov'
   gem 'simplecov-cobertura'
   gem 'simplecov-html'
