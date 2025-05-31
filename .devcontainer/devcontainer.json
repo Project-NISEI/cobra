@@ -16,7 +16,7 @@
         "ghcr.io/devcontainers/features/ruby:1": {
             "version": "3.3.6" // Change to match Ruby version from Gemfile
         },
-        "ruby": "3.3.6",
+        "ruby": "3.3.8",
         "ghcr.io/devcontainers/features/node:1": {
             "version": 20 // Change Node version as required
         },
@@ -29,7 +29,10 @@
     },
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // This can be used to network with other containers or the host.
-    "forwardPorts": [3000, 5432],
+    "forwardPorts": [
+        3000,
+        5432
+    ],
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "bundle install && bundle exec rake db:setup && npm install",
     // Configure tool-specific properties.
@@ -68,9 +71,27 @@
                 "ruby.format": "rubocop",
                 "rubocop.yjitEnabled": false,
                 "editor.formatOnSave": false,
-                "rubyLsp.rubyExecutablePath": "/usr/local/bin/ruby",
-                "rubyLsp.rubyVersionManager": {
-                  "identifier": "custom"
+                "rubyTestExplorer.debugCommand": "bundle exec rdebug-ide",
+                "rubyTestExplorer.testFramework": "rspec",
+                "rubyLsp.enabledFeatures": {
+                    "codeActions": true,
+                    "diagnostics": true,
+                    "documentHighlights": true,
+                    "documentLink": true,
+                    "documentSymbols": true,
+                    "foldingRanges": true,
+                    "formatting": true,
+                    "hover": true,
+                    "inlayHint": true,
+                    "onTypeFormatting": true,
+                    "selectionRanges": true,
+                    "semanticHighlighting": true,
+                    "completion": true,
+                    "codeLens": true,
+                    "definition": true,
+                    "workspaceSymbol": true,
+                    "signatureHelp": true,
+                    "typeHierarchy": true
                 }
             },
             "extensions": [

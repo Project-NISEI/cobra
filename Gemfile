@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby '~> 3.3.6'
+ruby '~> 3.3.8'
 
 # Gems that have trouble with native packages on alpine.
 gem 'nokogiri', force_ruby_platform: true
@@ -37,7 +37,9 @@ gem 'vite_rails'
 group :development, :test do
   gem 'brakeman'
   gem 'bullet'
+  gem 'debug'
   gem 'pry'
+  gem 'ruby-lsp-rails', require: false
   gem 'ruby-lsp-rspec', require: false
   gem 'simplecov'
   gem 'simplecov-cobertura'
