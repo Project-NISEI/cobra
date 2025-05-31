@@ -14,7 +14,7 @@
             "version": "latest"
         },
         "ghcr.io/devcontainers/features/ruby:1": {
-            "version": "3.3.6" // Change to match Ruby version from Gemfile
+            "version": "3.3.8" // Change to match Ruby version from Gemfile
         },
         "ruby": "3.3.8",
         "ghcr.io/devcontainers/features/node:1": {
