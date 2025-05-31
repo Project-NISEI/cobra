@@ -124,6 +124,9 @@ GEM
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
     date (3.4.1)
+    debug (1.10.0)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     diff-lcs (1.6.2)
     docile (1.4.1)
     drb (2.2.1)
@@ -302,6 +305,8 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.11.1)
       ffi (~> 1.0)
+    rbs (3.9.4)
+      logger
     rdoc (6.13.1)
       psych (>= 4.0.0)
     redcarpet (3.6.1)
@@ -367,6 +372,15 @@ GEM
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
       rubocop-rspec (~> 3.5)
+    ruby-lsp (0.23.23)
+      language_server-protocol (~> 3.17.0)
+      prism (>= 1.2, < 2.0)
+      rbs (>= 3, < 5)
+      sorbet-runtime (>= 0.5.10782)
+    ruby-lsp-rails (0.4.3)
+      ruby-lsp (>= 0.23.18, < 0.24.0)
+    ruby-lsp-rspec (0.1.23)
+      ruby-lsp (~> 0.23.19)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     sassc (2.4.0)
@@ -464,6 +478,7 @@ DEPENDENCIES
   capybara
   coffee-rails
   database_cleaner
+  debug
   execjs
   factory_bot_rails
   faker
@@ -493,6 +508,8 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   rubocop-rspec_rails
+  ruby-lsp-rails
+  ruby-lsp-rspec
   sassc-rails
   scenic
   simple_form
@@ -508,7 +525,7 @@ DEPENDENCIES
   vite_rails
 
 RUBY VERSION
-   ruby 3.3.6p108
+   ruby 3.3.8p144
 
 BUNDLED WITH
    2.5.6
