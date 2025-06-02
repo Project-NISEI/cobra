@@ -3,6 +3,13 @@
 require 'redcarpet'
 
 module ApplicationHelper
+
+  class ResponsiveImgRenderer < Redcarpet::Render::HTML 
+    def image(link, title, alt_text) 
+      %(<img class="img-fluid" src=#{link} alt=#{alt_text}>)
+    end 
+  end 
+
   def markdown(text)
     options = {
       filter_html: true,
@@ -12,7 +19,7 @@ module ApplicationHelper
       fenced_code_blocks: true
     }
 
-    renderer = Redcarpet::Render::HTML.new(options)
+    renderer = ResponsiveImgRenderer.new(options)
     markdown = Redcarpet::Markdown.new(renderer)
 
     markdown.render(text).html_safe # rubocop:disable Rails/OutputSafety
