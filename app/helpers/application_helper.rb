@@ -3,11 +3,20 @@
 require 'redcarpet'
 
 module ApplicationHelper
+<<<<<<< HEAD
   class ResponsiveImgRenderer < Redcarpet::Render::HTML
     def image(link, _title, alt_text)
       %(<img class="img-fluid" src=#{link} alt=#{alt_text}>)
     end
   end
+=======
+
+  class ResponsiveImgRenderer < Redcarpet::Render::HTML 
+    def image(link, title, alt_text) 
+      %(<img class="img-fluid" src=#{link} alt=#{alt_text}>)
+    end 
+  end 
+>>>>>>> b9adddd (use img-fluid class on images)
 
   def markdown(text)
     options = {
