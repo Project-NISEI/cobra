@@ -3,7 +3,6 @@
 require 'redcarpet'
 
 module ApplicationHelper
-
   class ResponsiveImgRenderer < Redcarpet::Render::HTML
     def image(link, _title, alt_text)
       %(<img class="img-fluid" src=#{link} alt=#{alt_text}>)
