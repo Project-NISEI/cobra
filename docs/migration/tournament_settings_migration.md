@@ -33,6 +33,18 @@ The following new endpoint needs to be created:
 |----------|------------|---------|---------|
 | `/tournaments/:id/data` | GET | New | Fetch tournament data and related options |
 
+**Important Note**: These endpoints must be updated to handle JSON responses before implementing the frontend components. Without proper JSON response handling:
+
+- **Content Type Mismatch**: The server will respond with HTML content (the default format) even when the frontend expects JSON. When JavaScript tries to parse this HTML as JSON using `response.json()`, it will throw a parsing error.
+
+- **Redirect Handling**: Many of the existing endpoints use redirects for HTML responses (e.g., `redirect_to edit_tournament_path(@tournament)`). When called via AJAX/fetch, the browser will follow these redirects, but JavaScript won't be notified about the redirect destination. The code will receive the HTML of the redirected page instead of actionable data.
+
+- **Error Handling**: Without proper JSON responses for errors, the frontend won't receive structured error information. Instead, it might get a 500 error page in HTML format, making it difficult to display meaningful error messages to users.
+
+- **Status Codes**: The existing endpoints might return 302 (redirect) status codes that the frontend isn't prepared to handle, rather than 200 (success) or 422 (validation error) that would be more appropriate for API responses.
+
+- **CSRF Protection**: Rails' CSRF protection works differently for HTML vs. JSON requests. Without proper JSON handling, the application might encounter CSRF token verification failures.
+
 ### 2. Create Svelte Components
 
 Create the following Svelte components:
