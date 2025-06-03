@@ -4,6 +4,8 @@ This document contains the technical implementation details for migrating the To
 
 ## API Endpoint Implementation
 
+### New Data Endpoint
+
 ```ruby
 # In tournaments_controller.rb
 
@@ -20,7 +22,11 @@ def data
     official_prize_kits: OfficialPrizeKit.all
   }
 end
+```
 
+### Update Existing Endpoints
+
+```ruby
 # Update existing update method to handle JSON
 def update
   authorize @tournament
@@ -51,7 +57,12 @@ def upload_to_abr
   end
 end
 
-# Similar updates for other action endpoints
+# Similar updates for other action endpoints:
+# - cut
+# - close_registration
+# - open_registration
+# - lock_player_registrations
+# - unlock_player_registrations
 ```
 
 ## Routes Update
@@ -60,7 +71,7 @@ end
 # In config/routes.rb
 resources :tournaments do
   member do
-    get :data
+    get :data  # Add new data endpoint
     # Existing routes remain unchanged
     post :upload_to_abr
     post :cut

@@ -13,20 +13,25 @@ The Tournament Settings page currently uses:
 
 ## Migration Strategy
 
-### 1. Create REST API Endpoints
+### 1. Update REST API Endpoints
 
-First, add JSON endpoints to the `TournamentsController`:
+The following endpoints already exist but need to be updated to handle JSON responses:
 
-| Endpoint | HTTP Method | Purpose |
-|----------|------------|---------|
-| `/tournaments/:id/data` | GET | Fetch tournament data and related options |
-| `/tournaments/:id` | PATCH/PUT | Update tournament settings |
-| `/tournaments/:id/upload_to_abr` | POST | Upload to ABR |
-| `/tournaments/:id/cut` | POST | Cut to elimination rounds |
-| `/tournaments/:id/close_registration` | PATCH | Close registration |
-| `/tournaments/:id/open_registration` | PATCH | Open registration |
-| `/tournaments/:id/lock_player_registrations` | PATCH | Lock player registrations |
-| `/tournaments/:id/unlock_player_registrations` | PATCH | Unlock player registrations |
+| Endpoint | HTTP Method | Status | Changes Needed |
+|----------|------------|---------|---------------|
+| `/tournaments/:id` | PATCH/PUT | Exists | Add JSON response format |
+| `/tournaments/:id/upload_to_abr` | POST | Exists | Add JSON response format |
+| `/tournaments/:id/cut` | POST | Exists | Add JSON response format |
+| `/tournaments/:id/close_registration` | PATCH | Exists | Add JSON response format |
+| `/tournaments/:id/open_registration` | PATCH | Exists | Add JSON response format |
+| `/tournaments/:id/lock_player_registrations` | PATCH | Exists | Add JSON response format |
+| `/tournaments/:id/unlock_player_registrations` | PATCH | Exists | Add JSON response format |
+
+The following new endpoint needs to be created:
+
+| Endpoint | HTTP Method | Status | Purpose |
+|----------|------------|---------|---------|
+| `/tournaments/:id/data` | GET | New | Fetch tournament data and related options |
 
 ### 2. Create Svelte Components
 
@@ -38,13 +43,14 @@ Create the following Svelte components:
 
 ### 3. Integration Steps
 
-1. Create the API endpoints first
-2. Build the Svelte components
-3. Mount the components in the existing Slim template
-4. Test thoroughly
-5. Replace the Slim template entirely once stable
+1. Update existing endpoints to handle JSON responses
+2. Create the new data endpoint
+3. Build the Svelte components
+4. Mount the components in the existing Slim template
+5. Test thoroughly
+6. Replace the Slim template entirely once stable
 
-For implementation details, see [Tournament Settings Implementation Details](tournament_settings_implementation.md).
+For implementation details, see [Tournament Settings Implementation Details](./tournament_settings_implementation.md).
 
 ## Testing Strategy
 
@@ -55,7 +61,7 @@ For implementation details, see [Tournament Settings Implementation Details](tou
 
 ## Rollout Plan
 
-1. Deploy the API endpoints first
+1. Deploy the API endpoint updates first
 2. Add the Svelte components but keep them disabled
 3. Enable for a subset of users/tournaments
 4. Monitor for issues
