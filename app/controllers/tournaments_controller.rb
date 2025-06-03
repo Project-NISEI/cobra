@@ -95,10 +95,28 @@ class TournamentsController < ApplicationController
 
     @new_tournament = current_user.tournaments.new(tournament_params)
 
-    if @new_tournament.save
-      redirect_to tournament_path(@new_tournament)
-    else
-      render :new
+    respond_to do |format|
+      if @new_tournament.save
+        format.html do
+          redirect_to tournament_path(@new_tournament)
+        end
+        format.json do
+          render json: {
+            id: @new_tournament.id,
+            name: @new_tournament.name,
+            url: tournament_path(@new_tournament)
+          }, status: :created
+        end
+      else
+        format.html do
+          render :new
+        end
+        format.json do
+          # Determine appropriate status code based on whether there are validation errors
+          status_code = @new_tournament.errors.any? ? :unprocessable_entity : :internal_server_error
+          render json: { errors: @new_tournament.errors }, status: status_code
+        end
+      end
     end
   end
 
