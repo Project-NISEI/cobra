@@ -9,40 +9,26 @@ RSpec.describe TournamentsController, type: :request do
     end
 
     context 'with valid parameters' do
-      let(:valid_params) do
-        {
-          tournament: {
-            name: 'Test Tournament',
-            stream_url: 'https://twitch.tv',
-            manual_seed: true
-          }
-        }
-      end
 
       it 'creates a new tournament' do
         expect do
-          post tournaments_path, params: valid_params, as: :json
+          post tournaments_path, params: { tournament: { name: 'Test Tournament' } }, as: :json
         end.to change(Tournament, :count).by(1)
-      end
-
-      it 'creates a tournament with correct attributes' do
-        post tournaments_path, params: valid_params, as: :json
 
         tournament = Tournament.last
-        expect(tournament.name).to eq('Test Tournament')
-        expect(tournament.stream_url).to eq('https://twitch.tv')
-        expect(tournament.manual_seed?).to be(true)
-        expect(tournament.user).to eq(user)
-      end
-
-      it 'returns success status with tournament data' do
-        post tournaments_path, params: valid_params, as: :json
+        expect(tournament).to have_attributes(
+          name: 'Test Tournament',
+          user_id: user.id
+        )
 
         expect(response).to have_http_status(:created)
-        json_response = JSON.parse(response.body)
-        expect(json_response['id']).to eq(Tournament.last.id)
-        expect(json_response['name']).to eq('Test Tournament')
-        expect(json_response['url']).to be_present # URL to redirect to
+        expect(JSON.parse(response.body)).to eq(
+          {
+            'id' => tournament.id,
+            'name' => 'Test Tournament',
+            'url' => tournament_path(tournament)
+          }
+        )
       end
     end
 
@@ -65,9 +51,11 @@ RSpec.describe TournamentsController, type: :request do
         post tournaments_path, params: invalid_params, as: :json
 
         expect(response).to have_http_status(:unprocessable_entity)
-        json_response = JSON.parse(response.body)
-        expect(json_response['errors']).to be_present
-        expect(json_response['errors']['name']).to include("can't be blank")
+        expect(JSON.parse(response.body)).to eq(
+          {
+            'errors' => { 'name' => ["can't be blank"] }
+          }
+        )
       end
     end
 
@@ -95,8 +83,8 @@ RSpec.describe TournamentsController, type: :request do
       let(:card_set) { create(:card_set) }
       let(:restriction) { create(:deckbuilding_restriction) }
 
-      let(:complete_params) do
-        {
+      it 'creates a tournament with more attributes' do
+        post tournaments_path, params: {
           tournament: {
             name: 'Complete Tournament',
             stream_url: 'https://twitch.tv',
@@ -109,24 +97,22 @@ RSpec.describe TournamentsController, type: :request do
             deckbuilding_restriction_id: restriction.id,
             date: '2023-05-15'
           }
-        }
-      end
-
-      it 'creates a tournament with all attributes' do
-        post tournaments_path, params: complete_params, as: :json
+        }, as: :json
 
         expect(response).to have_http_status(:created)
-        tournament = Tournament.last
-        expect(tournament.name).to eq('Complete Tournament')
-        expect(tournament.stream_url).to eq('https://twitch.tv')
-        expect(tournament.manual_seed?).to be(true)
-        expect(tournament.self_registration?).to be(true)
-        expect(tournament.private?).to be(true)
-        expect(tournament.tournament_type_id).to eq(tournament_type.id)
-        expect(tournament.format_id).to eq(format.id)
-        expect(tournament.card_set_id).to eq(card_set.id)
-        expect(tournament.deckbuilding_restriction_id).to eq(restriction.id)
-        expect(tournament.date.to_s).to eq('2023-05-15')
+        expect(Tournament.last).to have_attributes(
+          name: 'Complete Tournament',
+          stream_url: 'https://twitch.tv',
+          user_id: user.id,
+          manual_seed: true,
+          self_registration: true,
+          private: true,
+          tournament_type_id: tournament_type.id,
+          format_id: format.id,
+          card_set_id: card_set.id,
+          deckbuilding_restriction_id: restriction.id,
+          date: Date.parse('2023-05-15')
+        )
       end
     end
   end
