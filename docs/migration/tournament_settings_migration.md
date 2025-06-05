@@ -75,8 +75,6 @@ Create the following Svelte components:
 4. Test thoroughly
 5. Replace the Slim templates entirely once stable
 
-For implementation details, see [Tournament Settings Implementation Details](./tournament_settings_implementation.md).
-
 ## Testing Strategy
 
 1. Unit test the API endpoints
