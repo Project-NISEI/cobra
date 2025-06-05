@@ -134,8 +134,6 @@ class TournamentsController < ApplicationController
           private: @tournament.private,
           manual_seed: @tournament.manual_seed,
           self_registration: @tournament.self_registration,
-          registration_open: @tournament.registration_open,
-          player_registrations_locked: @tournament.player_registrations_locked,
           swiss_format: @tournament.swiss_format,
           tournament_type_id: @tournament.tournament_type_id,
           format_id: @tournament.format_id,
