@@ -33,18 +33,18 @@ The Tournament Settings and Creation pages currently use:
 
 The following endpoints already exist but need to be updated to handle JSON responses:
 
-| Endpoint | HTTP Method | Changes Needed |
-|----------|------------|---------------|
-| `/tournaments/new` | GET | Add JSON response format to return form options data |
-| `/tournaments` | POST | Add JSON response format |
-| `/tournaments/:id` | GET | Add JSON response format to return tournament data and related options |
-| `/tournaments/:id` | PATCH/PUT | Add JSON response format |
-| `/tournaments/:id/upload_to_abr` | POST | Add JSON response format |
-| `/tournaments/:id/cut` | POST | Add JSON response format |
-| `/tournaments/:id/close_registration` | PATCH | Add JSON response format |
-| `/tournaments/:id/open_registration` | PATCH | Add JSON response format |
-| `/tournaments/:id/lock_player_registrations` | PATCH | Add JSON response format |
-| `/tournaments/:id/unlock_player_registrations` | PATCH | Add JSON response format |
+| Endpoint                                       | HTTP Method | Changes Needed                                                         |
+|------------------------------------------------|-------------|------------------------------------------------------------------------|
+| `/tournaments/new`                             | GET         | Add JSON response format to return form options data                   |
+| `/tournaments`                                 | POST        | Add JSON response format                                               |
+| `/tournaments/:id/edit`                        | GET         | Add JSON response format to return tournament data and related options |
+| `/tournaments/:id`                             | PATCH/PUT   | Add JSON response format                                               |
+| `/tournaments/:id/upload_to_abr`               | POST        | Add JSON response format                                               |
+| `/tournaments/:id/cut`                         | POST        | Add JSON response format                                               |
+| `/tournaments/:id/close_registration`          | PATCH       | Add JSON response format                                               |
+| `/tournaments/:id/open_registration`           | PATCH       | Add JSON response format                                               |
+| `/tournaments/:id/lock_player_registrations`   | PATCH       | Add JSON response format                                               |
+| `/tournaments/:id/unlock_player_registrations` | PATCH       | Add JSON response format                                               |
 
 **Important Note**: These endpoints must be updated to handle JSON responses before implementing the frontend components. Without proper JSON response handling:
 
