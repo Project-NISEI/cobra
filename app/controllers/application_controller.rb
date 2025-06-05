@@ -27,8 +27,15 @@ class ApplicationController < ActionController::Base
   private
 
   def user_not_authorised
-    flash[:alert] = "🔒 Sorry, you can't do that"
-    redirect_to(request.referer || root_path)
+    respond_to do |format|
+      format.html do
+        flash[:alert] = "🔒 Sorry, you can't do that"
+        redirect_to(request.referer || root_path)
+      end
+      format.json do
+        render json: { error: "🔒 Sorry, you can't do that" }, status: :unauthorized
+      end
+    end
   end
 
   def error
