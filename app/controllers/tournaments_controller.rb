@@ -122,6 +122,34 @@ class TournamentsController < ApplicationController
 
   def edit
     authorize @tournament
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: {
+          id: @tournament.id,
+          name: @tournament.name,
+          date: @tournament.date,
+          stream_url: @tournament.stream_url,
+          private: @tournament.private,
+          manual_seed: @tournament.manual_seed,
+          self_registration: @tournament.self_registration,
+          registration_open: @tournament.registration_open,
+          player_registrations_locked: @tournament.player_registrations_locked,
+          swiss_format: @tournament.swiss_format,
+          tournament_type_id: @tournament.tournament_type_id,
+          format_id: @tournament.format_id,
+          card_set_id: @tournament.card_set_id,
+          deckbuilding_restriction_id: @tournament.deckbuilding_restriction_id,
+          abr_code: @tournament.abr_code,
+          # Include form options data
+          tournament_types: TournamentType.all.map { |t| { id: t.id, name: t.name } },
+          formats: Format.all.map { |f| { id: f.id, name: f.name } },
+          card_sets: CardSet.all.map { |c| { id: c.id, name: c.name } },
+          deckbuilding_restrictions: DeckbuildingRestriction.all.map { |d| { id: d.id, name: d.name } }
+        }
+      end
+    end
   end
 
   def update
