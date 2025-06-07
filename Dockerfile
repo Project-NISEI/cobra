@@ -3,7 +3,13 @@ FROM ruby:3.3.8-alpine3.20 AS base
 
 # Install essential Linux packages and nodejs
 RUN apk -U upgrade && apk add --no-cache \
-  postgresql-client tzdata nodejs npm gcompat \
+  gcompat \
+  libffi-dev \
+  nodejs \
+  npm \
+  postgresql-client \
+  tzdata \
+  yaml-dev \
   && rm -rf /var/cache/apk/*
 
 # Define where our application will live inside the image
