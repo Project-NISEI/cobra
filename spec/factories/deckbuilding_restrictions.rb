@@ -5,6 +5,6 @@ FactoryBot.define do
     sequence(:id) { |n| "restriction-#{n}" }
     sequence(:name) { |n| "Deckbuilding Restriction #{n}" }
     date_start { Time.zone.today - 60.days }
-    play_format_id { "standard" }
+    play_format_id { 'standard' }
   end
 end
