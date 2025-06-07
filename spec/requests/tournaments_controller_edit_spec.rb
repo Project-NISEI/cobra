@@ -47,11 +47,6 @@ RSpec.describe TournamentsController, type: :request do
             'manual_seed' => true,
             'self_registration' => true,
             'swiss_format' => 'double_sided',
-            'tournament_type_id' => nil,
-            'format_id' => nil,
-            'card_set_id' => nil,
-            'deckbuilding_restriction_id' => nil,
-            'abr_code' => nil,
             'tournament_types' => [],
             'formats' => [],
             'card_sets' => [],
@@ -79,11 +74,6 @@ RSpec.describe TournamentsController, type: :request do
             'manual_seed' => true,
             'self_registration' => true,
             'swiss_format' => 'double_sided',
-            'tournament_type_id' => nil,
-            'format_id' => nil,
-            'card_set_id' => nil,
-            'deckbuilding_restriction_id' => nil,
-            'abr_code' => nil,
             'tournament_types' => [
               { 'id' => tournament_type.id, 'name' => 'Store Championship' }
             ],
