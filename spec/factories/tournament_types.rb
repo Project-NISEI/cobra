@@ -5,6 +5,6 @@ FactoryBot.define do
     sequence(:name) { |n| "Tournament Type #{n}" }
     sequence(:position) { |n| n }
     nsg_format { false }
-    description { "Description for tournament type" }
+    description { 'Description for tournament type' }
   end
 end

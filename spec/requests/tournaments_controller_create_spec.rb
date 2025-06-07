@@ -9,7 +9,6 @@ RSpec.describe TournamentsController, type: :request do
     end
 
     context 'with valid parameters' do
-
       it 'creates a new tournament' do
         expect do
           post tournaments_path, params: { tournament: { name: 'Test Tournament' } }, as: :json
