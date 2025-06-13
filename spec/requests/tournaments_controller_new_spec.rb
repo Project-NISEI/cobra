@@ -21,28 +21,32 @@ RSpec.describe TournamentsController, type: :request do
 
         expect(response).to be_successful
         expect(response.content_type).to include('application/json')
-        expect(JSON.parse(response.body)).to eq(
+        data = JSON.parse(response.body)
+        expect(data['tournament']).to eq(
           {
-            'tournament' => {
-              'date' => '2023-05-15',
-              'private' => false,
-              'swiss_format' => 'double_sided'
-            },
-            'options' => {
-              'tournament_types' => [
-                { 'id' => tournament_type.id, 'name' => 'Store Championship' }
-              ],
-              'formats' => [
-                { 'id' => format.id, 'name' => 'Standard' }
-              ],
-              'card_sets' => [
-                { 'id' => card_set.id, 'name' => 'System Gateway' }
-              ],
-              'deckbuilding_restrictions' => [
-                { 'id' => restriction.id, 'name' => 'Standard Ban List' }
-              ]
-            }
+            'date' => '2023-05-15',
+            'private' => false,
+            'swiss_format' => 'double_sided'
           }
+        )
+        expect(data['options'].except('time_zones')).to eq(
+          {
+            'tournament_types' => [
+              { 'id' => tournament_type.id, 'name' => 'Store Championship' }
+            ],
+            'formats' => [
+              { 'id' => format.id, 'name' => 'Standard' }
+            ],
+            'card_sets' => [
+              { 'id' => card_set.id, 'name' => 'System Gateway' }
+            ],
+            'deckbuilding_restrictions' => [
+              { 'id' => restriction.id, 'name' => 'Standard Ban List' }
+            ]
+          }
+        )
+        expect(data['options']['time_zones']).to include(
+          { 'id' => 'UTC', 'name' => '(GMT+00:00) UTC' }
         )
       end
     end

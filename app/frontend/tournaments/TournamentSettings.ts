@@ -38,11 +38,22 @@ export interface TournamentOptions {
   formats: { id: number; name: string }[];
   card_sets: { id: number; name: string }[];
   deckbuilding_restrictions: { id: number; name: string }[];
+  time_zones: { id: string; name: string }[];
 }
 
 export interface TournamentSettingsData {
   tournament: TournamentSettings;
   options: TournamentOptions;
+}
+
+export function emptyTournamentOptions() {
+  return {
+    tournament_types: [],
+    formats: [],
+    card_sets: [],
+    deckbuilding_restrictions: [],
+    time_zones: [],
+  };
 }
 
 export async function loadNewTournament(): Promise<TournamentSettingsData> {

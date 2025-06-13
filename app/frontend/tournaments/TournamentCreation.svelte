@@ -1,6 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { type Errors, loadNewTournament, type TournamentSettings } from "./TournamentSettings";
+  import {
+    emptyTournamentOptions,
+    type Errors,
+    loadNewTournament,
+    type TournamentOptions,
+    type TournamentSettings
+  } from "./TournamentSettings";
   import TournamentForm from './TournamentForm.svelte';
 
   let tournament: TournamentSettings = {
@@ -8,6 +14,7 @@
     time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Browser's timezone as default
     swiss_format: 'double_sided',
   };
+  let options: TournamentOptions = emptyTournamentOptions();
 
   let isSubmitting = false;
   let errors: Errors = {};
@@ -41,7 +48,8 @@
     
     <form on:submit|preventDefault={submitNewTournament}>
       <TournamentForm 
-        {tournament} 
+        {tournament}
+        {options}
         onSubmit={submitNewTournament}
         submitLabel="Create" 
         {isSubmitting} 

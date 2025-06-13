@@ -363,7 +363,8 @@ class TournamentsController < ApplicationController
         tournament_types: TournamentType.all.map { |t| { id: t.id, name: t.name } },
         formats: Format.all.map { |f| { id: f.id, name: f.name } },
         card_sets: CardSet.all.map { |c| { id: c.id, name: c.name } },
-        deckbuilding_restrictions: DeckbuildingRestriction.all.map { |d| { id: d.id, name: d.name } }
+        deckbuilding_restrictions: DeckbuildingRestriction.all.map { |d| { id: d.id, name: d.name } },
+        time_zones: ActiveSupport::TimeZone.all.map { |z| { id: z.name, name: z.to_s } }
       }
     }
   end

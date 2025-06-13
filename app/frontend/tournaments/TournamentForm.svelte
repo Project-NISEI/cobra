@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { Errors, TournamentSettings } from "./TournamentSettings";
+  import { emptyTournamentOptions, type Errors, type TournamentOptions, type TournamentSettings } from "./TournamentSettings";
   export let tournament: TournamentSettings = {};
+  export let options: TournamentOptions = emptyTournamentOptions();
   
   export let onSubmit = () => {
     console.log("Submitted: ", tournament);
@@ -43,15 +44,9 @@
     <div class="form-group">
       <label for="time_zone">Time Zone</label>
       <select id="time_zone" class="form-control" bind:value={tournament.time_zone}>
-        <option value="UTC">UTC</option>
-        <option value="America/New_York">Eastern Time (US & Canada)</option>
-        <option value="America/Chicago">Central Time (US & Canada)</option>
-        <option value="America/Denver">Mountain Time (US & Canada)</option>
-        <option value="America/Los_Angeles">Pacific Time (US & Canada)</option>
-        <option value="Europe/London">London</option>
-        <option value="Europe/Paris">Paris</option>
-        <option value="Asia/Tokyo">Tokyo</option>
-        <option value="Australia/Sydney">Sydney</option>
+        {#each options.time_zones as time_zone (time_zone.id)}
+          <option value={time_zone.id}>{time_zone.name}</option>
+        {/each}
       </select>
       {#if errors.time_zone}
         <div class="invalid-feedback d-block">{errors.time_zone}</div>
