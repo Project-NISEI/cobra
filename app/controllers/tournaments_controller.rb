@@ -344,23 +344,27 @@ class TournamentsController < ApplicationController
 
   def tournament_settings_json(tournament)
     {
-      id: tournament.id,
-      name: tournament.name,
-      date: tournament.date,
-      stream_url: tournament.stream_url,
-      private: tournament.private,
-      manual_seed: tournament.manual_seed,
-      self_registration: tournament.self_registration,
-      swiss_format: tournament.swiss_format,
-      tournament_type_id: tournament.tournament_type_id,
-      format_id: tournament.format_id,
-      card_set_id: tournament.card_set_id,
-      deckbuilding_restriction_id: tournament.deckbuilding_restriction_id,
-      abr_code: tournament.abr_code,
-      tournament_types: TournamentType.all.map { |t| { id: t.id, name: t.name } },
-      formats: Format.all.map { |f| { id: f.id, name: f.name } },
-      card_sets: CardSet.all.map { |c| { id: c.id, name: c.name } },
-      deckbuilding_restrictions: DeckbuildingRestriction.all.map { |d| { id: d.id, name: d.name } }
-    }.compact
+      tournament: {
+        id: tournament.id,
+        name: tournament.name,
+        date: tournament.date,
+        stream_url: tournament.stream_url,
+        private: tournament.private,
+        manual_seed: tournament.manual_seed,
+        self_registration: tournament.self_registration,
+        swiss_format: tournament.swiss_format,
+        tournament_type_id: tournament.tournament_type_id,
+        format_id: tournament.format_id,
+        card_set_id: tournament.card_set_id,
+        deckbuilding_restriction_id: tournament.deckbuilding_restriction_id,
+        abr_code: tournament.abr_code
+      }.compact,
+      options: {
+        tournament_types: TournamentType.all.map { |t| { id: t.id, name: t.name } },
+        formats: Format.all.map { |f| { id: f.id, name: f.name } },
+        card_sets: CardSet.all.map { |c| { id: c.id, name: c.name } },
+        deckbuilding_restrictions: DeckbuildingRestriction.all.map { |d| { id: d.id, name: d.name } }
+      }
+    }
   end
 end

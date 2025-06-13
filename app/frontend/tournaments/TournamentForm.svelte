@@ -1,28 +1,13 @@
 <script lang="ts">
-  export let tournament = {
-    name: '',
-    date: '',
-    time_zone: 'UTC',
-    registration_starts: '',
-    tournament_starts: '',
-    swiss_format: 'double_sided',
-    stream_url: '',
-    self_registration: false,
-    nrdb_deck_registration: false,
-    allow_self_reporting: false,
-    private: false
-  };
+  import type { Errors, TournamentSettings } from "./TournamentSettings";
+  export let tournament: TournamentSettings = {};
   
-  export let onSubmit = () => {};
+  export let onSubmit = () => {
+    console.log("Submitted: ", tournament);
+  };
   export let submitLabel = 'Save';
   export let isSubmitting = false;
-  export let errors = null;
-  
-  // Format handling for time inputs
-  function formatTime(time) {
-    if (!time) return '';
-    return time;
-  }
+  export let errors: Errors = {};
 </script>
 
 <div class="form-group">
@@ -34,7 +19,7 @@
     bind:value={tournament.name} 
     required
   />
-  {#if errors?.name}
+  {#if errors.name}
     <div class="invalid-feedback d-block">{errors.name}</div>
   {/if}
 </div>
@@ -49,7 +34,7 @@
         class="form-control" 
         bind:value={tournament.date}
       />
-      {#if errors?.date}
+      {#if errors.date}
         <div class="invalid-feedback d-block">{errors.date}</div>
       {/if}
     </div>
@@ -68,7 +53,7 @@
         <option value="Asia/Tokyo">Tokyo</option>
         <option value="Australia/Sydney">Sydney</option>
       </select>
-      {#if errors?.time_zone}
+      {#if errors.time_zone}
         <div class="invalid-feedback d-block">{errors.time_zone}</div>
       {/if}
     </div>
@@ -85,7 +70,7 @@
         class="form-control" 
         bind:value={tournament.registration_starts}
       />
-      {#if errors?.registration_starts}
+      {#if errors.registration_starts}
         <div class="invalid-feedback d-block">{errors.registration_starts}</div>
       {/if}
     </div>
@@ -99,7 +84,7 @@
         class="form-control" 
         bind:value={tournament.tournament_starts}
       />
-      {#if errors?.tournament_starts}
+      {#if errors.tournament_starts}
         <div class="invalid-feedback d-block">{errors.tournament_starts}</div>
       {/if}
     </div>
@@ -112,7 +97,7 @@
     <option value="double_sided">Double-Sided</option>
     <option value="single_sided">Single-Sided</option>
   </select>
-  {#if errors?.swiss_format}
+  {#if errors.swiss_format}
     <div class="invalid-feedback d-block">{errors.swiss_format}</div>
   {/if}
 </div>
@@ -125,7 +110,7 @@
     class="form-control" 
     bind:value={tournament.stream_url}
   />
-  {#if errors?.stream_url}
+  {#if errors.stream_url}
     <div class="invalid-feedback d-block">{errors.stream_url}</div>
   {/if}
 </div>

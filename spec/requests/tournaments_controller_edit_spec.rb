@@ -39,18 +39,22 @@ RSpec.describe TournamentsController, type: :request do
 
         expect(JSON.parse(response.body)).to eq(
           {
-            'id' => tournament.id,
-            'name' => 'Test Tournament',
-            'date' => '2023-05-15',
-            'stream_url' => 'https://twitch.tv/test',
-            'private' => false,
-            'manual_seed' => true,
-            'self_registration' => true,
-            'swiss_format' => 'double_sided',
-            'tournament_types' => [],
-            'formats' => [],
-            'card_sets' => [],
-            'deckbuilding_restrictions' => []
+            'tournament' => {
+              'id' => tournament.id,
+              'name' => 'Test Tournament',
+              'date' => '2023-05-15',
+              'stream_url' => 'https://twitch.tv/test',
+              'private' => false,
+              'manual_seed' => true,
+              'self_registration' => true,
+              'swiss_format' => 'double_sided',
+            },
+            'options' => {
+              'tournament_types' => [],
+              'formats' => [],
+              'card_sets' => [],
+              'deckbuilding_restrictions' => []
+            }
           }
         )
       end
@@ -66,26 +70,30 @@ RSpec.describe TournamentsController, type: :request do
 
         expect(JSON.parse(response.body)).to eq(
           {
-            'id' => tournament.id,
-            'name' => 'Test Tournament',
-            'date' => '2023-05-15',
-            'stream_url' => 'https://twitch.tv/test',
-            'private' => false,
-            'manual_seed' => true,
-            'self_registration' => true,
-            'swiss_format' => 'double_sided',
-            'tournament_types' => [
-              { 'id' => tournament_type.id, 'name' => 'Store Championship' }
-            ],
-            'formats' => [
-              { 'id' => format.id, 'name' => 'Standard' }
-            ],
-            'card_sets' => [
-              { 'id' => card_set.id, 'name' => 'System Gateway' }
-            ],
-            'deckbuilding_restrictions' => [
-              { 'id' => restriction.id, 'name' => 'Standard Ban List' }
-            ]
+            'tournament' => {
+              'id' => tournament.id,
+              'name' => 'Test Tournament',
+              'date' => '2023-05-15',
+              'stream_url' => 'https://twitch.tv/test',
+              'private' => false,
+              'manual_seed' => true,
+              'self_registration' => true,
+              'swiss_format' => 'double_sided'
+            },
+            'options' => {
+              'tournament_types' => [
+                { 'id' => tournament_type.id, 'name' => 'Store Championship' }
+              ],
+              'formats' => [
+                { 'id' => format.id, 'name' => 'Standard' }
+              ],
+              'card_sets' => [
+                { 'id' => card_set.id, 'name' => 'System Gateway' }
+              ],
+              'deckbuilding_restrictions' => [
+                { 'id' => restriction.id, 'name' => 'Standard Ban List' }
+              ]
+            }
           }
         )
       end

@@ -23,21 +23,25 @@ RSpec.describe TournamentsController, type: :request do
         expect(response.content_type).to include('application/json')
         expect(JSON.parse(response.body)).to eq(
           {
-            'date' => '2023-05-15',
-            'private' => false,
-            'swiss_format' => 'double_sided',
-            'tournament_types' => [
-              { 'id' => tournament_type.id, 'name' => 'Store Championship' }
-            ],
-            'formats' => [
-              { 'id' => format.id, 'name' => 'Standard' }
-            ],
-            'card_sets' => [
-              { 'id' => card_set.id, 'name' => 'System Gateway' }
-            ],
-            'deckbuilding_restrictions' => [
-              { 'id' => restriction.id, 'name' => 'Standard Ban List' }
-            ]
+            'tournament' => {
+              'date' => '2023-05-15',
+              'private' => false,
+              'swiss_format' => 'double_sided'
+            },
+            'options' => {
+              'tournament_types' => [
+                { 'id' => tournament_type.id, 'name' => 'Store Championship' }
+              ],
+              'formats' => [
+                { 'id' => format.id, 'name' => 'Standard' }
+              ],
+              'card_sets' => [
+                { 'id' => card_set.id, 'name' => 'System Gateway' }
+              ],
+              'deckbuilding_restrictions' => [
+                { 'id' => restriction.id, 'name' => 'Standard Ban List' }
+              ]
+            }
           }
         )
       end
