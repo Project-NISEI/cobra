@@ -66,7 +66,7 @@
 <div class="row">
   <div class="col-md-6">
     <div class="form-group">
-      <label for="registration_starts">Registration Starts</label>
+      <label for="registration_starts">Registration starts</label>
       <input
         type="time"
         id="registration_starts"
@@ -80,7 +80,7 @@
   </div>
   <div class="col-md-6">
     <div class="form-group">
-      <label for="tournament_starts">Tournament Starts</label>
+      <label for="tournament_starts">Tournament starts</label>
       <input
         type="time"
         id="tournament_starts"
@@ -95,7 +95,7 @@
 </div>
 
 <div class="form-group">
-  <label for="swiss_format">Swiss Format</label>
+  <label for="swiss_format">Swiss format</label>
   <select
     id="swiss_format"
     class="form-control"
@@ -149,24 +149,40 @@
 <div class="form-check mb-3">
   <input
     type="checkbox"
-    id="allow_self_reporting"
-    class="form-check-input"
-    bind:checked={tournament.allow_self_reporting}
-  />
-  <label for="allow_self_reporting" class="form-check-label">
-    Allow logged-in players to report their own match results
-  </label>
-</div>
-
-<div class="form-check mb-3">
-  <input
-    type="checkbox"
     id="private"
     class="form-check-input"
     bind:checked={tournament.private}
   />
   <label for="private" class="form-check-label">
     Private: Only I will be able to view this tournament
+  </label>
+</div>
+
+<div class="form-check mb-3">
+  <input
+    type="checkbox"
+    id="manual_seed"
+    class="form-check-input"
+    bind:checked={tournament.manual_seed}
+  />
+  <label for="manual_seed" class="form-check-label">
+    Use manual seeding for tiebreakers: Players can be assigned a "seed" value
+    that will be used before all other tiebreakers (in ascending order; i.e.
+    Seed 1 wins all ties)
+  </label>
+</div>
+
+<div class="form-check mb-3">
+  <input
+    type="checkbox"
+    id="allow_streaming_opt_out"
+    class="form-check-input"
+    bind:checked={tournament.allow_streaming_opt_out}
+  />
+  <label for="allow_streaming_opt_out" class="form-check-label">
+    Streaming opt out: Allow players to choose whether their games should be
+    included in video coverage (defaults to yes, and players are notified that
+    in a top cut it may not be possible to exclude them)
   </label>
 </div>
 
