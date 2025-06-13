@@ -25,6 +25,7 @@
     const data = await loadNewTournament();
     // Merge any server-provided defaults with our local defaults
     tournament = { ...tournament, ...data.tournament };
+    options = data.options;
   });
 
   function submitNewTournament() {
