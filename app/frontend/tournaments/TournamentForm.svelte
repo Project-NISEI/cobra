@@ -17,13 +17,12 @@
 </script>
 
 <div class="form-group">
-  <label for="name">Tournament name</label>
+  <label for="name"><abbr title="required">*</abbr> Tournament name</label>
   <input
     type="text"
     id="name"
     class="form-control"
     bind:value={tournament.name}
-    required
   />
   {#if errors.name}
     <div class="invalid-feedback d-block">{errors.name}</div>
