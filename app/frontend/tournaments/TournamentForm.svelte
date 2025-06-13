@@ -1,23 +1,28 @@
 <script lang="ts">
-  import { emptyTournamentOptions, type Errors, type TournamentOptions, type TournamentSettings } from "./TournamentSettings";
+  import {
+    emptyTournamentOptions,
+    type Errors,
+    type TournamentOptions,
+    type TournamentSettings,
+  } from "./TournamentSettings";
   export let tournament: TournamentSettings = {};
   export let options: TournamentOptions = emptyTournamentOptions();
-  
+
   export let onSubmit = () => {
     console.log("Submitted: ", tournament);
   };
-  export let submitLabel = 'Save';
+  export let submitLabel = "Save";
   export let isSubmitting = false;
   export let errors: Errors = {};
 </script>
 
 <div class="form-group">
   <label for="name">Tournament name</label>
-  <input 
-    type="text" 
-    id="name" 
-    class="form-control" 
-    bind:value={tournament.name} 
+  <input
+    type="text"
+    id="name"
+    class="form-control"
+    bind:value={tournament.name}
     required
   />
   {#if errors.name}
@@ -29,10 +34,10 @@
   <div class="col-md-6">
     <div class="form-group">
       <label for="date">Date</label>
-      <input 
-        type="date" 
-        id="date" 
-        class="form-control" 
+      <input
+        type="date"
+        id="date"
+        class="form-control"
         bind:value={tournament.date}
       />
       {#if errors.date}
@@ -43,7 +48,11 @@
   <div class="col-md-6">
     <div class="form-group">
       <label for="time_zone">Time Zone</label>
-      <select id="time_zone" class="form-control" bind:value={tournament.time_zone}>
+      <select
+        id="time_zone"
+        class="form-control"
+        bind:value={tournament.time_zone}
+      >
         {#each options.time_zones as time_zone (time_zone.id)}
           <option value={time_zone.id}>{time_zone.name}</option>
         {/each}
@@ -59,10 +68,10 @@
   <div class="col-md-6">
     <div class="form-group">
       <label for="registration_starts">Registration Starts</label>
-      <input 
-        type="time" 
-        id="registration_starts" 
-        class="form-control" 
+      <input
+        type="time"
+        id="registration_starts"
+        class="form-control"
         bind:value={tournament.registration_starts}
       />
       {#if errors.registration_starts}
@@ -73,10 +82,10 @@
   <div class="col-md-6">
     <div class="form-group">
       <label for="tournament_starts">Tournament Starts</label>
-      <input 
-        type="time" 
-        id="tournament_starts" 
-        class="form-control" 
+      <input
+        type="time"
+        id="tournament_starts"
+        class="form-control"
         bind:value={tournament.tournament_starts}
       />
       {#if errors.tournament_starts}
@@ -88,7 +97,11 @@
 
 <div class="form-group">
   <label for="swiss_format">Swiss Format</label>
-  <select id="swiss_format" class="form-control" bind:value={tournament.swiss_format}>
+  <select
+    id="swiss_format"
+    class="form-control"
+    bind:value={tournament.swiss_format}
+  >
     <option value="double_sided">Double-Sided</option>
     <option value="single_sided">Single-Sided</option>
   </select>
@@ -99,10 +112,10 @@
 
 <div class="form-group">
   <label for="stream_url">Stream URL</label>
-  <input 
-    type="url" 
-    id="stream_url" 
-    class="form-control" 
+  <input
+    type="url"
+    id="stream_url"
+    class="form-control"
     bind:value={tournament.stream_url}
   />
   {#if errors.stream_url}
@@ -111,10 +124,10 @@
 </div>
 
 <div class="form-check mb-3">
-  <input 
-    type="checkbox" 
-    id="self_registration" 
-    class="form-check-input" 
+  <input
+    type="checkbox"
+    id="self_registration"
+    class="form-check-input"
     bind:checked={tournament.self_registration}
   />
   <label for="self_registration" class="form-check-label">
@@ -123,10 +136,10 @@
 </div>
 
 <div class="form-check mb-3">
-  <input 
-    type="checkbox" 
-    id="nrdb_deck_registration" 
-    class="form-check-input" 
+  <input
+    type="checkbox"
+    id="nrdb_deck_registration"
+    class="form-check-input"
     bind:checked={tournament.nrdb_deck_registration}
   />
   <label for="nrdb_deck_registration" class="form-check-label">
@@ -135,10 +148,10 @@
 </div>
 
 <div class="form-check mb-3">
-  <input 
-    type="checkbox" 
-    id="allow_self_reporting" 
-    class="form-check-input" 
+  <input
+    type="checkbox"
+    id="allow_self_reporting"
+    class="form-check-input"
     bind:checked={tournament.allow_self_reporting}
   />
   <label for="allow_self_reporting" class="form-check-label">
@@ -147,10 +160,10 @@
 </div>
 
 <div class="form-check mb-3">
-  <input 
-    type="checkbox" 
-    id="private" 
-    class="form-check-input" 
+  <input
+    type="checkbox"
+    id="private"
+    class="form-check-input"
     bind:checked={tournament.private}
   />
   <label for="private" class="form-check-label">
@@ -159,14 +172,18 @@
 </div>
 
 <div class="form-group">
-  <button 
-    type="submit" 
-    class="btn btn-primary" 
-    on:click|preventDefault={onSubmit} 
+  <button
+    type="submit"
+    class="btn btn-primary"
+    on:click|preventDefault={onSubmit}
     disabled={isSubmitting}
   >
     {#if isSubmitting}
-      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span
+        class="spinner-border spinner-border-sm"
+        role="status"
+        aria-hidden="true"
+      ></span>
       Saving...
     {:else}
       {submitLabel}
