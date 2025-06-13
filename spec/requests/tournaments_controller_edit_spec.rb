@@ -47,7 +47,7 @@ RSpec.describe TournamentsController, type: :request do
               'private' => false,
               'manual_seed' => true,
               'self_registration' => true,
-              'swiss_format' => 'double_sided',
+              'swiss_format' => 'double_sided'
             },
             'options' => {
               'tournament_types' => [],
