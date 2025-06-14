@@ -94,7 +94,23 @@ Rails.application.configure do
 end
 ```
 
-## For local dev with Docker
+## Local dev with VS Code
+
+The application has a Docker
+[DevContainer](https://code.visualstudio.com/docs/devcontainers/containers)
+setup.  If you open this folder in VS Code it will prompt you to re-open in the
+devcontainer. If you use VS Code, this is the easiest way to develop for Cobra.
+
+From there, your terminal will be in the container and you will have a
+self-contained, full-featured development environment.
+
+## Local dev with Docker
+
+If you want to develop with docker outside of VS Code, these instructions are
+for you. This set up is preferred over local environment dev to keep
+development and deployed versions consistent.
+
+Local changes are live refreshed for both ruby and svelte aside from server-startup configuration.
 
 - Set up config files
 ```shell
@@ -103,21 +119,49 @@ echo "POSTGRES_PASSWORD=cobra" > .env
 echo "RAILS_ENV=development" >> .env
 ```
 
-- Deploy the app
+- Start the application
 
 ```shell
-bin/deploy
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-This will build the Docker image, run rake tasks to initialise or migrate the database, update Netrunner identities,
-precompile assets, and bring up the app in Docker.
+To interact with the application, enter the `app` shell and run your commands in there.
+```shell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app /bin/sh
+```
+
+## Important Commands in the shell
+
+### Update IDs from the NRDB API
+
+```shell
+bundle exec rake ids:update
+```
+
+### Update Card Sets from the NRDB API
+
+```shell
+bundle exec rake card_sets:update
+```
+
+### Seed Tournament Metadata
+
+Formats, tournament types, and prize kits are seeded by this task.
+
+```shell
+bundle exec rake tournament_metadata:seed
+```
+
+### Run tests
 
 To run tests in your docker container, you will need to override the environment, like so:
+
 ```shell
-docker compose exec -e RAILS_ENV=test app rspec
+RAILS_ENV=test bundle exec rspec
 ```
 
 ## Deploy in production with Docker Compose
+
 - Deploy NGINX
 ```shell
 git clone https://github.com/Project-NISEI/nginx-proxy.git nginx
