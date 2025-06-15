@@ -1,12 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import {
+    createTournament,
     emptyTournamentOptions,
     type Errors,
     type FeatureFlags,
     loadNewTournament,
     type TournamentOptions,
     type TournamentSettings,
+    ValidationError,
   } from "./TournamentSettings";
   import TournamentForm from "./TournamentForm.svelte";
 
@@ -20,7 +22,6 @@
 
   let isSubmitting = false;
   let errors: Errors = {};
-  let success = false;
 
   onMount(async () => {
     // Fetch any initial data needed for the form (like available options)
@@ -31,10 +32,22 @@
     featureFlags = data.feature_flags;
   });
 
-  function submitNewTournament() {
+  async function submitNewTournament() {
     isSubmitting = true;
     errors = {};
-    console.log("Submitted: ", tournament);
+
+    try {
+      const response = await createTournament(tournament);
+      window.location.href = response.url;
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        errors = error.errors;
+      } else {
+        errors = { base: ["An unexpected error occurred. Please try again."] };
+      }
+    } finally {
+      isSubmitting = false;
+    }
   }
 </script>
 
@@ -42,11 +55,7 @@
   <div class="col-12">
     <h1>Create a tournament</h1>
 
-    {#if success}
-      <div class="alert alert-success">
-        Tournament created successfully! Redirecting to tournament settings...
-      </div>
-    {:else if errors.base}
+    {#if errors.base}
       <div class="alert alert-danger">{errors.base}</div>
     {/if}
 

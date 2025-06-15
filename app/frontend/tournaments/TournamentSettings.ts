@@ -1,7 +1,8 @@
-export type Errors = Record<string, string>;
+export type Errors = Record<string, string[]>;
 
 declare const Routes: {
   new_tournament_path: () => string;
+  tournaments_path: () => string;
 };
 
 export interface TournamentSettings {
@@ -72,4 +73,54 @@ export async function loadNewTournament(): Promise<TournamentSettingsData> {
     method: "GET",
   });
   return (await response.json()) as TournamentSettingsData;
+}
+
+export interface TournamentCreateResponse {
+  id: number;
+  name: string;
+  url: string;
+}
+
+export interface TournamentCreateErrorResponse {
+  errors: Errors;
+}
+
+function getCSRFToken(): string {
+  const metaTag = document.querySelector('meta[name="csrf-token"]');
+  if (metaTag instanceof HTMLMetaElement) {
+    return metaTag.content;
+  }
+  return "";
+}
+
+export async function createTournament(
+  tournament: TournamentSettings,
+): Promise<TournamentCreateResponse> {
+  const response = await fetch(Routes.tournaments_path(), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-CSRF-Token": getCSRFToken(),
+    },
+    body: JSON.stringify({ tournament }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 422) {
+      const errorData =
+        (await response.json()) as TournamentCreateErrorResponse;
+      throw new ValidationError(errorData.errors);
+    }
+    throw new Error(`HTTP ${response.status.toString()}: ${response.statusText}`);
+  }
+
+  return (await response.json()) as TournamentCreateResponse;
+}
+
+export class ValidationError extends Error {
+  constructor(public errors: Errors) {
+    super("Validation failed");
+    this.name = "ValidationError";
+  }
 }
