@@ -17,5 +17,6 @@
     "isolatedModules": true
   },
   "include": ["app/**/*.ts", "app/**/*.js", "app/**/*.svelte", "eslint.config.mjs", "svelte.config.js", "vitest-setup.ts", "vitest.config.ts"],
+  "exclude": ["app/assets/javascripts/awesomplete.js", "app/assets/javascripts/cable.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
