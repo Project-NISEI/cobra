@@ -109,6 +109,165 @@
   {/if}
 </div>
 
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label for="tournament_type_id">Tournament Type</label>
+      <select
+        id="tournament_type_id"
+        class="form-control"
+        bind:value={tournament.tournament_type_id}
+      >
+        <option value="">Select tournament type</option>
+        {#each options.tournament_types as tournament_type (tournament_type.id)}
+          <option value={tournament_type.id}>{tournament_type.name}</option>
+        {/each}
+      </select>
+      {#if errors.tournament_type_id}
+        <div class="invalid-feedback d-block">{errors.tournament_type_id}</div>
+      {/if}
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label for="card_set_id">Legal Cardpool Up To</label>
+      <select
+        id="card_set_id"
+        class="form-control"
+        bind:value={tournament.card_set_id}
+      >
+        <option value="">Select card set</option>
+        {#each options.card_sets as card_set (card_set.id)}
+          <option value={card_set.id}>{card_set.name}</option>
+        {/each}
+      </select>
+      {#if errors.card_set_id}
+        <div class="invalid-feedback d-block">{errors.card_set_id}</div>
+      {/if}
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label for="format_id">Play Format</label>
+      <select
+        id="format_id"
+        class="form-control"
+        bind:value={tournament.format_id}
+      >
+        <option value="">Select format</option>
+        {#each options.formats as format (format.id)}
+          <option value={format.id}>{format.name}</option>
+        {/each}
+      </select>
+      {#if errors.format_id}
+        <div class="invalid-feedback d-block">{errors.format_id}</div>
+      {/if}
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label for="deckbuilding_restriction_id">Deckbuilding Restriction</label>
+      <select
+        id="deckbuilding_restriction_id"
+        class="form-control"
+        bind:value={tournament.deckbuilding_restriction_id}
+      >
+        <option value="">Select restriction</option>
+        {#each options.deckbuilding_restrictions as restriction (restriction.id)}
+          <option value={restriction.id}>{restriction.name}</option>
+        {/each}
+      </select>
+      {#if errors.deckbuilding_restriction_id}
+        <div class="invalid-feedback d-block">{errors.deckbuilding_restriction_id}</div>
+      {/if}
+    </div>
+  </div>
+</div>
+
+<div class="form-check mb-3">
+  <input
+    type="checkbox"
+    id="decklist_required"
+    class="form-check-input"
+    bind:checked={tournament.decklist_required}
+  />
+  <label for="decklist_required" class="form-check-label">
+    Decklist required for event
+  </label>
+</div>
+
+<div class="form-group">
+  <label for="organizer_contact">Organizer Contact Information</label>
+  <input
+    type="text"
+    id="organizer_contact"
+    class="form-control"
+    bind:value={tournament.organizer_contact}
+  />
+  {#if errors.organizer_contact}
+    <div class="invalid-feedback d-block">{errors.organizer_contact}</div>
+  {/if}
+</div>
+
+<div class="form-group">
+  <label for="event_link">External Event Link</label>
+  <input
+    type="url"
+    id="event_link"
+    class="form-control"
+    bind:value={tournament.event_link}
+  />
+  {#if errors.event_link}
+    <div class="invalid-feedback d-block">{errors.event_link}</div>
+  {/if}
+</div>
+
+<div class="form-group">
+  <label for="description">Event Description (Markdown format supported)</label>
+  <textarea
+    id="description"
+    class="form-control"
+    rows="4"
+    bind:value={tournament.description}
+  ></textarea>
+  {#if errors.description}
+    <div class="invalid-feedback d-block">{errors.description}</div>
+  {/if}
+</div>
+
+<div class="form-group">
+  <label for="official_prize_kit_id">Official Prize Kit</label>
+  <select
+    id="official_prize_kit_id"
+    class="form-control"
+    bind:value={tournament.official_prize_kit_id}
+  >
+    <option value="">Select prize kit</option>
+    {#each options.official_prize_kits as prize_kit (prize_kit.id)}
+      <option value={prize_kit.id}>{prize_kit.name}</option>
+    {/each}
+  </select>
+  {#if errors.official_prize_kit_id}
+    <div class="invalid-feedback d-block">{errors.official_prize_kit_id}</div>
+  {/if}
+</div>
+
+<div class="form-group">
+  <label for="additional_prizes_description">Additional Prize Information (Markdown format supported)</label>
+  <textarea
+    id="additional_prizes_description"
+    class="form-control"
+    rows="4"
+    bind:value={tournament.additional_prizes_description}
+  ></textarea>
+  {#if errors.additional_prizes_description}
+    <div class="invalid-feedback d-block">{errors.additional_prizes_description}</div>
+  {/if}
+</div>
+
 <div class="form-group">
   <label for="stream_url">Stream URL</label>
   <input
@@ -183,6 +342,18 @@
     Streaming opt out: Allow players to choose whether their games should be
     included in video coverage (defaults to yes, and players are notified that
     in a top cut it may not be possible to exclude them)
+  </label>
+</div>
+
+<div class="form-check mb-3">
+  <input
+    type="checkbox"
+    id="allow_self_reporting"
+    class="form-check-input"
+    bind:checked={tournament.allow_self_reporting}
+  />
+  <label for="allow_self_reporting" class="form-check-label">
+    Allow logged-in players to report their own match results
   </label>
 </div>
 

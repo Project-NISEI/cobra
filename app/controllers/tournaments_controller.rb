@@ -352,11 +352,23 @@ class TournamentsController < ApplicationController
         private: tournament.private,
         manual_seed: tournament.manual_seed,
         self_registration: tournament.self_registration,
+        allow_streaming_opt_out: tournament.allow_streaming_opt_out,
+        nrdb_deck_registration: tournament.nrdb_deck_registration,
         swiss_format: tournament.swiss_format,
+        time_zone: tournament.time_zone,
+        registration_starts: tournament.registration_starts,
+        tournament_starts: tournament.tournament_starts,
         tournament_type_id: tournament.tournament_type_id,
         format_id: tournament.format_id,
         card_set_id: tournament.card_set_id,
         deckbuilding_restriction_id: tournament.deckbuilding_restriction_id,
+        decklist_required: tournament.decklist_required,
+        organizer_contact: tournament.organizer_contact,
+        event_link: tournament.event_link,
+        description: tournament.description,
+        official_prize_kit_id: tournament.official_prize_kit_id,
+        additional_prizes_description: tournament.additional_prizes_description,
+        allow_self_reporting: tournament.allow_self_reporting,
         abr_code: tournament.abr_code
       }.compact,
       options: {
@@ -364,7 +376,8 @@ class TournamentsController < ApplicationController
         formats: Format.all.map { |f| { id: f.id, name: f.name } },
         card_sets: CardSet.all.map { |c| { id: c.id, name: c.name } },
         deckbuilding_restrictions: DeckbuildingRestriction.all.map { |d| { id: d.id, name: d.name } },
-        time_zones: ActiveSupport::TimeZone.all.map { |z| { id: z.name, name: z.to_s } }
+        time_zones: ActiveSupport::TimeZone.all.map { |z| { id: z.name, name: z.to_s } },
+        official_prize_kits: OfficialPrizeKit.order(position: :desc).map { |p| { id: p.id, name: p.name } }
       }
     }
   end

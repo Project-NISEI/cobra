@@ -15,6 +15,7 @@ RSpec.describe TournamentsController, type: :request do
         format = create(:format, name: 'Standard')
         card_set = create(:card_set, name: 'System Gateway')
         restriction = create(:deckbuilding_restriction, name: 'Standard Ban List')
+        prize_kit = create(:official_prize_kit, name: '2025 Q1 Game Night Kit', position: 1)
         travel_to Date.new(2023, 5, 15) do
           get new_tournament_path, as: :json
         end
@@ -26,7 +27,10 @@ RSpec.describe TournamentsController, type: :request do
           {
             'date' => '2023-05-15',
             'private' => false,
-            'swiss_format' => 'double_sided'
+            'swiss_format' => 'double_sided',
+            'allow_self_reporting' => false,
+            'decklist_required' => false,
+            'nrdb_deck_registration' => false
           }
         )
         expect(data['options'].except('time_zones')).to eq(
@@ -42,6 +46,9 @@ RSpec.describe TournamentsController, type: :request do
             ],
             'deckbuilding_restrictions' => [
               { 'id' => restriction.id, 'name' => 'Standard Ban List' }
+            ],
+            'official_prize_kits' => [
+              { 'id' => prize_kit.id, 'name' => '2025 Q1 Game Night Kit' }
             ]
           }
         )

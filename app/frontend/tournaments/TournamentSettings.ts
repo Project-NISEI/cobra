@@ -39,6 +39,7 @@ export interface TournamentOptions {
   card_sets: { id: number; name: string }[];
   deckbuilding_restrictions: { id: number; name: string }[];
   time_zones: { id: string; name: string }[];
+  official_prize_kits: { id: number; name: string }[];
 }
 
 export interface TournamentSettingsData {
@@ -53,6 +54,7 @@ export function emptyTournamentOptions() {
     card_sets: [],
     deckbuilding_restrictions: [],
     time_zones: [],
+    official_prize_kits: [],
   };
 }
 

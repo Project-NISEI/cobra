@@ -46,7 +46,10 @@ RSpec.describe TournamentsController, type: :request do
             'private' => false,
             'manual_seed' => true,
             'self_registration' => true,
-            'swiss_format' => 'double_sided'
+            'nrdb_deck_registration' => false,
+            'swiss_format' => 'double_sided',
+            'decklist_required' => false,
+            'allow_self_reporting' => false
           }
         )
       end
@@ -57,6 +60,7 @@ RSpec.describe TournamentsController, type: :request do
         format = create(:format, name: 'Standard')
         card_set = create(:card_set, name: 'System Gateway')
         restriction = create(:deckbuilding_restriction, name: 'Standard Ban List')
+        prize_kit = create(:official_prize_kit, name: '2025 Q1 Game Night Kit', position: 1)
 
         get edit_tournament_path(tournament), as: :json
 
@@ -74,6 +78,9 @@ RSpec.describe TournamentsController, type: :request do
             ],
             'deckbuilding_restrictions' => [
               { 'id' => restriction.id, 'name' => 'Standard Ban List' }
+            ],
+            'official_prize_kits' => [
+              { 'id' => prize_kit.id, 'name' => '2025 Q1 Game Night Kit' }
             ]
           }
         )
