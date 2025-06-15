@@ -1,8 +1,7 @@
 <script lang="ts">
-  import type { Round } from "./PairingsData";
+  import type { Stage, Round } from "./PairingsData";
   import Pairing from "./Pairing.svelte";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
-  import Stage from "./Stage.svelte";
 
   export let stage: Stage;
   export let round: Round;
