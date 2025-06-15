@@ -185,7 +185,9 @@
         {/each}
       </select>
       {#if errors.deckbuilding_restriction_id}
-        <div class="invalid-feedback d-block">{errors.deckbuilding_restriction_id}</div>
+        <div class="invalid-feedback d-block">
+          {errors.deckbuilding_restriction_id}
+        </div>
       {/if}
     </div>
   </div>
@@ -260,7 +262,9 @@
 </div>
 
 <div class="form-group">
-  <label for="additional_prizes_description">Additional Prize Information (Markdown format supported)</label>
+  <label for="additional_prizes_description"
+    >Additional Prize Information (Markdown format supported)</label
+  >
   <textarea
     id="additional_prizes_description"
     class="form-control"
@@ -268,7 +272,9 @@
     bind:value={tournament.additional_prizes_description}
   ></textarea>
   {#if errors.additional_prizes_description}
-    <div class="invalid-feedback d-block">{errors.additional_prizes_description}</div>
+    <div class="invalid-feedback d-block">
+      {errors.additional_prizes_description}
+    </div>
   {/if}
 </div>
 
