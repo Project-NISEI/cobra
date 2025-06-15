@@ -87,6 +87,14 @@ RSpec.describe TournamentsController, type: :request do
         expect(data['options']['time_zones']).to include(
           { 'id' => 'UTC', 'name' => '(GMT+00:00) UTC' }
         )
+        expect(data['feature_flags']).to eq(
+          {
+            'single_sided_swiss' => false,
+            'nrdb_deck_registration' => false,
+            'allow_self_reporting' => false,
+            'streaming_opt_out' => false
+          }
+        )
       end
     end
 

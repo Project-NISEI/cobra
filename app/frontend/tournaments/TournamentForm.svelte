@@ -2,11 +2,13 @@
   import {
     emptyTournamentOptions,
     type Errors,
+    type FeatureFlags,
     type TournamentOptions,
     type TournamentSettings,
   } from "./TournamentSettings";
   export let tournament: TournamentSettings = {};
   export let options: TournamentOptions = emptyTournamentOptions();
+  export let featureFlags: FeatureFlags = {};
 
   export let onSubmit = () => {
     console.log("Submitted: ", tournament);
@@ -94,20 +96,22 @@
   </div>
 </div>
 
-<div class="form-group">
-  <label for="swiss_format">Swiss format</label>
-  <select
-    id="swiss_format"
-    class="form-control"
-    bind:value={tournament.swiss_format}
-  >
-    <option value="double_sided">Double-Sided</option>
-    <option value="single_sided">Single-Sided</option>
-  </select>
-  {#if errors.swiss_format}
-    <div class="invalid-feedback d-block">{errors.swiss_format}</div>
-  {/if}
-</div>
+{#if featureFlags.single_sided_swiss}
+  <div class="form-group">
+    <label for="swiss_format">Swiss format</label>
+    <select
+      id="swiss_format"
+      class="form-control"
+      bind:value={tournament.swiss_format}
+    >
+      <option value="double_sided">Double-Sided</option>
+      <option value="single_sided">Single-Sided</option>
+    </select>
+    {#if errors.swiss_format}
+      <div class="invalid-feedback d-block">{errors.swiss_format}</div>
+    {/if}
+  </div>
+{/if}
 
 <div class="row">
   <div class="col-md-6">
@@ -293,17 +297,19 @@
   </label>
 </div>
 
-<div class="form-check mb-3">
-  <input
-    type="checkbox"
-    id="nrdb_deck_registration"
-    class="form-check-input"
-    bind:checked={tournament.nrdb_deck_registration}
-  />
-  <label for="nrdb_deck_registration" class="form-check-label">
-    Deck registration: Upload decks from NetrunnerDB
-  </label>
-</div>
+{#if featureFlags.nrdb_deck_registration}
+  <div class="form-check mb-3">
+    <input
+      type="checkbox"
+      id="nrdb_deck_registration"
+      class="form-check-input"
+      bind:checked={tournament.nrdb_deck_registration}
+    />
+    <label for="nrdb_deck_registration" class="form-check-label">
+      Deck registration: Upload decks from NetrunnerDB
+    </label>
+  </div>
+{/if}
 
 <div class="form-check mb-3">
   <input
@@ -331,31 +337,35 @@
   </label>
 </div>
 
-<div class="form-check mb-3">
-  <input
-    type="checkbox"
-    id="allow_streaming_opt_out"
-    class="form-check-input"
-    bind:checked={tournament.allow_streaming_opt_out}
-  />
-  <label for="allow_streaming_opt_out" class="form-check-label">
-    Streaming opt out: Allow players to choose whether their games should be
-    included in video coverage (defaults to yes, and players are notified that
-    in a top cut it may not be possible to exclude them)
-  </label>
-</div>
+{#if featureFlags.streaming_opt_out}
+  <div class="form-check mb-3">
+    <input
+      type="checkbox"
+      id="allow_streaming_opt_out"
+      class="form-check-input"
+      bind:checked={tournament.allow_streaming_opt_out}
+    />
+    <label for="allow_streaming_opt_out" class="form-check-label">
+      Streaming opt out: Allow players to choose whether their games should be
+      included in video coverage (defaults to yes, and players are notified that
+      in a top cut it may not be possible to exclude them)
+    </label>
+  </div>
+{/if}
 
-<div class="form-check mb-3">
-  <input
-    type="checkbox"
-    id="allow_self_reporting"
-    class="form-check-input"
-    bind:checked={tournament.allow_self_reporting}
-  />
-  <label for="allow_self_reporting" class="form-check-label">
-    Allow logged-in players to report their own match results
-  </label>
-</div>
+{#if featureFlags.allow_self_reporting}
+  <div class="form-check mb-3">
+    <input
+      type="checkbox"
+      id="allow_self_reporting"
+      class="form-check-input"
+      bind:checked={tournament.allow_self_reporting}
+    />
+    <label for="allow_self_reporting" class="form-check-label">
+      Allow logged-in players to report their own match results
+    </label>
+  </div>
+{/if}
 
 <div class="form-group">
   <button

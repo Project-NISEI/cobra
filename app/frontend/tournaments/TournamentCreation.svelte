@@ -3,6 +3,7 @@
   import {
     emptyTournamentOptions,
     type Errors,
+    type FeatureFlags,
     loadNewTournament,
     type TournamentOptions,
     type TournamentSettings,
@@ -15,6 +16,7 @@
     swiss_format: "double_sided",
   };
   let options: TournamentOptions = emptyTournamentOptions();
+  let featureFlags: FeatureFlags = {};
 
   let isSubmitting = false;
   let errors: Errors = {};
@@ -26,6 +28,7 @@
     // Merge any server-provided defaults with our local defaults
     tournament = { ...tournament, ...data.tournament };
     options = data.options;
+    featureFlags = data.feature_flags;
   });
 
   function submitNewTournament() {
@@ -51,6 +54,7 @@
       <TournamentForm
         {tournament}
         {options}
+        {featureFlags}
         onSubmit={submitNewTournament}
         submitLabel="Create"
         {isSubmitting}

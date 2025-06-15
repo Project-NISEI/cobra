@@ -42,9 +42,17 @@ export interface TournamentOptions {
   official_prize_kits: { id: number; name: string }[];
 }
 
+export interface FeatureFlags {
+  single_sided_swiss?: boolean;
+  nrdb_deck_registration?: boolean;
+  allow_self_reporting?: boolean;
+  streaming_opt_out?: boolean;
+}
+
 export interface TournamentSettingsData {
   tournament: TournamentSettings;
   options: TournamentOptions;
+  feature_flags: FeatureFlags;
 }
 
 export function emptyTournamentOptions() {

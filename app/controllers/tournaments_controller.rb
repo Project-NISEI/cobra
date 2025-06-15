@@ -378,6 +378,12 @@ class TournamentsController < ApplicationController
         deckbuilding_restrictions: DeckbuildingRestriction.all.map { |d| { id: d.id, name: d.name } },
         time_zones: ActiveSupport::TimeZone.all.map { |z| { id: z.name, name: z.to_s } },
         official_prize_kits: OfficialPrizeKit.order(position: :desc).map { |p| { id: p.id, name: p.name } }
+      },
+      feature_flags: {
+        single_sided_swiss: Flipper.enabled?(:single_sided_swiss, current_user),
+        nrdb_deck_registration: Flipper.enabled?(:nrdb_deck_registration),
+        allow_self_reporting: Flipper.enabled?(:allow_self_reporting),
+        streaming_opt_out: Flipper.enabled?(:streaming_opt_out)
       }
     }
   end
