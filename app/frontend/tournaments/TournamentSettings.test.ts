@@ -7,13 +7,13 @@ import {
 } from "./TournamentSettings";
 
 // Mock global fetch
-Object.defineProperty(global, 'fetch', {
+Object.defineProperty(global, "fetch", {
   value: vi.fn(),
   writable: true,
 });
 
 // Mock global Routes object
-Object.defineProperty(global, 'Routes', {
+Object.defineProperty(global, "Routes", {
   value: {
     new_tournament_path: () => "/tournaments/new",
     tournaments_path: () => "/tournaments",
@@ -22,9 +22,9 @@ Object.defineProperty(global, 'Routes', {
 });
 
 // Mock CSRF token - create a proper HTMLMetaElement mock
-const mockMetaElement = document.createElement('meta');
-mockMetaElement.name = 'csrf-token';
-mockMetaElement.content = 'mock-csrf-token';
+const mockMetaElement = document.createElement("meta");
+mockMetaElement.name = "csrf-token";
+mockMetaElement.content = "mock-csrf-token";
 
 Object.defineProperty(document, "querySelector", {
   value: vi.fn().mockReturnValue(mockMetaElement),

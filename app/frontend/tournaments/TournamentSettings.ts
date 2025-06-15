@@ -112,7 +112,9 @@ export async function createTournament(
         (await response.json()) as TournamentCreateErrorResponse;
       throw new ValidationError(errorData.errors);
     }
-    throw new Error(`HTTP ${response.status.toString()}: ${response.statusText}`);
+    throw new Error(
+      `HTTP ${response.status.toString()}: ${response.statusText}`,
+    );
   }
 
   return (await response.json()) as TournamentCreateResponse;
