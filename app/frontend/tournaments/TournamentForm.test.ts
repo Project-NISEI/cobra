@@ -8,14 +8,14 @@ import type {
 } from "./TournamentSettings";
 
 describe("TournamentForm", () => {
-  const mockTournament: TournamentSettings = {
+  const tournament: TournamentSettings = {
     name: "Test Tournament",
     date: "2023-12-25",
     private: false,
     swiss_format: "double_sided",
   };
 
-  const mockOptions: TournamentOptions = {
+  const options: TournamentOptions = {
     tournament_types: [
       { id: 1, name: "Store Championship" },
       { id: 2, name: "Regional Championship" },
@@ -39,7 +39,7 @@ describe("TournamentForm", () => {
     official_prize_kits: [{ id: 1, name: "2025 Q1 Game Night Kit" }],
   };
 
-  const mockFeatureFlags: FeatureFlags = {
+  const featureFlags: FeatureFlags = {
     single_sided_swiss: true,
     nrdb_deck_registration: true,
     allow_self_reporting: true,
@@ -49,9 +49,9 @@ describe("TournamentForm", () => {
   it("renders basic form fields", () => {
     render(TournamentForm, {
       props: {
-        tournament: mockTournament,
-        options: mockOptions,
-        featureFlags: mockFeatureFlags,
+        tournament: tournament,
+        options: options,
+        featureFlags: featureFlags,
       },
     });
 
@@ -63,9 +63,9 @@ describe("TournamentForm", () => {
   it("shows conditional fields when feature flags are enabled", () => {
     render(TournamentForm, {
       props: {
-        tournament: mockTournament,
-        options: mockOptions,
-        featureFlags: mockFeatureFlags,
+        tournament: tournament,
+        options: options,
+        featureFlags: featureFlags,
       },
     });
 
@@ -83,8 +83,8 @@ describe("TournamentForm", () => {
   it("hides conditional fields when feature flags are disabled", () => {
     render(TournamentForm, {
       props: {
-        tournament: mockTournament,
-        options: mockOptions,
+        tournament: tournament,
+        options: options,
         featureFlags: {}, // All flags disabled
       },
     });
@@ -105,9 +105,9 @@ describe("TournamentForm", () => {
   it("populates dropdown options correctly", () => {
     render(TournamentForm, {
       props: {
-        tournament: mockTournament,
-        options: mockOptions,
-        featureFlags: mockFeatureFlags,
+        tournament: tournament,
+        options: options,
+        featureFlags: featureFlags,
       },
     });
 
@@ -124,9 +124,9 @@ describe("TournamentForm", () => {
 
     render(TournamentForm, {
       props: {
-        tournament: mockTournament,
-        options: mockOptions,
-        featureFlags: mockFeatureFlags,
+        tournament: tournament,
+        options: options,
+        featureFlags: featureFlags,
         onSubmit: mockOnSubmit,
       },
     });
@@ -145,9 +145,9 @@ describe("TournamentForm", () => {
 
     render(TournamentForm, {
       props: {
-        tournament: mockTournament,
-        options: mockOptions,
-        featureFlags: mockFeatureFlags,
+        tournament: tournament,
+        options: options,
+        featureFlags: featureFlags,
         errors,
       },
     });
@@ -159,9 +159,9 @@ describe("TournamentForm", () => {
   it("shows loading state when submitting", () => {
     render(TournamentForm, {
       props: {
-        tournament: mockTournament,
-        options: mockOptions,
-        featureFlags: mockFeatureFlags,
+        tournament: tournament,
+        options: options,
+        featureFlags: featureFlags,
         isSubmitting: true,
         submitLabel: "Saving...",
       },
