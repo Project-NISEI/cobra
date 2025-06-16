@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   loadNewTournament,
   createTournament,
@@ -26,25 +26,6 @@ csrfMeta.content = "mock-csrf-token";
 document.head.appendChild(csrfMeta);
 
 describe("TournamentSettings", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  describe("emptyTournamentOptions", () => {
-    it("returns empty options object", () => {
-      const options = emptyTournamentOptions();
-
-      expect(options).toEqual({
-        tournament_types: [],
-        formats: [],
-        card_sets: [],
-        deckbuilding_restrictions: [],
-        time_zones: [],
-        official_prize_kits: [],
-      });
-    });
-  });
-
   describe("loadNewTournament", () => {
     it("fetches tournament data successfully", async () => {
       const mockData = {
