@@ -19,12 +19,6 @@ Object.defineProperty(global, "Routes", {
   writable: true,
 });
 
-// Mock CSRF token
-Object.defineProperty(document, "querySelector", {
-  value: vi.fn().mockReturnValue({ content: "mock-csrf-token" }),
-  writable: true,
-});
-
 describe("TournamentCreation", () => {
   const mockTournamentData = {
     tournament: {
