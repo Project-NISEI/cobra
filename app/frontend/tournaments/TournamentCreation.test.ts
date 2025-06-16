@@ -10,15 +10,6 @@ vi.mock("./TournamentSettings", async (importOriginal) => ({
   createTournament: vi.fn(),
 }));
 
-// Mock global Routes object
-Object.defineProperty(global, "Routes", {
-  value: {
-    new_tournament_path: () => "/tournaments/new",
-    tournaments_path: () => "/tournaments",
-  },
-  writable: true,
-});
-
 describe("TournamentCreation", () => {
   const mockTournamentData = {
     tournament: {
