@@ -1,25 +1,13 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/svelte";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import TournamentCreation from "./TournamentCreation.svelte";
+import { ValidationError } from "./TournamentSettings";
 
 // Mock the TournamentSettings module
-vi.mock("./TournamentSettings", () => ({
+vi.mock("./TournamentSettings", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./TournamentSettings")>()),
   loadNewTournament: vi.fn(),
   createTournament: vi.fn(),
-  ValidationError: class ValidationError extends Error {
-    constructor(public errors: Record<string, string[]>) {
-      super("Validation failed");
-      this.name = "ValidationError";
-    }
-  },
-  emptyTournamentOptions: () => ({
-    tournament_types: [],
-    formats: [],
-    card_sets: [],
-    deckbuilding_restrictions: [],
-    time_zones: [],
-    official_prize_kits: [],
-  }),
 }));
 
 // Mock global Routes object
@@ -139,9 +127,7 @@ describe("TournamentCreation", () => {
   });
 
   it("handles validation errors", async () => {
-    const { createTournament, ValidationError } = await import(
-      "./TournamentSettings"
-    );
+    const { createTournament } = await import("./TournamentSettings");
     const validationError = new ValidationError({
       name: ["Name is required"],
       date: ["Date must be in the future"],
