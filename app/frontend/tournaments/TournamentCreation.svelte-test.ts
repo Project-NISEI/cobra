@@ -34,6 +34,7 @@ describe("TournamentCreation", () => {
       allow_self_reporting: true,
       streaming_opt_out: true,
     },
+    csrf_token: "fake-csrf-token",
   };
 
   beforeEach(async () => {
@@ -99,6 +100,7 @@ describe("TournamentCreation", () => {
 
     await waitFor(() => {
       expect(createTournament).toHaveBeenCalledWith(
+        "fake-csrf-token",
         expect.objectContaining({
           name: "Test Tournament",
         }),

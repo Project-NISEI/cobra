@@ -384,7 +384,8 @@ class TournamentsController < ApplicationController
         nrdb_deck_registration: Flipper.enabled?(:nrdb_deck_registration),
         allow_self_reporting: Flipper.enabled?(:allow_self_reporting),
         streaming_opt_out: Flipper.enabled?(:streaming_opt_out)
-      }
+      },
+      csrf_token: form_authenticity_token
     }
   end
 end

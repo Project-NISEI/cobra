@@ -54,9 +54,10 @@ export interface TournamentSettingsData {
   tournament: TournamentSettings;
   options: TournamentOptions;
   feature_flags: FeatureFlags;
+  csrf_token: string;
 }
 
-export function emptyTournamentOptions() {
+export function emptyTournamentOptions(): TournamentOptions {
   return {
     tournament_types: [],
     formats: [],
@@ -72,6 +73,11 @@ export async function loadNewTournament(): Promise<TournamentSettingsData> {
     headers: { Accept: "application/json" },
     method: "GET",
   });
+  if (!response.ok) {
+    throw new Error(
+      `HTTP ${response.status.toString()}: ${response.statusText}`,
+    );
+  }
   return (await response.json()) as TournamentSettingsData;
 }
 
@@ -85,15 +91,8 @@ export interface TournamentCreateErrorResponse {
   errors: Errors;
 }
 
-function getCSRFToken(): string {
-  const metaTag = document.querySelector('meta[name="csrf-token"]');
-  if (metaTag instanceof HTMLMetaElement) {
-    return metaTag.content;
-  }
-  return "";
-}
-
 export async function createTournament(
+  csrfToken: string,
   tournament: TournamentSettings,
 ): Promise<TournamentCreateResponse> {
   const response = await fetch(Routes.tournaments_path(), {
@@ -101,7 +100,7 @@ export async function createTournament(
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      "X-CSRF-Token": getCSRFToken(),
+      "X-CSRF-Token": csrfToken,
     },
     body: JSON.stringify({ tournament }),
   });

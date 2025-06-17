@@ -19,6 +19,7 @@
   };
   let options: TournamentOptions = emptyTournamentOptions();
   let featureFlags: FeatureFlags = {};
+  let csrfToken = "";
 
   let isSubmitting = false;
   let errors: Errors = {};
@@ -30,6 +31,7 @@
     tournament = { ...tournament, ...data.tournament };
     options = data.options;
     featureFlags = data.feature_flags;
+    csrfToken = data.csrf_token;
   });
 
   async function submitNewTournament() {
@@ -37,7 +39,7 @@
     errors = {};
 
     try {
-      const response = await createTournament(tournament);
+      const response = await createTournament(csrfToken, tournament);
       window.location.href = response.url;
     } catch (error) {
       if (error instanceof ValidationError) {
