@@ -10,11 +10,20 @@ require 'stackprof'
 #
 # The following environment variables can be set to control the simulation:
 #     DROPS_PER_ROUND -  The number of players that drop out of the tournament each round, defaults to 0
+#     DSS_BOTH_TIE - The number of times both games in double-sided swiss end in a tie, defaults to 1.
+#     DSS_P1_SWEEPS - The number of times player 1 sweeps in double-sided swiss, defaults to 25.
+#     DSS_P1_WIN_AND_TIE - The number of times player 1 wins and ties in double-sided swiss, defaults to 2.
+#     DSS_P2_SWEEPS - The number of times player 2 sweeps in double-sided swiss, defaults to 25.
+#     DSS_P2_WIN_AND_TIE - The number of times player 2 wins and ties in double-sided swiss, defaults to 2.
+#     DSS_SPLITS - The number of times a game ends in a split in double-sided swiss, defaults to 25.
 #     FIRST_ROUND_BYES - The number of players with first round byes, defaults to 0
 #     FORMAT - The swiss format to use, defaults to single_sided.
 #     NUM_PLAYERS - The number of players in the tournament, defaults to 150
 #     NUM_ROUNDS - The number of rounds in the tournament, defaults to 15
 #     PROFILE - If set to '1' or 'true', runs the simulation in profiling mode using stackprof.
+#     SSS_P1_WINS - The number of times player 1 wins in single-sided swiss, defaults to 48.
+#     SSS_P2_WINS - The number of times player 2 wins in single-sided swiss, defaults to 48.
+#     SSS_TIES - The number of times a game ends in a tie in single-sided swiss, defaults to 4.
 #     WRITE_JSON_FILE - If set to '1' or 'true', writes the results to JSON files in the current directory.
 
 # If profiles are requested, they the files will be written to the current directory.
@@ -63,6 +72,71 @@ RSpec.describe 'load testing' do
     end
   end
 
+  let(:num_double_sided_player1_sweeps) do
+    if ENV['DSS_P1_SWEEPS'].nil? || ENV['DSS_P1_SWEEPS'].strip.empty?
+      25
+    else
+      ENV['DSS_P1_SWEEPS'].strip.to_i
+    end
+  end
+  let(:num_double_sided_player2_sweeps) do
+    if ENV['DSS_P2_SWEEPS'].nil? || ENV['DSS_P2_SWEEPS'].strip.empty?
+      25
+    else
+      ENV['DSS_P2_SWEEPS'].strip.to_i
+    end
+  end
+  let(:num_double_sided_splits) do
+    if ENV['DSS_SPLITS'].nil? || ENV['DSS_SPLITS'].strip.empty?
+      25
+    else
+      ENV['DSS_SPLITS'].strip.to_i
+    end
+  end
+  let(:num_double_sided_p1_win_and_tie) do
+    if ENV['DSS_P1_WIN_AND_TIE'].nil? || ENV['DSS_P1_WIN_AND_TIE'].strip.empty?
+      2
+    else
+      ENV['DSS_P1_WIN_AND_TIE'].strip.to_i
+    end
+  end
+  let(:num_double_sided_p2_win_and_tie) do
+    if ENV['DSS_P2_WIN_AND_TIE'].nil? || ENV['DSS_P2_WIN_AND_TIE'].strip.empty?
+      2
+    else
+      ENV['DSS_P2_WIN_AND_TIE'].strip.to_i
+    end
+  end
+  let(:num_double_sided_both_tie) do
+    if ENV['DSS_BOTH_TIE'].nil? || ENV['DSS_BOTH_TIE'].strip.empty?
+      1
+    else
+      ENV['DSS_BOTH_TIE'].strip.to_i
+    end
+  end
+
+  let(:num_single_sided_player1_wins) do
+    if ENV['SSS_P1_WINS'].nil? || ENV['SSS_P1_WINS'].strip.empty?
+      48
+    else
+      ENV['SSS_P1_WINS'].strip.to_i
+    end
+  end
+  let(:num_single_sided_player2_wins) do
+    if ENV['SSS_P2_WINS'].nil? || ENV['SSS_P2_WINS'].strip.empty?
+      48
+    else
+      ENV['SSS_P2_WINS'].strip.to_i
+    end
+  end
+  let(:num_single_sided_ties) do
+    if ENV['SSS_TIES'].nil? || ENV['SSS_TIES'].strip.empty?
+      4
+    else
+      ENV['SSS_TIES'].strip.to_i
+    end
+  end
+
   let(:tournament) { create(:tournament, swiss_format:) }
   let(:summary_results) do
     {
@@ -75,18 +149,40 @@ RSpec.describe 'load testing' do
     }
   end
 
-  # TODO(plural): Allow score frequency to be set via environment variables.
   let(:scores) do
     scores = []
-    48.times do
-      scores << [3, 0]
-      scores << [0, 3]
+    if swiss_format == :single_sided
+      # Single-sided swiss scores.
+      num_single_sided_player1_wins.times do
+        scores << [3, 0]
+      end
+      num_single_sided_player2_wins.times do
+        scores << [0, 3]
+      end
+      num_single_sided_ties.times do
+        scores << [1, 1]
+      end
+    else
+      num_double_sided_player1_sweeps.times do
+        scores << [6, 0]
+      end
+      num_double_sided_player2_sweeps.times do
+        scores << [0, 6]
+      end
+      num_double_sided_splits.times do
+        scores << [3, 3]
+      end
+      num_double_sided_p1_win_and_tie.times do
+        scores << [4, 0]
+      end
+      num_double_sided_p2_win_and_tie.times do
+        scores << [0, 4]
+      end
+      num_double_sided_both_tie.times do
+        scores << [1, 1]
+      end
     end
-    # 4% chance of a tie.
-    # (1..4).each do |i|
-    #   scores << [1, 1]
-    # end
-    puts "There are #{scores.length} scores..."
+
     scores
   end
 
@@ -94,18 +190,8 @@ RSpec.describe 'load testing' do
     "WITH
       player1_pairings AS (
         SELECT
-          r.number AS round_number,
-          p.round_id,
           p.player1_id AS player_id,
-          p.player1_id IS NULL
-          OR p.player2_id IS NULL AS is_bye,
-          CASE
-              WHEN p.side = 1 THEN 'corp'
-              ELSE 'runner'
-          END AS side,
-          p.score1 AS score,
-          p.player2_id AS opponent_id,
-          p.score2 AS opponent_score
+          p.player2_id AS opponent_id
         FROM
           pairings AS p
           INNER JOIN rounds AS r ON p.round_id = r.id
@@ -113,19 +199,8 @@ RSpec.describe 'load testing' do
       ),
       player2_pairings AS (
         SELECT
-          r.number AS round_number,
-          p.round_id,
           p.player2_id AS player_id,
-          p.player1_id IS NULL
-          OR p.player2_id IS NULL AS is_bye,
-          -- flip the logic since this is player 2
-          CASE
-              WHEN p.side = 1 THEN 'runner'
-              ELSE 'corp'
-          END AS side,
-          p.score2 AS score,
-          p.player1_id AS opponent_id,
-          p.score1 AS opponent_score
+          p.player1_id AS opponent_id
         FROM
           pairings AS p
           INNER JOIN rounds AS r ON p.round_id = r.id
@@ -150,8 +225,7 @@ RSpec.describe 'load testing' do
         SELECT
           p.round_id,
           p.player1_id AS player_id,
-          p.player1_id IS NULL
-          OR p.player2_id IS NULL AS is_bye,
+          p.player1_id IS NULL OR p.player2_id IS NULL AS is_bye,
           CASE
               WHEN p.side = 1 THEN 'corp'
               ELSE 'runner'
@@ -168,8 +242,7 @@ RSpec.describe 'load testing' do
         SELECT
           p.round_id,
           p.player2_id AS player_id,
-          p.player1_id IS NULL
-          OR p.player2_id IS NULL AS is_bye,
+          p.player1_id IS NULL OR p.player2_id IS NULL AS is_bye,
           -- flip the logic since this is player 2
           CASE
               WHEN p.side = 1 THEN 'runner'
@@ -263,12 +336,36 @@ RSpec.describe 'load testing' do
 
   it 'can handle load' do
     puts 'Starting simulation with config:'
-    puts "  swiss_format:          #{swiss_format}"
-    puts "  num_players:           #{num_players}"
-    puts "  num_rounds:            #{num_rounds}"
-    puts "  num_drops_per_round:   #{num_drops_per_round}"
-    puts "  TODO: num_first_round_byes:  #{num_first_round_byes}"
-
+    puts "  swiss_format:                    #{swiss_format}"
+    puts "  num_players:                     #{num_players}"
+    puts "  num_rounds:                      #{num_rounds}"
+    puts "  num_drops_per_round:             #{num_drops_per_round}"
+    puts "  num_first_round_byes:            #{num_first_round_byes}"
+    if swiss_format == :single_sided
+      summary_results.merge!(
+        num_single_sided_player1_wins:,
+        num_single_sided_player2_wins:,
+        num_single_sided_ties:
+      )
+      puts "  num_single_sided_player1_wins:   #{num_single_sided_player1_wins}"
+      puts "  num_single_sided_player2_wins:   #{num_single_sided_player2_wins}"
+      puts "  num_single_sided_ties:           #{num_single_sided_ties}"
+    else
+      summary_results.merge!(
+        num_double_sided_both_tie:,
+        num_double_sided_p1_win_and_tie:,
+        num_double_sided_p2_win_and_tie:,
+        num_double_sided_player1_sweeps:,
+        num_double_sided_player2_sweeps:,
+        num_double_sided_splits:
+      )
+      puts "  num_double_sided_both_tie:       #{num_double_sided_both_tie}"
+      puts "  num_double_sided_p1_win_and_tie: #{num_double_sided_p1_win_and_tie}"
+      puts "  num_double_sided_p2_win_and_tie: #{num_double_sided_p2_win_and_tie}"
+      puts "  num_double_sided_player1_sweeps: #{num_double_sided_player1_sweeps}"
+      puts "  num_double_sided_player2_sweeps: #{num_double_sided_player2_sweeps}"
+      puts "  num_double_sided_splits:         #{num_double_sided_splits}"
+    end
     timer
     sign_in tournament.user
 
@@ -323,18 +420,18 @@ RSpec.describe 'load testing' do
         expect(players.select { |p| p.is_a? NilPlayer }.length).to be < 2
       end
 
+      # How many times have players played each opponent they have faced at the start of this round?
       player_opponent_game_count_counts = {}
       results = ActiveRecord::Base.connection.select_all(player_opponent_game_count_sql, nil, [round.tournament_id])
       results.each do |r|
         unless player_opponent_game_count_counts.key?(r['num_games'])
-          player_opponent_game_count_counts[r['num_games']] =
-            0
+          player_opponent_game_count_counts[r['num_games']] = 0
         end
         player_opponent_game_count_counts[r['num_games']] += 1
       end
 
-      # Summarize Number of Byes and Side Balance at beginning of round.
-      # Summarize Side Bias at beginning of round.
+      # Summarize Number of Byes and Side Bias for completed rounds at beginning of round.
+      # No need to populate this for the first round, since there are no completed rounds yet.
       results = ActiveRecord::Base.connection.select_all(player_score_summary, nil, [round.tournament_id])
       # We only expect 0 or 1 byes for a player
       num_byes = { 0 => 0, 1 => 0 }
@@ -353,6 +450,8 @@ RSpec.describe 'load testing' do
         score_counts[r['total_score']] = 0 unless score_counts.key?(r['total_score'])
         score_counts[r['total_score']] += 1
       end
+
+      # TODO(plural): Add current round number of byes.
       results = ActiveRecord::Base.connection.select_all(current_round_pairings_sql, nil, [round.tournament_id])
       pairing_types = { up: 0, down: 0, same: 0 }
       results.each do |r|
@@ -417,22 +516,7 @@ RSpec.describe 'load testing' do
       json_file_name = "tournament_simulation_results-#{Time.now.to_i}.json"
       puts JSON.pretty_generate(summary_results)
       File.write(json_file_name, JSON.pretty_generate(summary_results))
+      puts "Wrote JSON results to #{json_file_name}"
     end
-
-    # Summarize rounds:
-    #   Pairings up
-    #   Pairings down
-    #   Side Bias breakdown
-    #   # of byes
-    #
-    # tournament.players.each do |player|
-    #   if player.opponents.uniq.length != player.pairings.count
-    #     puts "Player #{player.name} (#{player.active? ? :active : :dropped}) had #{player.opponents.uniq.length}/#{player.pairings.count} unique opponents:" # rubocop:disable Layout/LineLength
-    #     player.pairings.each do |pairing|
-    #       opp = pairing.opponent_for(player)
-    #       puts "\t#{pairing.round.number}: #{opp.name}"
-    #     end
-    #   end
-    # end
   end
 end
