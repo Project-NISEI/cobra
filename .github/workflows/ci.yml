@@ -75,8 +75,8 @@ jobs:
       - name: Run rails tests
         run: bundle exec rails test
 
-#      - name: Run vitest tests
-#        run: npm run test
+      - name: Run vitest tests
+        run: npm run test
 
       - name: Plan deployment
         id: plan-deployment
