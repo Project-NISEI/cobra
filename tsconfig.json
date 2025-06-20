@@ -5,6 +5,7 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "resolveJsonModule": true,
+    "typeRoots": ["node_modules/@types", "node_modules/@testing-library"],
     /**
      * Typecheck JS in `.svelte` and `.js` files by default.
      * Disable checkJs if you'd like to use dynamic types in JS.
@@ -15,6 +16,8 @@
     "checkJs": true,
     "isolatedModules": true
   },
-  "include": ["app/**/*.ts", "app/**/*.js", "app/**/*.svelte", "eslint.config.mjs", "svelte.config.js"],
+  "include": ["app/**/*.ts", "app/**/*.js", "app/**/*.svelte", "eslint.config.mjs", "svelte.config.js",
+    "vitest-setup.*.ts", "vitest.config.ts"],
+  "exclude": ["app/assets/javascripts/awesomplete.js", "app/assets/javascripts/cable.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
