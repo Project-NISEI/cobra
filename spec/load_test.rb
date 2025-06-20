@@ -472,15 +472,15 @@ RSpec.describe 'load testing' do
       cumulative = {}
       if round.number > 1
         cumulative = {
-          player_opponent_game_count: player_opponent_game_count,
-          players_by_bye_count: num_byes,
-          score_counts: score_counts,
-          side_bias: side_bias
+          player_opponent_game_count: player_opponent_game_count.sort_by { |k, _v| k.to_i }.to_h,
+          players_by_bye_count: num_byes.sort_by { |k, _v| k.to_i }.to_h,
+          score_counts: score_counts.sort_by { |k, _v| k.to_i }.to_h,
+          side_bias: side_bias.sort_by { |k, _v| k.to_i }.to_h
         }
       end
 
       summary_results[:rounds][round.number].merge!(
-        pairing_types: pairing_types,
+        pairing_types: pairing_types.sort_by { |k, _v| k }.to_h,
         cumulative:
       )
 
