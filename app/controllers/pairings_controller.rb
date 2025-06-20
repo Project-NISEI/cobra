@@ -58,6 +58,14 @@ class PairingsController < ApplicationController
     redirect_back(fallback_location: tournament_rounds_path(tournament))
   end
 
+  def self_report
+    authorize @tournament, :update?
+    self_report_score = self_report_score_params.merge(pairing_id: pairing.id)
+    puts self_report_score
+    SelfReport.create(self_report_score)
+    redirect_back(fallback_location: tournament_rounds_path(tournament))
+  end
+
   def destroy
     authorize @tournament, :update?
 
@@ -99,5 +107,10 @@ class PairingsController < ApplicationController
     params.require(:pairing)
           .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp,
                   :score1, :score2, :side, :intentional_draw, :two_for_one)
+  end
+
+  def self_report_score_params
+    params.require(:report)
+          .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp, :report_player_id, :intentional_draw)
   end
 end

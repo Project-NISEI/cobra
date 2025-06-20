@@ -28,7 +28,7 @@
             = fa_icon 'video-camera', class: 'text-secondary'
             =< fa_icon 'ban', class: 'text-danger'
         javascript:
-            $('.streaming-tooltip').tooltip()
+          $('.streaming-tooltip').tooltip()
     - if pairing.decks_visible_to(current_user)
       =< link_to view_decks_tournament_round_pairing_path(@tournament, round, pairing) do
         => fa_icon 'eye'
@@ -45,6 +45,13 @@
           - else
             = render left_player.corp_identity_object
             = render left_player.runner_identity_object
+
+    - if @tournament.allow_self_reporting && (left_player.user_id == current_user.id || right_player.user_id == current_user.id)
+      .col-sm-5.centre_score
+        .preset_score
+          - presets(pairing).each do |data|
+            => preset_score_button_for_self_reporting pairing, data, current_user.id
+
     - if policy(round.tournament).edit? && (!single_sided || (single_sided && is_side_set))
       .col-sm-5.centre_score
         .preset_score

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_05_034059) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_20_072144) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -224,6 +224,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_05_034059) do
     t.index ["tournament_id"], name: "index_rounds_on_tournament_id"
   end
 
+  create_table "self_reports", force: :cascade do |t|
+    t.integer "pairing_id"
+    t.integer "report_player_id"
+    t.integer "score1"
+    t.integer "score2"
+    t.integer "score1_corp"
+    t.integer "score1_runner"
+    t.integer "score2_corp"
+    t.integer "score2_runner"
+    t.boolean "intentional_draw"
+    t.index ["pairing_id"], name: "index_self_reports_on_pairings"
+  end
+
   create_table "stages", id: :serial, force: :cascade do |t|
     t.integer "tournament_id"
     t.integer "number", default: 1
@@ -329,6 +342,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_05_034059) do
   add_foreign_key "round_timer_activations", "tournaments"
   add_foreign_key "rounds", "stages"
   add_foreign_key "rounds", "tournaments"
+  add_foreign_key "self_reports", "pairings"
   add_foreign_key "stages", "tournaments"
   add_foreign_key "standing_rows", "players"
   add_foreign_key "standing_rows", "stages"
