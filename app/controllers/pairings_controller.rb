@@ -59,7 +59,8 @@ class PairingsController < ApplicationController
   end
 
   def self_report
-    authorize @tournament, :update?
+    authorize @tournament, :show?
+    authorize pairing, :can_self_report?
     self_report_score = self_report_score_params.merge(pairing_id: pairing.id)
     puts self_report_score
     SelfReport.create(self_report_score)
