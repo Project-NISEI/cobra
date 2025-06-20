@@ -195,7 +195,7 @@ RSpec.describe 'load testing' do
         FROM
           pairings AS p
           INNER JOIN rounds AS r ON p.round_id = r.id
-        WHERE r.tournament_id = $1 AND r.completed
+        WHERE r.tournament_id = $1
       ),
       player2_pairings AS (
         SELECT
@@ -204,7 +204,7 @@ RSpec.describe 'load testing' do
         FROM
           pairings AS p
           INNER JOIN rounds AS r ON p.round_id = r.id
-        WHERE r.tournament_id = $1 AND r.completed
+        WHERE r.tournament_id = $1
       ),
       unified_pairings AS (
         SELECT *
