@@ -441,8 +441,10 @@ RSpec.describe 'load testing' do
         num_byes[r['num_byes']] += 1
 
         bias = r['num_corp_games'] - r['num_runner_games']
-        side_bias[bias] = 0 unless side_bias.key?(bias)
-        side_bias[bias] += 1
+        if swiss_format == :single_sided
+          side_bias[bias] = 0 unless side_bias.key?(bias)
+          side_bias[bias] += 1
+        end
         scores_by_player[r['player_id']] = r['total_score']
         score_counts[r['total_score']] = 0 unless score_counts.key?(r['total_score'])
         score_counts[r['total_score']] += 1
@@ -474,9 +476,9 @@ RSpec.describe 'load testing' do
         cumulative = {
           rounds_against_opponent_counts: rounds_against_opponent_counts.sort_by { |k, _v| k.to_i }.to_h,
           players_by_bye_count: num_byes.sort_by { |k, _v| k.to_i }.to_h,
-          score_counts: score_counts.sort_by { |k, _v| k.to_i }.to_h,
-          side_bias: side_bias.sort_by { |k, _v| k.to_i }.to_h
+          score_counts: score_counts.sort_by { |k, _v| k.to_i }.to_h
         }
+        cumulative[:side_bias] = side_bias.sort_by { |k, _v| k.to_i }.to_h if swiss_format == :single_sided
       end
 
       summary_results[:rounds][round.number].merge!(
@@ -489,7 +491,7 @@ RSpec.describe 'load testing' do
       puts "  Points summary: #{score_counts}"
       puts "  Pairing directions: #{pairing_types}"
       puts "  Number of byes per player: #{num_byes}"
-      puts "  Side bias: #{side_bias}"
+      puts "  Side bias: #{side_bias}" if swiss_format == :single_sided
 
       puts "\tGenerating results"
       ActiveRecord::Base.transaction do
