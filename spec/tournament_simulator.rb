@@ -515,7 +515,6 @@ RSpec.describe 'load testing' do
 
     if write_json_file
       json_file_name = "tournament_simulation_results-#{Time.now.to_i}.json"
-      puts JSON.pretty_generate(summary_results)
       File.write(json_file_name, JSON.pretty_generate(summary_results))
       puts "Wrote JSON results to #{json_file_name}"
     end
