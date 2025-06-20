@@ -75,6 +75,9 @@ jobs:
       - name: Run rails tests
         run: bundle exec rails test
 
+      - name: Run vitest tests
+        run: npm run typecheck
+
       - name: Plan deployment
         id: plan-deployment
         run: deploy/bin/github-actions-plan-deployment
