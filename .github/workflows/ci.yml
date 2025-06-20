@@ -76,7 +76,7 @@ jobs:
         run: bundle exec rails test
 
       - name: Run vitest tests
-        run: npm run typecheck
+        run: npm run test
 
       - name: Plan deployment
         id: plan-deployment
