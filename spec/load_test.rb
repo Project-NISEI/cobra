@@ -29,11 +29,6 @@ require 'stackprof'
 # If profiles are requested, they the files will be written to the current directory.
 # See https://github.com/tmm1/stackprof?tab=readme-ov-file#sampling for more info on working with stackprof.
 
-# TODOs
-#   Add env variable for number of wins vs. ties (and split wins on player 1 vs. player 2 as equally as can be)
-#   Ensure number of byes is calculated correctly.
-#   Use the proper set of scores per swiss format.
-
 RSpec.describe 'load testing' do
   let(:write_json_file) { %w[1 true].include?(ENV['WRITE_JSON_FILE']) || false }
   let(:num_rounds) do
@@ -450,7 +445,6 @@ RSpec.describe 'load testing' do
         score_counts[r['total_score']] += 1
       end
 
-      # TODO(plural): Add current round number of byes.
       results = ActiveRecord::Base.connection.select_all(current_round_pairings_sql, nil, [round.tournament_id])
       pairing_types = { up: 0, down: 0, same: 0, bye: 0 }
       results.each do |r|
@@ -513,12 +507,10 @@ RSpec.describe 'load testing' do
       puts "\t\tDone generating results. Took #{time_taken} seconds"
 
       puts "\tCalculating standings"
-      # 10.times do
       visit standings_tournament_players_path(tournament)
       time_taken = timer
       summary_results[:rounds][round.number][:standings_page_load_time_seconds] = time_taken
       puts "\t\tDone. Took #{time_taken} seconds"
-      # end
     end
 
     if write_json_file
