@@ -215,7 +215,7 @@ RSpec.describe 'load testing' do
       )
       SELECT player_id, opponent_id, COUNT(*) AS num_games
       FROM unified_pairings
-      WHERE player_id IS NOT NULL AND opponent_id IS NOT NULL
+      WHERE player_id IS NOT NULL
       GROUP BY 1,2"
   end
 
@@ -421,13 +421,11 @@ RSpec.describe 'load testing' do
       end
 
       # How many times have players played each opponent they have faced at the start of this round?
-      player_opponent_game_count_counts = {}
+      player_opponent_game_count = {}
       results = ActiveRecord::Base.connection.select_all(player_opponent_game_count_sql, nil, [round.tournament_id])
       results.each do |r|
-        unless player_opponent_game_count_counts.key?(r['num_games'])
-          player_opponent_game_count_counts[r['num_games']] = 0
-        end
-        player_opponent_game_count_counts[r['num_games']] += 1
+        player_opponent_game_count[r['num_games']] = 0 unless player_opponent_game_count.key?(r['num_games'])
+        player_opponent_game_count[r['num_games']] += 1
       end
 
       # Summarize Number of Byes and Side Bias for completed rounds at beginning of round.
@@ -439,7 +437,6 @@ RSpec.describe 'load testing' do
       scores_by_player = {}
       score_counts = {}
       results.each do |r|
-        puts r
         num_byes[r['num_byes']] = 0 unless num_byes.key?(r['num_byes'])
         num_byes[r['num_byes']] += 1
 
@@ -453,31 +450,42 @@ RSpec.describe 'load testing' do
 
       # TODO(plural): Add current round number of byes.
       results = ActiveRecord::Base.connection.select_all(current_round_pairings_sql, nil, [round.tournament_id])
-      pairing_types = { up: 0, down: 0, same: 0 }
+      pairing_types = { up: 0, down: 0, same: 0, bye: 0 }
       results.each do |r|
-        next if r['player_id'].nil? || r['opponent_id'].nil?
+        next if r['player_id'].nil?
 
-        player_score = scores_by_player[r['player_id']]
-        opponent_score = scores_by_player[r['opponent_id']]
-        if player_score > opponent_score
-          pairing_types[:down] += 1
-        elsif player_score < opponent_score
-          pairing_types[:up] += 1
+        if r['opponent_id'].nil?
+          pairing_types[:bye] += 1
         else
-          pairing_types[:same] += 1
+          player_score = scores_by_player[r['player_id']]
+          opponent_score = scores_by_player[r['opponent_id']]
+          if player_score > opponent_score
+            pairing_types[:down] += 1
+          elsif player_score < opponent_score
+            pairing_types[:up] += 1
+          else
+            pairing_types[:same] += 1
+          end
         end
       end
 
+      cumulative = {}
+      if round.number > 1
+        cumulative = {
+          player_opponent_game_count: player_opponent_game_count,
+          players_by_bye_count: num_byes,
+          score_counts: score_counts,
+          side_bias: side_bias
+        }
+      end
+
       summary_results[:rounds][round.number].merge!(
-        player_opponent_game_count_counts: player_opponent_game_count_counts,
-        score_counts: score_counts,
         pairing_types: pairing_types,
-        num_byes: num_byes,
-        side_bias: side_bias
+        cumulative:
       )
 
       puts "Start of round #{round.number}"
-      puts "  Num games vs. same opponent: #{player_opponent_game_count_counts}"
+      puts "  Num games vs. same opponent: #{player_opponent_game_count}"
       puts "  Points summary: #{score_counts}"
       puts "  Pairing directions: #{pairing_types}"
       puts "  Number of byes per player: #{num_byes}"
@@ -489,7 +497,6 @@ RSpec.describe 'load testing' do
           # score = [[6, 0], [4, 1], [3, 3], [0, 6]].sample
           score = scores.sample # [[3, 0], [0, 3], [1, 1]].sample
           # visit tournament_rounds_path(tournament)
-          # TODO(plural): Update this to set side score appropriately OR make a helper in the model to do it for us.
           p.update(score1: score.first, score2: score.last)
         end
 
