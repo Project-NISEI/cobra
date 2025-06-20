@@ -186,7 +186,7 @@ RSpec.describe 'load testing' do
     scores
   end
 
-  let(:player_opponent_game_count_sql) do
+  let(:rounds_against_opponent_counts_sql) do
     "WITH
       player1_pairings AS (
         SELECT
@@ -421,11 +421,11 @@ RSpec.describe 'load testing' do
       end
 
       # How many times have players played each opponent they have faced at the start of this round?
-      player_opponent_game_count = {}
-      results = ActiveRecord::Base.connection.select_all(player_opponent_game_count_sql, nil, [round.tournament_id])
+      rounds_against_opponent_counts = {}
+      results = ActiveRecord::Base.connection.select_all(rounds_against_opponent_counts_sql, nil, [round.tournament_id])
       results.each do |r|
-        player_opponent_game_count[r['num_games']] = 0 unless player_opponent_game_count.key?(r['num_games'])
-        player_opponent_game_count[r['num_games']] += 1
+        rounds_against_opponent_counts[r['num_games']] = 0 unless rounds_against_opponent_counts.key?(r['num_games'])
+        rounds_against_opponent_counts[r['num_games']] += 1
       end
 
       # Summarize Number of Byes and Side Bias for completed rounds at beginning of round.
@@ -472,7 +472,7 @@ RSpec.describe 'load testing' do
       cumulative = {}
       if round.number > 1
         cumulative = {
-          player_opponent_game_count: player_opponent_game_count.sort_by { |k, _v| k.to_i }.to_h,
+          rounds_against_opponent_counts: rounds_against_opponent_counts.sort_by { |k, _v| k.to_i }.to_h,
           players_by_bye_count: num_byes.sort_by { |k, _v| k.to_i }.to_h,
           score_counts: score_counts.sort_by { |k, _v| k.to_i }.to_h,
           side_bias: side_bias.sort_by { |k, _v| k.to_i }.to_h
@@ -485,7 +485,7 @@ RSpec.describe 'load testing' do
       )
 
       puts "Start of round #{round.number}"
-      puts "  Num games vs. same opponent: #{player_opponent_game_count}"
+      puts "  Num games vs. same opponent: #{rounds_against_opponent_counts}"
       puts "  Points summary: #{score_counts}"
       puts "  Pairing directions: #{pairing_types}"
       puts "  Number of byes per player: #{num_byes}"
