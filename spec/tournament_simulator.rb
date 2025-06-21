@@ -409,10 +409,10 @@ RSpec.describe 'load testing' do
       expect(players.map(&:id) - [nil]).to match_array(tournament.players.active.map(&:id))
       if i == 0
         # The first round can have multiple byes if there are players with first round byes.
-        expect(players.select { |p| p.is_a? NilPlayer }.length).to be < (2 + num_first_round_byes)
+        expect(players.select { |p| p.is_a? NilPlayer }.length).to be <= (1 + num_first_round_byes)
       else
         # After the first round, we should only have at most a single bye.
-        expect(players.select { |p| p.is_a? NilPlayer }.length).to be < 2
+        expect(players.select { |p| p.is_a? NilPlayer }.length).to be <= 1
       end
 
       # How many times have players played each opponent they have faced at the start of this round?
@@ -435,18 +435,19 @@ RSpec.describe 'load testing' do
         num_byes[r['num_byes']] = 0 unless num_byes.key?(r['num_byes'])
         num_byes[r['num_byes']] += 1
 
-        bias = r['num_corp_games'] - r['num_runner_games']
-        if swiss_format == :single_sided
-          side_bias[bias] = 0 unless side_bias.key?(bias)
-          side_bias[bias] += 1
-        end
         scores_by_player[r['player_id']] = r['total_score']
         score_counts[r['total_score']] = 0 unless score_counts.key?(r['total_score'])
         score_counts[r['total_score']] += 1
+
+        next unless swiss_format == :single_sided
+
+        bias = r['num_corp_games'] - r['num_runner_games']
+        side_bias[bias] = 0 unless side_bias.key?(bias)
+        side_bias[bias] += 1
       end
 
       results = ActiveRecord::Base.connection.select_all(current_round_pairings_sql, nil, [round.tournament_id])
-      pairing_types = { up: 0, down: 0, same: 0, bye: 0 }
+      pairing_types = { bye: 0, same: 0, up_or_down: 0 }
       results.each do |r|
         next if r['player_id'].nil?
 
@@ -455,10 +456,8 @@ RSpec.describe 'load testing' do
         else
           player_score = scores_by_player[r['player_id']]
           opponent_score = scores_by_player[r['opponent_id']]
-          if player_score > opponent_score
-            pairing_types[:down] += 1
-          elsif player_score < opponent_score
-            pairing_types[:up] += 1
+          if player_score != opponent_score
+            pairing_types[:up_or_down] += 1
           else
             pairing_types[:same] += 1
           end
@@ -490,13 +489,11 @@ RSpec.describe 'load testing' do
       puts "\tGenerating results"
       ActiveRecord::Base.transaction do
         round.pairings.each do |p|
-          # score = [[6, 0], [4, 1], [3, 3], [0, 6]].sample
-          score = scores.sample # [[3, 0], [0, 3], [1, 1]].sample
-          # visit tournament_rounds_path(tournament)
+          score = scores.sample
           p.update(score1: score.first, score2: score.last)
         end
 
-        # Drop 3 players at random
+        # Drop num_drops_per_round players at random
         tournament.players.active.shuffle.take(num_drops_per_round).each { |p| p.update(active: false) }
         active_players -= num_drops_per_round
         round.update(completed: true)
