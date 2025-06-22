@@ -171,26 +171,25 @@ RSpec.describe 'reporting scores for pairings' do
     end
   end
 
-  describe 'custom scores' do
-    # Scores only show up after sides are selected.
+
+  describe 'custom score form behaves when side is not set' do
     before do
-      pairing.update(side: :player1_is_corp)
       visit tournament_rounds_path(tournament)
     end
 
     it 'stores score' do
       all(:link, '...')[0].click
-      fill_in :pairing_score1, with: '4'
-      fill_in :pairing_score2, with: '1'
+      fill_in :pairing_score1, with: '3'
+      fill_in :pairing_score2, with: '0'
       click_button 'Save'
 
       pairing.reload
 
       aggregate_failures do
-        expect(pairing.score1).to eq(4)
+        expect(pairing.score1).to eq(3)
         expect(pairing.score1_corp).to eq(0)
         expect(pairing.score1_runner).to eq(0)
-        expect(pairing.score2).to eq(1)
+        expect(pairing.score2).to eq(0)
         expect(pairing.score2_corp).to eq(0)
         expect(pairing.score2_runner).to eq(0)
       end
@@ -200,14 +199,14 @@ RSpec.describe 'reporting scores for pairings' do
       pairing.update(score1_runner: 3)
 
       visit tournament_rounds_path(tournament)
-      fill_in :pairing_score1, with: '4'
+      fill_in :pairing_score1, with: '1'
       fill_in :pairing_score2, with: '1'
       click_button 'Save'
 
       pairing.reload
 
       aggregate_failures do
-        expect(pairing.score1).to eq(4)
+        expect(pairing.score1).to eq(1)
         expect(pairing.score1_corp).to eq(0)
         expect(pairing.score1_runner).to eq(0)
         expect(pairing.score2).to eq(1)
@@ -217,17 +216,143 @@ RSpec.describe 'reporting scores for pairings' do
     end
 
     it 'stores a missing score as zero' do
-      fill_in :pairing_score1, with: '6'
+      fill_in :pairing_score1, with: '3'
       click_button 'Save'
 
       pairing.reload
 
       aggregate_failures do
-        expect(pairing.score1).to eq(6)
+        expect(pairing.score1).to eq(3)
         expect(pairing.score1_corp).to eq(0)
         expect(pairing.score1_runner).to eq(0)
         expect(pairing.score2).to eq(0)
         expect(pairing.score2_corp).to eq(0)
+        expect(pairing.score2_runner).to eq(0)
+      end
+    end
+  end
+
+  describe 'custom score form sets side scores appropriately when player1 is corp' do
+    before do
+      stage.update(format: :single_sided_swiss)
+      pairing.update(side: :player1_is_corp)
+      visit tournament_rounds_path(tournament)
+    end
+
+    it 'sets side scores appropriately' do
+      all(:link, '...')[0].click
+      fill_in :pairing_score1, with: '3'
+      fill_in :pairing_score2, with: '0'
+      click_button 'Save'
+
+      pairing.reload
+
+      aggregate_failures do
+        expect(pairing.score1).to eq(3)
+        expect(pairing.score1_corp).to eq(3)
+        expect(pairing.score1_runner).to eq(0)
+        expect(pairing.score2).to eq(0)
+        expect(pairing.score2_corp).to eq(0)
+        expect(pairing.score2_runner).to eq(0)
+      end
+    end
+
+    it 'blanks pre-existing side scores' do
+      pairing.update(score1_runner: 3)
+
+      visit tournament_rounds_path(tournament)
+      fill_in :pairing_score1, with: '3'
+      fill_in :pairing_score2, with: '0'
+      click_button 'Save'
+
+      pairing.reload
+
+      aggregate_failures do
+        expect(pairing.score1).to eq(3)
+        expect(pairing.score1_corp).to eq(3)
+        expect(pairing.score1_runner).to eq(0)
+        expect(pairing.score2).to eq(0)
+        expect(pairing.score2_corp).to eq(0)
+        expect(pairing.score2_runner).to eq(0)
+      end
+    end
+
+    it 'sets both players scores appropriately' do
+      fill_in :pairing_score1, with: '1'
+      fill_in :pairing_score2, with: '1'
+      click_button 'Save'
+
+      pairing.reload
+
+      aggregate_failures do
+        expect(pairing.score1).to eq(1)
+        expect(pairing.score1_corp).to eq(1)
+        expect(pairing.score1_runner).to eq(0)
+        expect(pairing.score2).to eq(1)
+        expect(pairing.score2_corp).to eq(0)
+        expect(pairing.score2_runner).to eq(1)
+      end
+    end
+  end
+
+  describe 'custom score form sets side scores appropriately when player1 is runner' do
+    before do
+      stage.update(format: :single_sided_swiss)
+      pairing.update(side: :player1_is_runner)
+      visit tournament_rounds_path(tournament)
+    end
+
+    it 'sets side scores appropriately' do
+      all(:link, '...')[0].click
+      fill_in :pairing_score1, with: '3'
+      fill_in :pairing_score2, with: '0'
+      click_button 'Save'
+
+      pairing.reload
+
+      aggregate_failures do
+        expect(pairing.score1).to eq(3)
+        expect(pairing.score1_corp).to eq(0)
+        expect(pairing.score1_runner).to eq(3)
+        expect(pairing.score2).to eq(0)
+        expect(pairing.score2_corp).to eq(0)
+        expect(pairing.score2_runner).to eq(0)
+      end
+    end
+
+    it 'blanks pre-existing side scores' do
+      pairing.update(score1_corp: 3)
+
+      visit tournament_rounds_path(tournament)
+      fill_in :pairing_score1, with: '3'
+      fill_in :pairing_score2, with: '0'
+      click_button 'Save'
+
+      pairing.reload
+
+      aggregate_failures do
+        expect(pairing.score1).to eq(3)
+        expect(pairing.score1_corp).to eq(0)
+        expect(pairing.score1_runner).to eq(3)
+        expect(pairing.score2).to eq(0)
+        expect(pairing.score2_corp).to eq(0)
+        expect(pairing.score2_runner).to eq(0)
+      end
+    end
+
+    it 'sets both players scores appropriately' do
+      fill_in :pairing_score1, with: '1'
+      fill_in :pairing_score2, with: '1'
+      click_button 'Save'
+
+      pairing.reload
+
+      aggregate_failures do
+        expect(pairing.score1).to eq(1)
+        expect(pairing.score1_corp).to eq(0)
+        expect(pairing.score1_runner).to eq(1)
+        expect(pairing.score2).to eq(1)
+        expect(pairing.score2_corp).to eq(1)
         expect(pairing.score2_runner).to eq(0)
       end
     end

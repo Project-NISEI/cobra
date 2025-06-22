@@ -132,6 +132,7 @@ class Pairing < ApplicationRecord
     ensure_custom_scores_complete
   end
 
+
   def combine_separate_side_scores
     return unless (score1_corp.present? && score1_corp.positive?) ||
                   (score1_runner.present? && score1_runner.positive?) ||
@@ -147,5 +148,18 @@ class Pairing < ApplicationRecord
 
     self.score1 = score1 || 0
     self.score2 = score2 || 0
+
+    # If a side is set, ensure that the scores for the sides are set properly.
+    if side == 'player1_is_corp'
+      self.score1_corp = score1
+      self.score1_runner = 0
+      self.score2_corp = 0
+      self.score2_runner = score2
+    elsif side == 'player1_is_runner'
+      self.score1_corp = 0
+      self.score1_runner = score1
+      self.score2_corp = score2
+      self.score2_runner = 0
+    end
   end
 end
