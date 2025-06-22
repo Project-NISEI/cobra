@@ -392,7 +392,9 @@ RSpec.describe 'load testing' do
       end
 
       time_taken = timer
-      summary_results[:rounds][round.number] = {}
+      summary_results[:rounds][round.number] = {
+        active_players: tournament.players.active.count
+      }
       summary_results[:rounds][round.number][:pairing_time_seconds] = time_taken
       puts "\t\tDone pairing round #{round.number}. Took #{timer} seconds"
 
@@ -480,6 +482,7 @@ RSpec.describe 'load testing' do
       )
 
       puts "Start of round #{round.number}"
+      puts "  Active players: #{tournament.players.active.count}"
       puts "  Num games vs. same opponent: #{rounds_against_opponent_counts}"
       puts "  Points summary: #{score_counts}"
       puts "  Pairing directions: #{pairing_types}"
