@@ -103,17 +103,17 @@ class PairingsController < ApplicationController
   def save_report
     pairing.update(score_params)
 
-    if score_params.key?('side') && pairing.reported?
-      score1_corp = pairing.score1_corp
-      pairing.score1_corp = pairing.score1_runner
-      pairing.score1_runner = score1_corp
+    return unless score_params.key?('side') && pairing.reported?
 
-      score2_corp = pairing.score2_corp
-      pairing.score2_corp = pairing.score2_runner
-      pairing.score2_runner = score2_corp
+    score1_corp = pairing.score1_corp
+    pairing.score1_corp = pairing.score1_runner
+    pairing.score1_runner = score1_corp
 
-      pairing.save
-    end
+    score2_corp = pairing.score2_corp
+    pairing.score2_corp = pairing.score2_runner
+    pairing.score2_runner = score2_corp
+
+    pairing.save
   end
 
   def round
