@@ -132,7 +132,6 @@ class Pairing < ApplicationRecord
     ensure_custom_scores_complete
   end
 
-
   def combine_separate_side_scores
     return unless (score1_corp.present? && score1_corp.positive?) ||
                   (score1_runner.present? && score1_runner.positive?) ||

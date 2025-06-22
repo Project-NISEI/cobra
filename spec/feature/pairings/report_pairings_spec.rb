@@ -171,7 +171,6 @@ RSpec.describe 'reporting scores for pairings' do
     end
   end
 
-
   describe 'custom score form behaves when side is not set' do
     before do
       visit tournament_rounds_path(tournament)
