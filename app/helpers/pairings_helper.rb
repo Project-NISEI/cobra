@@ -37,7 +37,7 @@ module PairingsHelper
               pairing.tournament,
               pairing.round,
               pairing,
-              report: data.merge(report_player_id: current_user),
+              pairing: data.merge(report_player_id: current_user),
             ),
             method: :post,
             class: 'btn btn-primary'
