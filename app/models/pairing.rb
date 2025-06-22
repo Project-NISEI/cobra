@@ -7,7 +7,7 @@ class Pairing < ApplicationRecord
   has_one :tournament, through: :round
   has_one :stage, through: :round
 
-  has_many :self_reports
+  has_many :self_reports, dependent: :destroy
 
   scope :non_bye, -> { where('player1_id IS NOT NULL AND player2_id IS NOT NULL') }
   scope :bye, -> { where('player1_id IS NULL OR player2_id IS NULL') }

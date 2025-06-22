@@ -51,10 +51,10 @@ class PairingsController < ApplicationController
     authorize pairing, :can_self_report?
 
     # early return if already reported
-    # already_reported = !pairing.self_reports.exists?(report_player_id: current_user.id)
-    # return unless already_reported
+    already_reported = pairing.self_reports.exists?(report_player_id: current_user.id)
+    return render json: { error: 'Already Reported' }, status: :forbidden if already_reported
 
-    self_report_score = self_report_score_params.merge(pairing_id: pairing.id)
+    self_report_score = self_report_score_params.merge(pairing_id: pairing.id).merge(report_player_id: current_user.id)
     SelfReport.create(self_report_score)
 
     # check if two reports exists and enter result
@@ -72,7 +72,7 @@ class PairingsController < ApplicationController
       save_report
 
     end
-    redirect_back(fallback_location: tournament_rounds_path(tournament))
+    render json: { success: true }, status: :ok
   end
 
   def destroy
@@ -96,6 +96,11 @@ class PairingsController < ApplicationController
   def view_decks
     authorize @tournament, :show?
     authorize pairing
+  end
+
+  def pairing_presets
+    authorize @tournament, :show?
+    render json: { presets: helpers.presets(pairing), csrf_token: form_authenticity_token }
   end
 
   private
@@ -136,6 +141,6 @@ class PairingsController < ApplicationController
 
   def self_report_score_params
     params.require(:pairing)
-          .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp, :report_player_id, :intentional_draw)
+          .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp, :intentional_draw)
   end
 end

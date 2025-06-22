@@ -3,6 +3,7 @@
   import type { Stage } from "./PairingsData";
 
   export let stage: Stage;
+  export let tournamentId: string;
   export let start_expanded: boolean;
 </script>
 
@@ -14,6 +15,7 @@
   </div>
   {#each stage.rounds as round, index (round.id)}
     <Round
+      {tournamentId}
       {round}
       {stage}
       start_expanded={start_expanded && index === stage.rounds.length - 1}
