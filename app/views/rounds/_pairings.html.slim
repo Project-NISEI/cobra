@@ -45,37 +45,12 @@
           - else
             = render left_player.corp_identity_object
             = render left_player.runner_identity_object
-    - if @tournament.allow_self_reporting && (left_player.user_id == current_user.id || right_player.user_id == current_user.id)
-      button.btn.btn-primary data-toggle="modal" data-target="#selfReport" type="button"
-        | Self Report
-
-      .modal.fade#selfReport tabindex="-1" role="dialog"
-        .modal-dialog.modal-dialog-centered role="document"
-          .modal-content
-            .modal-header
-              h5.modal-title Self Report Game
-              button.close type="button" data-dismiss="modal" aria-label="Close"
-                span &times;
-            .modal-body
-              - presets(pairing).each do |data|
-                => preset_score_button_for_self_reporting pairing, data, current_user.id
-
     - if policy(round.tournament).edit? && (!single_sided || (single_sided && is_side_set))
       .col-sm-5.centre_score
-        button.btn.btn-primary data-toggle="modal" data-target="#reportGame" type="button"
-          | Report Game
-
-        .modal.fade#reportGame tabindex="-1" role="dialog"
-          .modal-dialog.modal-dialog-centered role="document"
-            .modal-content
-              .modal-header
-                h5.modal-title Report Game
-                button.close type="button" data-dismiss="modal" aria-label="Close"
-                  span &times;
-              .modal-body
-                - presets(pairing).each do |data|
-                  => preset_score_button pairing, data
-                => link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
+        .preset_score
+          - presets(pairing).each do |data|
+            => preset_score_button pairing, data
+          => link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
         .custom_score
           = simple_form_for pairing, url: report_tournament_round_pairing_path(round.tournament, round, pairing), method: :post, html: { class: 'form-inline' } do |f|
             .mx-auto
