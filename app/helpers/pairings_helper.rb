@@ -135,7 +135,7 @@ module PairingsHelper
     ws = winning_side(pairing)
 
     if pairing.stage.single_sided_swiss?
-      if pairing.player1_is_corp?
+      if pairing.player1_is_corp? || pairing.side.nil?
         left_score = pairing.score1
         right_score = pairing.score2
       else
