@@ -53,6 +53,7 @@ module PairingsHelper
               pairing: { side: value }
             ),
             method: :post,
+            data: { confirm: "Are you sure you want to switch #{player.name} to #{side}?" },
             class: "btn btn-sm mr-1 #{active ? 'btn-dark' : 'btn-outline-dark'}"
   end
 
