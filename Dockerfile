@@ -1,5 +1,5 @@
 #####################################################################
-FROM ruby:3.3.8-alpine3.20 AS base
+FROM ruby:3.4.4-alpine3.20 AS base
 
 # Install essential Linux packages and nodejs
 RUN apk -U upgrade && apk add --no-cache \
