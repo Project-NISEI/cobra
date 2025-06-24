@@ -83,26 +83,22 @@ module PairingStrategies
 
     def self.points_weight(player1_points, player2_points)
       if ENV['AESOPS_LOGIC']
-       return ((player1_points - player2_points + 1) * (player1_points - player2_points)).abs / 6.0
-      else
-       return 0 - (player1_points - player2_points)**2 / 6.0
+        return ((player1_points - player2_points + 1) * (player1_points - player2_points)).abs / 6.0
       end
+
+      0 - (player1_points - player2_points)**2 / 6.0
     end
 
     def self.side_bias_weight(player1_side_bias, player2_side_bias)
-     if ENV['AESOPS_LOGIC']
-       return 8**[(player1_side_bias + 1).abs, (player2_side_bias - 1).abs].max.abs
-      else
-        return 8**((player1_side_bias - player2_side_bias).abs / 2.0)
-      end
+      return 8**[(player1_side_bias + 1).abs, (player2_side_bias - 1).abs].max.abs if ENV['AESOPS_LOGIC']
+
+      8**((player1_side_bias - player2_side_bias).abs / 2.0)
     end
 
     def self.rematch_bias_weight(has_previous_matchup)
-      if ENV['AESOPS_LOGIC']
-       return  has_previous_matchup ? 0.1 : 0
-      else
-        return has_previous_matchup ? -0.5 : 0
-      end
+      return has_previous_matchup ? 0.1 : 0 if ENV['AESOPS_LOGIC']
+
+      has_previous_matchup ? -0.5 : 0
     end
 
     def self.preferred_player1_side(player1_side_bias, player2_side_bias)
