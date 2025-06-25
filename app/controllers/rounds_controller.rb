@@ -164,6 +164,14 @@ class RoundsController < ApplicationController
       pairings_reported += score1.nil? && score2.nil? ? 0 : 1
       # Only show own self report
       self_report = SelfReport.where(pairing_id: id, report_player_id: current_user.id).first if current_user
+      if self_report
+        self_report_score_label = score_label(@tournament.swiss_format, player1_side(side),
+                                              self_report.score1, self_report.score1_corp,
+                                              self_report.score1_runner,
+                                              self_report.score2,
+                                              self_report.score2_corp,
+                                              self_report.score2_runner)
+      end
       pairings << {
         id:,
         table_number:,
@@ -179,7 +187,7 @@ class RoundsController < ApplicationController
                                  score2, score2_corp, score2_runner),
         intentional_draw:,
         two_for_one:,
-        self_report:
+        self_report: ({ report_player_id: self_report.report_player_id, label: self_report_score_label } if self_report)
       }
     end
     {

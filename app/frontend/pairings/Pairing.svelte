@@ -1,9 +1,13 @@
 <script lang="ts">
-  import { type Pairing, type Round, type Stage } from "./PairingsData";
+  import {
+    type Pairing,
+    type Player,
+    type Round,
+    type Stage,
+  } from "./PairingsData";
   import PlayerName from "./PlayerName.svelte";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
-  import { onMount } from "svelte";
-  import { loadPresets, type PairingPreset, selfReport } from "./SelfReport";
+  import SelfReportOptions from "@/pairings/SelfReportOptions.svelte";
 
   export let tournamentId: string;
   export let stage: Stage;
@@ -11,8 +15,6 @@
   export let pairing: Pairing;
   let left_player = pairing.player1;
   let right_player = pairing.player2;
-  let presets: PairingPreset[];
-  let csrfToken: string;
   console.log(`Format: ${stage.format}`);
   if (
     pairing.player2.side == "corp" &&
@@ -23,24 +25,11 @@
     right_player = pairing.player1;
   }
 
-  onMount(async () => {
-    const response = await loadPresets(
-      tournamentId,
-      round.id.toString(),
-      pairing.id.toString(),
-    );
-    presets = response.presets;
-    csrfToken = response.csrf_token;
-  });
-
-  async function toggleIdentities(data: PairingPreset) {
-    await selfReport(
-      tournamentId,
-      round.id.toString(),
-      pairing.id.toString(),
-      csrfToken,
-      data,
-    );
+  function selfReportLable(pairing: Pairing, player: Player) {
+    if (pairing.self_report?.report_player_id !== player.user_id) {
+      return null;
+    }
+    return pairing.self_report.label;
   }
 </script>
 
@@ -59,8 +48,7 @@
   <PlayerName
     player={left_player}
     left_or_right="left"
-    self_reported={pairing.self_report?.report_player_id ===
-      left_player.user_id}
+    self_report_label={selfReportLable(pairing, left_player)}
   />
   <div class="col-sm-2 centre_score">
     {pairing.score_label}
@@ -74,22 +62,11 @@
   <PlayerName
     player={right_player}
     left_or_right="right"
-    self_reported={pairing.self_report?.report_player_id ===
-      right_player.user_id}
+    self_report_label={selfReportLable(pairing, right_player)}
   />
-  {#if pairing.policy.self_report}
-    <div class="m-1">
-      {#each presets as preset, index (preset.label)}
-        <button
-          class="btn btn-primary mr-1"
-          id="option-{index}"
-          on:click={async () => {
-            return toggleIdentities(preset);
-          }}
-        >
-          {preset.label}
-        </button>
-      {/each}
-    </div>
-  {/if}
+  <div class="col-sm-2">
+    {#if pairing.policy.self_report}
+      <SelfReportOptions {tournamentId} {round} {pairing} />
+    {/if}
+  </div>
 </div>

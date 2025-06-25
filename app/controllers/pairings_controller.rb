@@ -141,6 +141,7 @@ class PairingsController < ApplicationController
 
   def self_report_score_params
     params.require(:pairing)
-          .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp, :intentional_draw)
+          .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp,
+                  :score1, :score2, :side, :intentional_draw, :two_for_one)
   end
 end

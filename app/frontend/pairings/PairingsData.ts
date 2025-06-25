@@ -61,6 +61,7 @@ export interface SelfReport {
   score1: number;
   score2: number;
   intentional_draw: boolean;
+  label: string | null;
 }
 
 export interface PairingPolicies {

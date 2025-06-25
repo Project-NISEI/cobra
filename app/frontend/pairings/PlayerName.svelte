@@ -4,7 +4,7 @@
   import { showIdentities } from "./ShowIdentities";
 
   export let player: Player;
-  export let self_reported: boolean;
+  export let self_report_label: string | null;
   export let left_or_right: string;
 </script>
 
@@ -13,8 +13,8 @@
   {#if player.side_label}
     {player.side_label}
   {/if}
-  {#if self_reported}
-    (reported)
+  {#if self_report_label}
+    (reported: {self_report_label})
   {/if}
   <div class="ids" style={$showIdentities ? "display: block;" : ""}>
     {#if player.side_label}
