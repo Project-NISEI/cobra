@@ -36,7 +36,8 @@
     .col-sm.left_player_name
       = left_player.name_with_pronouns
       <br />
-      =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
+      - unless pairing.bye?
+        =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
       - if left_player.id
         .ids
           - if round.stage.single_sided?
@@ -89,7 +90,8 @@
     .col-sm.right_player_name
       = right_player.name_with_pronouns
       <br />
-      =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided
+      - unless pairing.bye?
+        =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided
       - if right_player.id
         .ids
           - if round.stage.single_sided?
