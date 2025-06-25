@@ -63,6 +63,7 @@ RSpec.describe TournamentsController, type: :request do
             'streaming_opt_out' => false
           }
         )
+        expect(data['csrf_token']).not_to be_empty
       end
     end
 

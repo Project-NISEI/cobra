@@ -37,7 +37,8 @@ RSpec.describe TournamentsController, type: :request do
         expect(response).to be_successful
         expect(response.content_type).to include('application/json')
 
-        expect(JSON.parse(response.body)['tournament']).to eq(
+        data = JSON.parse(response.body)
+        expect(data['tournament']).to eq(
           {
             'id' => tournament.id,
             'name' => 'Test Tournament',
@@ -52,6 +53,7 @@ RSpec.describe TournamentsController, type: :request do
             'allow_self_reporting' => false
           }
         )
+        expect(data['csrf_token']).not_to be_empty
       end
 
       it 'includes form options data' do
