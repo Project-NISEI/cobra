@@ -88,6 +88,12 @@ class TournamentsController < ApplicationController
 
     @new_tournament = current_user.tournaments.new
     @new_tournament.date = Date.current
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: helpers.tournament_settings_json(@new_tournament), status: :ok
+      end
+    end
   end
 
   def create
@@ -95,15 +101,44 @@ class TournamentsController < ApplicationController
 
     @new_tournament = current_user.tournaments.new(tournament_params)
 
-    if @new_tournament.save
-      redirect_to tournament_path(@new_tournament)
-    else
-      render :new
+    respond_to do |format|
+      if @new_tournament.save
+        format.html do
+          redirect_to tournament_path(@new_tournament)
+          return
+        end
+        format.json do
+          render json: {
+            id: @new_tournament.id,
+            name: @new_tournament.name,
+            url: tournament_path(@new_tournament)
+          }, status: :created
+          return
+        end
+      else
+        format.html do
+          render :new
+          return
+        end
+        format.json do
+          # Determine appropriate status code based on whether there are validation errors
+          status_code = @new_tournament.errors.any? ? :unprocessable_entity : :internal_server_error
+          render json: { errors: @new_tournament.errors }, status: status_code
+          return
+        end
+      end
     end
   end
 
   def edit
     authorize @tournament
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: helpers.tournament_settings_json(@tournament)
+      end
+    end
   end
 
   def update
