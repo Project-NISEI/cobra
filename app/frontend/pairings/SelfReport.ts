@@ -35,7 +35,7 @@ export async function selfReport(
   pairingId: string,
   csrfToken: string,
   data: PairingPreset,
-): Promise<PairingPresetsData> {
+): Promise<SelfReportResult> {
   const response = await fetch(
     Routes.self_report_tournament_round_pairing_path(
       tournamentId,
@@ -52,7 +52,7 @@ export async function selfReport(
       body: JSON.stringify({ pairing: data }),
     },
   );
-  return (await response.json()) as PairingPresetsData;
+  return (await response.json()) as SelfReportResult;
 }
 
 export interface PairingPreset {
@@ -68,3 +68,7 @@ export interface PairingPresetsData {
   presets: PairingPreset[];
   csrf_token: string;
 }
+
+export type SelfReportResult =
+  | { success: true }
+  | { success: false; error: string };
