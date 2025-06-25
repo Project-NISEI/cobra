@@ -163,16 +163,14 @@ class RoundsController < ApplicationController
       two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
       pairings_reported += score1.nil? && score2.nil? ? 0 : 1
       # Only show own self report
-      self_report = SelfReport.where(pairing_id: id, report_player_id: current_user.id).first
+      self_report = SelfReport.where(pairing_id: id, report_player_id: current_user.id).first if current_user
       pairings << {
         id:,
         table_number:,
         table_label: stage.double_elim? || stage.single_elim? ? "Game #{table_number}" : "Table #{table_number}",
         policy: {
           view_decks:,
-          self_report: self_report.nil? &&
-                       (players[player1_id]['user_id'] == current_user.id ||
-                         players[player2_id]['user_id'] == current_user.id)
+          self_report: helpers.self_report_allowed(self_report, players[player1_id], players[player2_id])
         },
         player1: pairings_data_player(players[player1_id], player1_side(side)),
         player2: pairings_data_player(players[player2_id], player2_side(side)),
@@ -196,7 +194,7 @@ class RoundsController < ApplicationController
     {
       name_with_pronouns: name_with_pronouns(player),
       side:,
-      user_id: player['user_id'],
+      user_id: (player['user_id'] if player),
       side_label: side_label(side),
       corp_id: id(player, 'corp'),
       runner_id: id(player, 'runner')
