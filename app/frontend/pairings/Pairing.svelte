@@ -1,13 +1,8 @@
 <script lang="ts">
-  import {
-    type Pairing,
-    type Round,
-    type Stage
-  } from "./PairingsData";
+  import { type Pairing, type Round, type Stage } from "./PairingsData";
   import PlayerName from "./PlayerName.svelte";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
   import SelfReportOptions from "./SelfReportOptions.svelte";
-
 
   export let tournamentId: string;
   export let stage: Stage;
@@ -24,7 +19,6 @@
     left_player = pairing.player2;
     right_player = pairing.player1;
   }
-
 </script>
 
 <div
@@ -39,10 +33,7 @@
       View decks
     </a>
   {/if}
-  <PlayerName
-    player={left_player}
-    left_or_right="left"
-  />
+  <PlayerName player={left_player} left_or_right="left" />
   <div class="col-sm-2 centre_score">
     {pairing.score_label}
     {#if pairing.intentional_draw}
@@ -52,10 +43,7 @@
       <span class="badge badge-pill badge-secondary score-badge">2 for 1</span>
     {/if}
   </div>
-  <PlayerName
-    player={right_player}
-    left_or_right="right"
-  />
+  <PlayerName player={right_player} left_or_right="right" />
   <div class="col-sm-2">
     {#if pairing.policy.self_report}
       <SelfReportOptions {tournamentId} {round} {pairing} />

@@ -1,8 +1,5 @@
 <script lang="ts">
-  import {
-    type Pairing,
-    type Round
-  } from "./PairingsData";
+  import { type Pairing, type Round } from "./PairingsData";
   import { onMount } from "svelte";
   import { loadPresets, type PairingPreset, selfReport } from "./SelfReport";
 
@@ -16,7 +13,7 @@
     const response = await loadPresets(
       tournamentId,
       round.id.toString(),
-      pairing.id.toString()
+      pairing.id.toString(),
     );
     presets = response.presets;
     csrfToken = response.csrf_token;
@@ -28,7 +25,7 @@
       round.id.toString(),
       pairing.id.toString(),
       csrfToken,
-      data
+      data,
     );
   }
 </script>
@@ -55,7 +52,12 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title" id="reportModal">Report Game</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -67,8 +69,8 @@
               class="btn btn-primary"
               id="option-{index}"
               on:click={async () => {
-              return onSelfReportClicked(preset);
-            }}
+                return onSelfReportClicked(preset);
+              }}
             >
               {preset.label}
             </button>
