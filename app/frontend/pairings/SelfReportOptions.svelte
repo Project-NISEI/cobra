@@ -20,13 +20,19 @@
   });
 
   async function onSelfReportClicked(data: PairingPreset) {
-    await selfReport(
+    const response = await selfReport(
       tournamentId,
       round.id.toString(),
       pairing.id.toString(),
       csrfToken,
       data,
     );
+    if (!response.success) {
+      alert(response.error);
+      return;
+    }
+    // TODO: instead of reloading, maybe use result value
+    window.location.reload();
   }
 </script>
 
@@ -39,7 +45,6 @@
   Report Game
 </button>
 
-<!-- Modal -->
 <div
   class="modal fade"
   id="reportModal"
@@ -67,6 +72,7 @@
           {#each presets as preset, index (preset.label)}
             <button
               class="btn btn-primary"
+              data-dismiss="modal"
               id="option-{index}"
               on:click={async () => {
                 return onSelfReportClicked(preset);

@@ -52,7 +52,7 @@ class PairingsController < ApplicationController
 
     # early return if already reported
     already_reported = pairing.self_reports.exists?(report_player_id: current_user.id)
-    return render json: { error: 'Already Reported' }, status: :forbidden if already_reported
+    return render json: { success: false, error: 'Already Reported' }, status: :forbidden if already_reported
 
     self_report_score = self_report_score_params.merge(pairing_id: pairing.id).merge(report_player_id: current_user.id)
     SelfReport.create(self_report_score)
