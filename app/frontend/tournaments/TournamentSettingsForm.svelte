@@ -6,6 +6,7 @@
     type TournamentOptions,
     type TournamentSettings,
   } from "./TournamentSettings";
+  import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
   export let tournament: TournamentSettings = {};
   export let options: TournamentOptions = emptyTournamentOptions();
   export let featureFlags: FeatureFlags = {};
@@ -14,6 +15,7 @@
     console.log("Submitted: ", tournament);
   };
   export let submitLabel = "Save";
+  export let submitIcon = "floppy-o";
   export let isSubmitting = false;
   export let errors: Errors = {};
 </script>
@@ -48,7 +50,7 @@
   </div>
   <div class="col-md-6">
     <div class="form-group">
-      <label for="time_zone">Time Zone</label>
+      <label for="time_zone">Time zone</label>
       <select
         id="time_zone"
         class="form-control"
@@ -104,8 +106,8 @@
       class="form-control"
       bind:value={tournament.swiss_format}
     >
-      <option value="double_sided">Double-Sided</option>
-      <option value="single_sided">Single-Sided</option>
+      <option value="double_sided">Double-sided</option>
+      <option value="single_sided">Single-sided</option>
     </select>
     {#if errors.swiss_format}
       <div class="invalid-feedback d-block">{errors.swiss_format}</div>
@@ -122,7 +124,7 @@
         class="form-control"
         bind:value={tournament.tournament_type_id}
       >
-        <option value="">Select tournament type</option>
+        <option value=""></option>
         {#each options.tournament_types as tournament_type (tournament_type.id)}
           <option value={tournament_type.id}>{tournament_type.name}</option>
         {/each}
@@ -140,7 +142,7 @@
         class="form-control"
         bind:value={tournament.card_set_id}
       >
-        <option value="">Select card set</option>
+        <option value=""></option>
         {#each options.card_sets as card_set (card_set.id)}
           <option value={card_set.id}>{card_set.name}</option>
         {/each}
@@ -161,7 +163,7 @@
         class="form-control"
         bind:value={tournament.format_id}
       >
-        <option value="">Select format</option>
+        <option value=""></option>
         {#each options.formats as format (format.id)}
           <option value={format.id}>{format.name}</option>
         {/each}
@@ -179,7 +181,7 @@
         class="form-control"
         bind:value={tournament.deckbuilding_restriction_id}
       >
-        <option value="">Select restriction</option>
+        <option value=""></option>
         {#each options.deckbuilding_restrictions as restriction (restriction.id)}
           <option value={restriction.id}>{restriction.name}</option>
         {/each}
@@ -236,7 +238,6 @@
   <textarea
     id="description"
     class="form-control"
-    rows="4"
     bind:value={tournament.description}
   ></textarea>
   {#if errors.description}
@@ -251,7 +252,7 @@
     class="form-control"
     bind:value={tournament.official_prize_kit_id}
   >
-    <option value="">Select prize kit</option>
+    <option value=""></option>
     {#each options.official_prize_kits as prize_kit (prize_kit.id)}
       <option value={prize_kit.id}>{prize_kit.name}</option>
     {/each}
@@ -268,7 +269,6 @@
   <textarea
     id="additional_prizes_description"
     class="form-control"
-    rows="4"
     bind:value={tournament.additional_prizes_description}
   ></textarea>
   {#if errors.additional_prizes_description}
@@ -380,6 +380,7 @@
     on:click|preventDefault={onSubmit}
     disabled={isSubmitting}
   >
+    <FontAwesomeIcon icon={submitIcon} />
     {#if isSubmitting}
       <span
         class="spinner-border spinner-border-sm"
