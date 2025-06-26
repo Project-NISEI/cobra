@@ -68,6 +68,7 @@
         {featureFlags}
         onSubmit={submitNewTournament}
         submitLabel="Create"
+        submitIcon="plus"
         {isSubmitting}
         {errors}
       />
