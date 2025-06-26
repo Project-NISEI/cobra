@@ -1,13 +1,13 @@
 <script lang="ts">
   import {
     type Pairing,
-    type Player,
     type Round,
-    type Stage,
+    type Stage
   } from "./PairingsData";
   import PlayerName from "./PlayerName.svelte";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
-  import SelfReportOptions from "@/pairings/SelfReportOptions.svelte";
+  import SelfReportOptions from "./SelfReportOptions.svelte";
+
 
   export let tournamentId: string;
   export let stage: Stage;
@@ -25,12 +25,6 @@
     right_player = pairing.player1;
   }
 
-  function selfReportLable(pairing: Pairing, player: Player) {
-    if (pairing.self_report?.report_player_id !== player.user_id) {
-      return null;
-    }
-    return pairing.self_report.label;
-  }
 </script>
 
 <div
@@ -48,7 +42,6 @@
   <PlayerName
     player={left_player}
     left_or_right="left"
-    self_report_label={selfReportLable(pairing, left_player)}
   />
   <div class="col-sm-2 centre_score">
     {pairing.score_label}
@@ -62,11 +55,13 @@
   <PlayerName
     player={right_player}
     left_or_right="right"
-    self_report_label={selfReportLable(pairing, right_player)}
   />
   <div class="col-sm-2">
     {#if pairing.policy.self_report}
       <SelfReportOptions {tournamentId} {round} {pairing} />
+    {/if}
+    {#if pairing.self_report !== null}
+      Report: {pairing.self_report.label}
     {/if}
   </div>
 </div>

@@ -1,12 +1,8 @@
 <script lang="ts">
   import {
     type Pairing,
-    type Player,
-    type Round,
-    type Stage,
+    type Round
   } from "./PairingsData";
-  import PlayerName from "./PlayerName.svelte";
-  import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
   import { onMount } from "svelte";
   import { loadPresets, type PairingPreset, selfReport } from "./SelfReport";
 
@@ -20,7 +16,7 @@
     const response = await loadPresets(
       tournamentId,
       round.id.toString(),
-      pairing.id.toString(),
+      pairing.id.toString()
     );
     presets = response.presets;
     csrfToken = response.csrf_token;
@@ -32,35 +28,16 @@
       round.id.toString(),
       pairing.id.toString(),
       csrfToken,
-      data,
+      data
     );
   }
 </script>
-
-<!--<div class="dropdown">-->
-<!--  <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" data-boundary="viewport">-->
-<!--    Self Report-->
-<!--  </button>-->
-<!--    <div class="dropdown-menu ">-->
-<!--      {#each presets as preset, index (preset.label)}-->
-<!--        <button-->
-<!--          class="dropdown-item"-->
-<!--          id="option-{index}"-->
-<!--          on:click={async () => {-->
-<!--            return onSelfReportClicked(preset);-->
-<!--          }}-->
-<!--        >-->
-<!--          {preset.label}-->
-<!--        </button>-->
-<!--      {/each}-->
-<!--    </div>-->
-<!--</div>-->
 
 <button
   type="button"
   class="btn btn-primary"
   data-toggle="modal"
-  data-target="#exampleModal"
+  data-target="#reportModal"
 >
   Report Game
 </button>
@@ -68,29 +45,35 @@
 <!-- Modal -->
 <div
   class="modal fade"
-  id="exampleModal"
+  id="reportModal"
   tabindex="-1"
   role="dialog"
-  aria-labelledby="exampleModalLabel"
+  aria-labelledby="reportModal"
   aria-hidden="true"
 >
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel">Report Game</h2>
+        <h4 class="modal-title" id="reportModal">Report Game</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
-        {#each presets as preset, index (preset.label)}
-          <button
-            class="btn btn-primary"
-            id="option-{index}"
-            on:click={async () => {
+        <p>Please click the right button to report your game</p>
+        <div class="d-flex flex-row w-100 justify-content-around">
+          {#each presets as preset, index (preset.label)}
+            <button
+              class="btn btn-primary"
+              id="option-{index}"
+              on:click={async () => {
               return onSelfReportClicked(preset);
             }}
-          >
-            {preset.label}
-          </button>
-        {/each}
+            >
+              {preset.label}
+            </button>
+          {/each}
+        </div>
       </div>
     </div>
   </div>
