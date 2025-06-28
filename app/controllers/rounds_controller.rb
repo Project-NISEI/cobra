@@ -178,7 +178,8 @@ class RoundsController < ApplicationController
         table_label: stage.double_elim? || stage.single_elim? ? "Game #{table_number}" : "Table #{table_number}",
         policy: {
           view_decks:,
-          self_report: helpers.self_report_allowed(self_report, players[player1_id], players[player2_id])
+          self_report: helpers.self_report_allowed(self_report, players[player1_id], players[player2_id]) &&
+            (score1.nil? && score2.nil?)
         },
         player1: pairings_data_player(players[player1_id], player1_side(side)),
         player2: pairings_data_player(players[player2_id], player2_side(side)),
@@ -209,7 +210,8 @@ class RoundsController < ApplicationController
     }
   end
 
-  def score_label(swiss_format, player1_side, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner) # rubocop:disable Metrics/ParameterLists
+  def score_label(swiss_format, player1_side, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner)
+    # rubocop:disable Metrics/ParameterLists
     # No scores reported.
     return '-' if score1 == 0 && score2 == 0 # rubocop:disable Style/NumericPredicate
 
