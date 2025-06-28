@@ -25,6 +25,10 @@ class TournamentPolicy < ApplicationPolicy
     record.self_registration || update?
   end
 
+  def self_report?
+    record.allow_self_reporting
+  end
+
   def save_json?
     show?
   end

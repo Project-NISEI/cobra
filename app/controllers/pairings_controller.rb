@@ -47,11 +47,11 @@ class PairingsController < ApplicationController
   end
 
   def self_report
-    authorize @tournament, :show?
+    authorize @tournament, :self_report?
     authorize pairing, :can_self_report?
 
-    # early return if already reported
-    already_reported = pairing.self_reports.exists?(report_player_id: current_user.id)
+    # early return if player has already reported or the game itself is reported
+    already_reported = pairing.self_reports.exists?(report_player_id: current_user.id) || pairing.reported?
     return render json: { success: false, error: 'Already Reported' }, status: :forbidden if already_reported
 
     self_report_score = self_report_score_params.merge(pairing_id: pairing.id).merge(report_player_id: current_user.id)
