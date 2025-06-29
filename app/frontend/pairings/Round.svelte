@@ -3,6 +3,7 @@
   import Pairing from "./Pairing.svelte";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
+  export let tournamentId: string;
   export let stage: Stage;
   export let round: Round;
   export let start_expanded: boolean;
@@ -28,7 +29,7 @@
         Pairings by name
       </a>
       {#each round.pairings as pairing (pairing.id)}
-        <Pairing {pairing} {round} {stage} />
+        <Pairing {tournamentId} {pairing} {round} {stage} />
       {/each}
     </div>
   </div>
