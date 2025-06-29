@@ -5,7 +5,7 @@ module SelfReportHelper
     return false if current_user.nil?
 
     self_report.nil? &&
-      ((player1['user_id'] == current_user.id) ||
-        (player2['user_id'] == current_user.id))
+      ((player1&.dig('user_id') == current_user.id) ||
+        (player2&.dig('user_id') == current_user.id))
   end
 end

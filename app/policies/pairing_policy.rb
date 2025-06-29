@@ -6,6 +6,9 @@ class PairingPolicy < ApplicationPolicy
   end
 
   def can_self_report?
-    record.player1.user_id == user.id || record.player2.user_id == user.id
+    user.present? && (
+      record.player1&.user_id == user&.id ||
+        record.player2&.user_id == user&.id
+    )
   end
 end

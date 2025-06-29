@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 RSpec.describe SelfReportHelper do
   describe '#self_report_allowed' do
     let(:none_empty_self_report) { empty_self_report }
@@ -12,12 +13,12 @@ RSpec.describe SelfReportHelper do
       expect(helper.self_report_allowed(nil, nil, player_1_with_id, player_2_with_id)).to be false
     end
 
-    it 'returns true if current user is in pairing' do
+    it 'returns true if current user 1 is in pairing' do
       expect(helper.self_report_allowed(alice, nil, player_1_with_id,
                                         player_2_with_id)).to be true
     end
 
-    it 'returns true if current user is in pairing' do
+    it 'returns true if current user 2 is in pairing' do
       expect(helper.self_report_allowed(bob, nil, player_1_with_id,
                                         player_2_with_id)).to be true
     end
