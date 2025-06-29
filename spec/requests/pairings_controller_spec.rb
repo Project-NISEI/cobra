@@ -111,6 +111,7 @@ RSpec.describe PairingsController do
         expect(response).to have_http_status(:forbidden)
       end
     end
+
     def create_pairing_params(overrides = {})
       {
         pairing: {
