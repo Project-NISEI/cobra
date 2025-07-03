@@ -28,7 +28,7 @@
             = fa_icon 'video-camera', class: 'text-secondary'
             =< fa_icon 'ban', class: 'text-danger'
         javascript:
-            $('.streaming-tooltip').tooltip()
+          $('.streaming-tooltip').tooltip()
     - if pairing.decks_visible_to(current_user)
       =< link_to view_decks_tournament_round_pairing_path(@tournament, round, pairing) do
         => fa_icon 'eye'
