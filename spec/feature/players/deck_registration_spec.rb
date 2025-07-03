@@ -3,43 +3,38 @@
 RSpec.describe 'registering a deck from NetrunnerDB' do
   let(:organiser) { create(:user, nrdb_access_token: 'a_token') }
   let(:player) { create(:user, nrdb_access_token: 'a_token') }
+  let(:tournament) { create(:tournament, user: organiser, self_registration: true, nrdb_deck_registration: true) }
 
   before do
     Flipper.enable :nrdb_deck_registration
-    sign_in organiser
-    visit new_tournament_path
-    fill_in 'Tournament name', with: 'Test Tournament'
-    check :tournament_self_registration
-    check :tournament_nrdb_deck_registration
-    click_button 'Create'
   end
 
   it 'registers as a player' do
     expect do
       register_as_player
     end.to change(Player, :count).by(1)
-    expect(page).to have_current_path(registration_tournament_path(Tournament.last), ignore_query: true)
+    expect(page).to have_current_path(registration_tournament_path(tournament), ignore_query: true)
   end
 
   it 'TO registers themselves as a player' do
     expect do
       register_as_organizer
     end.to change(Player, :count).by(1)
-    expect(page).to have_current_path(registration_tournament_path(Tournament.last), ignore_query: true)
+    expect(page).to have_current_path(registration_tournament_path(tournament), ignore_query: true)
   end
 
   it 'creates a player as the TO' do
     expect do
       create_player_as_organizer
     end.to change(Player, :count).by(1)
-    expect(page).to have_current_path(tournament_players_path(Tournament.last), ignore_query: true)
+    expect(page).to have_current_path(tournament_players_path(tournament), ignore_query: true)
   end
 
   it 'displays a deck in the list' do
     register_as_player
     create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy')
     VCR.use_cassette 'nrdb_decks/az_palantir_full_deck' do
-      visit registration_tournament_path(Tournament.last)
+      visit registration_tournament_path(tournament)
     end
     expect(displayed_decks_names)
       .to eq(['The Palantir - 1st/Undefeated @ Silver Goblin Store Champs'])
@@ -48,10 +43,10 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   it 'displays no decks when locked with no deck' do
     register_as_player
     sign_in organiser
-    visit tournament_players_path(Tournament.last)
+    visit tournament_players_path(tournament)
     click_link 'Close registration'
     sign_in player
-    visit registration_tournament_path(Tournament.last)
+    visit registration_tournament_path(tournament)
     expect(page).not_to have_selector '#nrdb_decks'
   end
 
@@ -61,7 +56,7 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
       create(:identity, nrdb_code: '01054', name: 'Haas-Bioroid: Engineering the Future')
       create(:identity, nrdb_code: '26010', name: 'Az McCaffrey: Mechanical Prodigy')
       VCR.use_cassette 'nrdb_decks/az_palantir_and_jammy_hb' do
-        visit registration_tournament_path(Tournament.last)
+        visit registration_tournament_path(tournament)
         select_corp_deck Deck.new identity_title: 'Haas-Bioroid: Engineering the Future',
                                   name: 'Ben Ni Jammy HB \"Always Beta Test\" (UK Nationals \'16 14th)",',
                                   identity_nrdb_printing_id: '01054',
@@ -103,10 +98,10 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
 
     it 'displays the decks when locked' do
       sign_in organiser
-      visit tournament_players_path(Tournament.last)
+      visit tournament_players_path(tournament)
       click_link 'Close registration'
       sign_in player
-      visit registration_tournament_path(Tournament.last)
+      visit registration_tournament_path(tournament)
       expect(page).not_to have_selector '#nrdb_decks'
       expect(page).to have_selector '#display_decks'
       expect(find('#player_corp_deck', visible: false).value).to match(/^\{.+}$/)
@@ -116,14 +111,15 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
 
   def register_as_player
     sign_in player
-    visit tournament_path(Tournament.last)
+    visit tournament_path(tournament)
     with_nrdb_decks do
       click_button 'Deck Registration'
     end
   end
 
   def register_as_organizer
-    visit tournament_path(Tournament.last)
+    sign_in organiser
+    visit tournament_path(tournament)
     fill_in 'Name', with: 'Test Player'
     with_nrdb_decks do
       click_button 'Deck Registration'
@@ -131,7 +127,8 @@ RSpec.describe 'registering a deck from NetrunnerDB' do
   end
 
   def create_player_as_organizer
-    visit tournament_players_path(Tournament.last)
+    sign_in organiser
+    visit tournament_players_path(tournament)
     fill_in 'Name', with: 'Test Player'
     with_nrdb_decks do
       click_button 'Create'
