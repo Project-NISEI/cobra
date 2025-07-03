@@ -596,7 +596,8 @@ RSpec.describe PlayersController do
     {
       'name_with_pronouns' => name_with_pronouns,
       'corp_id' => nil,
-      'runner_id' => nil
+      'runner_id' => nil,
+      'active' => true
     }
   end
 
@@ -604,7 +605,8 @@ RSpec.describe PlayersController do
     {
       'name_with_pronouns' => name_with_pronouns,
       'corp_id' => { 'faction' => nil, 'name' => nil },
-      'runner_id' => { 'faction' => nil, 'name' => nil }
+      'runner_id' => { 'faction' => nil, 'name' => nil },
+      'active' => true
     }
   end
 

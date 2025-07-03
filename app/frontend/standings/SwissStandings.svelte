@@ -50,7 +50,10 @@
     {#each stage.standings as standing (standing.position)}
       <tr>
         <td>{standing.position}</td>
-        <td>{standing.player.name_with_pronouns}</td>
+        <td>
+          {standing.player.name_with_pronouns}
+          {standing.player.active ? "" : "(dropped)"}
+        </td>
         {#if stage.any_decks_viewable}
           <td>
             {#if standing.policy.view_decks}
