@@ -41,21 +41,38 @@ class PairingsController < ApplicationController
   def report
     authorize @tournament, :update?
 
-    pairing.update(score_params)
-
-    if score_params.key?('side') && pairing.reported?
-      score1_corp = pairing.score1_corp
-      pairing.score1_corp = pairing.score1_runner
-      pairing.score1_runner = score1_corp
-
-      score2_corp = pairing.score2_corp
-      pairing.score2_corp = pairing.score2_runner
-      pairing.score2_runner = score2_corp
-
-      pairing.save
-    end
+    save_report
 
     redirect_back(fallback_location: tournament_rounds_path(tournament))
+  end
+
+  def self_report
+    authorize @tournament, :self_report?
+    authorize pairing, :can_self_report?
+
+    # early return if player has already reported or the game itself is reported
+    already_reported = pairing.self_reports.exists?(report_player_id: current_user.id) || pairing.reported?
+    return render json: { success: false, error: 'Already Reported' }, status: :forbidden if already_reported
+
+    self_report_score = self_report_score_params.merge(pairing_id: pairing.id).merge(report_player_id: current_user.id)
+    SelfReport.create(self_report_score)
+
+    # check if two reports exists and enter result
+    reports = pairing.self_reports
+    if reports.size == 2
+      # if reports don't match, do nothing (later replaced by notification)
+      if reports[0].score1_corp != reports[1].score1_corp ||
+         reports[0].score2_corp != reports[1].score2_corp ||
+         reports[0].score1_runner != reports[1].score1_runner ||
+         reports[0].score2_runner != reports[1].score2_runner
+
+        return
+      end
+
+      save_report
+
+    end
+    render json: { success: true }, status: :ok
   end
 
   def destroy
@@ -81,7 +98,28 @@ class PairingsController < ApplicationController
     authorize pairing
   end
 
+  def pairing_presets
+    authorize @tournament, :show?
+    render json: { presets: helpers.presets(pairing), csrf_token: form_authenticity_token }
+  end
+
   private
+
+  def save_report
+    pairing.update(score_params)
+
+    return unless score_params.key?('side') && pairing.reported?
+
+    score1_corp = pairing.score1_corp
+    pairing.score1_corp = pairing.score1_runner
+    pairing.score1_runner = score1_corp
+
+    score2_corp = pairing.score2_corp
+    pairing.score2_corp = pairing.score2_runner
+    pairing.score2_runner = score2_corp
+
+    pairing.save
+  end
 
   def round
     @round ||= Round.find(params[:round_id])
@@ -96,6 +134,12 @@ class PairingsController < ApplicationController
   end
 
   def score_params
+    params.require(:pairing)
+          .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp,
+                  :score1, :score2, :side, :intentional_draw, :two_for_one)
+  end
+
+  def self_report_score_params
     params.require(:pairing)
           .permit(:score1_runner, :score1_corp, :score2_runner, :score2_corp,
                   :score1, :score2, :side, :intentional_draw, :two_for_one)

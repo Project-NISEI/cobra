@@ -31,6 +31,18 @@ module PairingsHelper
             class: 'btn btn-primary'
   end
 
+  def preset_score_button_for_self_reporting(pairing, data, current_user)
+    link_to data[:label],
+            self_report_tournament_round_pairing_path(
+              pairing.tournament,
+              pairing.round,
+              pairing,
+              pairing: data.merge(report_player_id: current_user)
+            ),
+            method: :post,
+            class: 'btn btn-primary'
+  end
+
   def side_value(player, side, pairing)
     return unless player_is_in_pairing(player, pairing)
 
