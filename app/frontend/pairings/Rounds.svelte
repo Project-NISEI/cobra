@@ -37,7 +37,11 @@
     </p>
   {/if}
   {#each data.stages as stage, index (stage.format)}
-    <Stage {stage} start_expanded={index === data.stages.length - 1} />
+    <Stage
+      {stage}
+      start_expanded={index === data.stages.length - 1}
+      {tournamentId}
+    />
   {/each}
 {:else}
   <div class="d-flex align-items-center m-2">
