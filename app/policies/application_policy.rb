@@ -36,6 +36,10 @@ class ApplicationPolicy
     update?
   end
 
+  def edit_form?
+    edit?
+  end
+
   def destroy?
     false
   end
