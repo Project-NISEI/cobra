@@ -85,15 +85,14 @@ class TournamentsController < ApplicationController
 
   def new
     authorize Tournament
+  end
+
+  def new_form
+    authorize Tournament
 
     @new_tournament = current_user.tournaments.new
     @new_tournament.date = Date.current
-    respond_to do |format|
-      format.html
-      format.json do
-        render json: helpers.tournament_settings_json(@new_tournament), status: :ok
-      end
-    end
+    render json: helpers.tournament_settings_json(@new_tournament), status: :ok
   end
 
   def create

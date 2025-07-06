@@ -54,6 +54,7 @@ Rails.application.routes.draw do
     get :shortlink, on: :collection
     get :not_found, on: :collection
     get :my, on: :collection
+    get :new_form, on: :collection
     get :stats, on: :member
     get 'type/:type_id', to: 'tournaments#index', on: :collection, as: :tournaments_by_type
   end
