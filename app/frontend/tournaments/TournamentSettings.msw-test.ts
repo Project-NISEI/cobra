@@ -7,7 +7,7 @@ import {
   emptyTournamentOptions,
 } from "./TournamentSettings";
 import { server } from "../msw/server";
-import { new_tournament_path, tournaments_path } from "../msw/routes";
+import { new_form_tournaments_path, tournaments_path } from "../msw/routes";
 
 describe("TournamentSettings", () => {
   describe("loadNewTournament", () => {
@@ -19,7 +19,7 @@ describe("TournamentSettings", () => {
       };
 
       server.use(
-        http.get(new_tournament_path(), ({ request }) => {
+        http.get(new_form_tournaments_path(), ({ request }) => {
           expect(request.headers.get("Accept")).toBe("application/json");
           return HttpResponse.json(mockData);
         }),
@@ -31,7 +31,7 @@ describe("TournamentSettings", () => {
 
     it("handles network errors", async () => {
       server.use(
-        http.get(new_tournament_path(), () => {
+        http.get(new_form_tournaments_path(), () => {
           return HttpResponse.error();
         }),
       );

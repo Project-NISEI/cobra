@@ -17,7 +17,7 @@ RSpec.describe TournamentsController, type: :request do
         restriction = create(:deckbuilding_restriction, name: 'Standard Ban List')
         prize_kit = create(:official_prize_kit, name: '2025 Q1 Game Night Kit', position: 1)
         travel_to Date.new(2023, 5, 15) do
-          get new_tournament_path, as: :json
+          get new_form_tournaments_path, as: :json
         end
 
         expect(response).to be_successful
@@ -73,7 +73,7 @@ RSpec.describe TournamentsController, type: :request do
       end
 
       it 'returns unauthorized status' do
-        get new_tournament_path, as: :json
+        get new_form_tournaments_path, as: :json
 
         expect(response).to have_http_status(:unauthorized)
       end
