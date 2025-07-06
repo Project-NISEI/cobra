@@ -5,9 +5,14 @@ import {
   createTournament,
   ValidationError,
   emptyTournamentOptions,
+  loadEditTournament,
 } from "./TournamentSettings";
 import { server } from "../msw/server";
-import { new_form_tournaments_path, tournaments_path } from "../msw/routes";
+import {
+  edit_form_tournament_path,
+  new_form_tournaments_path,
+  tournaments_path,
+} from "../msw/routes";
 
 describe("TournamentSettings", () => {
   describe("loadNewTournament", () => {
@@ -37,6 +42,40 @@ describe("TournamentSettings", () => {
       );
 
       await expect(loadNewTournament()).rejects.toThrow();
+    });
+  });
+
+  describe("loadEditTournament", () => {
+    it("fetches edit tournament form data", async () => {
+      const mockData = {
+        tournament: {
+          date: "2023-12-25",
+          name: "Test Tournament",
+          private: false,
+        },
+        options: emptyTournamentOptions(),
+        feature_flags: { single_sided_swiss: true },
+      };
+
+      server.use(
+        http.get(edit_form_tournament_path(123), ({ request }) => {
+          expect(request.headers.get("Accept")).toBe("application/json");
+          return HttpResponse.json(mockData);
+        }),
+      );
+
+      const result = await loadEditTournament(123);
+      expect(result).toEqual(mockData);
+    });
+
+    it("handles network errors", async () => {
+      server.use(
+        http.get(edit_form_tournament_path(123), () => {
+          return HttpResponse.error();
+        }),
+      );
+
+      await expect(loadEditTournament(123)).rejects.toThrow();
     });
   });
 
