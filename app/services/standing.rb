@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Standing
-  attr_reader :player, :points, :sos, :extended_sos, :corp_points, :runner_points
+  attr_reader :player, :points, :sos, :extended_sos, :bye_points, :corp_points, :runner_points
 
   delegate :name, :pronouns, :name_with_pronouns, to: :player
   delegate :tournament, :seed_in_stage, to: :player
@@ -11,6 +11,7 @@ class Standing
     @points = values.fetch(:points, 0) || 0
     @sos = values.fetch(:sos, 0) || 0
     @extended_sos = values.fetch(:extended_sos, 0) || 0
+    @bye_points = values.fetch(:bye_points, 0) || 0
     @corp_points = values.fetch(:corp_points, 0) || 0
     @runner_points = values.fetch(:runner_points, 0) || 0
   end

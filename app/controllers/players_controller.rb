@@ -186,6 +186,7 @@ class PlayersController < ApplicationController
         extended_sos: row.extended_sos,
         corp_points: row.corp_points || 0,
         runner_points: row.runner_points || 0,
+        bye_points: row.bye_points || 0,
         manual_seed: row.manual_seed,
         side_bias: stage.format == 'single_sided_swiss' ? row.player.side_bias : nil
       }

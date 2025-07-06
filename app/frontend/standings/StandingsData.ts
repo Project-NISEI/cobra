@@ -42,6 +42,7 @@ export interface SwissStanding {
   points: number;
   sos: string;
   extended_sos: string;
+  bye_points: number;
   corp_points: number;
   runner_points: number;
   manual_seed: number | null;
