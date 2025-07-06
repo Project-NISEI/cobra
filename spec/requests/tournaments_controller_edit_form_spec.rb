@@ -32,7 +32,7 @@ RSpec.describe TournamentsController, type: :request do
       end
 
       it 'returns tournament data' do
-        get edit_tournament_path(tournament), as: :json
+        get edit_form_tournament_path(tournament), as: :json
 
         expect(response).to be_successful
         expect(response.content_type).to include('application/json')
@@ -64,7 +64,7 @@ RSpec.describe TournamentsController, type: :request do
         restriction = create(:deckbuilding_restriction, name: 'Standard Ban List')
         prize_kit = create(:official_prize_kit, name: '2025 Q1 Game Night Kit', position: 1)
 
-        get edit_tournament_path(tournament), as: :json
+        get edit_form_tournament_path(tournament), as: :json
 
         data = JSON.parse(response.body)
         expect(data['options'].except('time_zones')).to eq(
@@ -106,7 +106,7 @@ RSpec.describe TournamentsController, type: :request do
       end
 
       it 'returns unauthorized status' do
-        get edit_tournament_path(tournament), as: :json
+        get edit_form_tournament_path(tournament), as: :json
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -118,7 +118,7 @@ RSpec.describe TournamentsController, type: :request do
       end
 
       it 'returns unauthorized status' do
-        get edit_tournament_path(tournament), as: :json
+        get edit_form_tournament_path(tournament), as: :json
 
         expect(response).to have_http_status(:unauthorized)
       end

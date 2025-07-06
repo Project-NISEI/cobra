@@ -2,7 +2,7 @@
 
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: %i[
-    show info edit update destroy
+    show info edit edit_form update destroy
     upload_to_abr save_json cut qr registration timer
     close_registration open_registration lock_player_registrations unlock_player_registrations
     id_and_faction_data cut_conversion_rates side_win_percentages stats
@@ -131,13 +131,11 @@ class TournamentsController < ApplicationController
 
   def edit
     authorize @tournament
+  end
 
-    respond_to do |format|
-      format.html
-      format.json do
-        render json: helpers.tournament_settings_json(@tournament)
-      end
-    end
+  def edit_form
+    authorize @tournament
+    render json: helpers.tournament_settings_json(@tournament)
   end
 
   def update
