@@ -66,6 +66,24 @@ describe("TournamentCreation", () => {
     });
   });
 
+  it("shows a loading spinner", async () => {
+    const { loadNewTournament } = await import("./TournamentSettings");
+    vi.mocked(loadNewTournament).mockImplementation(
+      () =>
+        new Promise(() => {
+          // This promise intentionally never resolves to test loading state
+        }),
+    );
+
+    render(TournamentCreation);
+
+    await waitFor(() => {
+      expect(screen.getByText("Create a tournament")).toBeInTheDocument();
+    });
+    expect(screen.queryByLabelText(/tournament name/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+  });
+
   it("successfully creates a tournament", async () => {
     const { createTournament } = await import("./TournamentSettings");
     const mockResponse = {
