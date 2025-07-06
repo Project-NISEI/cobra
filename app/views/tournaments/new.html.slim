@@ -1,8 +1,4 @@
-.col-12
-  h1 Create a tournament
-  = simple_form_for @new_tournament do |f|
-    = render 'form', f: f
-    .form-group
-      = button_tag type: :submit, class: 'btn btn-primary' do |f|
-        => fa_icon 'plus'
-        | Create
+#tournament_creation_anchor.col-12
+
+= content_for :head do
+  = vite_typescript_tag 'tournament_creation', 'data-turbolinks-track': 'reload'

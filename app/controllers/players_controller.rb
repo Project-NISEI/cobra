@@ -214,6 +214,7 @@ class PlayersController < ApplicationController
 
     {
       id: player.id,
+      active: player.active,
       name_with_pronouns: player.name_with_pronouns,
       corp_id: show_ids ? standings_identity(player.corp_identity_object) : nil,
       runner_id: show_ids ? standings_identity(player.runner_identity_object) : nil

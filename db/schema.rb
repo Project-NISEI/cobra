@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_05_034059) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_20_072144) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -170,6 +170,27 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_05_034059) do
     t.index ["round_id"], name: "index_pairings_on_round_id"
   end
 
+  create_table "player_match_reports", id: false, force: :cascade do |t|
+    t.integer "tournament_id", null: false
+    t.integer "round_id", null: false
+    t.integer "pairing_id", null: false
+    t.integer "player_id", null: false
+    t.integer "player1_id", null: false
+    t.integer "player2_id", null: false
+    t.integer "score1"
+    t.integer "score2"
+    t.integer "side"
+    t.integer "score1_runner"
+    t.integer "score1_corp"
+    t.integer "score2_corp"
+    t.integer "score2_runner"
+    t.boolean "intentional_draw", default: false, null: false
+    t.boolean "two_for_one", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_id", "round_id", "pairing_id", "player_id"], name: "idx_unq_id_player_match_reports", unique: true
+  end
+
   create_table "players", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "tournament_id"
@@ -222,6 +243,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_05_034059) do
     t.integer "length_minutes", default: 65
     t.index ["stage_id"], name: "index_rounds_on_stage_id"
     t.index ["tournament_id"], name: "index_rounds_on_tournament_id"
+  end
+
+  create_table "self_reports", force: :cascade do |t|
+    t.integer "pairing_id"
+    t.integer "report_player_id"
+    t.integer "score1"
+    t.integer "score2"
+    t.integer "score1_corp"
+    t.integer "score1_runner"
+    t.integer "score2_corp"
+    t.integer "score2_runner"
+    t.boolean "intentional_draw"
+    t.index ["pairing_id"], name: "index_self_reports_on_pairings"
   end
 
   create_table "stages", id: :serial, force: :cascade do |t|
@@ -329,6 +363,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_05_034059) do
   add_foreign_key "round_timer_activations", "tournaments"
   add_foreign_key "rounds", "stages"
   add_foreign_key "rounds", "tournaments"
+  add_foreign_key "self_reports", "pairings"
   add_foreign_key "stages", "tournaments"
   add_foreign_key "standing_rows", "players"
   add_foreign_key "standing_rows", "stages"

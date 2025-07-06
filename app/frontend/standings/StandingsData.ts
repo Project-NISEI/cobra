@@ -57,6 +57,7 @@ export interface CutStanding {
 
 export interface Player {
   id: number;
+  active: boolean;
   name_with_pronouns: string;
   corp_id: Identity | null;
   runner_id: Identity | null;

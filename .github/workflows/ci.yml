@@ -50,7 +50,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.8
+          ruby-version: 3.4.4
           bundler-cache: true
 
       - name: Set up Rails
@@ -75,6 +75,9 @@ jobs:
       - name: Run rails tests
         run: bundle exec rails test
 
+      - name: Run vitest tests
+        run: npm run test
+
       - name: Plan deployment
         id: plan-deployment
         run: deploy/bin/github-actions-plan-deployment
@@ -91,7 +94,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.8
+          ruby-version: 3.4.4
           bundler-cache: true
       - name: Install NPM
         uses: actions/setup-node@v4
@@ -108,6 +111,8 @@ jobs:
         run: bundle exec rubocop --parallel
       - name: Lint Javascript files
         run: npx eslint .
+      - name: Check TypeScript types
+        run: npm run typecheck
       - name: Check style with Prettier
         run: npx prettier . --check
 

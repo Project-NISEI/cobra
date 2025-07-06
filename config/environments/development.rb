@@ -82,6 +82,7 @@ Rails.application.configure do
     Flipper.enable :open_list_cut
     Flipper.enable :streaming_opt_out
     Flipper.enable :single_sided_swiss
+    Flipper.enable :allow_self_reporting
   rescue StandardError => e
     Rails.logger.warn "Failed setting Flipper features: #{e.class}"
   end

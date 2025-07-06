@@ -42,6 +42,16 @@ RSpec.describe PairingsHelper do
         )
       end
     end
+
+    describe '#sss_readable_score' do
+      let(:sss_bye) { create(:pairing, stage: tournament.current_stage, score1: 3, score2: 0, player2: nil, side: nil) }
+
+      it 'outputs correct score description in sss' do
+        aggregate_failures do
+          expect(helper.readable_score(sss_bye)).to eq('3 - 0')
+        end
+      end
+    end
   end
 
   describe '#presets' do
