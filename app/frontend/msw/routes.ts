@@ -11,6 +11,10 @@ export function new_form_tournaments_path() {
   return `${basePath}/tournaments/new`;
 }
 
+export function edit_form_tournament_path(id: number) {
+  return `${basePath}/tournaments/${id.toString()}/edit_form`;
+}
+
 export function tournaments_path() {
   return `${basePath}/tournaments`;
 }
@@ -18,6 +22,7 @@ export function tournaments_path() {
 Object.defineProperty(global, "Routes", {
   value: {
     new_form_tournaments_path,
+    edit_form_tournament_path,
     tournaments_path,
   },
 });
