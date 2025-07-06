@@ -9,6 +9,7 @@ RSpec.describe TournamentsController, type: :request do
         tournament: {
           name: 'Test Tournament',
           stream_url: 'https://twitch.tv/test',
+          swiss_format: 'double_sided',
           manual_seed: true,
           self_registration: true,
           date: '2023-05-15'
@@ -122,6 +123,29 @@ RSpec.describe TournamentsController, type: :request do
           card_set_id: card_set.id,
           deckbuilding_restriction_id: restriction.id,
           date: Date.parse('2023-05-15')
+        )
+      end
+    end
+
+    context 'when changing swiss format' do
+      it 'changes swiss format when no rounds exist' do
+        patch tournament_path(tournament), params: { tournament: { swiss_format: 'single_sided' } }, as: :json
+        tournament.reload
+        expect(tournament).to be_single_sided
+        expect(response).to have_http_status(:no_content)
+        expect(response.body).to be_empty
+      end
+
+      it 'does not change swiss format when rounds exist' do
+        tournament.pair_new_round!
+        patch tournament_path(tournament), params: { tournament: { swiss_format: 'single_sided' } }, as: :json
+        tournament.reload
+        expect(tournament).to be_double_sided
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)).to eq(
+          {
+            'errors' => { 'base' => "Can't change Swiss format when rounds exist." }
+          }
         )
       end
     end
