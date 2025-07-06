@@ -36,8 +36,4 @@ class TournamentPolicy < ApplicationPolicy
   def my?
     user
   end
-
-  def new_form?
-    user
-  end
 end
