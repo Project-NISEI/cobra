@@ -6,7 +6,7 @@
   export let start_expanded: boolean;
 </script>
 
-<div class="accordion mb-3" role="tablist">
+<div class="accordion mb-3 accordion-pairings" role="tablist">
   <div class="row mb-1">
     <div class="col-sm-11">
       <h4>{stage.name}</h4>
