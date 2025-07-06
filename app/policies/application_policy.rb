@@ -24,6 +24,10 @@ class ApplicationPolicy
     create?
   end
 
+  def new_form?
+    new?
+  end
+
   def update?
     false
   end
