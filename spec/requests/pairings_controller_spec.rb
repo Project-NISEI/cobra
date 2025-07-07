@@ -87,6 +87,11 @@ RSpec.describe PairingsController do
         end.to change(SelfReport, :count).by(1)
 
         expect(response).to have_http_status(:ok)
+
+        expect(Pairing.find(tournament.rounds[0].pairings[0].id)).to have_attributes(
+          score1: nil,
+          score2: nil
+        )
       end
 
       it 'self report matches and pairing scores are set' do
@@ -144,7 +149,7 @@ RSpec.describe PairingsController do
                params: create_pairing_params, as: :json
         end.to change(SelfReport, :count).by(1)
 
-        expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 

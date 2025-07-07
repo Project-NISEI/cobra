@@ -50,23 +50,21 @@ class PairingsController < ApplicationController
     authorize @tournament, :self_report?
     authorize pairing, :can_self_report?
 
-    # early return if player has already reported or the game itself is reported
-    already_reported = pairing.self_reports.exists?(report_player_id: current_user.id) || pairing.reported?
-    return render json: { success: false, error: 'Already Reported' }, status: :forbidden if already_reported
-
     self_report_score = self_report_score_params.merge(pairing_id: pairing.id).merge(report_player_id: current_user.id)
     SelfReport.create(self_report_score)
 
-    # check if two reports exists and enter result
-    reports = pairing.self_reports
+    # if both players have reported and the reported scores match, finalize scores for the pairing
+    reports = Pairing.find(params[:id]).self_reports
+
     if reports.size == 2
+
       # if reports don't match, do nothing (later replaced by notification)
       if reports[0].score1_corp != reports[1].score1_corp ||
          reports[0].score2_corp != reports[1].score2_corp ||
          reports[0].score1_runner != reports[1].score1_runner ||
          reports[0].score2_runner != reports[1].score2_runner
 
-        return
+        return render json: { success: true }, status: :ok
       end
 
       save_report
