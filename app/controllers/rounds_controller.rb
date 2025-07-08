@@ -159,15 +159,30 @@ class RoundsController < ApplicationController
     pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
                          two_for_one score1 score1_corp score1_runner score2 score2_corp score2_runner]
     round.pairings.order(:table_number).pluck(pairings_fields).each do | # rubocop:disable Metrics/ParameterLists
-        id, table_number, player1_id, player2_id, side, intentional_draw,
-        two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
+    id, table_number, player1_id, player2_id, side, intentional_draw,
+      two_for_one, score1, score1_corp, score1_runner, score2, score2_corp, score2_runner|
       pairings_reported += score1.nil? && score2.nil? ? 0 : 1
+      # Only show own self report
+      self_report = SelfReport.where(pairing_id: id, report_player_id: current_user.id).first if current_user
+      if self_report
+        self_report_score_label = score_label(@tournament.swiss_format, player1_side(side),
+                                              self_report.score1, self_report.score1_corp,
+                                              self_report.score1_runner,
+                                              self_report.score2,
+                                              self_report.score2_corp,
+                                              self_report.score2_runner)
+      end
       pairings << {
         id:,
         table_number:,
         table_label: stage.double_elim? || stage.single_elim? ? "Game #{table_number}" : "Table #{table_number}",
         policy: {
-          view_decks:
+          view_decks:,
+          self_report: SelfReporting.self_report_allowed(current_user,
+                                                         self_report,
+                                                         players[player1_id]&.dig('user_id'),
+                                                         players[player2_id]&.dig('user_id')) &&
+                       score1.nil? && score2.nil?
         },
         player1: pairings_data_player(players[player1_id], player1_side(side)),
         player2: pairings_data_player(players[player2_id], player2_side(side)),
@@ -175,7 +190,8 @@ class RoundsController < ApplicationController
                                  score1, score1_corp, score1_runner,
                                  score2, score2_corp, score2_runner),
         intentional_draw:,
-        two_for_one:
+        two_for_one:,
+        self_report: ({ report_player_id: self_report.report_player_id, label: self_report_score_label } if self_report)
       }
     end
     {
@@ -190,6 +206,7 @@ class RoundsController < ApplicationController
     {
       name_with_pronouns: name_with_pronouns(player),
       side:,
+      user_id: (player['user_id'] if player),
       side_label: side_label(side),
       corp_id: id(player, 'corp'),
       runner_id: id(player, 'runner')
