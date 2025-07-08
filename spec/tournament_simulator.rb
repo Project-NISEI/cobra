@@ -141,7 +141,9 @@ RSpec.describe 'load testing' do
       num_players:,
       num_rounds:,
       num_drops_per_round:,
-      num_first_round_byes:
+      num_first_round_byes:,
+      num_pairings: 0,
+      num_bye_vs_bye_pairings: 0
     }
   end
 
@@ -324,6 +326,53 @@ RSpec.describe 'load testing' do
       SELECT * FROM player2_pairings"
   end
 
+  # Retrieve pairings after round 1 where both players had previously received a bye.
+  let(:bye_vs_bye_sql) do
+    "WITH
+      rounds AS (
+        SELECT
+          id, number
+        FROM
+          rounds
+        WHERE
+          stage_id IN (
+            SELECT id FROM stages WHERE tournament_id = $1 AND number = 1
+          )
+      ),
+      bye_players AS (
+        SELECT DISTINCT p.player1_id AS player_id
+        FROM
+          pairings AS p
+          INNER JOIN rounds r ON p.round_id = r.id
+        WHERE
+          player1_id IS NOT NULL AND player2_id IS NULL
+        UNION DISTINCT
+        SELECT DISTINCT p.player2_id AS player_id
+        FROM
+          pairings AS p
+          INNER JOIN rounds r ON p.round_id = r.id
+        WHERE
+          player2_id IS NOT NULL AND player1_id IS NULL
+      ),
+      with_byes AS (
+        SELECT
+          p.round_id,
+          r.number AS round_number,
+          p.player1_id,
+          b1.player_id IS NOT NULL AS p1_is_bye_player,
+          p.player2_id,
+          b2.player_id IS NOT NULL AS p2_is_bye_player
+        FROM
+          pairings p
+          INNER JOIN rounds r ON p.round_id = r.id
+          LEFT JOIN bye_players b1 ON p.player1_id = b1.player_id
+          LEFT JOIN bye_players b2 ON p.player2_id = b2.player_id
+        WHERE r.number > 1
+      )
+      SELECT * FROM with_byes WHERE p1_is_bye_player AND p2_is_bye_player
+    "
+  end
+
   def timer
     (Time.zone.now - (@start || Time.zone.now)).seconds.tap do
       @start = Time.zone.now
@@ -338,6 +387,7 @@ RSpec.describe 'load testing' do
     puts "  num_rounds:                      #{num_rounds}"
     puts "  num_drops_per_round:             #{num_drops_per_round}"
     puts "  num_first_round_byes:            #{num_first_round_byes}"
+
     if swiss_format == :single_sided
       summary_results.merge!(
         num_single_sided_player1_wins:,
@@ -394,13 +444,14 @@ RSpec.describe 'load testing' do
       else
         round = tournament.pair_new_round!
       end
-
       time_taken = timer
+
       summary_results[:rounds][round.number] = {
         active_players: tournament.players.active.count
       }
-      summary_results[:rounds][round.number][:pairing_time_seconds] = time_taken
-      puts "\t\tDone pairing round #{round.number}. Took #{timer} seconds"
+      round_results = summary_results[:rounds][round.number]
+      round_results[:pairing_time_seconds] = time_taken
+      puts "\t\tDone pairing round #{round.number}. Took #{time_taken} seconds"
 
       expected_pairings = 0
       if num_first_round_byes > 0 && i == 0
@@ -480,10 +531,20 @@ RSpec.describe 'load testing' do
         cumulative[:side_bias] = side_bias.sort_by { |k, _v| k.to_i }.to_h if swiss_format == :single_sided
       end
 
-      summary_results[:rounds][round.number].merge!(
+      num_bye_vs_bye_pairings = 0
+      results = ActiveRecord::Base.connection.select_all(bye_vs_bye_sql, nil, [round.tournament_id])
+      results.each do |r|
+        num_bye_vs_bye_pairings += 1 if r['round_number'] == round.number
+      end
+      round_results.merge!(
+        num_pairings: round.pairings.count,
+        num_bye_vs_bye_pairings:,
         pairing_types: pairing_types.sort_by { |k, _v| k }.to_h,
         cumulative:
       )
+      # Update entire tournament counts as well.
+      summary_results[:num_pairings] += round_results[:num_pairings]
+      summary_results[:num_bye_vs_bye_pairings] += round_results[:num_bye_vs_bye_pairings]
 
       puts "Start of round #{round.number}"
       puts "  Active players: #{tournament.players.active.count}"
@@ -492,6 +553,8 @@ RSpec.describe 'load testing' do
       puts "  Pairing directions: #{pairing_types}"
       puts "  Number of byes per player: #{num_byes}"
       puts "  Side bias: #{side_bias}" if swiss_format == :single_sided
+      puts "  Number of pairings: #{round_results[:num_pairings]}"
+      puts "  Number of bye vs bye pairings: #{round_results[:num_bye_vs_bye_pairings]}"
 
       puts "\tGenerating results"
       ActiveRecord::Base.transaction do
@@ -507,13 +570,13 @@ RSpec.describe 'load testing' do
       end
 
       time_taken = timer
-      summary_results[:rounds][round.number][:result_generation_time_seconds] = time_taken
+      round_results[:result_generation_time_seconds] = time_taken
       puts "\t\tDone generating results. Took #{time_taken} seconds"
 
       puts "\tCalculating standings"
       visit standings_tournament_players_path(tournament)
       time_taken = timer
-      summary_results[:rounds][round.number][:standings_page_load_time_seconds] = time_taken
+      round_results[:standings_page_load_time_seconds] = time_taken
       puts "\t\tDone. Took #{time_taken} seconds"
     end
 
