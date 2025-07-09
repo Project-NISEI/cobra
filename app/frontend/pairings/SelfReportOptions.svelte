@@ -10,11 +10,7 @@
   let csrfToken: string;
 
   onMount(async () => {
-    const response = await loadPresets(
-      tournamentId,
-      round.id,
-      pairing.id,
-    );
+    const response = await loadPresets(tournamentId, round.id, pairing.id);
     presets = response.presets;
     csrfToken = response.csrf_token;
   });
