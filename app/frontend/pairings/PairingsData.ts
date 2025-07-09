@@ -1,7 +1,7 @@
 import type { Identity } from "../identities/Identity";
 
 declare const Routes: {
-  pairings_data_tournament_rounds_path: (tournamentId: string) => string;
+  pairings_data_tournament_rounds_path: (tournamentId: number) => string;
   pairing_presets_tournament_round_pairing_path: (
     tournamentId: string,
     roundId: string,
@@ -10,7 +10,7 @@ declare const Routes: {
 };
 
 export async function loadPairings(
-  tournamentId: string,
+  tournamentId: number,
 ): Promise<PairingsData> {
   const response = await fetch(
     Routes.pairings_data_tournament_rounds_path(tournamentId),
@@ -57,7 +57,7 @@ export interface Pairing {
 }
 
 export interface SelfReport {
-  report_player_id: string;
+  report_player_id: number;
   score1: number;
   score2: number;
   intentional_draw: boolean;

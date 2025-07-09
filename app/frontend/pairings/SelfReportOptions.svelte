@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { loadPresets, type PairingPreset, selfReport } from "./SelfReport";
 
-  export let tournamentId: string;
+  export let tournamentId: number;
   export let round: Round;
   export let pairing: Pairing;
   let presets: PairingPreset[];
@@ -12,8 +12,8 @@
   onMount(async () => {
     const response = await loadPresets(
       tournamentId,
-      round.id.toString(),
-      pairing.id.toString(),
+      round.id,
+      pairing.id,
     );
     presets = response.presets;
     csrfToken = response.csrf_token;
@@ -22,8 +22,8 @@
   async function onSelfReportClicked(data: PairingPreset) {
     const response = await selfReport(
       tournamentId,
-      round.id.toString(),
-      pairing.id.toString(),
+      round.id,
+      pairing.id,
       csrfToken,
       data,
     );

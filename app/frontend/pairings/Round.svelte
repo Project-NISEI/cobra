@@ -3,7 +3,7 @@
   import Pairing from "./Pairing.svelte";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
 
-  export let tournamentId: string;
+  export let tournamentId: number;
   export let stage: Stage;
   export let round: Round;
   export let start_expanded: boolean;

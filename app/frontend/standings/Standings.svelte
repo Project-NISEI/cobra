@@ -10,7 +10,7 @@
   import { loadStandings } from "./StandingsData";
   import SwissStandings from "./SwissStandings.svelte";
 
-  export let tournamentId: string;
+  export let tournamentId: number;
   let data: StandingsData;
 
   onMount(async () => {

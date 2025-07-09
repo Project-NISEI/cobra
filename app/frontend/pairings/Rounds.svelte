@@ -6,7 +6,7 @@
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
   import { showIdentities } from "./ShowIdentities";
 
-  export let tournamentId: string;
+  export let tournamentId: number;
   let data: PairingsData;
 
   onMount(async () => {

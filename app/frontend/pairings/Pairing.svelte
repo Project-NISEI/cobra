@@ -4,7 +4,7 @@
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
   import SelfReportOptions from "./SelfReportOptions.svelte";
 
-  export let tournamentId: string;
+  export let tournamentId: number;
   export let stage: Stage;
   export let round: Round;
   export let pairing: Pairing;
