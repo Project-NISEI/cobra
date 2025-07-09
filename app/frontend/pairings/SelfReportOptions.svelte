@@ -42,7 +42,7 @@
   data-toggle="modal"
   data-target="#reportModal"
 >
-  Report Game
+  Report Pairing
 </button>
 
 <div
@@ -56,7 +56,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="reportModal">Report Game</h4>
+        <h4 class="modal-title" id="reportModal">Report Pairing</h4>
         <button
           type="button"
           class="close"
