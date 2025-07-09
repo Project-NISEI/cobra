@@ -7,8 +7,12 @@
 
 const basePath = "https://localhost:3000";
 
-export function new_tournament_path() {
+export function new_form_tournaments_path() {
   return `${basePath}/tournaments/new`;
+}
+
+export function edit_form_tournament_path(id: number) {
+  return `${basePath}/tournaments/${id.toString()}/edit_form`;
 }
 
 export function tournaments_path() {
@@ -17,7 +21,8 @@ export function tournaments_path() {
 
 Object.defineProperty(global, "Routes", {
   value: {
-    new_tournament_path,
+    new_form_tournaments_path,
+    edit_form_tournament_path,
     tournaments_path,
   },
 });

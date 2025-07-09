@@ -178,10 +178,10 @@ class RoundsController < ApplicationController
         table_label: stage.double_elim? || stage.single_elim? ? "Game #{table_number}" : "Table #{table_number}",
         policy: {
           view_decks:,
-          self_report: helpers.self_report_allowed(current_user,
-                                                   self_report,
-                                                   players[player1_id],
-                                                   players[player2_id]) &&
+          self_report: SelfReporting.self_report_allowed(current_user,
+                                                         self_report,
+                                                         players[player1_id]&.dig('user_id'),
+                                                         players[player2_id]&.dig('user_id')) &&
                        score1.nil? && score2.nil?
         },
         player1: pairings_data_player(players[player1_id], player1_side(side)),

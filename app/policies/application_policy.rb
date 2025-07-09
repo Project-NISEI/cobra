@@ -24,12 +24,20 @@ class ApplicationPolicy
     create?
   end
 
+  def new_form?
+    new?
+  end
+
   def update?
     false
   end
 
   def edit?
     update?
+  end
+
+  def edit_form?
+    edit?
   end
 
   def destroy?

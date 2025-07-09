@@ -12,11 +12,7 @@
   } from "./TournamentSettings";
   import TournamentSettingsForm from "./TournamentSettingsForm.svelte";
 
-  let tournament: TournamentSettings = {
-    date: new Date().toISOString().split("T")[0], // Today's date as default
-    time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Browser's timezone as default
-    swiss_format: "double_sided",
-  };
+  let tournament: TournamentSettings;
   let options: TournamentOptions = emptyTournamentOptions();
   let featureFlags: FeatureFlags = {};
   let csrfToken = "";
@@ -27,8 +23,7 @@
   onMount(async () => {
     // Fetch any initial data needed for the form (like available options)
     const data = await loadNewTournament();
-    // Merge any server-provided defaults with our local defaults
-    tournament = { ...tournament, ...data.tournament };
+    tournament = data.tournament;
     options = data.options;
     featureFlags = data.feature_flags;
     csrfToken = data.csrf_token;
@@ -59,19 +54,23 @@
 
     {#if errors.base}
       <div class="alert alert-danger">{errors.base}</div>
+    {:else if tournament}
+      <form on:submit|preventDefault={submitNewTournament}>
+        <TournamentSettingsForm
+          {tournament}
+          {options}
+          {featureFlags}
+          onSubmit={submitNewTournament}
+          submitLabel="Create"
+          submitIcon="plus"
+          {isSubmitting}
+          {errors}
+        />
+      </form>
+    {:else}
+      <div class="d-flex align-items-center m-2" data-testid="loading-spinner">
+        <div class="spinner-border m-auto"></div>
+      </div>
     {/if}
-
-    <form on:submit|preventDefault={submitNewTournament}>
-      <TournamentSettingsForm
-        {tournament}
-        {options}
-        {featureFlags}
-        onSubmit={submitNewTournament}
-        submitLabel="Create"
-        submitIcon="plus"
-        {isSubmitting}
-        {errors}
-      />
-    </form>
   </div>
 </div>

@@ -2,7 +2,7 @@
 
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: %i[
-    show info edit update destroy
+    show info edit edit_form update destroy
     upload_to_abr save_json cut qr registration timer
     close_registration open_registration lock_player_registrations unlock_player_registrations
     id_and_faction_data cut_conversion_rates side_win_percentages stats
@@ -85,15 +85,14 @@ class TournamentsController < ApplicationController
 
   def new
     authorize Tournament
+  end
+
+  def new_form
+    authorize Tournament
 
     @new_tournament = current_user.tournaments.new
     @new_tournament.date = Date.current
-    respond_to do |format|
-      format.html
-      format.json do
-        render json: helpers.tournament_settings_json(@new_tournament), status: :ok
-      end
-    end
+    render json: helpers.tournament_settings_json(@new_tournament), status: :ok
   end
 
   def create
@@ -101,44 +100,26 @@ class TournamentsController < ApplicationController
 
     @new_tournament = current_user.tournaments.new(tournament_params)
 
-    respond_to do |format|
-      if @new_tournament.save
-        format.html do
-          redirect_to tournament_path(@new_tournament)
-          return
-        end
-        format.json do
-          render json: {
-            id: @new_tournament.id,
-            name: @new_tournament.name,
-            url: tournament_path(@new_tournament)
-          }, status: :created
-          return
-        end
-      else
-        format.html do
-          render :new
-          return
-        end
-        format.json do
-          # Determine appropriate status code based on whether there are validation errors
-          status_code = @new_tournament.errors.any? ? :unprocessable_entity : :internal_server_error
-          render json: { errors: @new_tournament.errors }, status: status_code
-          return
-        end
-      end
+    if @new_tournament.save
+      render json: {
+        id: @new_tournament.id,
+        name: @new_tournament.name,
+        url: tournament_path(@new_tournament)
+      }, status: :created
+    else
+      # Determine appropriate status code based on whether there are validation errors
+      status_code = @new_tournament.errors.any? ? :unprocessable_entity : :internal_server_error
+      render json: { errors: @new_tournament.errors }, status: status_code
     end
   end
 
   def edit
     authorize @tournament
+  end
 
-    respond_to do |format|
-      format.html
-      format.json do
-        render json: helpers.tournament_settings_json(@tournament)
-      end
-    end
+  def edit_form
+    authorize @tournament
+    render json: helpers.tournament_settings_json(@tournament)
   end
 
   def update
@@ -146,7 +127,8 @@ class TournamentsController < ApplicationController
 
     params = tournament_params
 
-    error_found = false
+    error = nil
+    errors = {}
 
     if params[:swiss_format] != @tournament.swiss_format
       first_stage = @tournament.stages.first
@@ -154,8 +136,7 @@ class TournamentsController < ApplicationController
          ((params[:swiss_format] == 'single_sided' && first_stage.swiss?) ||
          (params[:swiss_format] == 'double_sided' && first_stage.single_sided_swiss?))
         if !@tournament.rounds.empty?
-          flash[:alert] = "Can't change Swiss format when rounds exist."
-          error_found = true
+          error = "Can't change Swiss format when rounds exist."
         else
           case params[:swiss_format] # rubocop:disable Metrics/BlockNesting
           when 'single_sided'
@@ -168,7 +149,7 @@ class TournamentsController < ApplicationController
       end
     end
 
-    unless error_found
+    unless error
       if params[:swiss_deck_visibility]
         unless params[:cut_deck_visibility]
           params[:cut_deck_visibility] = Tournament.max_visibility_cut_or_swiss(
@@ -180,10 +161,25 @@ class TournamentsController < ApplicationController
           @tournament.swiss_deck_visibility, params[:cut_deck_visibility]
         )
       end
-      @tournament.update(params)
+      errors = @tournament.errors unless @tournament.update(params)
     end
 
-    redirect_back_or_to edit_tournament_path(@tournament)
+    respond_to do |format|
+      format.html do
+        flash[:alert] = error if error
+        redirect_back_or_to edit_tournament_path(@tournament)
+        return
+      end
+      format.json do
+        errors['base'] = error if error
+        if errors.empty?
+          head :no_content
+        else
+          render json: { errors: errors }, status: :unprocessable_entity
+        end
+        return
+      end
+    end
   end
 
   def destroy

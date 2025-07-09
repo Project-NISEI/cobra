@@ -1,7 +1,8 @@
 export type Errors = Record<string, string[]>;
 
 declare const Routes: {
-  new_tournament_path: () => string;
+  new_form_tournaments_path: () => string;
+  edit_form_tournament_path: (id: number) => string;
   tournaments_path: () => string;
 };
 
@@ -69,7 +70,22 @@ export function emptyTournamentOptions(): TournamentOptions {
 }
 
 export async function loadNewTournament(): Promise<TournamentSettingsData> {
-  const response = await fetch(Routes.new_tournament_path(), {
+  const response = await fetch(Routes.new_form_tournaments_path(), {
+    headers: { Accept: "application/json" },
+    method: "GET",
+  });
+  if (!response.ok) {
+    throw new Error(
+      `HTTP ${response.status.toString()}: ${response.statusText}`,
+    );
+  }
+  return (await response.json()) as TournamentSettingsData;
+}
+
+export async function loadEditTournament(
+  id: number,
+): Promise<TournamentSettingsData> {
+  const response = await fetch(Routes.edit_form_tournament_path(id), {
     headers: { Accept: "application/json" },
     method: "GET",
   });
