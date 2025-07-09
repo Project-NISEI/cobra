@@ -67,7 +67,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>Please click the right button to report your game</p>
+        <p>Please click the button for the result to report this round</p>
         <div class="d-flex flex-row w-100 justify-content-around">
           {#each presets as preset, index (preset.label)}
             <button
