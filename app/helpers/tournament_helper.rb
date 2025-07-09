@@ -39,8 +39,10 @@ module TournamentHelper
       options: {
         tournament_types: TournamentType.all.map { |t| { id: t.id, name: t.name } },
         formats: Format.all.map { |f| { id: f.id, name: f.name } },
-        card_sets: CardSet.all.map { |c| { id: c.id, name: c.name } },
-        deckbuilding_restrictions: DeckbuildingRestriction.all.map { |d| { id: d.id, name: d.name } },
+        card_sets: CardSet.all.order(date_release: :desc).map { |c| { id: c.id, name: c.name } },
+        deckbuilding_restrictions: DeckbuildingRestriction.all.order(date_start: :desc).map do |d|
+          { id: d.id, name: d.name }
+        end,
         time_zones: ActiveSupport::TimeZone.all.map { |z| { id: z.name, name: z.to_s } },
         official_prize_kits: OfficialPrizeKit.order(position: :desc).map { |p| { id: p.id, name: p.name } }
       },
