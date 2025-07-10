@@ -1,8 +1,10 @@
 <script lang="ts">
-  import type { Pairing, Round, Stage } from "./PairingsData";
+  import { type Pairing, type Round, type Stage } from "./PairingsData";
   import PlayerName from "./PlayerName.svelte";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
+  import SelfReportOptions from "./SelfReportOptions.svelte";
 
+  export let tournamentId: string;
   export let stage: Stage;
   export let round: Round;
   export let pairing: Pairing;
@@ -42,4 +44,12 @@
     {/if}
   </div>
   <PlayerName player={right_player} left_or_right="right" />
+  <div class="col-sm-2">
+    {#if pairing.policy.self_report}
+      <SelfReportOptions {tournamentId} {round} {pairing} />
+    {/if}
+    {#if pairing.self_report !== null}
+      Report: {pairing.self_report.label}
+    {/if}
+  </div>
 </div>
