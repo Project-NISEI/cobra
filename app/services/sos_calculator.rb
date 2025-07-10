@@ -9,6 +9,7 @@ class SosCalculator
     games_played = {}
     opponents = {}
     points_for_sos = {}
+    bye_points = {}
     corp_points = {}
     runner_points = {}
     stage.eligible_pairings.each do |p|
@@ -36,6 +37,10 @@ class SosCalculator
       runner_points[p.player1_id] += p.score1_runner || 0
       runner_points[p.player2_id] ||= 0
       runner_points[p.player2_id] += p.score2_runner || 0
+      bye_points[p.player1_id] ||= 0
+      bye_points[p.player1_id] += p.score1 if p.player2_id.nil? && !p.score1.nil?
+      bye_points[p.player2_id] ||= 0
+      bye_points[p.player2_id] += p.score2 if p.player1_id.nil? && !p.score2.nil?
     end
 
     # filter out byes from sos calculations
@@ -70,6 +75,7 @@ class SosCalculator
                    points: points[p.id],
                    sos: sos[p.id],
                    extended_sos: extended_sos[p.id],
+                   bye_points: bye_points[p.id] || 0,
                    corp_points: corp_points[p.id],
                    runner_points: runner_points[p.id])
     end.sort

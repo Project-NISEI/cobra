@@ -75,8 +75,13 @@
             points={standing.runner_points}
             name_if_missing="Runner"
           />
+          {#if standing.bye_points > 0}
+            &nbsp;Bye ({standing.bye_points})
+          {/if}
         </td>
-        <td>{standing.points}</td>
+        <td>
+          {standing.points}
+        </td>
         {#if manual_seed}
           <td>{standing.manual_seed}</td>
         {/if}

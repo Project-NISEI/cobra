@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_06_20_072144) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_06_040934) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -276,6 +276,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_20_072144) do
     t.decimal "extended_sos"
     t.integer "corp_points"
     t.integer "runner_points"
+    t.integer "bye_points", default: 0
     t.index ["player_id"], name: "index_standing_rows_on_player_id"
     t.index ["stage_id"], name: "index_standing_rows_on_stage_id"
   end

@@ -436,7 +436,7 @@ RSpec.describe PlayersController do
                 'standings' => [
                   standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: '6.0',
                                                 player: player_with_no_ids('Charlie (she/her)')),
-                  standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: '0.0',
+                  standing_with_custom_score(2, points: 6, bye_points: 6, sos: '0.0', extended_sos: '0.0',
                                                 player: player_with_no_ids('Alice (she/her)')),
                   standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: '0.0',
                                                 player: player_with_no_ids('Bob (he/him)'))
@@ -481,7 +481,7 @@ RSpec.describe PlayersController do
                 'standings' => [
                   standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: '6.0',
                                                 player: player_with_no_ids('Charlie (she/her)')),
-                  standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: '0.0',
+                  standing_with_custom_score(2, points: 6, bye_points: 6, sos: '0.0', extended_sos: '0.0',
                                                 player: player_with_no_ids('Alice (she/her)')),
                   standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: '0.0',
                                                 player: player_with_no_ids('Bob (he/him)'))
@@ -532,7 +532,7 @@ RSpec.describe PlayersController do
                 'standings' => [
                   standing_with_custom_score(1, points: 6, sos: '0.0', extended_sos: '6.0',
                                                 player: player_with_no_ids('Charlie (she/her)')),
-                  standing_with_custom_score(2, points: 6, sos: '0.0', extended_sos: '0.0',
+                  standing_with_custom_score(2, points: 6, bye_points: 6, sos: '0.0', extended_sos: '0.0',
                                                 player: player_with_no_ids('Alice (she/her)')),
                   standing_with_custom_score(3, points: 0, sos: '6.0', extended_sos: '0.0',
                                                 player: player_with_no_ids('Bob (he/him)'))
@@ -568,7 +568,7 @@ RSpec.describe PlayersController do
     }
   end
 
-  def standing_with_custom_score(position, points:, sos:, extended_sos:, player:)
+  def standing_with_custom_score(position, points:, sos:, extended_sos:, player:, bye_points: 0) # rubocop:disable Metrics/ParameterLists
     {
       'position' => position,
       'player' => player,
@@ -576,8 +576,9 @@ RSpec.describe PlayersController do
       'points' => points,
       'sos' => sos,
       'extended_sos' => extended_sos,
-      'runner_points' => 0,
+      'bye_points' => bye_points,
       'corp_points' => 0,
+      'runner_points' => 0,
       'manual_seed' => nil,
       'side_bias' => nil
     }

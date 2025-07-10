@@ -60,7 +60,8 @@ class Stage < ApplicationRecord
         sos: standing.sos,
         extended_sos: standing.extended_sos,
         corp_points: standing.corp_points,
-        runner_points: standing.runner_points
+        runner_points: standing.runner_points,
+        bye_points: standing.bye_points || 0
       )
     end
   end
