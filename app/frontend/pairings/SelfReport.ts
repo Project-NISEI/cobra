@@ -1,20 +1,20 @@
 declare const Routes: {
   pairing_presets_tournament_round_pairing_path: (
-    tournamentId: string,
-    roundId: string,
-    id: string,
+    tournamentId: number,
+    roundId: number,
+    id: number,
   ) => string;
   self_report_tournament_round_pairing_path: (
-    tournamentId: string,
-    roundId: string,
-    id: string,
+    tournamentId: number,
+    roundId: number,
+    id: number,
   ) => string;
 };
 
 export async function loadPresets(
-  tournamentId: string,
-  roundId: string,
-  pairingId: string,
+  tournamentId: number,
+  roundId: number,
+  pairingId: number,
 ): Promise<PairingPresetsData> {
   const response = await fetch(
     Routes.pairing_presets_tournament_round_pairing_path(
@@ -30,9 +30,9 @@ export async function loadPresets(
 }
 
 export async function selfReport(
-  tournamentId: string,
-  roundId: string,
-  pairingId: string,
+  tournamentId: number,
+  roundId: number,
+  pairingId: number,
   csrfToken: string,
   data: PairingPreset,
 ): Promise<SelfReportResult> {

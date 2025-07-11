@@ -1,11 +1,11 @@
 import type { Identity } from "../identities/Identity";
 
 declare const Routes: {
-  standings_data_tournament_players_path: (tournamentId: string) => string;
+  standings_data_tournament_players_path: (tournamentId: number) => string;
 };
 
 export async function loadStandings(
-  tournamentId: string,
+  tournamentId: number,
 ): Promise<StandingsData> {
   const response = await fetch(
     Routes.standings_data_tournament_players_path(tournamentId),
