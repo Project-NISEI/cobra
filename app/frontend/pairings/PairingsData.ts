@@ -3,9 +3,9 @@ import type { Identity } from "../identities/Identity";
 declare const Routes: {
   pairings_data_tournament_rounds_path: (tournamentId: number) => string;
   pairing_presets_tournament_round_pairing_path: (
-    tournamentId: string,
-    roundId: string,
-    id: string,
+    tournamentId: number,
+    roundId: number,
+    id: number,
   ) => string;
 };
 
