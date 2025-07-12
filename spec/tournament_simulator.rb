@@ -9,7 +9,6 @@ require 'stackprof'
 # to control the simulation.
 #
 # The following environment variables can be set to control the simulation:
-#     AESOPS_LOGIC - If set to '1' or 'true', uses the Aesops pairing logic, defaults to false.
 #     DROPS_PER_ROUND -  The number of players that drop out of the tournament each round, defaults to 0
 #     DSS_BOTH_TIE - The number of times both games in double-sided swiss end in a tie, defaults to 1.
 #     DSS_P1_SWEEPS - The number of times player 1 sweeps in double-sided swiss, defaults to 25.
@@ -137,7 +136,6 @@ RSpec.describe 'load testing' do
   let(:summary_results) do
     {
       swiss_format:,
-      aesops_logic: ENV['AESOPS_LOGIC'] ? true : false,
       num_players:,
       num_rounds:,
       num_drops_per_round:,
@@ -382,7 +380,6 @@ RSpec.describe 'load testing' do
   it 'can handle load' do
     puts 'Starting simulation with config:'
     puts "  swiss_format:                    #{swiss_format}"
-    puts "  aesops_logic:                    #{ENV['AESOPS_LOGIC'] ? 'true' : 'false'}"
     puts "  num_players:                     #{num_players}"
     puts "  num_rounds:                      #{num_rounds}"
     puts "  num_drops_per_round:             #{num_drops_per_round}"
