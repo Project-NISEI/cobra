@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# TODO(plural): Add debug level logging to the pairings class to allow dumping details out.
 module PairingStrategies
   class SingleSidedSwiss < Base
     CORP = 1
@@ -14,8 +15,9 @@ module PairingStrategies
     end
 
     def pair!
-      assign_byes!
+      assign_first_round_byes!
 
+      # paired_players will invoke the pairing logic and eventually evaluate all potential pairings.
       paired_players.each do |pairing|
         pp = pairing_params(pairing)
         @plain_pairings << PlainPairing.new(pp[:player1], pp[:score1], pp[:player2], pp[:score2])
@@ -26,18 +28,19 @@ module PairingStrategies
       # Set player sides for the pairings.
       apply_sides!
 
+      # Write the results to the database.
       ActiveRecord::Base.transaction do
         @plain_pairings.each do |pp|
           p = Pairing.new(round:, player1_id: pp.player1&.id, player2_id: pp.player2&.id, table_number: pp.table_number)
+          # Assign scores for byes.
           if pp.bye?
             if pp.player1.nil?
               p.score2 = @bye_winner_score
             else
               p.score1 = @bye_winner_score
             end
-          end
-          # Don't set a side for byes.
-          unless pp.bye?
+          else
+            # Assign sides for non-bye pairings.
             p.side = pp.player1_side == 'corp' ? CORP : RUNNER
           end
 
@@ -46,19 +49,22 @@ module PairingStrategies
       end
     end
 
-    def self.get_pairings(players)
+    def self.calculate_pairings(players)
+      # The block argument to SwissImplementation.pair is invoked for each potential pairing of players
+      # and will return the calculated weight for that potential pairing.
       SwissImplementation.pair(players) do |player1, player2|
-        # handle logic if one of the players is the bye
+        # Potential bye pairing.
         if [player1, player2].include?(SwissImplementation::Bye)
           real_player = [player1, player2].difference([SwissImplementation::Bye]).first
 
           # return nil (no pairing possible) if player has already received bye
           next nil if real_player.had_bye
 
-          next points_weight(real_player.points, -1)
+          next 1000 - points_weight(real_player.points, -1)
         end
 
         # return nil (no pairing possible) if players have already played twice
+        # TODO(plural): Start here for investigating lucille's bug with 3 matchups.
         next nil if player1.opponents.key?(player2.id) && player1.opponents[player2.id].count >= 2
 
         # Check if either player has a preferred side bias.
@@ -70,35 +76,40 @@ module PairingStrategies
           next nil
         end
 
-        weight =
-          points_weight(player1.points, player2.points) +
-          side_bias_weight(player1.side_bias, player2.side_bias) +
-          rematch_bias_weight(player1.opponents.keys.include?(player2.id))
+        # Points and Rematch weights aren't affected by sides so we only need to calculate them once.
+        points = points_weight(player1.points, player2.points)
+        rematch = rematch_bias_weight(player1.opponents.keys.include?(player2.id))
 
-        weight = 1000 - weight if ENV['AESOPS_LOGIC']
+        legal_options = self.legal_options(player1, player2)
 
-        weight
+        min_cost = 1000
+        # Player 1 can corp
+        if legal_options[0]
+          min_cost = [points + rematch + side_bias_weight(player1.side_bias, player2.side_bias), min_cost].min
+        end
+        # Player 2 can corp
+        if legal_options[1]
+          min_cost = [points + rematch + side_bias_weight(player2.side_bias, player1.side_bias), min_cost].min
+        end
+
+        next nil if min_cost >= 100
+
+        1000 - min_cost
       end
     end
 
+    # Points weight does not care about sides.
     def self.points_weight(player1_points, player2_points)
-      if ENV['AESOPS_LOGIC']
-        return ((player1_points - player2_points + 1) * (player1_points - player2_points)).abs / 6.0
-      end
-
-      0 - (player1_points - player2_points)**2 / 6.0
+      (player1_points - player2_points)**2
     end
 
     def self.side_bias_weight(player1_side_bias, player2_side_bias)
-      return 8**[(player1_side_bias + 1).abs, (player2_side_bias - 1).abs].max.abs if ENV['AESOPS_LOGIC']
-
-      8**((player1_side_bias - player2_side_bias).abs / 2.0)
+      50**[[player1_side_bias, 0].max.abs, [player2_side_bias, 0].min.abs].max.abs
     end
 
+    # The rematch penalty is applied if the players have played each other before.
     def self.rematch_bias_weight(has_previous_matchup)
-      return has_previous_matchup ? 0.1 : 0 if ENV['AESOPS_LOGIC']
-
-      has_previous_matchup ? -0.5 : 0
+      has_previous_matchup ? 5 : 0
     end
 
     def self.preferred_player1_side(player1_side_bias, player2_side_bias)
@@ -108,9 +119,32 @@ module PairingStrategies
       nil
     end
 
+    # Return an array of 2 booleans, representing whether there is a valid pairing for each player to play as Corp.
+    def self.legal_options(player1, player2)
+      player1_can_corp = true
+      player2_can_corp = true
+      player1_can_corp = false if player1.opponents.key?(player2.id) && player1.opponents[player2.id].first == 'corp'
+      player2_can_corp = false if player2.opponents.key?(player1.id) && player2.opponents[player1.id].first == 'corp'
+
+      [player1_can_corp, player2_can_corp]
+    end
+
+    def self.assign_side(player1, player2)
+      preference = preferred_player1_side(player1.side_bias, player2.side_bias)
+      if preference.nil? && player1.opponents.key?(player2.id)
+        # Pick the opposite side if this is a repeat matchup for these players.
+        return player1.opponents[player2.id].first == 'corp' ? 'runner' : 'corp'
+      elsif !preference.nil?
+        return preference == :corp ? 'corp' : 'runner'
+      end
+
+      # Fall back to random assignment
+      %w[corp runner].sample
+    end
+
     private
 
-    def assign_byes!
+    def assign_first_round_byes!
       players_with_byes.each do |player|
         # player[0] is the player id from the player summary structure
         @plain_pairings << PlainPairing.new(@players[player[0]], @bye_winner_score, nil, @bye_loser_score)
@@ -118,12 +152,14 @@ module PairingStrategies
     end
 
     def paired_players
+      # The first round is simple: Pair off the eligible players randomly.
+      # players_to_pair will not return players with byes
       if first_round?
         @paired_players ||= players_to_pair.shuffle(random:).in_groups_of(2, nil)
         return @paired_players
       end
 
-      @paired_players ||= self.class.get_pairings(players_to_pair)
+      @paired_players ||= self.class.calculate_pairings(players_to_pair)
     end
 
     def pairing_params(pairing)
@@ -163,17 +199,7 @@ module PairingStrategies
       @plain_pairings.each do |pairing|
         next if pairing.bye?
 
-        preference = self.class.preferred_player1_side(pairing.player1.side_bias, pairing.player2.side_bias)
-        if preference.nil? && pairing.player1.opponents.key?(pairing.player2.id)
-          # Pick the opposite side if this is a repeat matchup for these players.
-          pairing.player1_side = pairing.player1.opponents[pairing.player2.id].first == 'corp' ? 'runner' : 'corp'
-        elsif !preference.nil?
-          pairing.player1_side = 'runner' if preference == :runner
-          pairing.player1_side = 'corp' if preference == :corp
-        elsif preference.nil?
-          # Fall back to random assignment
-          pairing.player1_side = %w[corp runner].sample
-        end
+        pairing.player1_side = self.class.assign_side(pairing.player1, pairing.player2)
       end
     end
   end
