@@ -35,6 +35,9 @@
         | View decks
     .col-sm.left_player_name
       = left_player.name_with_pronouns
+      = fa_icon 'info-circle', class: 'left-report-tooltip', title: 'Player has reported the game:'
+      javascript:
+        $('.report-tooltip').tooltip()
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
@@ -89,6 +92,10 @@
             | 2 for 1
     .col-sm.right_player_name
       = right_player.name_with_pronouns
+      - if right_player.
+        = fa_icon 'info-circle', class: 'right-report-tooltip', title: 'Player has reported the game:'
+        javascript:
+          $('.report-tooltip').tooltip()
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided
