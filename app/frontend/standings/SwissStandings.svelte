@@ -2,6 +2,7 @@
   import type { SwissStage } from "./StandingsData";
   import Identity from "../identities/Identity.svelte";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
+  import Tooltip from "./Tooltip.svelte";
 
   export let stage: SwissStage;
   export let manual_seed: boolean;
@@ -50,9 +51,13 @@
     {#each stage.standings as standing (standing.position)}
       <tr>
         <td>{standing.position}</td>
-        <td>
-          {standing.player.name_with_pronouns}
-          {standing.player.active ? "" : "(dropped)"}
+        <td class="d-flex flex-row space-x-2">
+          <p class="mr-2">{standing.player.name_with_pronouns}</p>
+          {#if !standing.player.active}
+            <Tooltip text="(dropped)">
+              <FontAwesomeIcon icon="sign-out" />
+            </Tooltip>
+          {/if}
         </td>
         {#if stage.any_decks_viewable}
           <td>
