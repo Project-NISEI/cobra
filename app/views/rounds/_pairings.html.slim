@@ -5,6 +5,8 @@
   - left_player_number = 1
   - right_player = @players[pairing.player2_id]
   - right_player_number = 2
+  - left_player_report = pairing.self_reports.find { |report| report.report_player_id == left_player.user_id }
+  - right_player_report = pairing.self_reports.find { |report| report.report_player_id == right_player.user_id }
   - if single_sided && is_side_set && !pairing.player1_is_corp?
     - left_player = @players[pairing.player2_id]
     - left_player_number = 2
@@ -13,6 +15,10 @@
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user}"
     .col-sm-2
       | #{pairing.table_label}
+      - if (right_player_report != nil && left_player_report != nil) && ((right_player_report&.score1 != left_player_report&.score1) || (right_player_report&.score2 != left_player_report&.score2))
+        = fa_icon 'exclamation-triangle', class: 'reporting-tooltip m-1', title: "Player reports differ, action required"
+        javascript:
+          $('.reporting-tooltip').tooltip()
       - if @tournament.allow_streaming_opt_out? && policy(round.tournament).edit?
         - if pairing.player_ids.all? { |player_id| @players[player_id].include_in_stream? }
           = fa_icon 'video-camera',
@@ -28,16 +34,17 @@
             = fa_icon 'video-camera', class: 'text-secondary'
             =< fa_icon 'ban', class: 'text-danger'
         javascript:
-            $('.streaming-tooltip').tooltip()
+          $('.streaming-tooltip').tooltip()
     - if pairing.decks_visible_to(current_user)
       =< link_to view_decks_tournament_round_pairing_path(@tournament, round, pairing) do
         => fa_icon 'eye'
         | View decks
     .col-sm.left_player_name
       = left_player.name_with_pronouns
-      = fa_icon 'info-circle', class: 'left-report-tooltip', title: 'Player has reported the game:'
-      javascript:
-        $('.report-tooltip').tooltip()
+      - if left_player_report != nil
+        = fa_icon 'info-circle', class: 'left-report-tooltip m-1', title: "Player reported #{left_player_report.score1} - #{left_player_report.score2}"
+        javascript:
+          $('.left-report-tooltip').tooltip()
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
@@ -92,10 +99,10 @@
             | 2 for 1
     .col-sm.right_player_name
       = right_player.name_with_pronouns
-      - if right_player.
-        = fa_icon 'info-circle', class: 'right-report-tooltip', title: 'Player has reported the game:'
+      - if right_player_report != nil
+        = fa_icon 'info-circle', class: 'right-report-tooltip m-1', title: "Player reported #{right_player_report.score1} - #{right_player_report.score2}"
         javascript:
-          $('.report-tooltip').tooltip()
+          $('.right-report-tooltip').tooltip()
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided
