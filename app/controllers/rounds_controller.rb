@@ -32,7 +32,7 @@ class RoundsController < ApplicationController
 
   def show
     authorize @tournament, :update?
-    @round = Round.includes([:stage, { pairings: %i[stage tournament player1 player2] }]).find(params[:id])
+    @round = Round.includes([:stage, { pairings: %i[stage tournament player1 player2 self_reports] }]).find(params[:id])
     @players = @tournament.players
                           .includes(:corp_identity_ref, :runner_identity_ref)
                           .index_by(&:id).merge({ nil => NilPlayer.new })
