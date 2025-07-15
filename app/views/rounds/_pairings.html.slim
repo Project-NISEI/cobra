@@ -41,10 +41,7 @@
         | View decks
     .col-sm.left_player_name
       = left_player.name_with_pronouns
-      - if left_player_report != nil
-        = fa_icon 'check-square', class: 'left-report-tooltip m-1', title: "Player reported #{left_player_report.score1} - #{left_player_report.score2}"
-        javascript:
-          $('.left-report-tooltip').tooltip()
+      = render 'self_report_icon', player_report: left_player_report, opposite_player_report: right_player_report
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
@@ -99,10 +96,7 @@
             | 2 for 1
     .col-sm.right_player_name
       = right_player.name_with_pronouns
-      - if right_player_report != nil
-        = fa_icon 'check-square', class: 'right-report-tooltip m-1', title: "Player reported #{right_player_report.score1} - #{right_player_report.score2}"
-        javascript:
-          $('.right-report-tooltip').tooltip()
+      = render 'self_report_icon', player_report: right_player_report, opposite_player_report: left_player_report
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided
