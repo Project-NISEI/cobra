@@ -7,6 +7,7 @@
   - right_player_number = 2
   - left_player_report = pairing.self_reports.find { |report| report.report_player_id == left_player.user_id }
   - right_player_report = pairing.self_reports.find { |report| report.report_player_id == right_player.user_id }
+  - self_report_matches = (right_player_report != nil && left_player_report != nil) && ((right_player_report&.score1 != left_player_report&.score1) || (right_player_report&.score2 != left_player_report&.score2))
   - if single_sided && is_side_set && !pairing.player1_is_corp?
     - left_player = @players[pairing.player2_id]
     - left_player_number = 2
@@ -15,7 +16,7 @@
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user}"
     .col-sm-2
       | #{pairing.table_label}
-      - if (right_player_report != nil && left_player_report != nil) && ((right_player_report&.score1 != left_player_report&.score1) || (right_player_report&.score2 != left_player_report&.score2))
+      - if self_report_matches
         = fa_icon 'exclamation-triangle', class: 'reporting-tooltip m-1', title: "Player reports differ, action required"
         javascript:
           $('.reporting-tooltip').tooltip()
@@ -41,7 +42,7 @@
         | View decks
     .col-sm.left_player_name
       = left_player.name_with_pronouns
-      = render 'self_report_icon', player_report: left_player_report, opposite_player_report: right_player_report
+      = render 'self_report_icon', player_report: left_player_report, opposite_player_report: right_player_report, self_report_matches:
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
@@ -96,7 +97,7 @@
             | 2 for 1
     .col-sm.right_player_name
       = right_player.name_with_pronouns
-      = render 'self_report_icon', player_report: right_player_report, opposite_player_report: left_player_report
+      = render 'self_report_icon', player_report: right_player_report, opposite_player_report: left_player_report, self_report_matches:
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided

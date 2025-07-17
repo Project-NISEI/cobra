@@ -1,9 +1,12 @@
-- if player_report != nil && opposite_player_report == nil
+- if self_report_matches
+    = fa_icon 'times-circle', class: 'differ-tooltip m-1', title: "Player reported #{player_report.score1} - #{player_report.score2}"
+    javascript:
+        $('.differ-tooltip').tooltip()
+- elsif player_report != nil
     = fa_icon 'check-square', class: 'report-tooltip m-1', title: "Player reported #{player_report.score1} - #{player_report.score2}"
     javascript:
         $('.report-tooltip').tooltip()
-
-- if player_report == nil && opposite_player_report != nil
+- elsif player_report == nil && opposite_player_report != nil
     = fa_icon 'question-circle', class: 'missing-report-tooltip m-1', title: "Waiting for report"
     javascript:
         $('.missing-report-tooltip').tooltip()
