@@ -110,6 +110,12 @@
             = render right_player.corp_identity_object
             = render right_player.runner_identity_object
     - if policy(round.tournament).update?
-      .col-sm-1
+      .row-sm1.mr-3
         = link_to tournament_round_pairing_path(round.tournament, round, pairing), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed.' } do
           => fa_icon 'trash'
+        - if players_have_self_reported && !self_reports_match
+          = link_to reset_self_report_tournament_round_pairing_path(round.tournament, round, pairing), 
+            method: :delete, title: 'Reset self reports of pairing', class: 'btn btn-primary ml-2 reset-self-reports', 
+            data: { confirm: 'Are you sure? This cannot be reversed.' } do
+            => fa_icon 'undo'
+            javascript: $('.reset-self-reports').tooltip()
