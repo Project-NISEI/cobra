@@ -60,6 +60,9 @@ Rails.application.routes.draw do
     get :new_form, on: :collection
     get :edit_form, on: :member
     get :stats, on: :member
+    get :new_demo, on: :collection
+    get :new_demo_form, on: :collection
+    post :create_demo, on: :collection
     get 'type/:type_id', to: 'tournaments#index', on: :collection, as: :tournaments_by_type
   end
   resources :identities, only: [:index]
