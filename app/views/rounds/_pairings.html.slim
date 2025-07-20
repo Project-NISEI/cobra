@@ -14,7 +14,7 @@
     - left_player_number = 2
     - right_player = @players[pairing.player1_id]
     - right_player_number = 1
-  .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user} #{'self_reports_match' if players_have_self_reported && !self_reports_match}"
+  .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user} #{'self_reports_match' if !pairing.reported? && players_have_self_reported && !self_reports_match}"
     .col-sm-2
       | #{pairing.table_label}
       - if players_have_self_reported && !self_reports_match
