@@ -141,7 +141,18 @@ class TournamentsController < ApplicationController
     end
 
     if errors.empty?
-      Rails.logger.info 'Will create the demo tournament...'
+      tournament = DemoTournament.create(
+        tournament_name: params[:tournament][:name],
+        format: params[:tournament][:swiss_format],
+        first_round_byes: params[:tournament][:num_first_round_byes].to_i,
+        num_players: params[:tournament][:num_players].to_i,
+        assign_ids: params[:tournament][:assign_ids].present?,
+        owner: current_user
+      )
+      render json: {
+        id: tournament.id,
+        url: tournament_rounds_path(tournament)
+      }, status: :created
     else
       render json: { errors: }, status: :unprocessable_entity
     end
