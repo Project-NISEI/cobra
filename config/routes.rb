@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     resources :rounds, only: %i[index show create edit update destroy] do
       resources :pairings, only: %i[index create destroy] do
         post :report, on: :member
+        delete :reset_self_report, on: :member
         post :self_report, on: :member
         get :match_slips, on: :collection
         get :view_decks, on: :member

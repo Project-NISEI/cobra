@@ -46,6 +46,14 @@ class PairingsController < ApplicationController
     redirect_back(fallback_location: tournament_rounds_path(tournament))
   end
 
+  def reset_self_report
+    authorize @tournament, :update?
+
+    SelfReport.where(pairing_id: pairing.id).destroy_all
+
+    redirect_back(fallback_location: tournament_rounds_path(tournament))
+  end
+
   def self_report
     authorize @tournament, :self_report?
     authorize pairing, :can_self_report?
