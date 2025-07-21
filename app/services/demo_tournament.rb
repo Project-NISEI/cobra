@@ -3,7 +3,23 @@
 require 'faker'
 
 class DemoTournament
-  def self.create(tournament_name: nil, format: nil, first_round_byes: 0, num_players: 0, assign_ids: false, owner: nil)
+  def self.create(tournament_name: nil, format: nil, first_round_byes: 0, num_players: 0, assign_ids: false, owner: nil) # rubocop:disable Metrics/ParameterLists
+    Rails.logger.debug 'Creating demo tournament...'
+
+    # Validate
+    raise 'Tournament name cannot be empty' if tournament_name.blank?
+    raise 'Format must be a valid swiss format' unless %i[single_sided double_sided].include?(format)
+    raise 'First round byes must be a non-negative integer' if first_round_byes.negative?
+    raise 'Num players must be a non-negative integer' if num_players.negative?
+    raise 'First round byes cannot exceed the number of players' if first_round_byes > num_players
+    raise 'Owner cannot be nil' if owner.nil?
+
+    Rails.logger.debug "  Tournament name: #{tournament_name}"
+    Rails.logger.debug "  Format: #{format}"
+    Rails.logger.debug "  First round byes: #{first_round_byes}"
+    Rails.logger.debug "  Num players: #{num_players}"
+    Rails.logger.debug "  Assign IDs: #{assign_ids}"
+    Rails.logger.debug "  Owner: #{owner.nrdb_username}"
     corp_ids = []
     runner_ids = []
     Identity.find_each do |id|
