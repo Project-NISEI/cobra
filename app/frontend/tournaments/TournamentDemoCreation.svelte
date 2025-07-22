@@ -2,30 +2,22 @@
   import { onMount } from "svelte";
   import {
     createDemoTournament,
-    emptyDemoTournamentOptions,
     type Errors,
-    type FeatureFlags,
     loadNewDemoTournament,
-    type DemoTournamentOptions,
     type DemoTournamentSettings,
     ValidationError,
   } from "./DemoTournamentSettings";
   import DemoTournamentSettingsForm from "./DemoTournamentSettingsForm.svelte";
 
   let tournament: DemoTournamentSettings;
-  let options: DemoTournamentOptions = emptyDemoTournamentOptions();
-  let featureFlags: FeatureFlags = {};
   let csrfToken = "";
 
   let isSubmitting = false;
   let errors: Errors = {};
 
   onMount(async () => {
-    // Fetch any initial data needed for the form (like available options)
     const data = await loadNewDemoTournament();
     tournament = data.tournament;
-    options = data.options;
-    featureFlags = data.feature_flags;
     csrfToken = data.csrf_token;
   });
 
@@ -54,9 +46,6 @@
     <p>
       This allows you to create a private tournament with certain parameters, demo players with fake names, and specific rounds.
     </p>
-    <p>
-      The description for the created tournament will contain a summary of your options.
-    </p>
 
     {#if errors.base}
       <div class="alert alert-danger">{errors.base}</div>
@@ -64,7 +53,6 @@
       <form on:submit|preventDefault={submitNewTournament}>
         <DemoTournamentSettingsForm
           {tournament}
-          {featureFlags}
           onSubmit={submitNewTournament}
           submitLabel="Create"
           submitIcon="plus"

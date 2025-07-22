@@ -1,14 +1,10 @@
 <script lang="ts">
   import {
-    emptyDemoTournamentOptions,
     type Errors,
-    type FeatureFlags,
-    type DemoTournamentOptions,
     type DemoTournamentSettings,
   } from "./DemoTournamentSettings";
   import FontAwesomeIcon from "../widgets/FontAwesomeIcon.svelte";
   export let tournament: DemoTournamentSettings = {};
-  export let featureFlags: FeatureFlags = {};
 
   export let onSubmit = () => {
     console.log("Submitted: ", tournament);
@@ -32,27 +28,25 @@
   {/if}
 </div>
 
-{#if featureFlags.single_sided_swiss}
-  <div class="form-group">
-    <label for="swiss_format">Swiss format</label>
-    <select
-      id="swiss_format"
-      class="form-control"
-      bind:value={tournament.swiss_format}
-    >
-      <option value="double_sided">Double-sided</option>
-      <option value="single_sided">Single-sided</option>
-    </select>
-    {#if errors.swiss_format}
-      <div class="invalid-feedback d-block">{errors.swiss_format}</div>
-    {/if}
-  </div>
-{/if}
+<div class="form-group">
+  <label for="swiss_format">Swiss format</label>
+  <select
+    id="swiss_format"
+    class="form-control"
+    bind:value={tournament.swiss_format}
+  >
+    <option value="double_sided">Double-sided</option>
+    <option value="single_sided">Single-sided</option>
+  </select>
+  {#if errors.swiss_format}
+    <div class="invalid-feedback d-block">{errors.swiss_format}</div>
+  {/if}
+</div>
 
 <div class="row">
   <div class="col-md-6">
     <div class="form-group">
-      <label for="tournament_type_id">Number of Players</label>
+      <label for="num_players">Number of Players</label>
       <input
     type="text"
     id="num_players"
@@ -66,7 +60,7 @@
   </div>
   <div class="col-md-6">
     <div class="form-group">
-      <label for="tournament_type_id">Number of First Round Byes</label>
+      <label for="num_first_round_byes">Number of First Round Byes</label>
       <input
     type="text"
     id="num_first_round_byes"

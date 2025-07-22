@@ -1,38 +1,23 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/svelte";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import TournamentCreation from "./TournamentCreation.svelte";
-import { ValidationError } from "./TournamentSettings";
+import TournamentDemoCreation from "./TournamentDemoCreation.svelte";
+import { ValidationError } from "./DemoTournamentSettings";
 
-// Mock the TournamentSettings module
-vi.mock("./TournamentSettings", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("./TournamentSettings")>()),
-  loadNewTournament: vi.fn(),
-  createTournament: vi.fn(),
+// Mock the DemoTournamentSettings module
+vi.mock("./DemoTournamentSettings", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./DemoTournamentSettings")>()),
+  loadNewDemoTournament: vi.fn(),
+  createDemoTournament: vi.fn(),
 }));
 
-describe("TournamentCreation", () => {
+describe("TournamentDemoCreation", () => {
   const mockTournamentData = {
     tournament: {
-      date: "2023-12-25",
-      private: false,
-      swiss_format: "double_sided",
-      allow_self_reporting: false,
-      decklist_required: false,
-      nrdb_deck_registration: false,
-    },
-    options: {
-      tournament_types: [{ id: 1, name: "Store Championship" }],
-      formats: [{ id: 1, name: "Standard" }],
-      card_sets: [{ id: 1, name: "System Gateway" }],
-      deckbuilding_restrictions: [{ id: 1, name: "Standard Ban List" }],
-      time_zones: [{ id: "UTC", name: "(GMT+00:00) UTC" }],
-      official_prize_kits: [{ id: 1, name: "2025 Q1 Game Night Kit" }],
-    },
-    feature_flags: {
-      single_sided_swiss: true,
-      nrdb_deck_registration: true,
-      allow_self_reporting: true,
-      streaming_opt_out: true,
+      name: "Test Demo Tournament",
+      swiss_format: "single_sided",
+      num_players: 16,
+      num_first_round_byes: 1,
+      assign_ids: true,
     },
     csrf_token: "fake-csrf-token",
   };
@@ -41,57 +26,62 @@ describe("TournamentCreation", () => {
     vi.clearAllMocks();
 
     // Mock loadNewTournament to return test data
-    const { loadNewTournament } = await import("./TournamentSettings");
-    vi.mocked(loadNewTournament).mockResolvedValue(mockTournamentData);
+    const { loadNewDemoTournament } = await import("./DemoTournamentSettings");
+    vi.mocked(loadNewDemoTournament).mockResolvedValue(mockTournamentData);
   });
 
-  it("renders the tournament creation form", async () => {
-    render(TournamentCreation);
+  it("renders the demo tournament creation form", async () => {
+    render(TournamentDemoCreation);
 
     await waitFor(() => {
-      expect(screen.getByText("Create a tournament")).toBeInTheDocument();
+      expect(screen.getByText("Create a demo tournament")).toBeInTheDocument();
     });
 
     expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Number of Players/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/swiss format/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/number of first round byes/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/assign random ids for players\?/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /create/i })).toBeInTheDocument();
   });
 
   it("loads initial tournament data on mount", async () => {
-    const { loadNewTournament } = await import("./TournamentSettings");
+    const { loadNewDemoTournament } = await import("./DemoTournamentSettings");
 
-    render(TournamentCreation);
+    render(TournamentDemoCreation);
 
     await waitFor(() => {
-      expect(loadNewTournament).toHaveBeenCalledOnce();
+      expect(loadNewDemoTournament).toHaveBeenCalledOnce();
     });
   });
 
   it("shows a loading spinner", async () => {
-    const { loadNewTournament } = await import("./TournamentSettings");
-    vi.mocked(loadNewTournament).mockImplementation(
+    const { loadNewDemoTournament } = await import("./DemoTournamentSettings");
+    vi.mocked(loadNewDemoTournament).mockImplementation(
       () =>
         new Promise(() => {
           // This promise intentionally never resolves to test loading state
         }),
     );
 
-    render(TournamentCreation);
+    render(TournamentDemoCreation);
 
     await waitFor(() => {
-      expect(screen.getByText("Create a tournament")).toBeInTheDocument();
+      expect(screen.getByText("Create a demo tournament")).toBeInTheDocument();
     });
     expect(screen.queryByLabelText(/tournament name/i)).not.toBeInTheDocument();
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
   });
 
   it("successfully creates a tournament", async () => {
-    const { createTournament } = await import("./TournamentSettings");
     const mockResponse = {
       id: 123,
-      name: "Test Tournament",
-      url: "/tournaments/123",
+      name: "Test Demo Tournament",
+      url: "/tournaments/123/rounds"
     };
-    vi.mocked(createTournament).mockResolvedValue(mockResponse);
+
+    const { createDemoTournament } = await import("./DemoTournamentSettings");
+    vi.mocked(createDemoTournament).mockResolvedValue(mockResponse);
 
     // Mock window.location.href
     const mockLocation = { href: "" };
@@ -100,7 +90,7 @@ describe("TournamentCreation", () => {
       writable: true,
     });
 
-    render(TournamentCreation);
+    render(TournamentDemoCreation);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
@@ -108,7 +98,15 @@ describe("TournamentCreation", () => {
 
     // Fill in the form
     const nameInput = screen.getByLabelText(/tournament name/i);
-    await fireEvent.input(nameInput, { target: { value: "Test Tournament" } });
+    await fireEvent.input(nameInput, { target: { value: "Test Demo Tournament" } });
+    const formatInput = screen.getByLabelText(/swiss format/i);
+    await fireEvent.change(formatInput, { target: { value: 'Single-sided' } });
+    const numPlayersInput = screen.getByLabelText(/number of players/i);
+    await fireEvent.input(numPlayersInput, { target: { value: "16" } });
+    const numByesInput = screen.getByLabelText(/number of first round byes/i);
+    await fireEvent.input(numByesInput, { target: { value: "1" } });
+    const assignIdsCheckbox = screen.getByLabelText(/assign random ids for players\?/i);
+    await fireEvent.click(assignIdsCheckbox);
 
     // Submit the form
     const submitButton = screen.getByRole("button", {
@@ -117,33 +115,37 @@ describe("TournamentCreation", () => {
     await fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(createTournament).toHaveBeenCalledWith(
+      expect(createDemoTournament).toHaveBeenCalledWith(
         "fake-csrf-token",
         expect.objectContaining({
-          name: "Test Tournament",
+          name: "Test Demo Tournament",
         }),
       );
     });
 
     // Check that redirect happens
     await waitFor(() => {
-      expect(mockLocation.href).toBe("/tournaments/123");
+      expect(mockLocation.href).toBe("/tournaments/123/rounds");
     });
   });
 
   it("handles validation errors", async () => {
-    const { createTournament } = await import("./TournamentSettings");
+    const { createDemoTournament } = await import("./DemoTournamentSettings");
     const validationError = new ValidationError({
-      name: ["Name is required"],
-      date: ["Date must be in the future"],
+      name: ["You must provide a name for the tournament"],
+      num_players: ["Number of players is required"],
+      num_first_round_byes: ["Number of byes must be a number"],
     });
-    vi.mocked(createTournament).mockRejectedValue(validationError);
+    vi.mocked(createDemoTournament).mockRejectedValue(validationError);
 
-    render(TournamentCreation);
+    render(TournamentDemoCreation);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
     });
+
+    const numByesInput = screen.getByLabelText(/number of first round byes/i);
+    await fireEvent.input(numByesInput, { target: { value: "plural is not a number" } });
 
     // Submit the form
     const submitButton = screen.getByRole("button", {
@@ -152,18 +154,17 @@ describe("TournamentCreation", () => {
     await fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Name is required")).toBeInTheDocument();
-      expect(
-        screen.getByText("Date must be in the future"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("You must provide a name for the tournament")).toBeInTheDocument();
+      expect(screen.getByText("Number of players is required")).toBeInTheDocument();
+      expect(screen.getByText("Number of byes must be a number")).toBeInTheDocument();
     });
   });
 
   it("handles unexpected errors", async () => {
-    const { createTournament } = await import("./TournamentSettings");
-    vi.mocked(createTournament).mockRejectedValue(new Error("Network error"));
+    const { createDemoTournament } = await import("./DemoTournamentSettings");
+    vi.mocked(createDemoTournament).mockRejectedValue(new Error("Network error"));
 
-    render(TournamentCreation);
+    render(TournamentDemoCreation);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
@@ -183,16 +184,16 @@ describe("TournamentCreation", () => {
   });
 
   it("disables submit button while submitting", async () => {
-    const { createTournament } = await import("./TournamentSettings");
-    // Make createTournament hang to test loading state
-    vi.mocked(createTournament).mockImplementation(
+    const { createDemoTournament } = await import("./DemoTournamentSettings");
+    // Make createDemoTournament hang to test loading state
+    vi.mocked(createDemoTournament).mockImplementation(
       () =>
         new Promise(() => {
           // This promise intentionally never resolves to test loading state
         }),
     );
 
-    render(TournamentCreation);
+    render(TournamentDemoCreation);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
