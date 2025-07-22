@@ -42,14 +42,14 @@ class TournamentPolicy < ApplicationPolicy
   end
 
   def new_demo?
-    true # good place to put the feature flag.
+    Flipper.enabled?(:demo_tournaments, user)
   end
 
   def new_demo_form?
-    true # good place to put the feature flag.
+    Flipper.enabled?(:demo_tournaments, user)
   end
 
   def create_demo?
-    true # good place to put the feature flag.
+    Flipper.enabled?(:demo_tournaments, user)
   end
 end
