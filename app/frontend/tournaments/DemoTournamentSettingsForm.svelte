@@ -48,11 +48,11 @@
     <div class="form-group">
       <label for="num_players">Number of Players</label>
       <input
-    type="text"
-    id="num_players"
-    class="form-control"
-    bind:value={tournament.num_players}
-  />
+        type="text"
+        id="num_players"
+        class="form-control"
+        bind:value={tournament.num_players}
+      />
       {#if errors.num_players}
         <div class="invalid-feedback d-block">{errors.num_players}</div>
       {/if}
@@ -62,16 +62,18 @@
     <div class="form-group">
       <label for="num_first_round_byes">Number of First Round Byes</label>
       <input
-    type="text"
-    id="num_first_round_byes"
-    class="form-control"
-    bind:value={tournament.num_first_round_byes}
-  />
+        type="text"
+        id="num_first_round_byes"
+        class="form-control"
+        bind:value={tournament.num_first_round_byes}
+      />
       {#if errors.num_first_round_byes}
-        <div class="invalid-feedback d-block">{errors.num_first_round_byes}</div>
+        <div class="invalid-feedback d-block">
+          {errors.num_first_round_byes}
+        </div>
       {/if}
-</div>
-</div>
+    </div>
+  </div>
 </div>
 
 <div class="form-check mb-3">

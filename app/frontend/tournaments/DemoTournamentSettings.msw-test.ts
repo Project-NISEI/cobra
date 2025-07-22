@@ -20,7 +20,7 @@ describe("DemoTournamentSettings", () => {
           swiss_format: "single_sided",
           num_players: null,
           num_first_round_byes: null,
-          assign_ids: false
+          assign_ids: false,
         },
       };
 
@@ -59,7 +59,7 @@ describe("DemoTournamentSettings", () => {
         swiss_format: "single_sided",
         num_players: 8,
         num_first_round_byes: 0,
-        assign_ids: false
+        assign_ids: false,
       };
 
       server.use(
