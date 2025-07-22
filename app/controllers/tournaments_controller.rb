@@ -102,9 +102,7 @@ class TournamentsController < ApplicationController
   def new_demo_form
     authorize Tournament
 
-    @new_tournament = current_user.tournaments.new
-    @new_tournament.date = Date.current
-    render json: helpers.tournament_settings_json(@new_tournament), status: :ok
+    render json: helpers.demo_tournament_json, status: :ok
   end
 
   def create
@@ -136,7 +134,8 @@ class TournamentsController < ApplicationController
     if params[:tournament][:num_players].blank? || !params[:tournament][:num_players].match?(/^\d+$/)
       errors[:num_players] = 'You must provide a number of players'
     end
-    if params[:tournament][:num_first_round_byes].present? && !params[:tournament][:num_first_round_byes].match?(/^\d+$/)
+    if params[:tournament][:num_first_round_byes].present? &&
+       !params[:tournament][:num_first_round_byes].match?(/^\d+$/)
       errors[:num_first_round_byes] = 'Number of byes must be a number'
     end
 

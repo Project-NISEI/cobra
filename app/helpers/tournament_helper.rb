@@ -7,6 +7,19 @@ module TournamentHelper
     tournament.date.strftime('%-d %b %Y')
   end
 
+  def demo_tournament_json
+    {
+      tournament: {
+        name: '',
+        swiss_format: 'single_sided',
+        num_players: nil,
+        num_first_round_byes: nil,
+        assign_ids: false
+      },
+      csrf_token: form_authenticity_token
+    }
+  end
+
   def tournament_settings_json(tournament)
     {
       tournament: {
