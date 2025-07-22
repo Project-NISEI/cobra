@@ -1,4 +1,14 @@
 # Cobra
+- [Requirements](#requirements)
+- [Development Setup](#development-setup)
+  - [Devcontainer with VS Code](#devcontainer-with-vs-code)
+  - [Local dev with Docker Compose](#local-dev-with-docker-compose)
+  - [Local Ruby installation](#local-ruby-installation)
+  - [Important Commands](#important-commands)
+  - [Feature flags](#feature-flags)
+- [Deploy in Production](#deploy-in-production)
+  - [Docker Compose](#docker-compose)
+  - [Pulumi](#pulumi)
 
 ## Requirements
 To deploy Cobra, you only need Docker Compose and a way of getting the repository onto your server (such as git).
@@ -10,65 +20,116 @@ Depending on your IDE or code editor, you may prefer to install Ruby locally.
 Either installed or in Docker, you will need:
 - Ruby (or a Ruby version manager - e.g. rvm or rbenv), matching the version declared in [.ruby-version](.ruby-version).
 - Bundler:
-```
-$ gem install bundler
-```
+  ```sh
+  $ gem install bundler
+  ```
 - PostgreSQL
 - Git
 
-## Set up for development with local Ruby installation
+## Development Setup
+### Devcontainer with VS Code
+The application has a Docker
+[DevContainer](https://code.visualstudio.com/docs/devcontainers/containers)
+setup. If you use VS Code, this is the easiest way to develop for Cobra.
 
-- Get the project
+To use it, first create the database.yml file:
+```sh
+$ cat config/database.example.app-in-docker.yml | sed s/localhost/db/ > config/database.yml
 ```
-$ git clone https://github.com/Project-NISEI/cobra.git
-$ cd cobra
+
+If you open this folder in VS Code it will prompt you to re-open in the
+devcontainer. From there, your terminal will be in the container and you will have a
+self-contained, full-featured development environment.
+
+### Local dev with Docker Compose
+If you want to develop with docker outside of VS Code, these instructions are
+for you. This set up is preferred over local environment dev to keep
+development and deployed versions consistent.
+
+Local changes are live refreshed for both ruby and svelte aside from server-startup configuration.
+
+1. Set up config files
+   ```sh
+   $ cat config/database.example.app-in-docker.yml | sed s/localhost/db/ > config/database.yml
+   $ echo "POSTGRES_PASSWORD=cobra" > .env
+   $ echo "RAILS_ENV=development" >> .env
+   ```
+2. Start the application
+   ```sh
+   $ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+   ```
+
+To interact with the application, enter the `app` shell and run your commands in there.
+```sh
+$ docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app /bin/sh
 ```
-- Install dependencies
-```
-$ bundle
-```
-- Set up config files
-```
-$ cp config/database.example.app-in-host.yml config/database.yml
-```
-- Set up database in Docker
-```
-$ echo "POSTGRES_PASSWORD=cobra" > .env
-$ echo "RAILS_ENV=development" >> .env
-$ bin/init-db-from-host
-```
+
+### Local Ruby installation
+1. Get the project
+   ```sh
+   $ git clone https://github.com/Project-NISEI/cobra.git
+   $ cd cobra
+   ```
+2. Install dependencies
+   ```sh
+   $ bundle
+   ```
+3. Set up config files
+   ```sh
+   $ cp config/database.example.app-in-host.yml config/database.yml
+   ```
+4. Set up database in Docker
+   ```sh
+   $ echo "POSTGRES_PASSWORD=cobra" > .env
+   $ echo "RAILS_ENV=development" >> .env
+   $ bin/init-db-from-host
+   ```
 
 This will create a Docker container running PostgreSQL and set up the database there.
 If you prefer to install PostgreSQL locally instead, you can set up the database like this:
-
-```
+```sh
 $ psql postgres
     # create user cobra with password 'cobra' CREATEDB;
     # \q
 $ rake db:create db:migrate
 ```
 
-- Start local server in your IDE, or with the Rails CLI (this was installed when you ran `bundle`):
-```
+Start local server in your IDE, or with the Rails CLI (this was installed when you ran `bundle`):
+```sh
 $ rails server
 ```
 
-## Run tests
-```
-$ rspec
-```
-
-## Identities
-Identities are stored in the database and can be seeded/updated by running a rake task:
-```
-$ rake ids:update
+### Important commands
+#### Update IDs from the NRDB API
+```sh
+$ bundle exec rake ids:update
 ```
 This rake task queries the NRDB API and creates/updates identities as appropriate.
 Identities not in the database are stripped out of ABR uploads to avoid errors.
 This is run automatically by `bin/deploy` and `bin/init-db-*`.
 
-## Feature flags
+#### Update Card Sets from the NRDB API
+```sh
+$ bundle exec rake card_sets:update
+```
 
+#### Seed Tournament Metadata
+Formats, tournament types, and prize kits are seeded by this task.
+```sh
+$ bundle exec rake tournament_metadata:seed
+```
+
+#### Run tests
+```sh
+$ bundle exec rspec
+```
+
+Note that you will need to override the environment if you are running this in a Docker container:
+```sh
+$ RAILS_ENV=test bundle exec rspec
+```
+
+### Feature flags
 [Flipper](https://github.com/jnunemaker/flipper) is included to give the option to hide or disable features which are
 incomplete. This lets you make changes in smaller increments, while still being able to deploy to a production
 environment with your feature hidden.
@@ -94,102 +155,35 @@ Rails.application.configure do
 end
 ```
 
-## Local dev with VS Code
+## Deploy in Production
+### Docker Compose
+1. Deploy NGINX
+   ```sh
+   $ git clone https://github.com/Project-NISEI/nginx-proxy.git nginx
+   $ cd nginx
+   $ docker network create --driver bridge null_signal
+   $ docker compose up -d
+   ```
+2. Get the project
+   ```sh
+   $ git clone https://github.com/Project-NISEI/cobra.git
+   $ cd cobra
+   ```
+3. Set up config files
+   ```sh
+   $ cp config/database.example.app-in-docker.yml config/database.yml
+   $ echo "RAILS_ENV=production" > .env
+   $ echo "COMPOSE_FILE_TYPE=prod" >> .env
+   $ echo "POSTGRES_PASSWORD=some-good-password" >> .env
+   $ echo "SECRET_KEY_BASE=random-64-bit-hex-key" >> .env
+   $ echo "COBRA_DOMAIN=yourdomainhere.com" >> .env
+   ```
+4. Deploy
+   ```sh
+   $ bin/deploy
+   ```
 
-The application has a Docker
-[DevContainer](https://code.visualstudio.com/docs/devcontainers/containers)
-setup.  If you open this folder in VS Code it will prompt you to re-open in the
-devcontainer. If you use VS Code, this is the easiest way to develop for Cobra.
-
-From there, your terminal will be in the container and you will have a
-self-contained, full-featured development environment.
-
-## Local dev with Docker
-
-If you want to develop with docker outside of VS Code, these instructions are
-for you. This set up is preferred over local environment dev to keep
-development and deployed versions consistent.
-
-Local changes are live refreshed for both ruby and svelte aside from server-startup configuration.
-
-- Set up config files
-```shell
-cat config/database.example.app-in-docker.yml | sed s/localhost/db/ > config/database.yml
-echo "POSTGRES_PASSWORD=cobra" > .env
-echo "RAILS_ENV=development" >> .env
-```
-
-- Start the application
-
-```shell
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
-```
-
-To interact with the application, enter the `app` shell and run your commands in there.
-```shell
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app /bin/sh
-```
-
-## Important Commands in the shell
-
-### Update IDs from the NRDB API
-
-```shell
-bundle exec rake ids:update
-```
-
-### Update Card Sets from the NRDB API
-
-```shell
-bundle exec rake card_sets:update
-```
-
-### Seed Tournament Metadata
-
-Formats, tournament types, and prize kits are seeded by this task.
-
-```shell
-bundle exec rake tournament_metadata:seed
-```
-
-### Run tests
-
-To run tests in your docker container, you will need to override the environment, like so:
-
-```shell
-RAILS_ENV=test bundle exec rspec
-```
-
-## Deploy in production with Docker Compose
-
-- Deploy NGINX
-```shell
-git clone https://github.com/Project-NISEI/nginx-proxy.git nginx
-cd nginx
-docker network create --driver bridge null_signal
-docker compose up -d
-```
-- Get the project
-```shell
-git clone https://github.com/Project-NISEI/cobra.git
-cd cobra
-```
-- Set up config files
-```shell
-cp config/database.example.app-in-docker.yml config/database.yml
-echo "RAILS_ENV=production" > .env
-echo "COMPOSE_FILE_TYPE=prod" >> .env
-echo "POSTGRES_PASSWORD=some-good-password" >> .env
-echo "SECRET_KEY_BASE=random-64-bit-hex-key" >> .env
-echo "COBRA_DOMAIN=yourdomainhere.com" >> .env
-```
-- Deploy
-```shell
-bin/deploy
-```
-
-## Deploy with Pulumi
-
+### Pulumi
 The deploy directory contains scripts for deploying to DigitalOcean using Pulumi for infrastructure as code. Here are
 some steps for setting that up.
 
@@ -208,8 +202,7 @@ If you'd prefer to manage the resulting droplet manually and just use this as a 
 the resulting Pulumi stack. It may be easier to hold state locally for this, rather than creating a stack in Pulumi
 cloud. Refer to Pulumi documentation to log into the CLI in local-only mode.
 
-### GitHub Actions deployment
-
+#### GitHub Actions deployment
 There's a GitHub Actions workflow that handles deployment with Pulumi, and also deployment of Cobra inside the droplet.
 This needs the configuration for Cobra stored in Pulumi, alongside details of the droplet. You'll also need to connect
 your GitHub to Pulumi and DigitalOcean. With a Pulumi stack set up as above, follow the following steps:
@@ -218,9 +211,9 @@ your GitHub to Pulumi and DigitalOcean. With a Pulumi stack set up as above, fol
 2. Set the domain you want to use in Pulumi, with `pulumi config set cobra:cobra_domain your_domain.com`.
    Ensure you own the domain you want to use.
 3. If you have NetrunnerDB client credentials, encrypt them with these commands:
-   ```shell
-   pulumi config set cobra:nrdb_client --secret
-   pulumi config set cobra:nrdb_secret --secret
+   ```sh
+   $ pulumi config set cobra:nrdb_client --secret
+   $ pulumi config set cobra:nrdb_secret --secret
    ```
    If you don't have client credentials, you can still deploy but you won't be able to log into Cobra.
 4. Set a Pulumi access token and a DigitalOcean token in GitHub repository secrets, PULUMI_ACCESS_TOKEN and
