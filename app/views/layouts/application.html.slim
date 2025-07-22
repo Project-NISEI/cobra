@@ -41,9 +41,10 @@ html
                   = link_to new_tournament_path, class: 'dropdown-item' do
                     => fa_icon 'plus'
                     | Create tournament
-                  = link_to new_demo_tournaments_path, class: 'dropdown-item' do
-                    => fa_icon 'plus'
-                    | Create demo / testing tournament
+                  - if Flipper.enabled?(:demo_tournaments, current_user)
+                    = link_to new_demo_tournaments_path, class: 'dropdown-item' do
+                      => fa_icon 'plus'
+                      | Create demo tournament
                   = link_to my_tournaments_path, class: 'dropdown-item' do
                     => fa_icon 'trophy'
                     | My tournaments
