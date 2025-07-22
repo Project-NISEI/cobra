@@ -44,7 +44,8 @@
   <div class="col-12">
     <h1>Create a demo tournament</h1>
     <p>
-      This allows you to create a private tournament with certain parameters, demo players with fake names, and specific rounds.
+      This allows you to create a private tournament with certain parameters,
+      demo players with fake names, and specific rounds.
     </p>
 
     {#if errors.base}
