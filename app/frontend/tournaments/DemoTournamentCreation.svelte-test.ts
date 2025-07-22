@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/svelte";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import TournamentDemoCreation from "./TournamentDemoCreation.svelte";
+import DemoTournamentCreation from "./DemoTournamentCreation.svelte";
 import { ValidationError } from "./DemoTournamentSettings";
 
 // Mock the DemoTournamentSettings module
@@ -10,7 +10,7 @@ vi.mock("./DemoTournamentSettings", async (importOriginal) => ({
   createDemoTournament: vi.fn(),
 }));
 
-describe("TournamentDemoCreation", () => {
+describe("DemoTournamentCreation", () => {
   const mockTournamentData = {
     tournament: {
       name: "Test Demo Tournament",
@@ -31,7 +31,7 @@ describe("TournamentDemoCreation", () => {
   });
 
   it("renders the demo tournament creation form", async () => {
-    render(TournamentDemoCreation);
+    render(DemoTournamentCreation);
 
     await waitFor(() => {
       expect(screen.getByText("Create a demo tournament")).toBeInTheDocument();
@@ -48,7 +48,7 @@ describe("TournamentDemoCreation", () => {
   it("loads initial tournament data on mount", async () => {
     const { loadNewDemoTournament } = await import("./DemoTournamentSettings");
 
-    render(TournamentDemoCreation);
+    render(DemoTournamentCreation);
 
     await waitFor(() => {
       expect(loadNewDemoTournament).toHaveBeenCalledOnce();
@@ -64,7 +64,7 @@ describe("TournamentDemoCreation", () => {
         }),
     );
 
-    render(TournamentDemoCreation);
+    render(DemoTournamentCreation);
 
     await waitFor(() => {
       expect(screen.getByText("Create a demo tournament")).toBeInTheDocument();
@@ -90,7 +90,7 @@ describe("TournamentDemoCreation", () => {
       writable: true,
     });
 
-    render(TournamentDemoCreation);
+    render(DemoTournamentCreation);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
@@ -138,7 +138,7 @@ describe("TournamentDemoCreation", () => {
     });
     vi.mocked(createDemoTournament).mockRejectedValue(validationError);
 
-    render(TournamentDemoCreation);
+    render(DemoTournamentCreation);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
@@ -164,7 +164,7 @@ describe("TournamentDemoCreation", () => {
     const { createDemoTournament } = await import("./DemoTournamentSettings");
     vi.mocked(createDemoTournament).mockRejectedValue(new Error("Network error"));
 
-    render(TournamentDemoCreation);
+    render(DemoTournamentCreation);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
@@ -193,7 +193,7 @@ describe("TournamentDemoCreation", () => {
         }),
     );
 
-    render(TournamentDemoCreation);
+    render(DemoTournamentCreation);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
