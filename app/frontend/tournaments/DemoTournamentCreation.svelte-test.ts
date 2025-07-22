@@ -40,8 +40,12 @@ describe("DemoTournamentCreation", () => {
     expect(screen.getByLabelText(/tournament name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Number of Players/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/swiss format/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/number of first round byes/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/assign random ids for players\?/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/number of first round byes/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/assign random ids for players\?/i),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /create/i })).toBeInTheDocument();
   });
 
@@ -77,7 +81,7 @@ describe("DemoTournamentCreation", () => {
     const mockResponse = {
       id: 123,
       name: "Test Demo Tournament",
-      url: "/tournaments/123/rounds"
+      url: "/tournaments/123/rounds",
     };
 
     const { createDemoTournament } = await import("./DemoTournamentSettings");
@@ -98,14 +102,18 @@ describe("DemoTournamentCreation", () => {
 
     // Fill in the form
     const nameInput = screen.getByLabelText(/tournament name/i);
-    await fireEvent.input(nameInput, { target: { value: "Test Demo Tournament" } });
+    await fireEvent.input(nameInput, {
+      target: { value: "Test Demo Tournament" },
+    });
     const formatInput = screen.getByLabelText(/swiss format/i);
-    await fireEvent.change(formatInput, { target: { value: 'Single-sided' } });
+    await fireEvent.change(formatInput, { target: { value: "Single-sided" } });
     const numPlayersInput = screen.getByLabelText(/number of players/i);
     await fireEvent.input(numPlayersInput, { target: { value: "16" } });
     const numByesInput = screen.getByLabelText(/number of first round byes/i);
     await fireEvent.input(numByesInput, { target: { value: "1" } });
-    const assignIdsCheckbox = screen.getByLabelText(/assign random ids for players\?/i);
+    const assignIdsCheckbox = screen.getByLabelText(
+      /assign random ids for players\?/i,
+    );
     await fireEvent.click(assignIdsCheckbox);
 
     // Submit the form
@@ -145,7 +153,9 @@ describe("DemoTournamentCreation", () => {
     });
 
     const numByesInput = screen.getByLabelText(/number of first round byes/i);
-    await fireEvent.input(numByesInput, { target: { value: "plural is not a number" } });
+    await fireEvent.input(numByesInput, {
+      target: { value: "plural is not a number" },
+    });
 
     // Submit the form
     const submitButton = screen.getByRole("button", {
@@ -154,15 +164,23 @@ describe("DemoTournamentCreation", () => {
     await fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("You must provide a name for the tournament")).toBeInTheDocument();
-      expect(screen.getByText("Number of players is required")).toBeInTheDocument();
-      expect(screen.getByText("Number of byes must be a number")).toBeInTheDocument();
+      expect(
+        screen.getByText("You must provide a name for the tournament"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Number of players is required"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Number of byes must be a number"),
+      ).toBeInTheDocument();
     });
   });
 
   it("handles unexpected errors", async () => {
     const { createDemoTournament } = await import("./DemoTournamentSettings");
-    vi.mocked(createDemoTournament).mockRejectedValue(new Error("Network error"));
+    vi.mocked(createDemoTournament).mockRejectedValue(
+      new Error("Network error"),
+    );
 
     render(DemoTournamentCreation);
 
