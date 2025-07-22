@@ -137,7 +137,7 @@ class TournamentsController < ApplicationController
       errors[:num_players] = 'You must provide a number of players'
     end
     if params[:tournament][:num_first_round_byes].present? && !params[:tournament][:num_first_round_byes].match?(/^\d+$/)
-      errors[:num_first_round_byes] = 'Number of byes mmmust be a number'
+      errors[:num_first_round_byes] = 'Number of byes must be a number'
     end
 
     if errors.empty?
@@ -151,6 +151,7 @@ class TournamentsController < ApplicationController
       )
       render json: {
         id: tournament.id,
+        name: tournament.name,
         url: tournament_rounds_path(tournament)
       }, status: :created
     else
