@@ -95,6 +95,16 @@ class TournamentsController < ApplicationController
     render json: helpers.tournament_settings_json(@new_tournament), status: :ok
   end
 
+  def new_demo
+    authorize Tournament
+  end
+
+  def new_demo_form
+    authorize Tournament
+
+    render json: helpers.demo_tournament_json, status: :ok
+  end
+
   def create
     authorize Tournament
 
@@ -110,6 +120,41 @@ class TournamentsController < ApplicationController
       # Determine appropriate status code based on whether there are validation errors
       status_code = @new_tournament.errors.any? ? :unprocessable_entity : :internal_server_error
       render json: { errors: @new_tournament.errors }, status: status_code
+    end
+  end
+
+  def create_demo
+    authorize Tournament
+
+    # We will do basic validation here, while farming out a successful creation to the library code.
+    errors = {}
+
+    errors[:name] = 'You must provide a name for the tournament' if params[:tournament][:name].blank?
+
+    if params[:tournament][:num_players].blank? || !params[:tournament][:num_players].match?(/^\d+$/)
+      errors[:num_players] = 'You must provide a number of players'
+    end
+    if params[:tournament][:num_first_round_byes].present? &&
+       !params[:tournament][:num_first_round_byes].match?(/^\d+$/)
+      errors[:num_first_round_byes] = 'Number of byes must be a number'
+    end
+
+    if errors.empty?
+      tournament = DemoTournament.create(
+        tournament_name: params[:tournament][:name],
+        format: params[:tournament][:swiss_format],
+        first_round_byes: params[:tournament][:num_first_round_byes].to_i,
+        num_players: params[:tournament][:num_players].to_i,
+        assign_ids: params[:tournament][:assign_ids].present?,
+        owner: current_user
+      )
+      render json: {
+        id: tournament.id,
+        name: tournament.name,
+        url: tournament_rounds_path(tournament)
+      }, status: :created
+    else
+      render json: { errors: }, status: :unprocessable_entity
     end
   end
 
@@ -304,7 +349,9 @@ class TournamentsController < ApplicationController
                                        :time_zone, :registration_starts, :tournament_starts, :tournament_type_id,
                                        :card_set_id, :format_id, :deckbuilding_restriction_id, :decklist_required,
                                        :organizer_contact, :event_link, :description, :official_prize_kit_id,
-                                       :additional_prizes_description, :allow_self_reporting)
+                                       :additional_prizes_description, :allow_self_reporting,
+                                       # Used for demo tournaments
+                                       :num_players, :num_first_round_byes)
   end
 
   def set_tournament_view_data

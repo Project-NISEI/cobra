@@ -8,7 +8,7 @@ class DemoTournament
 
     # Validate
     raise 'Tournament name cannot be empty' if tournament_name.blank?
-    raise 'Format must be a valid swiss format' unless %i[single_sided double_sided].include?(format)
+    raise 'Format must be a valid swiss format' unless %w[single_sided double_sided].include?(format)
     raise 'First round byes must be a non-negative integer' if first_round_byes.negative?
     raise 'Num players must be a non-negative integer' if num_players.negative?
     raise 'First round byes cannot exceed the number of players' if first_round_byes > num_players

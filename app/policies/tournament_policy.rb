@@ -40,4 +40,16 @@ class TournamentPolicy < ApplicationPolicy
   def my?
     user
   end
+
+  def new_demo?
+    true # good place to put the feature flag.
+  end
+
+  def new_demo_form?
+    true # good place to put the feature flag.
+  end
+
+  def create_demo?
+    true # good place to put the feature flag.
+  end
 end
