@@ -20,5 +20,11 @@ module Bracket
       loser(5),
       loser(4)
     ].freeze
+
+    def self.bracket_type(game_number)
+      return :lower if [4, 5].include? game_number
+
+      :upper
+    end
   end
 end

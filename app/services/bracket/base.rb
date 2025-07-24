@@ -68,6 +68,10 @@ module Bracket
       s.map { |p| Standing.new(p) }
     end
 
+    def self.bracket_type(_game_number)
+      :upper
+    end
+
     private
 
     def pairing(number)

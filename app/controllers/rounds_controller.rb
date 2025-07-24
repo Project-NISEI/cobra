@@ -154,6 +154,13 @@ class RoundsController < ApplicationController
   end
 
   def pairings_data_round(stage, players, view_decks, round)
+    bracket = nil
+    begin
+      bracket = Bracket::Factory.bracket_for(stage.players.count) if stage.single_elim? || stage.double_elim?
+    rescue RuntimeError
+      bracket = nil
+    end
+
     pairings = []
     pairings_reported = 0
     pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
@@ -191,7 +198,8 @@ class RoundsController < ApplicationController
                                  score2, score2_corp, score2_runner),
         intentional_draw:,
         two_for_one:,
-        self_report: ({ report_player_id: self_report.report_player_id, label: self_report_score_label } if self_report)
+        self_report: ({ report_player_id: self_report.report_player_id, label: self_report_score_label } if self_report),
+        bracket_type: (bracket.bracket_type(table_number).to_s if bracket)
       }
     end
     {
