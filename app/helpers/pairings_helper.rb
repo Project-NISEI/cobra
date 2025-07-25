@@ -94,7 +94,7 @@ module PairingsHelper
     end
 
     # Single-sided elimination round
-    if (pairing.stage.single_elim? || pairing.stage.double_elim?) && !pairing.side.nil?
+    if pairing.stage.elimination? && !pairing.side.nil?
       if pairing.player1_is_corp?
         return [
           { score1: 3, score2: 0, score1_corp: 3, score2_runner: 0, score1_runner: 0, score2_corp: 0, label: '3-0' },

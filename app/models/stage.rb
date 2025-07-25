@@ -39,7 +39,11 @@ class Stage < ApplicationRecord
   end
 
   def single_sided?
-    double_elim? || single_sided_swiss? || single_elim?
+    single_sided_swiss? || elimination?
+  end
+
+  def elimination?
+    single_elim? || double_elim?
   end
 
   def default_round_minutes

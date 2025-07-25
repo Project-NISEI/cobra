@@ -155,7 +155,7 @@ class RoundsController < ApplicationController
 
   def pairings_data_round(stage, players, view_decks, round)
     begin
-      bracket = Bracket::Factory.bracket_for(stage.players.count) if stage.single_elim? || stage.double_elim?
+      bracket = Bracket::Factory.bracket_for(stage.players.count) if stage.elimination?
     rescue RuntimeError
       bracket = nil
     end
@@ -183,7 +183,7 @@ class RoundsController < ApplicationController
       pairings << {
         id:,
         table_number:,
-        table_label: stage.double_elim? || stage.single_elim? ? "Game #{table_number}" : "Table #{table_number}",
+        table_label: stage.elimination? ? "Game #{table_number}" : "Table #{table_number}",
         policy: {
           view_decks:,
           self_report: SelfReporting.self_report_allowed(current_user,
