@@ -154,6 +154,12 @@ class RoundsController < ApplicationController
   end
 
   def pairings_data_round(stage, players, view_decks, round)
+    begin
+      bracket = Bracket::Factory.bracket_for(stage.players.count) if stage.elimination?
+    rescue RuntimeError
+      bracket = nil
+    end
+
     pairings = []
     pairings_reported = 0
     pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
@@ -165,17 +171,19 @@ class RoundsController < ApplicationController
       # Only show own self report
       self_report = SelfReport.where(pairing_id: id, report_player_id: current_user.id).first if current_user
       if self_report
-        self_report_score_label = score_label(@tournament.swiss_format, player1_side(side),
-                                              self_report.score1, self_report.score1_corp,
-                                              self_report.score1_runner,
-                                              self_report.score2,
-                                              self_report.score2_corp,
-                                              self_report.score2_runner)
+        self_report_result = {
+          report_player_id: self_report.report_player_id,
+          label: score_label(@tournament.swiss_format, player1_side(side),
+                             self_report.score1, self_report.score1_corp,
+                             self_report.score1_runner,
+                             self_report.score2,
+                             self_report.score2_corp,
+                             self_report.score2_runner) }
       end
       pairings << {
         id:,
         table_number:,
-        table_label: stage.double_elim? || stage.single_elim? ? "Game #{table_number}" : "Table #{table_number}",
+        table_label: stage.elimination? ? "Game #{table_number}" : "Table #{table_number}",
         policy: {
           view_decks:,
           self_report: SelfReporting.self_report_allowed(current_user,
@@ -191,7 +199,8 @@ class RoundsController < ApplicationController
                                  score2, score2_corp, score2_runner),
         intentional_draw:,
         two_for_one:,
-        self_report: ({ report_player_id: self_report.report_player_id, label: self_report_score_label } if self_report)
+        self_report: self_report_result,
+        bracket_type: (bracket.bracket_type(table_number).to_s if bracket)
       }
     end
     {

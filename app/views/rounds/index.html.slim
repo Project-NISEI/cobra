@@ -51,7 +51,7 @@
             => fa_icon 'plus'
             | Pair new round!
           | All rounds must be flagged complete before you can add a new round
-      - unless @stages.last.single_elim? || @stages.last.double_elim?
+      - unless @stages.last.elimination?
         p
           => link_to cut_tournament_path(@tournament, number: 3, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
             => fa_icon 'scissors'

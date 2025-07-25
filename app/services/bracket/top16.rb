@@ -60,5 +60,11 @@ module Bracket
       seed_of([loser(9), loser(10), loser(11), loser(12)], 3),
       seed_of([loser(9), loser(10), loser(11), loser(12)], 4)
     ].freeze
+
+    def self.bracket_type(game_number)
+      return :lower if [9, 10, 11, 17, 18, 19, 20, 25, 26, 29].include? game_number
+
+      :upper
+    end
   end
 end

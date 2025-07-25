@@ -110,7 +110,7 @@ class Pairing < ApplicationRecord
   end
 
   def table_label
-    stage.double_elim? || stage.single_elim? ? "Game #{table_number}" : "Table #{table_number}"
+    stage.elimination? ? "Game #{table_number}" : "Table #{table_number}"
   end
 
   def fixed_table_number?
