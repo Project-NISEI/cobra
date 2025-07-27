@@ -15,11 +15,11 @@ export default ts.config(
       svelte.configs.recommended,
     ],
     ignores: [
-      "public/",
-      "vendor/",
-      "tmp/",
       "**/venv/",
-      "app/assets/javascripts/{awesomplete,cable}.js",
+      "app/assets/**/*",
+      "public/**/*",
+      "tmp/",
+      "vendor/",
     ],
   },
   {
