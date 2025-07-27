@@ -5,15 +5,19 @@
   - left_player_number = 1
   - right_player = @players[pairing.player2_id]
   - right_player_number = 2
-  - left_player_report = pairing.self_reports.find { |report| report.report_player_id == left_player.user_id }
-  - right_player_report = pairing.self_reports.find { |report| report.report_player_id == right_player.user_id }
-  - players_have_self_reported = (right_player_report != nil && left_player_report != nil)
-  - self_reports_match = ((right_player_report&.score1 == left_player_report&.score1) || (right_player_report&.score2 == left_player_report&.score2))
+  / Correct which player is left or right if needed.
   - if single_sided && is_side_set && !pairing.player1_is_corp?
     - left_player = @players[pairing.player2_id]
     - left_player_number = 2
     - right_player = @players[pairing.player1_id]
     - right_player_number = 1
+
+  / Retrieve any self-reported results by players
+  - left_player_report = pairing.self_reports.find { |report| report.report_player_id == left_player.user_id }
+  - right_player_report = pairing.self_reports.find { |report| report.report_player_id == right_player.user_id }
+  - players_have_self_reported = (right_player_report != nil && left_player_report != nil)
+  - self_reports_match = ((right_player_report&.score1 == left_player_report&.score1) || (right_player_report&.score2 == left_player_report&.score2))
+
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user} #{'self_reports_match' if !pairing.reported? && players_have_self_reported && !self_reports_match}"
     .col-sm-2
       | #{pairing.table_label}
@@ -114,8 +118,8 @@
         = link_to tournament_round_pairing_path(round.tournament, round, pairing), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed.' } do
           => fa_icon 'trash'
         - if players_have_self_reported && !self_reports_match
-          = link_to reset_self_report_tournament_round_pairing_path(round.tournament, round, pairing), 
-            method: :delete, title: 'Reset self reports of pairing', class: 'btn btn-primary ml-2 reset-self-reports', 
+          = link_to reset_self_report_tournament_round_pairing_path(round.tournament, round, pairing),
+            method: :delete, title: 'Reset self reports of pairing', class: 'btn btn-primary ml-2 reset-self-reports',
             data: { confirm: 'Are you sure? This cannot be reversed.' } do
             => fa_icon 'undo'
             javascript: $('.reset-self-reports').tooltip()
