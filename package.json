@@ -1,6 +1,7 @@
 {
   "type": "module",
   "scripts": {
+    "lint": "eslint app",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
