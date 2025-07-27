@@ -14,13 +14,7 @@ export default ts.config(
       ts.configs.stylisticTypeChecked,
       svelte.configs.recommended,
     ],
-    ignores: [
-      "public/",
-      "vendor/",
-      "tmp/",
-      "**/venv/",
-      "app/assets/javascripts/{awesomplete,cable}.js",
-    ],
+    ignores: ["**/venv/", "app/assets/**/*", "public/**/*", "tmp/", "vendor/"],
   },
   {
     languageOptions: {
