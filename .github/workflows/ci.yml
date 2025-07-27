@@ -110,7 +110,7 @@ jobs:
       - name: Lint Ruby files
         run: bundle exec rubocop --parallel
       - name: Lint Javascript files
-        run: npx eslint .
+        run: npx eslint app
       - name: Check TypeScript types
         run: npm run typecheck
       - name: Check style with Prettier
