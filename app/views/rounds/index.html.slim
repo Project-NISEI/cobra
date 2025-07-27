@@ -17,6 +17,9 @@
       #toggle_identities.btn.btn-primary
         => fa_icon 'eye-slash'
         | Show/hide identities
+      =< link_to view_pairings_tournament_rounds_path(@tournament), class: 'btn btn-primary' do
+        => fa_icon 'users'
+        | See player pairings view
       p
       .reported_hidden_message.alert.alert-info Reported scores are currently hidden on this page. This will not affect other users viewing this page.
       p
