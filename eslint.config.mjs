@@ -14,13 +14,7 @@ export default ts.config(
       ts.configs.stylisticTypeChecked,
       svelte.configs.recommended,
     ],
-    ignores: [
-      "**/venv/",
-      "app/assets/**/*",
-      "public/**/*",
-      "tmp/",
-      "vendor/",
-    ],
+    ignores: ["**/venv/", "app/assets/**/*", "public/**/*", "tmp/", "vendor/"],
   },
   {
     languageOptions: {
