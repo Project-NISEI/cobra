@@ -148,7 +148,7 @@
           <button
             class="btn btn-primary"
             id="option-custom"
-            on:click={async () => {
+            on:click={() => {
               onCustomReportClicked();
             }}
           >
