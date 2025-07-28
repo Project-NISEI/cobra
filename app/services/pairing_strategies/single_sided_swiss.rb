@@ -53,51 +53,56 @@ module PairingStrategies
       # The block argument to SwissImplementation.pair is invoked for each potential pairing of players
       # and will return the calculated weight for that potential pairing.
       SwissImplementation.pair(players) do |player1, player2|
-        # Potential bye pairing.
-        if [player1, player2].include?(SwissImplementation::Bye)
-          real_player = [player1, player2].difference([SwissImplementation::Bye]).first
-
-          # return nil (no pairing possible) if player has already received bye
-          next nil if real_player.had_bye
-
-          next 1000 - points_weight(real_player.points, -1)
-        end
-
-        # return nil (no pairing possible) if players have already played twice
-        # TODO(plural): Start here for investigating lucille's bug with 3 matchups.
-        next nil if player1.opponents.key?(player2.id) && player1.opponents[player2.id].count >= 2
-
-        # Check if either player has a preferred side bias.
-        preferred_side = preferred_player1_side(player1.side_bias, player2.side_bias)
-
-        # return nil (no pairing possible) if there is a side bias and the sides would repeat the previous pairing
-        if preferred_side && player1.opponents[player2.id] &&
-           player1.opponents[player2.id].include?(preferred_side)
-          next nil
-        end
-
-        # Points and Rematch weights aren't affected by sides so we only need to calculate them once.
-        points = points_weight(player1.points, player2.points)
-        rematch = rematch_bias_weight(player1.opponents.keys.include?(player2.id))
-
-        legal_options = self.legal_options(player1, player2)
-
-        min_cost = 1000
-        # Player 1 can corp
-        if legal_options[0]
-          min_cost = [points + rematch + side_bias_weight(player1.side_bias, player2.side_bias), min_cost].min
-        end
-        # Player 2 can corp
-        if legal_options[1]
-          min_cost = [points + rematch + side_bias_weight(player2.side_bias, player1.side_bias), min_cost].min
-        end
-
-        next nil if min_cost >= 100
-
-        1000 - min_cost
+        next potential_pairing_weight(player1, player2)
       end
     end
 
+    def self.potential_pairing_weight(player1, player2)
+      # Potential bye pairing.
+      if [player1, player2].include?(SwissImplementation::Bye)
+        real_player = [player1, player2].difference([SwissImplementation::Bye]).first
+
+        # return nil (no pairing possible) if player has already received bye
+        return nil if real_player.had_bye
+
+        return 1000 - points_weight(real_player.points, -1)
+      end
+
+      # return nil (no pairing possible) if players have already played twice
+      # TODO(plural): Start here for investigating lucille's bug with 3 matchups.
+      return nil if player1.opponents.key?(player2.id) && player1.opponents[player2.id].count >= 2
+
+      # Check if either player has a preferred side bias.
+      preferred_side = preferred_player1_side(player1.side_bias, player2.side_bias)
+
+      # return nil (no pairing possible) if there is a side bias and the sides would repeat the previous pairing
+      if preferred_side && player1.opponents[player2.id] &&
+          player1.opponents[player2.id].include?(preferred_side)
+        return nil
+      end
+
+      # Points and Rematch weights aren't affected by sides so we only need to calculate them once.
+      points = points_weight(player1.points, player2.points)
+      rematch = rematch_bias_weight(player1.opponents.keys.include?(player2.id))
+
+      legal_options = self.legal_options(player1, player2)
+
+      min_cost = 1000
+      # Player 1 can corp
+      if legal_options[0]
+        min_cost = [points + rematch + side_bias_weight(player1.side_bias, player2.side_bias), min_cost].min
+      end
+      # Player 2 can corp
+      if legal_options[1]
+        min_cost = [points + rematch + side_bias_weight(player2.side_bias, player1.side_bias), min_cost].min
+      end
+
+      return nil if min_cost >= 100
+
+      1000 - min_cost
+    end
+
+    # The weight is calculated as the square of the difference in points.
     # Points weight does not care about sides.
     def self.points_weight(player1_points, player2_points)
       (player1_points - player2_points)**2
@@ -129,17 +134,26 @@ module PairingStrategies
       [player1_can_corp, player2_can_corp]
     end
 
-    def self.assign_side(player1, player2)
-      preference = preferred_player1_side(player1.side_bias, player2.side_bias)
-      if preference.nil? && player1.opponents.key?(player2.id)
-        # Pick the opposite side if this is a repeat matchup for these players.
+    def self.assign_side(player1, player2, random: Random)
+      # If there was a prior matchup between these two players, we can only asside the missing matchup.
+      if player1.opponents.key?(player2.id)
+        if player1.opponents[player2.id].count == 2
+          # This should not happen given the pairing logic will return nil for a double matchup,
+          # but be defensive here because this happens after pairings are filtered by weight.
+          Rails.logger.error "Tried to assign side for players #{player1.name} and #{player2.name} who have already played twice."
+          return nil
+        end
+
         return player1.opponents[player2.id].first == 'corp' ? 'runner' : 'corp'
-      elsif !preference.nil?
-        return preference == :corp ? 'corp' : 'runner'
       end
 
-      # Fall back to random assignment
-      %w[corp runner].sample
+      # Honor any side bias next.
+      preference = preferred_player1_side(player1.side_bias, player2.side_bias)
+
+      return preference == :corp ? 'corp' : 'runner' unless preference.nil?
+
+      # Fall back to random assignment if these players are balanced and have not yet played.
+      %w[corp runner].sample(random: random)
     end
 
     private

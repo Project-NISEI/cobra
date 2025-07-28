@@ -171,6 +171,55 @@ RSpec.describe PairingStrategies::SingleSidedSwiss do
     end
   end
 
+  describe '.assign_side' do
+    context 'when players have never played' do
+      it 'selects randomly when there is no side bias' do
+        player1 = PairingStrategies::PlainPlayer.new(1, 'Player 1', true, false)
+        player2 = PairingStrategies::PlainPlayer.new(2, 'Player 2', true, false)
+        expect(described_class.assign_side(player1, player2, random: Random.new(3578))).to be('runner')
+      end
+
+      it 'honors side preference for player1' do
+        player1 = PairingStrategies::PlainPlayer.new(1, 'Player 1', true, false)
+        player1.side_bias = 1 # Corp +1
+        player2 = PairingStrategies::PlainPlayer.new(2, 'Player 2', true, false)
+        expect(described_class.assign_side(player1, player2)).to be('runner')
+
+        player1.side_bias = -1
+        expect(described_class.assign_side(player1, player2)).to be('corp')
+      end
+    end
+
+    context 'when players have played once' do
+      it 'picks opposite side regardless of side balance' do
+        player1 = PairingStrategies::PlainPlayer.new(1, 'Player 1', true, false)
+        player2 = PairingStrategies::PlainPlayer.new(2, 'Player 2', true, false)
+
+        player1.opponents[player2.id] = %w[runner]
+        [-1, 0, 1].each do |side_bias|
+          player1.side_bias = side_bias
+          expect(described_class.assign_side(player1, player2)).to be('corp')
+        end
+
+        player1.opponents[player2.id] = %w[corp]
+        [-1, 0, 1].each do |side_bias|
+          player1.side_bias = side_bias
+          expect(described_class.assign_side(player1, player2)).to be('runner')
+        end
+      end
+    end
+
+    context 'when players have played twice' do
+      it 'returns nil' do
+        player1 = PairingStrategies::PlainPlayer.new(1, 'Player 1', true, false)
+        player2 = PairingStrategies::PlainPlayer.new(2, 'Player 2', true, false)
+        player1.opponents[player2.id] = %w[corp runner]
+
+        expect(described_class.assign_side(player1, player2)).to be_nil
+      end
+    end
+  end
+
   describe '#pair!' do
     context '2 players, check pairing sides for second matchup' do
       %i[bob alice].each do |name|
