@@ -2,6 +2,7 @@
 
 RSpec.describe Player do
   let(:player) { create(:player) }
+  let(:cut_stage) { create(:stage, format: :single_elim) }
 
   describe '#pairings' do
     let(:pairing) { create(:pairing) }
@@ -175,6 +176,17 @@ RSpec.describe Player do
 
       it 'returns negative number' do
         expect(player.side_bias).to eq(-3)
+      end
+    end
+    context 'with cut rounds in the mix' do
+      before do
+        create_list(:pairing, 2, player1: player, side: :player1_is_corp)
+        create_list(:pairing, 2, player1: player, side: :player1_is_runner)
+        create_list(:pairing, 2, player1: player, side: :player1_is_runner, stage: cut_stage)
+      end
+
+      it 'returns 0' do
+        expect(player.side_bias).to eq(0)
       end
     end
   end
