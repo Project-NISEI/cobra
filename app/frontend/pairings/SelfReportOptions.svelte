@@ -13,7 +13,7 @@
   let presets: SelfReportPresets[];
   let csrfToken: string;
 
-  let customReporting: boolean = false;
+  let customReporting = false;
 
   let score1: number;
   let score2: number;
@@ -149,7 +149,7 @@
             class="btn btn-primary"
             id="option-custom"
             on:click={async () => {
-              return onCustomReportClicked();
+              onCustomReportClicked();
             }}
           >
             {customReporting ? "Presets" : "Custom"}
