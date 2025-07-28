@@ -15,7 +15,7 @@ export async function loadPresets(
   tournamentId: number,
   roundId: number,
   pairingId: number,
-): Promise<PairingPresetsData> {
+): Promise<SelfReportPresetsData> {
   const response = await fetch(
     Routes.pairing_presets_tournament_round_pairing_path(
       tournamentId,
@@ -26,7 +26,7 @@ export async function loadPresets(
       method: "GET",
     },
   );
-  return (await response.json()) as PairingPresetsData;
+  return (await response.json()) as SelfReportPresetsData;
 }
 
 export async function selfReport(
@@ -34,7 +34,7 @@ export async function selfReport(
   roundId: number,
   pairingId: number,
   csrfToken: string,
-  data: PairingPreset,
+  data: SelfReport,
 ): Promise<SelfReportResult> {
   const response = await fetch(
     Routes.self_report_tournament_round_pairing_path(
@@ -55,7 +55,7 @@ export async function selfReport(
   return (await response.json()) as SelfReportResult;
 }
 
-export interface PairingPreset {
+export interface SelfReportPresets {
   score1_corp: number;
   score2_corp: number;
   score1_runner: number;
@@ -64,8 +64,18 @@ export interface PairingPreset {
   label: string;
 }
 
-export interface PairingPresetsData {
-  presets: PairingPreset[];
+export interface SelfReport {
+  score1: number | null;
+  score2: number | null;
+  score1_corp: number | null;
+  score2_corp: number | null;
+  score1_runner: number | null;
+  score2_runner: number | null;
+  intentional_draw: boolean | null;
+}
+
+export interface SelfReportPresetsData {
+  presets: SelfReportPresets[];
   csrf_token: string;
 }
 

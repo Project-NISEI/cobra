@@ -1,13 +1,22 @@
 <script lang="ts">
   import { type Pairing, type Round } from "./PairingsData";
   import { onMount } from "svelte";
-  import { loadPresets, type PairingPreset, selfReport } from "./SelfReport";
+  import {
+    loadPresets,
+    type SelfReportPresets,
+    selfReport,
+  } from "./SelfReport";
 
   export let tournamentId: number;
   export let round: Round;
   export let pairing: Pairing;
-  let presets: PairingPreset[];
+  let presets: SelfReportPresets[];
   let csrfToken: string;
+
+  let customReporting: boolean = false;
+
+  let score1: number;
+  let score2: number;
 
   onMount(async () => {
     const response = await loadPresets(tournamentId, round.id, pairing.id);
@@ -15,13 +24,41 @@
     csrfToken = response.csrf_token;
   });
 
-  async function onSelfReportClicked(data: PairingPreset) {
+  function onCustomReportClicked() {
+    customReporting = !customReporting;
+  }
+
+  async function onSelfReportPresetClicked(data: SelfReportPresets) {
     const response = await selfReport(
       tournamentId,
       round.id,
       pairing.id,
       csrfToken,
-      data,
+      { score1: null, score2: null, ...data },
+    );
+    if (!response.success) {
+      alert(response.error);
+      return;
+    }
+    // TODO: instead of reloading, maybe use result value
+    window.location.reload();
+  }
+
+  async function onCustomSelfReportSubmit(score1: number, score2: number) {
+    const response = await selfReport(
+      tournamentId,
+      round.id,
+      pairing.id,
+      csrfToken,
+      {
+        score1,
+        score2,
+        intentional_draw: null,
+        score1_corp: null,
+        score1_runner: null,
+        score2_corp: null,
+        score2_runner: null,
+      },
     );
     if (!response.success) {
       alert(response.error);
@@ -64,19 +101,59 @@
       </div>
       <div class="modal-body">
         <p>Please click the button for the result to report this round</p>
-        <div class="d-flex flex-row w-100 justify-content-around">
-          {#each presets as preset, index (preset.label)}
+        <div
+          style="gap: 20px;"
+          class="d-flex flex-row w-100 justify-content-center"
+        >
+          {#if !customReporting}
+            {#each presets as preset, index (preset.label)}
+              <button
+                class="btn btn-primary"
+                data-dismiss="modal"
+                id="option-{index}"
+                on:click={async () => {
+                  return onSelfReportPresetClicked(preset);
+                }}
+              >
+                {preset.label}
+              </button>
+            {/each}
+          {:else}
+            <input
+              type="text"
+              id="name"
+              style="width: 2.5em;"
+              class="form-control"
+              bind:value={score1}
+            />
+            <p>-</p>
+            <input
+              type="text"
+              id="name"
+              style="width: 2.5em;"
+              class="form-control"
+              bind:value={score2}
+            />
             <button
               class="btn btn-primary"
               data-dismiss="modal"
-              id="option-{index}"
+              id="option-custom"
               on:click={async () => {
-                return onSelfReportClicked(preset);
+                return onCustomSelfReportSubmit(score1, score2);
               }}
             >
-              {preset.label}
+              Submit
             </button>
-          {/each}
+          {/if}
+          <button
+            class="btn btn-primary"
+            id="option-custom"
+            on:click={async () => {
+              return onCustomReportClicked();
+            }}
+          >
+            {customReporting ? "Presets" : "Custom"}
+          </button>
         </div>
       </div>
     </div>
