@@ -53,7 +53,7 @@
       {
         score1,
         score2,
-        intentional_draw: null,
+        intentional_draw: false,
         score1_corp: null,
         score1_runner: null,
         score2_corp: null,

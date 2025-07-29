@@ -71,7 +71,7 @@ export interface SelfReport {
   score2_corp: number | null;
   score1_runner: number | null;
   score2_runner: number | null;
-  intentional_draw: boolean | null;
+  intentional_draw: boolean;
 }
 
 export interface SelfReportPresetsData {
