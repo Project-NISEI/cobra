@@ -67,12 +67,10 @@ class PairingsController < ApplicationController
     if reports.size == 2
 
       # if reports don't match, do nothing (later replaced by notification)
-      # score1 and score2 are checked to allow custom score reports.
-      # TODO: need solution to include side in ties in dss
-      # this means if both players report a tie differently
-      # (3-3(C) and 3-3(R)) the latest report us taken as final value
-      if reports[0].score1 != reports[1].score1 ||
-         reports[0].score2 != reports[1].score2
+      if reports[0].score1_corp != reports[1].score1_corp ||
+         reports[0].score2_corp != reports[1].score2_corp ||
+         reports[0].score1_runner != reports[1].score1_runner ||
+         reports[0].score2_runner != reports[1].score2_runner
 
         return render json: { success: true }, status: :ok
       end
