@@ -76,10 +76,7 @@ module PairingStrategies
       preferred_side = preferred_player1_side(player1.side_bias, player2.side_bias)
 
       # return nil (no pairing possible) if there is a side bias and the sides would repeat the previous pairing
-      if preferred_side && player1.opponents[player2.id] &&
-          player1.opponents[player2.id].include?(preferred_side)
-        return nil
-      end
+      return nil if preferred_side && player1.opponents[player2.id]&.include?(preferred_side)
 
       # Points and Rematch weights aren't affected by sides so we only need to calculate them once.
       points = points_weight(player1.points, player2.points)
@@ -140,7 +137,7 @@ module PairingStrategies
         if player1.opponents[player2.id].count == 2
           # This should not happen given the pairing logic will return nil for a double matchup,
           # but be defensive here because this happens after pairings are filtered by weight.
-          Rails.logger.error "Tried to assign side for players #{player1.name} and #{player2.name} who have already played twice."
+          Rails.logger.error "Tried to assign side for players #{player1.name} and #{player2.name} who have already played twice." # rubocop:disable Layout/LineLength
           return nil
         end
 
