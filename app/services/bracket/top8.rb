@@ -49,7 +49,7 @@ module Bracket
       11 => 12,
       12 => 13,
       13 => 14,
-      14 => 15,
+      14 => 15
     }.freeze
 
     def self.bracket_type(game_number)
