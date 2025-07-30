@@ -72,6 +72,10 @@ module Bracket
       :upper
     end
 
+    def self.successor_game(_game_number)
+      nil
+    end
+
     private
 
     def pairing(number)

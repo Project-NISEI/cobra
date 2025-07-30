@@ -178,7 +178,8 @@ class RoundsController < ApplicationController
                              self_report.score1_runner,
                              self_report.score2,
                              self_report.score2_corp,
-                             self_report.score2_runner) }
+                             self_report.score2_runner)
+        }
       end
       pairings << {
         id:,
@@ -200,7 +201,8 @@ class RoundsController < ApplicationController
         intentional_draw:,
         two_for_one:,
         self_report: self_report_result,
-        bracket_type: (bracket.bracket_type(table_number).to_s if bracket)
+        bracket_type: (bracket.bracket_type(table_number).to_s if bracket),
+        successor_game: (bracket.successor_game(table_number) if bracket)
       }
     end
     {
