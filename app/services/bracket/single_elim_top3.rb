@@ -11,5 +11,11 @@ module Bracket
       loser(2),
       loser(1)
     ].freeze
+
+    SUCCESSOR_GAMES = { 1 => 2 }.freeze
+
+    def self.successor_game(game_number)
+      SUCCESSOR_GAMES[game_number]
+    end
   end
 end

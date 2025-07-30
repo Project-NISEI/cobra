@@ -78,7 +78,7 @@ class Tournament < ApplicationRecord
   end
 
   def stage_decks_open?(stage)
-    if stage.double_elim? || stage.single_elim?
+    if stage.elimination?
       cut_decks_open?
     elsif stage.swiss?
       swiss_decks_open?
@@ -88,7 +88,7 @@ class Tournament < ApplicationRecord
   end
 
   def stage_decks_public?(stage)
-    if stage.double_elim? || stage.single_elim?
+    if stage.elimination?
       cut_decks_public?
     elsif stage.swiss?
       swiss_decks_public?
@@ -121,14 +121,14 @@ class Tournament < ApplicationRecord
 
   def cut_stage?
     latest_stage = stages.last
-    !latest_stage.nil? && (stages.last.single_elim? || stages.last.double_elim?)
+    !latest_stage.nil? && stages.last.elimination?
   end
 
   def id_and_faction_data
     results = build_id_stats(id)
 
     latest_stage = stages.last
-    results[:cut] = if !latest_stage.nil? && (stages.last.single_elim? || stages.last.double_elim?)
+    results[:cut] = if !latest_stage.nil? && stages.last.elimination?
                       build_id_stats(id, is_cut: true)
                     else
                       default_id_stats

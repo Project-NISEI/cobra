@@ -54,6 +54,8 @@ export interface Pairing {
   intentional_draw: boolean;
   two_for_one: boolean;
   self_report: SelfReport | null;
+  bracket_type: string | null;
+  successor_game: number | null;
 }
 
 export interface SelfReport {

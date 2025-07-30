@@ -120,12 +120,12 @@ class NrtmJson
       }.merge(score_for_pairing(pairing, pairing.player2_side, pairing.score2, pairing.score1)),
       intentionalDraw: pairing.intentional_draw.present?,
       twoForOne: pairing.two_for_one.present?,
-      eliminationGame: pairing.stage.single_elim? || pairing.stage.double_elim?
+      eliminationGame: pairing.stage.elimination?
     }
   end
 
   def score_for_pairing(pairing, side, score, opp_score)
-    if pairing.stage.single_elim? || pairing.stage.double_elim?
+    if pairing.stage.elimination?
       return { winner: (score > opp_score if score && opp_score) }
     end
 

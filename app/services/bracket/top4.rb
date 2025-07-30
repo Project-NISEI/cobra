@@ -20,5 +20,24 @@ module Bracket
       loser(5),
       loser(4)
     ].freeze
+
+    SUCCESSOR_GAMES = {
+      1 => 3,
+      2 => 3,
+      3 => 6,
+      4 => 5,
+      5 => 6,
+      6 => 7
+    }.freeze
+
+    def self.bracket_type(game_number)
+      return :lower if [4, 5].include? game_number
+
+      :upper
+    end
+
+    def self.successor_game(game_number)
+      SUCCESSOR_GAMES[game_number]
+    end
   end
 end
