@@ -67,7 +67,9 @@ class PairingsController < ApplicationController
     if reports.size == 2
 
       # if reports don't match, do nothing (later replaced by notification)
-      if reports[0].score1_corp != reports[1].score1_corp ||
+      if reports[0].score1 != reports[1].score1 ||
+         reports[0].score2 != reports[1].score2 ||
+         reports[0].score1_corp != reports[1].score1_corp ||
          reports[0].score2_corp != reports[1].score2_corp ||
          reports[0].score1_runner != reports[1].score1_runner ||
          reports[0].score2_runner != reports[1].score2_runner
