@@ -1,11 +1,11 @@
 // Both players have reported different scores -> x
 - if players_have_self_reported && !self_reports_match
-    = fa_icon 'times', class: 'differ-tooltip m-1', title: "Player reported #{player_report.score1} - #{player_report.score2}"
+    = fa_icon 'times', class: 'differ-tooltip m-1', title: "Player reported #{readable_self_report_score(pairing, player_report)}"
     javascript:
         $('.differ-tooltip').tooltip()
 // Players has reported -> check icon
 - elsif player_report != nil
-    = fa_icon 'check', class: 'report-tooltip m-1', title: "Player reported #{player_report.score1} - #{player_report.score2}"
+    = fa_icon 'check', class: 'report-tooltip m-1', title: "Player reported #{readable_self_report_score(pairing, player_report)}"
     javascript:
         $('.report-tooltip').tooltip()
 // Players hasn't reported but opponent has -> question icon, waiting

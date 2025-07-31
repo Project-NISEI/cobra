@@ -16,7 +16,7 @@
   - left_player_report = pairing.self_reports.find { |report| report.report_player_id == left_player.user_id }
   - right_player_report = pairing.self_reports.find { |report| report.report_player_id == right_player.user_id }
   - players_have_self_reported = (right_player_report != nil && left_player_report != nil)
-  - self_reports_match = ((right_player_report&.score1 == left_player_report&.score1) || (right_player_report&.score2 == left_player_report&.score2))
+  - self_reports_match = ((right_player_report&.score1 == left_player_report&.score1) && (right_player_report&.score2 == left_player_report&.score2) && (right_player_report&.score1_corp == left_player_report&.score1_corp) && (right_player_report&.score2_corp == left_player_report&.score2_corp) && (right_player_report&.score1_runner == left_player_report&.score1_runner) && (right_player_report&.score2_runner == left_player_report&.score2_runner))
 
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user} #{'self_reports_match' if !pairing.reported? && players_have_self_reported && !self_reports_match}"
     .col-sm-2
@@ -47,7 +47,7 @@
         | View decks
     .col-sm.left_player_name
       = left_player.name_with_pronouns
-      = render 'self_report_icon', player_report: left_player_report, opposite_player_report: right_player_report, self_reports_match:, players_have_self_reported:
+      = render 'self_report_icon', player_report: left_player_report, opposite_player_report: right_player_report, self_reports_match:, players_have_self_reported:, pairing:
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
@@ -102,7 +102,7 @@
             | 2 for 1
     .col-sm.right_player_name
       = right_player.name_with_pronouns
-      = render 'self_report_icon', player_report: right_player_report, opposite_player_report: left_player_report, self_reports_match:, players_have_self_reported:
+      = render 'self_report_icon', player_report: right_player_report, opposite_player_report: left_player_report, self_reports_match:, players_have_self_reported:, pairing:
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided
