@@ -101,7 +101,10 @@
       </div>
       <div class="modal-body">
         <p>Please click the button for the result to report this pairing:</p>
-        <p>{pairing.player1.name_with_pronouns} vs. {pairing.player2.name_with_pronouns}</p>
+        <p>
+          {pairing.player1.name_with_pronouns} vs. {pairing.player2
+            .name_with_pronouns}
+        </p>
         <div
           style="gap: 20px;"
           class="d-flex flex-row w-100 justify-content-center"
