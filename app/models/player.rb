@@ -43,10 +43,9 @@ class Player < ApplicationRecord
   end
 
   def side_bias
-    @side_bias ||= pairings.reported.reduce(0) do |bias, pairing|
-      if pairing.stage.is_cut?
-        return bias
-      end
+    @side_bias ||= pairings.includes(:stage).reported.reduce(0) do |bias, pairing|
+      return bias if pairing.stage.cut?
+
       side = pairing.side_for(self)
       bias += 1 if side == :corp
       bias -= 1 if side == :runner

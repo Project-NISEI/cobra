@@ -42,11 +42,7 @@ class Stage < ApplicationRecord
     double_elim? || single_sided_swiss? || single_elim?
   end
 
-  def is_swiss?
-    swiss? || single_sided_swiss?
-  end
-
-  def is_cut?
+  def cut?
     double_elim? || single_elim?
   end
 

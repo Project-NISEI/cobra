@@ -178,15 +178,16 @@ RSpec.describe Player do
         expect(player.side_bias).to eq(-3)
       end
     end
-    context 'with cut rounds in the mix' do
+
+    context 'with more corp pairings in swiss but more runner in cut' do
       before do
-        create_list(:pairing, 2, player1: player, side: :player1_is_corp)
+        create_list(:pairing, 3, player1: player, side: :player1_is_corp)
         create_list(:pairing, 2, player1: player, side: :player1_is_runner)
         create_list(:pairing, 2, player1: player, side: :player1_is_runner, stage: cut_stage)
       end
 
-      it 'returns 0' do
-        expect(player.side_bias).to eq(0)
+      it 'returns positive number' do
+        expect(player.side_bias).to eq(1)
       end
     end
   end
