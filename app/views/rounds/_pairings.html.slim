@@ -46,7 +46,7 @@
         => fa_icon 'eye'
         | View decks
     .col-sm.left_player_name
-      = left_player.name_with_pronouns
+      | #{left_player.name_with_pronouns} (#{left_player_number})
       = render 'self_report_icon', player_report: left_player_report, opposite_player_report: right_player_report, self_reports_match:, players_have_self_reported:, pairing:
       <br />
       - unless pairing.bye?
