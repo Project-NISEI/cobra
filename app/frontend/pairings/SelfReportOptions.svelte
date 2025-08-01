@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { type Pairing, type Round } from "./PairingsData";
+  import {
+    type Pairing,
+    type Player,
+    type Round,
+    type Stage,
+  } from "./PairingsData";
   import { onMount } from "svelte";
   import {
     loadPresets,
@@ -8,6 +13,7 @@
   } from "./SelfReport";
 
   export let tournamentId: number;
+  export let stage: Stage;
   export let round: Round;
   export let pairing: Pairing;
   let presets: SelfReportPresets[];
@@ -17,6 +23,24 @@
 
   let score1: number;
   let score2: number;
+
+  let left_player_number = 1;
+  let left_player: Player;
+  let right_player: Player;
+
+  left_player = pairing.player1;
+  right_player = pairing.player2;
+  if (
+    stage.format === "single_sided_swiss" ||
+    stage.format === "double_elim" ||
+    stage.format === "single_elim"
+  ) {
+    if (pairing.player1.side === "runner") {
+      left_player_number = 2;
+      left_player = pairing.player2;
+      right_player = pairing.player1;
+    }
+  }
 
   onMount(async () => {
     const response = await loadPresets(tournamentId, round.id, pairing.id);
@@ -100,7 +124,10 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>Please click the button for the result to report this round</p>
+        <p>Please click the button for the result to report this pairing:</p>
+        <p>
+          {left_player.name_with_pronouns} vs. {right_player.name_with_pronouns}
+        </p>
         <div
           style="gap: 20px;"
           class="d-flex flex-row w-100 justify-content-center"
@@ -119,21 +146,39 @@
               </button>
             {/each}
           {:else}
-            <input
-              type="text"
-              id="name"
-              style="width: 2.5em;"
-              class="form-control"
-              bind:value={score1}
-            />
-            <p>-</p>
-            <input
-              type="text"
-              id="name"
-              style="width: 2.5em;"
-              class="form-control"
-              bind:value={score2}
-            />
+            {#if left_player_number === 1}
+              <input
+                type="text"
+                id="name"
+                style="width: 2.5em;"
+                class="form-control"
+                bind:value={score1}
+              />
+              <p>-</p>
+              <input
+                type="text"
+                id="name"
+                style="width: 2.5em;"
+                class="form-control"
+                bind:value={score2}
+              />
+            {:else}
+              <input
+                type="text"
+                id="name"
+                style="width: 2.5em;"
+                class="form-control"
+                bind:value={score2}
+              />
+              <p>-</p>
+              <input
+                type="text"
+                id="name"
+                style="width: 2.5em;"
+                class="form-control"
+                bind:value={score1}
+              />
+            {/if}
             <button
               class="btn btn-primary"
               data-dismiss="modal"
