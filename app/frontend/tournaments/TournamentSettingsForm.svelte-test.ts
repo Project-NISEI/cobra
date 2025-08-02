@@ -40,10 +40,7 @@ describe("TournamentSettingsForm", () => {
   };
 
   const featureFlags: FeatureFlags = {
-    single_sided_swiss: true,
-    nrdb_deck_registration: true,
-    allow_self_reporting: true,
-    streaming_opt_out: true,
+    allow_self_reporting: true
   };
 
   it("renders basic form fields", () => {
@@ -89,12 +86,6 @@ describe("TournamentSettingsForm", () => {
       },
     });
 
-    expect(screen.queryByLabelText("Swiss format")).not.toBeInTheDocument();
-    expect(
-      screen.queryByLabelText(
-        "Deck registration: Upload decks from NetrunnerDB",
-      ),
-    ).not.toBeInTheDocument();
     expect(
       screen.queryByLabelText(
         "Allow logged-in players to report their own match results",

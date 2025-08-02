@@ -57,10 +57,7 @@ RSpec.describe TournamentsController, type: :request do
         )
         expect(data['feature_flags']).to eq(
           {
-            'single_sided_swiss' => false,
-            'nrdb_deck_registration' => false,
-            'allow_self_reporting' => false,
-            'streaming_opt_out' => false
+            'allow_self_reporting' => false
           }
         )
         expect(data['csrf_token']).not_to be_empty
