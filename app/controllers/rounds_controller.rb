@@ -7,7 +7,7 @@ class RoundsController < ApplicationController
   def index
     authorize @tournament, :update?
     @stages = @tournament.stages.includes(
-      :tournament, rounds: [:tournament, :stage, { pairings: %i[tournament stage round] }]
+      :tournament, rounds: [:tournament, :stage, { pairings: %i[tournament stage round self_reports] }]
     )
     @players = @tournament.players
                           .includes(:corp_identity_ref, :runner_identity_ref)
