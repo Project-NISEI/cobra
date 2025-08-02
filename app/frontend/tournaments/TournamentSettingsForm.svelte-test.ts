@@ -40,7 +40,7 @@ describe("TournamentSettingsForm", () => {
   };
 
   const featureFlags: FeatureFlags = {
-    allow_self_reporting: true
+    allow_self_reporting: true,
   };
 
   it("renders basic form fields", () => {
