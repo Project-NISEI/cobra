@@ -355,13 +355,19 @@ class TournamentsController < ApplicationController
   end
 
   def set_tournament_view_data
-    @players = @tournament.players.active.sort_by { |p| p.name || '' }
-    @dropped = @tournament.players.dropped.sort_by { |p| p.name || '' }
+    @players = @tournament.players.includes(%i[corp_identity_ref runner_identity_ref]).active.sort_by do |p|
+      p.name || ''
+    end
+    @dropped = @tournament.players.includes(%i[corp_identity_ref runner_identity_ref]).dropped.sort_by do |p|
+      p.name || ''
+    end
 
     return unless current_user
 
     @current_user_is_running_tournament = @tournament.user_id == current_user.id
-    @current_user_player = @players.find { |p| p.user_id == current_user.id }
+    @current_user_player = @players.find do |p|
+      p.user_id == current_user.id
+    end
     @current_user_dropped = @dropped.any? { |p| p.user_id == current_user.id }
   end
 

@@ -14,7 +14,7 @@ Rails.application.configure do
     Bullet.n_plus_one_query_enable = true
     Bullet.unused_eager_loading_enable = false
     Bullet.counter_cache_enable = false
-    Bullet.raise = false # raise an error if n+1 query occurs
+    Bullet.raise = true # raise an error if n+1 query occurs
   end
 
   # Settings specified here will take precedence over those in config/application.rb.
