@@ -114,5 +114,6 @@ html
             => link_to 'Support NSG on Ko-fi', 'https://ko-fi.com/nullsignalgames'
           .col-6.nav-item.text-center
             | 🐍 Maintained by <a href="https://nullsignal.games">Null Signal Games</a>. Created by Johno. 🐍
-          .col-3.nav-item.text-right
-            = link_to "v#{Rails.configuration.version}", 'https://github.com/project-nisei/cobra/releases', class: 'text-muted'
+          .col-3.nav-item
+            = link_to "v#{Rails.configuration.version}", 'https://github.com/project-nisei/cobra/releases', class: 'text-muted', target: '_blank', rel: 'noopener'
+            = link_to "Report an issue", 'https://docs.google.com/forms/d/e/1FAIpQLSdP_q1BqJbct1agLHBK-TdW08vEMeb8IRS1m9XofQMS6EUZnA/viewform', class: 'text-muted ml-3', target: '_blank', rel: 'noopener'            
