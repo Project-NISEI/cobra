@@ -171,15 +171,23 @@ class RoundsController < ApplicationController
       # Only show own self report
       self_report = SelfReport.where(pairing_id: id, report_player_id: current_user.id).first if current_user
       if self_report
-        self_report_result = {
-          report_player_id: self_report.report_player_id,
-          label: score_label(@tournament.swiss_format, player1_side(side),
-                             self_report.score1, self_report.score1_corp,
-                             self_report.score1_runner,
-                             self_report.score2,
-                             self_report.score2_corp,
-                             self_report.score2_runner)
-        }
+        self_report_result = { report_player_id: self_report.report_player_id }
+        if (stage.single_sided_swiss? || stage.single_elim? || stage.double_elim?) && side == 'player1_is_corp'
+          self_report_result[:label] = score_label(@tournament.swiss_format, player1_side(side),
+                                                   self_report.score1, self_report.score1_corp,
+                                                   self_report.score1_runner,
+                                                   self_report.score2,
+                                                   self_report.score2_corp,
+                                                   self_report.score2_runner)
+        else
+          # Player 2 is the corp (left side) player
+          self_report_result[:label] = score_label(@tournament.swiss_format, player2_side(side),
+                                                   self_report.score2, self_report.score2_corp,
+                                                   self_report.score2_runner,
+                                                   self_report.score1,
+                                                   self_report.score1_corp,
+                                                   self_report.score1_runner)
+        end
       end
       pairings << {
         id:,

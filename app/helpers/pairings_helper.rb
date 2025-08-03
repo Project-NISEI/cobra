@@ -153,6 +153,30 @@ module PairingsHelper
     end
   end
 
+  # TODO: (TrueSvenpai): refactor to reduce code duplication.
+  def readable_self_report_score(pairing, self_report)
+    return '-' if self_report.score1&.zero? && self_report.score2&.zero?
+
+    ws = winning_side(self_report)
+
+    if pairing.stage.single_sided_swiss?
+      if pairing.player1_is_corp? || pairing.side.nil?
+        left_score = self_report.score1
+        right_score = self_report.score2
+      else
+        left_score = self_report.score2
+        right_score = self_report.score1
+      end
+      return "#{left_score} - #{right_score}" unless ws
+
+      "#{left_score} - #{right_score} (#{ws})"
+    else
+      return "#{self_report.score1} - #{self_report.score2}" unless ws
+
+      "#{self_report.score1} - #{self_report.score2} (#{ws})"
+    end
+  end
+
   def winning_side(pairing)
     corp_score = (pairing.score1_corp || 0) + (pairing.score2_corp || 0)
     runner_score = (pairing.score1_runner || 0) + (pairing.score2_runner || 0)

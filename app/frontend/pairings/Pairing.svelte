@@ -46,7 +46,7 @@
   <PlayerName player={right_player} left_or_right="right" />
   <div class="col-sm-2">
     {#if pairing.policy.self_report}
-      <SelfReportOptions {tournamentId} {round} {pairing} />
+      <SelfReportOptions {tournamentId} {stage} {round} {pairing} />
     {/if}
     {#if pairing.self_report !== null}
       Report: {pairing.self_report.label}
