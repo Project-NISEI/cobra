@@ -24,5 +24,18 @@ module Bracket
       seed_of([loser(1), loser(2), loser(3), loser(4)], 3),
       seed_of([loser(1), loser(2), loser(3), loser(4)], 4)
     ].freeze
+
+    SUCCESSOR_GAMES = {
+      1 => 5,
+      2 => 5,
+      3 => 6,
+      4 => 6,
+      5 => 7,
+      6 => 7
+    }.freeze
+
+    def self.successor_game(game_number)
+      SUCCESSOR_GAMES[game_number]
+    end
   end
 end

@@ -34,5 +34,32 @@ module Bracket
       seed_of([loser(7), loser(8)], 1),
       seed_of([loser(7), loser(8)], 2)
     ].freeze
+
+    SUCCESSOR_GAMES = {
+      1 => 5,
+      2 => 5,
+      3 => 6,
+      4 => 6,
+      5 => 9,
+      6 => 9,
+      7 => 10,
+      8 => 11,
+      9 => 14,
+      10 => 12,
+      11 => 12,
+      12 => 13,
+      13 => 14,
+      14 => 15
+    }.freeze
+
+    def self.bracket_type(game_number)
+      return :lower if [7, 8, 10, 11, 12, 13].include? game_number
+
+      :upper
+    end
+
+    def self.successor_game(game_number)
+      SUCCESSOR_GAMES[game_number]
+    end
   end
 end

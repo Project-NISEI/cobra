@@ -149,7 +149,7 @@ class PlayersController < ApplicationController
   end
 
   def render_standings_for_stage(stage)
-    if stage.single_elim? || stage.double_elim?
+    if stage.elimination?
       # Compute standings on the fly during cut
       Rails.logger.info 'Computing cut standings'
       return compute_and_render_cut_standings stage

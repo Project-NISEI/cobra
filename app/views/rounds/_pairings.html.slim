@@ -30,7 +30,7 @@
           = fa_icon 'video-camera',
                   class: 'text-success streaming-tooltip ml-2',
                   title: 'May be included in video coverage'
-        - elsif round.stage.single_elim? || round.stage.double_elim?
+        - elsif round.stage.elimination?
           = fa_icon 'video-camera',
                   class: 'text-warning streaming-tooltip ml-2',
                   title: 'One or both players requested not to be included in video coverage,
