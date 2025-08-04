@@ -18,13 +18,15 @@ export async function loadPairings(
       method: "GET",
     },
   );
-  
+
   const data = (await response.json()) as PairingsData;
-  for (const stage of data.stages)
-  {
-    stage.successor_games = new Map(Object
-      .entries(stage.successor_games)
-      .map(([k, v]) => [Number(k), Number(v)]));
+  for (const stage of data.stages) {
+    stage.successor_games = new Map(
+      Object.entries(stage.successor_games).map(([k, v]) => [
+        Number(k),
+        Number(v),
+      ]),
+    );
   }
 
   return data;
