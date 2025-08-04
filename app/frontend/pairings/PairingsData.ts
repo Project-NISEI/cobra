@@ -31,6 +31,7 @@ export async function loadPairings(
 
   return data;
 }
+
 export interface PairingsData {
   policy: TournamentPolicies;
   is_player_meeting: boolean;

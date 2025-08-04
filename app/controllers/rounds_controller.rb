@@ -114,10 +114,12 @@ class RoundsController < ApplicationController
   def pairings_data_stages
     players = pairings_data_players
     @tournament.stages.includes(:rounds).map do |stage|
-      begin
-        bracket = Bracket::Factory.bracket_for(stage.players.count) if stage.elimination?
-      rescue RuntimeError
-        bracket = nil
+      if stage.elimination?
+        begin
+          bracket = Bracket::Factory.bracket_for(stage.players.count, single_elim: stage.single_elim?)
+        rescue RuntimeError
+          bracket = nil
+        end
       end
 
       {
