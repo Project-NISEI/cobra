@@ -35,7 +35,7 @@ module Bracket
       seed_of([loser(7), loser(8)], 2)
     ].freeze
 
-    UPPER_BRACKET = [1, 2, 3, 4, 5, 6, 9, 14].freeze
+    UPPER_BRACKET = [1, 2, 3, 4, 5, 6, 9, 14, 15].freeze
 
     SUCCESSOR_GAMES = {
       1 => 5,
