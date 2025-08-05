@@ -114,10 +114,20 @@ class RoundsController < ApplicationController
   def pairings_data_stages
     players = pairings_data_players
     @tournament.stages.includes(:rounds).map do |stage|
+      if stage.elimination?
+        begin
+          bracket = Bracket::Factory.bracket_for(stage.players.count, single_elim: stage.single_elim?)
+        rescue RuntimeError
+          bracket = nil
+        end
+      end
+
       {
         name: stage.format.titleize,
         format: stage.format,
-        rounds: pairings_data_rounds(stage, players)
+        rounds: pairings_data_rounds(stage, players),
+        upper_bracket: bracket ? bracket.upper_bracket : [],
+        successor_games: bracket ? bracket.successor_games : {}
       }
     end
   end
@@ -154,12 +164,6 @@ class RoundsController < ApplicationController
   end
 
   def pairings_data_round(stage, players, view_decks, round)
-    begin
-      bracket = Bracket::Factory.bracket_for(stage.players.count) if stage.elimination?
-    rescue RuntimeError
-      bracket = nil
-    end
-
     pairings = []
     pairings_reported = 0
     pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
@@ -208,9 +212,7 @@ class RoundsController < ApplicationController
                                  score2, score2_corp, score2_runner),
         intentional_draw:,
         two_for_one:,
-        self_report: self_report_result,
-        bracket_type: (bracket.bracket_type(table_number).to_s if bracket),
-        successor_game: (bracket.successor_game(table_number) if bracket)
+        self_report: self_report_result
       }
     end
     {

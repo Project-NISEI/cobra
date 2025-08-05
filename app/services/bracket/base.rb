@@ -68,12 +68,12 @@ module Bracket
       s.map { |p| Standing.new(p) }
     end
 
-    def self.bracket_type(_game_number)
-      :upper
+    def self.upper_bracket
+      []
     end
 
-    def self.successor_game(_game_number)
-      nil
+    def self.successor_games
+      {}
     end
 
     private

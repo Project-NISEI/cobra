@@ -25,6 +25,8 @@ module Bracket
       seed_of([loser(1), loser(2), loser(3), loser(4)], 4)
     ].freeze
 
+    UPPER_BRACKET = [*1..7].freeze
+
     SUCCESSOR_GAMES = {
       1 => 5,
       2 => 5,
@@ -34,8 +36,12 @@ module Bracket
       6 => 7
     }.freeze
 
-    def self.successor_game(game_number)
-      SUCCESSOR_GAMES[game_number]
+    def self.upper_bracket
+      UPPER_BRACKET
+    end
+
+    def self.successor_games
+      SUCCESSOR_GAMES
     end
   end
 end

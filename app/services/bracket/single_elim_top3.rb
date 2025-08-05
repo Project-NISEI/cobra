@@ -12,10 +12,16 @@ module Bracket
       loser(1)
     ].freeze
 
+    UPPER_BRACKET = [1, 2].freeze
+
     SUCCESSOR_GAMES = { 1 => 2 }.freeze
 
-    def self.successor_game(game_number)
-      SUCCESSOR_GAMES[game_number]
+    def self.upper_bracket
+      UPPER_BRACKET
+    end
+
+    def self.successor_games
+      SUCCESSOR_GAMES
     end
   end
 end

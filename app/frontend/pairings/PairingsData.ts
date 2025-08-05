@@ -18,8 +18,20 @@ export async function loadPairings(
       method: "GET",
     },
   );
-  return (await response.json()) as PairingsData;
+
+  const data = (await response.json()) as PairingsData;
+  for (const stage of data.stages) {
+    stage.successor_games = new Map(
+      Object.entries(stage.successor_games).map(([k, v]) => [
+        Number(k),
+        Number(v),
+      ]),
+    );
+  }
+
+  return data;
 }
+
 export interface PairingsData {
   policy: TournamentPolicies;
   is_player_meeting: boolean;
@@ -34,6 +46,8 @@ export interface Stage {
   name: string;
   format: string;
   rounds: Round[];
+  upper_bracket: number[];
+  successor_games: Map<number, number>;
 }
 
 export interface Round {
@@ -54,8 +68,6 @@ export interface Pairing {
   intentional_draw: boolean;
   two_for_one: boolean;
   self_report: SelfReport | null;
-  bracket_type: string | null;
-  successor_game: number | null;
 }
 
 export interface SelfReport {
