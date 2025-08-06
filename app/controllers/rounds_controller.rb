@@ -114,20 +114,10 @@ class RoundsController < ApplicationController
   def pairings_data_stages
     players = pairings_data_players
     @tournament.stages.includes(:rounds).map do |stage|
-      if stage.elimination?
-        begin
-          bracket = Bracket::Factory.bracket_for(stage.players.count, single_elim: stage.single_elim?)
-        rescue RuntimeError
-          bracket = nil
-        end
-      end
-
       {
         name: stage.format.titleize,
         format: stage.format,
-        rounds: pairings_data_rounds(stage, players),
-        upper_bracket: bracket ? bracket.upper_bracket : [],
-        successor_games: bracket ? bracket.successor_games : {}
+        rounds: pairings_data_rounds(stage, players)
       }
     end
   end
@@ -158,12 +148,28 @@ class RoundsController < ApplicationController
 
   def pairings_data_rounds(stage, players)
     view_decks = stage.decks_visible_to(current_user) ? true : false
-    stage.rounds.map do |round|
-      pairings_data_round(stage, players, view_decks, round)
+    bracket_info = bracket_games(stage)
+
+    # Get data for all paired rounds
+    rounds = stage.rounds.map do |round|
+      pairings_data_round(stage, players, view_decks, round, bracket_info&.select { |g| g[:round] == round.number })
     end
+
+    # Add bracket information for rounds not yet paired
+    bracket_info&.group_by { |g| g[:round] }&.each do |round, games|
+      next if rounds.any? { |r| r[:number] == round }
+
+      rounds << {
+        id: nil,
+        number: round,
+        pairings: games
+      }
+    end
+
+    rounds
   end
 
-  def pairings_data_round(stage, players, view_decks, round)
+  def pairings_data_round(stage, players, view_decks, round, bracket_games)
     pairings = []
     pairings_reported = 0
     pairings_fields = %i[id table_number player1_id player2_id side intentional_draw
@@ -193,6 +199,9 @@ class RoundsController < ApplicationController
                                                    self_report.score1_runner)
         end
       end
+
+      bracket_game = bracket_games&.find { |g| g[:table_number] == table_number }
+
       pairings << {
         id:,
         table_number:,
@@ -212,9 +221,12 @@ class RoundsController < ApplicationController
                                  score2, score2_corp, score2_runner),
         intentional_draw:,
         two_for_one:,
-        self_report: self_report_result
+        self_report: self_report_result,
+        successor_game: bracket_game ? bracket_game[:successor_game] : nil,
+        bracket_type: bracket_game ? bracket_game[:bracket_type] : nil
       }
     end
+
     {
       id: round.id,
       number: round.number,
@@ -309,6 +321,27 @@ class RoundsController < ApplicationController
       nil
     else
       "(#{side.to_s.titleize})"
+    end
+  end
+
+  def bracket_games(stage)
+    return nil unless stage.elimination?
+
+    begin
+      bracket = Bracket::Factory.bracket_for(stage.players.count, single_elim: stage.single_elim?)
+    rescue RuntimeError
+      return nil
+    end
+
+    # Massage the game data to look more like the pairing data for convenience
+    bracket&.new&.games&.map do |game|
+      {
+        id: nil,
+        table_number: game[:number],
+        round: game[:round],
+        successor_game: game[:successor],
+        bracket_type: game[:bracket_type].to_s
+      }
     end
   end
 end

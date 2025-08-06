@@ -11,10 +11,12 @@ module Bracket
         class_eval do
           @games ||= []
           @games << {
+            number:,
             player1: p1,
             player2: p2,
             round: options[:round],
-            number:
+            successor: options[:successor],
+            bracket_type: options[:bracket_type]
           }
         end
       end

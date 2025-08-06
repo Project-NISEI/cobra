@@ -13,7 +13,7 @@
       <h4>{stage.name}</h4>
     </div>
   </div>
-  {#each stage.rounds as round, index (round.id)}
+  {#each stage.rounds.filter((r) => r.id) as round, index (round.id)}
     <Round
       {tournamentId}
       {round}
