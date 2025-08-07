@@ -222,6 +222,7 @@ class RoundsController < ApplicationController
         intentional_draw:,
         two_for_one:,
         self_report: self_report_result,
+        round: bracket_game ? bracket_game[:round] : nil,
         successor_game: bracket_game ? bracket_game[:successor_game] : nil,
         bracket_type: bracket_game ? bracket_game[:bracket_type] : nil
       }
