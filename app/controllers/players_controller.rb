@@ -126,6 +126,12 @@ class PlayersController < ApplicationController
 
   def standings_data
     authorize @tournament, :show?
+
+    sql = ActiveRecord::Base.sanitize_sql([
+                                            'SELECT * FROM standings_data_view WHERE tournament_id = ?', @tournament.id
+                                          ])
+    rows = ActiveRecord::Base.connection.exec_query(sql).to_a
+
     stages = @tournament.stages.includes(
       rounds: [pairings: %i[player1 player2]],
       registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]],
