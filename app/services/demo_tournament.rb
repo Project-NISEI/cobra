@@ -33,8 +33,10 @@ class DemoTournament
     tournament = Tournament.new(name: tournament_name, user: owner, swiss_format: format, private: true)
     tournament.save!
 
+    Faker::Name.unique.clear
+
     num_players.times do
-      p = Player.new(name: Faker::Name.name, tournament:)
+      p = Player.new(name: Faker::Name.unique.name, tournament:)
       Rails.logger.debug "  Creating player: #{p.name}"
       if assign_ids
         corp_id = corp_ids.sample(1).first
