@@ -60,7 +60,8 @@ standings_for_tournament AS (
 rounds_for_stages AS (
     SELECT s.id AS stage_id,
         s.number AS stage_number,
-        COUNT(DISTINCT r.id) AS num_rounds
+        COUNT(DISTINCT r.id) AS num_rounds,
+        COUNT(DISTINCT r.id) FILTER (WHERE r.completed) AS num_rounds_completed
     FROM stages AS s
         LEFT JOIN rounds AS r ON s.id = r.stage_id
     GROUP BY s.id,
@@ -91,8 +92,8 @@ SELECT
     t.manual_seed,
     rfs.num_rounds,
     -- Set the player meeting field if it is the first stage and there are no rounds yet.
-    rfs.stage_number = 1
-    AND rfs.num_rounds = 0 AS is_player_meeting,
+    rfs.stage_number = 1 AND rfs.num_rounds = 0 AS is_player_meeting,
+    rfs.num_rounds_completed,
     swp.stage_id,
     swp.stage_format,
     swp.stage_number,

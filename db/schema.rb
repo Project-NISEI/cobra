@@ -574,7 +574,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
           ), rounds_for_stages AS (
            SELECT s.id AS stage_id,
               s.number AS stage_number,
-              count(DISTINCT r.id) AS num_rounds
+              count(DISTINCT r.id) AS num_rounds,
+              count(DISTINCT r.id) FILTER (WHERE r.completed) AS num_rounds_completed
              FROM (stages s
                LEFT JOIN rounds r ON ((s.id = r.stage_id)))
             GROUP BY s.id, s.number
@@ -602,6 +603,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
       t.manual_seed,
       rfs.num_rounds,
       ((rfs.stage_number = 1) AND (rfs.num_rounds = 0)) AS is_player_meeting,
+      rfs.num_rounds_completed,
       swp.stage_id,
       swp.stage_format,
       swp.stage_number,
