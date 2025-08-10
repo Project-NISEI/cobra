@@ -520,20 +520,20 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
   create_view "standings_data_view", sql_definition: <<-SQL
       WITH two_player_biases AS (
            SELECT r.stage_id,
-              p_1.player1_id,
+              p.player1_id,
                   CASE
-                      WHEN (p_1.side = 1) THEN 1
-                      WHEN (p_1.side = 2) THEN '-1'::integer
+                      WHEN (p.side = 1) THEN 1
+                      WHEN (p.side = 2) THEN '-1'::integer
                       ELSE 0
                   END AS player1_side_bias,
-              p_1.player2_id,
+              p.player2_id,
                   CASE
-                      WHEN (p_1.side = 1) THEN '-1'::integer
-                      WHEN (p_1.side = 2) THEN 1
+                      WHEN (p.side = 1) THEN '-1'::integer
+                      WHEN (p.side = 2) THEN 1
                       ELSE 0
                   END AS player2_side_bias
-             FROM ((pairings p_1
-               JOIN rounds r ON ((p_1.round_id = r.id)))
+             FROM ((pairings p
+               JOIN rounds r ON ((p.round_id = r.id)))
                JOIN stages s ON ((r.stage_id = s.id)))
             WHERE (s.format = 2)
           ), flattened AS (
@@ -556,11 +556,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
           ), standings_for_tournament AS (
            SELECT s.tournament_id,
               s.id AS stage_id,
+              s.format AS stage_format,
               sr."position",
               sr.player_id,
-              p_1.name,
-              p_1.pronouns,
-              p_1.active,
+              p.name,
+              p.pronouns,
+              p.active,
               sr.points,
               sr.corp_points,
               sr.runner_points,
@@ -568,23 +569,51 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
               sr.sos,
               sr.extended_sos
              FROM ((standing_rows sr
-               JOIN players p_1 ON ((sr.player_id = p_1.id)))
+               JOIN players p ON ((sr.player_id = p.id)))
                JOIN stages s ON ((s.id = sr.stage_id)))
+          ), rounds_for_stages AS (
+           SELECT s.id AS stage_id,
+              s.number AS stage_number,
+              count(DISTINCT r.id) AS num_rounds
+             FROM (stages s
+               LEFT JOIN rounds r ON ((s.id = r.stage_id)))
+            GROUP BY s.id, s.number
+          ), stages_with_players AS (
+           SELECT s.tournament_id,
+              s.id AS stage_id,
+              s.number AS stage_number,
+              s.format AS stage_format,
+              r.id AS registration_id,
+              p.id AS player_id,
+              p.name AS player_name,
+              p.pronouns AS player_pronouns,
+              p.active AS player_active,
+              corp_id.name AS corp_id_name,
+              corp_id.faction AS corp_id_faction,
+              runner_id.name AS runner_id_name,
+              runner_id.faction AS runner_id_faction
+             FROM ((((stages s
+               JOIN registrations r ON ((s.id = r.stage_id)))
+               JOIN players p ON ((r.player_id = p.id)))
+               LEFT JOIN identities corp_id ON ((p.corp_identity_ref_id = corp_id.id)))
+               LEFT JOIN identities runner_id ON ((p.runner_identity_ref_id = runner_id.id)))
           )
    SELECT t.id AS tournament_id,
       t.manual_seed,
-      (EXISTS ( SELECT rounds.id
-             FROM rounds)) AS is_player_meeting,
-      sft.stage_id,
+      rfs.num_rounds,
+      ((rfs.stage_number = 1) AND (rfs.num_rounds = 0)) AS is_player_meeting,
+      swp.stage_id,
+      swp.stage_format,
+      swp.stage_number,
+      swp.player_id,
+      swp.player_name,
+      swp.player_pronouns,
+      swp.corp_id_name,
+      swp.corp_id_faction,
+      swp.runner_id_name,
+      swp.runner_id_faction,
+      swp.player_active,
       sft."position",
-      sft.player_id,
-      sft.name,
-      sft.pronouns,
-      corp_id.name AS corp_id_name,
-      corp_id.faction AS corp_id_faction,
-      runner_id.name AS runner_id_name,
-      runner_id.faction AS runner_id_faction,
-      sft.active,
       sft.points,
       sft.corp_points,
       sft.runner_points,
@@ -592,11 +621,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
       sft.sos,
       sft.extended_sos,
       sb.side_bias
-     FROM (((((tournaments t
-       JOIN standings_for_tournament sft ON ((sft.tournament_id = t.id)))
-       JOIN players p ON ((sft.player_id = p.id)))
-       LEFT JOIN identities corp_id ON ((p.corp_identity_ref_id = corp_id.id)))
-       LEFT JOIN identities runner_id ON ((p.runner_identity_ref_id = runner_id.id)))
+     FROM ((((tournaments t
+       JOIN stages_with_players swp ON ((swp.tournament_id = t.id)))
+       JOIN rounds_for_stages rfs ON ((rfs.stage_id = swp.stage_id)))
+       LEFT JOIN standings_for_tournament sft ON (((sft.tournament_id = swp.tournament_id) AND (sft.stage_id = swp.stage_id) AND (sft.player_id = swp.player_id))))
        LEFT JOIN side_bias sb ON (((sb.stage_id = sft.stage_id) AND (sft.player_id = sb.player_id))));
   SQL
 end
