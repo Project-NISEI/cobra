@@ -141,15 +141,11 @@
                    = fa_icon 'hourglass', class: 'missing-report-tooltip m-1'
               .modal-footer
                 - if left_player_report
-                  = link_to reset_self_report_tournament_round_pairing_path(round.tournament, round, pairing),
-                    method: :delete, title: 'Reset self reports of pairing', class: 'btn btn-primary reset-self-reports disabled',
-                    data: { confirm: 'Are you sure?' } do
+                  .btn.btn-primary.disabled
                     => fa_icon 'check'
                     | Accept #{left_player.name}
                 - if right_player_report
-                  = link_to reset_self_report_tournament_round_pairing_path(round.tournament, round, pairing),
-                    method: :delete, title: 'Reset self reports of pairing', class: 'btn btn-primary reset-self-reports disabled',
-                    data: { confirm: 'Are you sure?' } do
+                  .btn.btn-primary.disabled
                     => fa_icon 'check'
                     | Accept #{right_player.name}
                 - if players_have_self_reported && !self_reports_match
