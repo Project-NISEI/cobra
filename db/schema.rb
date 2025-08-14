@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_06_040934) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -516,5 +516,117 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_06_040934) do
      FROM (swiss s
        LEFT JOIN cut c USING (tournament_id, side, identity, faction))
     GROUP BY s.tournament_id, s.faction, s.side, s.identity;
+  SQL
+  create_view "standings_data_view", sql_definition: <<-SQL
+      WITH two_player_biases AS (
+           SELECT r.stage_id,
+              p.player1_id,
+                  CASE
+                      WHEN (p.side = 1) THEN 1
+                      WHEN (p.side = 2) THEN '-1'::integer
+                      ELSE 0
+                  END AS player1_side_bias,
+              p.player2_id,
+                  CASE
+                      WHEN (p.side = 1) THEN '-1'::integer
+                      WHEN (p.side = 2) THEN 1
+                      ELSE 0
+                  END AS player2_side_bias
+             FROM ((pairings p
+               JOIN rounds r ON ((p.round_id = r.id)))
+               JOIN stages s ON ((r.stage_id = s.id)))
+            WHERE (s.format = 2)
+          ), flattened AS (
+           SELECT two_player_biases.stage_id,
+              two_player_biases.player1_id AS player_id,
+              two_player_biases.player1_side_bias AS side_bias
+             FROM two_player_biases
+          UNION ALL
+           SELECT two_player_biases.stage_id,
+              two_player_biases.player2_id AS player_id,
+              two_player_biases.player2_side_bias AS side_bias
+             FROM two_player_biases
+          ), side_bias AS (
+           SELECT flattened.stage_id,
+              flattened.player_id,
+              sum(flattened.side_bias) AS side_bias
+             FROM flattened
+            WHERE (flattened.player_id IS NOT NULL)
+            GROUP BY flattened.stage_id, flattened.player_id
+          ), standings_for_tournament AS (
+           SELECT s.tournament_id,
+              s.id AS stage_id,
+              s.format AS stage_format,
+              sr."position",
+              sr.player_id,
+              p.name,
+              p.pronouns,
+              p.active,
+              sr.points,
+              sr.corp_points,
+              sr.runner_points,
+              sr.bye_points,
+              sr.sos,
+              sr.extended_sos
+             FROM ((standing_rows sr
+               JOIN players p ON ((sr.player_id = p.id)))
+               JOIN stages s ON ((s.id = sr.stage_id)))
+          ), rounds_for_stages AS (
+           SELECT s.id AS stage_id,
+              s.number AS stage_number,
+              count(DISTINCT r.id) AS num_rounds,
+              count(DISTINCT r.id) FILTER (WHERE r.completed) AS num_rounds_completed
+             FROM (stages s
+               LEFT JOIN rounds r ON ((s.id = r.stage_id)))
+            GROUP BY s.id, s.number
+          ), stages_with_players AS (
+           SELECT s.tournament_id,
+              s.id AS stage_id,
+              s.number AS stage_number,
+              s.format AS stage_format,
+              r.id AS registration_id,
+              p.id AS player_id,
+              p.name AS player_name,
+              p.pronouns AS player_pronouns,
+              p.active AS player_active,
+              corp_id.name AS corp_id_name,
+              corp_id.faction AS corp_id_faction,
+              runner_id.name AS runner_id_name,
+              runner_id.faction AS runner_id_faction
+             FROM ((((stages s
+               JOIN registrations r ON ((s.id = r.stage_id)))
+               JOIN players p ON ((r.player_id = p.id)))
+               LEFT JOIN identities corp_id ON ((p.corp_identity_ref_id = corp_id.id)))
+               LEFT JOIN identities runner_id ON ((p.runner_identity_ref_id = runner_id.id)))
+          )
+   SELECT t.id AS tournament_id,
+      t.manual_seed,
+      rfs.num_rounds,
+      ((rfs.stage_number = 1) AND (rfs.num_rounds = 0)) AS is_player_meeting,
+      rfs.num_rounds_completed,
+      swp.stage_id,
+      swp.stage_format,
+      swp.stage_number,
+      swp.player_id,
+      swp.player_name,
+      swp.player_pronouns,
+      swp.corp_id_name,
+      swp.corp_id_faction,
+      swp.runner_id_name,
+      swp.runner_id_faction,
+      swp.player_active,
+      sft."position",
+      sft.points,
+      sft.corp_points,
+      sft.runner_points,
+      sft.bye_points,
+      sft.sos,
+      sft.extended_sos,
+      sb.side_bias
+     FROM ((((tournaments t
+       JOIN stages_with_players swp ON ((swp.tournament_id = t.id)))
+       JOIN rounds_for_stages rfs ON ((rfs.stage_id = swp.stage_id)))
+       LEFT JOIN standings_for_tournament sft ON (((sft.tournament_id = swp.tournament_id) AND (sft.stage_id = swp.stage_id) AND (sft.player_id = swp.player_id))))
+       LEFT JOIN side_bias sb ON (((sb.stage_id = sft.stage_id) AND (sft.player_id = sb.player_id))));
   SQL
 end
