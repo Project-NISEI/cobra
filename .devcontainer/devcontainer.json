@@ -71,6 +71,7 @@
                 "ruby.format": "rubocop",
                 "rubocop.yjitEnabled": false,
                 "editor.formatOnSave": false,
+                "rubyLsp.useBundler": true,
                 "rubyTestExplorer.debugCommand": "bundle exec rdebug-ide",
                 "rubyTestExplorer.testFramework": "rspec",
                 "rubyLsp.enabledFeatures": {
