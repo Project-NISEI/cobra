@@ -8,7 +8,9 @@ module Bracket
 
     delegate :seed, to: :stage
 
-    def initialize(stage)
+    def initialize(stage = nil)
+      return unless stage
+
       @stage = stage
       @pairings = stage.rounds.select(&:completed?)
                        .map(&:pairings).flatten
@@ -66,14 +68,6 @@ module Bracket
         end
       end
       s.map { |p| Standing.new(p) }
-    end
-
-    def self.upper_bracket
-      []
-    end
-
-    def self.successor_games
-      {}
     end
 
     private

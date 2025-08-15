@@ -20,9 +20,7 @@ RSpec.describe RoundsController do
             'stages' => [{
               'name' => 'Swiss',
               'format' => 'swiss',
-              'rounds' => [],
-              'upper_bracket' => [],
-              'successor_games' => {}
+              'rounds' => []
             }]
           )
       end
@@ -38,9 +36,7 @@ RSpec.describe RoundsController do
             'stages' => [{
               'name' => 'Swiss',
               'format' => 'swiss',
-              'rounds' => [],
-              'upper_bracket' => [],
-              'successor_games' => {}
+              'rounds' => []
             }]
           )
       end
@@ -56,9 +52,7 @@ RSpec.describe RoundsController do
             'stages' => [{
               'name' => 'Swiss',
               'format' => 'swiss',
-              'rounds' => [],
-              'upper_bracket' => [],
-              'successor_games' => {}
+              'rounds' => []
             }]
           )
       end
@@ -88,18 +82,18 @@ RSpec.describe RoundsController do
                              'player2' => player_with_no_ids('Bob (he/him)'),
                              'policy' => { 'view_decks' => false, 'self_report' => false },
                              'score_label' => ' - ', 'two_for_one' => false,
-                             'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil },
+                             'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil,
+                             'round' => nil, 'successor_game' => nil, 'bracket_type' => nil },
                            { 'intentional_draw' => false,
                              'player1' => player_with_no_ids('Alice (she/her)'),
                              'player2' => bye_player,
                              'policy' => { 'view_decks' => false, 'self_report' => false },
                              'score_label' => '6 - 0', 'two_for_one' => false,
-                             'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil }
+                             'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil,
+                             'round' => nil, 'successor_game' => nil, 'bracket_type' => nil }
                          ], 'pairings_reported' => 1
                        }
-                     ],
-                     'upper_bracket' => [],
-                     'successor_games' => {}
+                     ]
                    }]
                  })
       end
@@ -126,7 +120,8 @@ RSpec.describe RoundsController do
                                'self_report' => false
                              }, # sees player view as a player
                              'score_label' => ' - ', 'two_for_one' => false,
-                             'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil },
+                             'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil,
+                             'round' => nil, 'successor_game' => nil, 'bracket_type' => nil },
                            { 'intentional_draw' => false,
                              'player1' => player_with_no_ids('Alice (she/her)'),
                              'player2' => bye_player,
@@ -135,12 +130,11 @@ RSpec.describe RoundsController do
                                'self_report' => false
                              }, # sees player view as a player
                              'score_label' => '6 - 0', 'two_for_one' => false,
-                             'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil }
+                             'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil,
+                             'round' => nil, 'successor_game' => nil, 'bracket_type' => nil }
                          ], 'pairings_reported' => 1
                        }
-                     ],
-                     'upper_bracket' => [],
-                     'successor_games' => {}
+                     ]
                    }]
                  })
       end
@@ -173,18 +167,18 @@ RSpec.describe RoundsController do
                                'player2' => player_with_no_ids('Bob (he/him)'),
                                'policy' => { 'view_decks' => false, 'self_report' => false },
                                'score_label' => ' - ', 'two_for_one' => false,
-                               'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil },
+                               'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil,
+                               'round' => nil, 'successor_game' => nil, 'bracket_type' => nil },
                              { 'intentional_draw' => false,
                                'player1' => player_with_no_ids('Alice (she/her)'),
                                'player2' => bye_player,
                                'policy' => { 'view_decks' => false, 'self_report' => false },
                                'score_label' => '6 - 0', 'two_for_one' => false,
-                               'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil }
+                               'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil,
+                               'round' => nil, 'successor_game' => nil, 'bracket_type' => nil }
                            ], 'pairings_reported' => 1
                          }
-                       ],
-                       'upper_bracket' => [],
-                       'successor_games' => {}
+                       ]
                      },
                      {
                        'name' => 'Double Elim',
@@ -198,12 +192,18 @@ RSpec.describe RoundsController do
                                'player2' => player_with_no_ids('Charlie (she/her)'),
                                'policy' => { 'view_decks' => false, 'self_report' => false },
                                'score_label' => ' - ', 'two_for_one' => false,
-                               'table_label' => 'Game 1', 'table_number' => 1, 'self_report' => nil }
-                           ], 'pairings_reported' => 0
+                               'table_label' => 'Game 1', 'table_number' => 1, 'self_report' => nil,
+                               'round' => 1, 'successor_game' => 2, 'bracket_type' => 'upper' }
+                           ],
+                           'pairings_reported' => 0
+                         },
+                         {
+                           'number' => 2,
+                           'pairings' => [
+                             { 'table_number' => 2, 'round' => 2, 'successor_game' => nil, 'bracket_type' => 'upper' }
+                           ]
                          }
-                       ],
-                       'upper_bracket' => [1, 2],
-                       'successor_games' => { '1' => 2 }
+                       ]
                      }
                    ]
                  })
@@ -239,18 +239,18 @@ RSpec.describe RoundsController do
                              'player2' => player_with_no_ids('Bob (he/him)', side: 'runner', side_label: '(Runner)'),
                              'policy' => { 'view_decks' => false, 'self_report' => false },
                              'score_label' => '3 - 0 (C)', 'two_for_one' => false,
-                             'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil },
+                             'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil,
+                             'round' => nil, 'successor_game' => nil, 'bracket_type' => nil },
                            { 'intentional_draw' => false,
                              'player1' => player_with_no_ids('Alice (she/her)'),
                              'player2' => bye_player,
                              'policy' => { 'view_decks' => false, 'self_report' => false },
                              'score_label' => '6 - 0', 'two_for_one' => false,
-                             'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil }
+                             'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil,
+                             'round' => nil, 'successor_game' => nil, 'bracket_type' => nil }
                          ], 'pairings_reported' => 2
                        }
-                     ],
-                     'upper_bracket' => [],
-                     'successor_games' => {}
+                     ]
                    }]
                  })
       end
@@ -287,18 +287,18 @@ RSpec.describe RoundsController do
                              'player2' => player_with_no_ids('Bob (he/him)', side: 'corp', side_label: '(Corp)'),
                              'policy' => { 'view_decks' => false, 'self_report' => false },
                              'score_label' => '0 - 3 (R)', 'two_for_one' => false,
-                             'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil },
+                             'table_label' => 'Table 1', 'table_number' => 1, 'self_report' => nil,
+                             'round' => nil, 'successor_game' => nil, 'bracket_type' => nil },
                            { 'intentional_draw' => false,
                              'player1' => player_with_no_ids('Alice (she/her)'),
                              'player2' => bye_player,
                              'policy' => { 'view_decks' => false, 'self_report' => false },
                              'score_label' => '6 - 0', 'two_for_one' => false,
-                             'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil }
+                             'table_label' => 'Table 2', 'table_number' => 2, 'self_report' => nil,
+                             'round' => nil, 'successor_game' => nil, 'bracket_type' => nil }
                          ], 'pairings_reported' => 2
                        }
-                     ],
-                     'upper_bracket' => [],
-                     'successor_games' => {}
+                     ]
                    }]
                  })
       end
