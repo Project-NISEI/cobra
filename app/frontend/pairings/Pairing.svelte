@@ -24,8 +24,8 @@
 <div
   class="row m-1 round_pairing align-items-center table_{pairing.table_number}"
 >
-  <div class="col-sm-2">
-    {pairing.table_label}
+  <div class="col-sm-2 {pairing.ui_metadata.row_highlighted ? 'font-weight-bold': ''}">
+    {pairing.table_label} {pairing.ui_metadata.row_highlighted ? '(you)' : ''}
   </div>
   {#if pairing.policy.view_decks}
     <a href="{round.id}/pairings/{pairing.id}/view_decks">
