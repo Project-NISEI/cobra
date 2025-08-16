@@ -58,7 +58,7 @@ export interface Pairing {
   self_report: SelfReport | null;
   successor_game: number | null;
   bracket_type: string | null;
-  ui_metadata: UiMetadata
+  ui_metadata: UiMetadata;
 }
 
 export interface UiMetadata {
