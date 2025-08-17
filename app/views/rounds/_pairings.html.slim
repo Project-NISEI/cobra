@@ -21,10 +21,6 @@
   .row.m-1.round_pairing.align-items-center class="table_#{pairing.table_number} #{'reported' if pairing.reported? && current_user == @tournament.user} #{'self_reports_match' if !pairing.reported? && players_have_self_reported && !self_reports_match}"
     .col-sm-2
       | #{pairing.table_label}
-      - if players_have_self_reported && !self_reports_match
-        = fa_icon 'exclamation-triangle', class: 'reporting-tooltip m-1', title: "Player reports differ, action required"
-        javascript:
-          $('.reporting-tooltip').tooltip()
       - if @tournament.allow_streaming_opt_out? && policy(round.tournament).edit?
         - if pairing.player_ids.all? { |player_id| @players[player_id].include_in_stream? }
           = fa_icon 'video-camera',
@@ -47,7 +43,6 @@
         | View decks
     .col-sm.left_player_name
       = left_player.name_with_pronouns
-      = render 'self_report_icon', player_report: left_player_report, opposite_player_report: right_player_report, self_reports_match:, players_have_self_reported:, pairing:
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: left_player, single_sided: single_sided
@@ -102,7 +97,6 @@
             | 2 for 1
     .col-sm.right_player_name
       = right_player.name_with_pronouns
-      = render 'self_report_icon', player_report: right_player_report, opposite_player_report: left_player_report, self_reports_match:, players_have_self_reported:, pairing:
       <br />
       - unless pairing.bye?
         =< render 'player_side', pairing: pairing, player: right_player, single_sided: single_sided
@@ -115,11 +109,49 @@
             = render right_player.runner_identity_object
     - if policy(round.tournament).update?
       .row-sm1.mr-3
+        button.btn.btn-primary.mr-2 data-toggle="modal" data-target="#selfReportModal" type="button"
+          | Reports
+          - if !pairing.reported? && (players_have_self_reported && !self_reports_match)
+            =< fa_icon 'exclamation-triangle'
         = link_to tournament_round_pairing_path(round.tournament, round, pairing), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed.' } do
           => fa_icon 'trash'
-        - if players_have_self_reported && !self_reports_match
-          = link_to reset_self_report_tournament_round_pairing_path(round.tournament, round, pairing),
-            method: :delete, title: 'Reset self reports of pairing', class: 'btn btn-primary ml-2 reset-self-reports',
-            data: { confirm: 'Are you sure? This cannot be reversed.' } do
-            => fa_icon 'undo'
-            javascript: $('.reset-self-reports').tooltip()
+        .modal.fade#selfReportModal tabindex="-1" role="dialog" aria-hidden="true"
+          .modal-dialog.modal-dialog-centered role="document"
+            .modal-content
+              .modal-header
+                h5.modal-title Player Self Reports
+                button.close type="button" data-dismiss="modal" aria-label="Close"
+                  span aria-hidden="true" &times;
+              .modal-body
+                p 
+                  = "#{left_player.name} reported:"
+                  - if left_player_report
+                    =< "#{readable_self_report_score(pairing, left_player_report)}"
+                    - if (players_have_self_reported && !self_reports_match)
+                      =< fa_icon 'times'
+                  - else 
+                   = fa_icon 'hourglass', class: 'missing-report-tooltip m-1'
+                p 
+                  = "#{right_player.name} reported: "
+                  - if right_player_report
+                    =< "#{readable_self_report_score(pairing, right_player_report)}"
+                    - if (players_have_self_reported && !self_reports_match)
+                      =< fa_icon 'times'
+                  - else 
+                   = fa_icon 'hourglass', class: 'missing-report-tooltip m-1'
+              .modal-footer
+                - if left_player_report
+                  .btn.btn-primary.disabled
+                    => fa_icon 'check'
+                    | Accept #{left_player.name}
+                - if right_player_report
+                  .btn.btn-primary.disabled
+                    => fa_icon 'check'
+                    | Accept #{right_player.name}
+                - if players_have_self_reported && !self_reports_match
+                  = link_to reset_self_report_tournament_round_pairing_path(round.tournament, round, pairing),
+                    method: :delete, title: 'Reset self reports of pairing', class: 'btn btn-primary reset-self-reports',
+                    data: { confirm: 'Are you sure? This cannot be reversed.' } do
+                    => fa_icon 'undo'
+                    | Reset
+                    javascript: $('.reset-self-reports').tooltip()

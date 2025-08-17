@@ -60,10 +60,7 @@ module TournamentHelper
         official_prize_kits: OfficialPrizeKit.order(position: :desc).map { |p| { id: p.id, name: p.name } }
       },
       feature_flags: {
-        single_sided_swiss: Flipper.enabled?(:single_sided_swiss, current_user),
-        nrdb_deck_registration: Flipper.enabled?(:nrdb_deck_registration),
-        allow_self_reporting: Flipper.enabled?(:allow_self_reporting),
-        streaming_opt_out: Flipper.enabled?(:streaming_opt_out)
+        allow_self_reporting: Flipper.enabled?(:allow_self_reporting)
       },
       csrf_token: form_authenticity_token
     }

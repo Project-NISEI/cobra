@@ -78,10 +78,6 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
   config.after_initialize do
-    Flipper.enable :nrdb_deck_registration
-    Flipper.enable :open_list_cut
-    Flipper.enable :streaming_opt_out
-    Flipper.enable :single_sided_swiss
     Flipper.enable :allow_self_reporting
   rescue StandardError => e
     Rails.logger.warn "Failed setting Flipper features: #{e.class}"
