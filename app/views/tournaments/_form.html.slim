@@ -17,10 +17,8 @@
     .form-group
       = f.input :tournament_starts, as: :time, html5: true, input_html: { class: 'form-control' }
 
-
-- if Flipper.enabled?(:single_sided_swiss, current_user)
-  .form-group
-    = f.input :swiss_format, collection: Tournament.swiss_formats.keys, input_html: { class: 'form-control' }, include_blank: false, label_method: ->(val) { val.capitalize.tr('_', '-') }
+.form-group
+  = f.input :swiss_format, collection: Tournament.swiss_formats.keys, input_html: { class: 'form-control' }, include_blank: false, label_method: ->(val) { val.capitalize.tr('_', '-') }
 
 .row
   .col-md-6
@@ -58,9 +56,8 @@
   = f.input :stream_url, input_html: { class: 'form-control' }, label: 'Stream URL'
 .form-group
   = f.input :self_registration, as: :boolean, inline_label: 'Self-Registration: Allow players to use a link to register themselves'
-- if Flipper.enabled? :nrdb_deck_registration
-  .form-group
-    = f.input :nrdb_deck_registration, as: :boolean, inline_label: 'Deck registration: Upload decks from NetrunnerDB'
+.form-group
+  = f.input :nrdb_deck_registration, as: :boolean, inline_label: 'Deck registration: Upload decks from NetrunnerDB'
 - if Flipper.enabled? :allow_self_reporting
   .form-group
     = f.input :allow_self_reporting, as: :boolean, inline_label: 'Allow logged-in players to report their own match results'
@@ -68,6 +65,5 @@
   = f.input :private, as: :boolean, inline_label: 'Private: Only I will be able to view this tournament'
 .form-group
   = f.input :manual_seed, as: :boolean, inline_label: 'Use manual seeding for tiebreakers: Players can be assigned a "seed" value that will be used before all other tiebreakers (in ascending order; i.e. Seed 1 wins all ties)'
-- if Flipper.enabled? :streaming_opt_out
-  .form-group
-    = f.input :allow_streaming_opt_out, as: :boolean, inline_label: 'Streaming opt out: Allow players to choose whether their games should be included in video coverage (defaults to yes, and players are notified that in a top cut it may not be possible to exclude them)'
+.form-group
+  = f.input :allow_streaming_opt_out, as: :boolean, inline_label: 'Streaming opt out: Allow players to choose whether their games should be included in video coverage (defaults to yes, and players are notified that in a top cut it may not be possible to exclude them)'

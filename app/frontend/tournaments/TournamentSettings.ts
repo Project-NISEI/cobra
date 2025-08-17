@@ -45,10 +45,7 @@ export interface TournamentOptions {
 }
 
 export interface FeatureFlags {
-  single_sided_swiss?: boolean;
-  nrdb_deck_registration?: boolean;
   allow_self_reporting?: boolean;
-  streaming_opt_out?: boolean;
 }
 
 export interface TournamentSettingsData {

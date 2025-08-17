@@ -20,7 +20,6 @@ describe("TournamentSettings", () => {
       const mockData = {
         tournament: { date: "2023-12-25", private: false },
         options: emptyTournamentOptions(),
-        feature_flags: { single_sided_swiss: true },
       };
 
       server.use(
@@ -54,7 +53,6 @@ describe("TournamentSettings", () => {
           private: false,
         },
         options: emptyTournamentOptions(),
-        feature_flags: { single_sided_swiss: true },
       };
 
       server.use(
