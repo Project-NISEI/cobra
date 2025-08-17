@@ -2,7 +2,7 @@
   import type { Stage, Pairing } from "./PairingsData.ts";
   import BracketMatchNode from "./BracketMatchNode.svelte";
   import type { BracketMatch } from "./bracketTypes";
-  import { SvelteMap } from 'svelte/reactivity';
+  import { SvelteMap } from "svelte/reactivity";
 
   export let stage: Stage;
 
@@ -10,21 +10,26 @@
 
   // Check if this is a double elimination format
   const isDoubleElim = stage.format === "double_elim";
-  
+
   // Find the maximum round number to identify the last round
-  const maxRoundNumber = Math.max(...stage.rounds.map(r => r.number));
-  
+  const maxRoundNumber = Math.max(...stage.rounds.map((r) => r.number));
+
   // Filter function to exclude empty bracket reset games
-  function shouldIncludePairing(pairing: Pairing, roundNumber: number): boolean {
+  function shouldIncludePairing(
+    pairing: Pairing,
+    roundNumber: number,
+  ): boolean {
     // If this is the last round in double elim and the pairing has no players, exclude it
     if (isDoubleElim && roundNumber === maxRoundNumber) {
       // Check if the pairing has actual player data
-      const hasPlayers = !!(pairing.player1.name_with_pronouns || pairing.player2.name_with_pronouns);
+      const hasPlayers = !!(
+        pairing.player1.name_with_pronouns || pairing.player2.name_with_pronouns
+      );
       return hasPlayers;
     }
     return true;
   }
-  
+
   const upperRounds = stage.rounds.map((r) => ({
     number: r.number,
     pairings: r.pairings
@@ -32,11 +37,11 @@
       .filter((p) => shouldIncludePairing(p, r.number)),
   }));
   const lowerRounds = stage.rounds
-    .map((r) => ({ 
-      number: r.number, 
+    .map((r) => ({
+      number: r.number,
       pairings: r.pairings
         .filter((p) => p.bracket_type === "lower")
-        .filter((p) => shouldIncludePairing(p, r.number))
+        .filter((p) => shouldIncludePairing(p, r.number)),
     }))
     .filter((r) => r.pairings.length > 0);
 
@@ -58,39 +63,50 @@
 
   // Extract a flattened list of matches per column to compute connectors
   function roundsToColumns(rounds: typeof upperRounds): BracketMatch[][] {
-    return rounds
-      .sort((a, b) => a.number - b.number)
-      .map((r) => r.pairings);
+    return rounds.sort((a, b) => a.number - b.number).map((r) => r.pairings);
   }
 
   function keyFor(cIdx: number, rIdx: number, m: BracketMatch): string {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    return String(m.id ?? m.table_number ?? m.successor_game ?? `${cIdx}-${rIdx}`);
+    return String(
+      m.id ?? m.table_number ?? m.successor_game ?? `${cIdx}-${rIdx}`,
+    );
   }
 
   // Compute SVG size heuristically
   const upperCols = roundsToColumns(upperRounds);
   const lowerCols = roundsToColumns(lowerRounds);
   const numUpperRows = stage.rounds.reduce(
-    (max, r) => Math.max(max, r.pairings.filter((p) => p.bracket_type === "upper").length),
+    (max, r) =>
+      Math.max(
+        max,
+        r.pairings.filter((p) => p.bracket_type === "upper").length,
+      ),
     0,
   );
   const numLowerRows = stage.rounds.reduce(
-    (max, r) => Math.max(max, r.pairings.filter((p) => p.bracket_type === "lower").length),
+    (max, r) =>
+      Math.max(
+        max,
+        r.pairings.filter((p) => p.bracket_type === "lower").length,
+      ),
     0,
   );
 
   // Align lower bracket's first column with the upper bracket's second column (by round number alignment)
   // Assumption: upper bracket rounds always start at round 1
-  const minLowerRound = lowerRounds.length > 0 ? Math.min(...lowerRounds.map((r) => r.number)) : 1;
+  const minLowerRound =
+    lowerRounds.length > 0 ? Math.min(...lowerRounds.map((r) => r.number)) : 1;
   const lowerColOffset = Math.max(0, minLowerRound - 1);
 
   // Lower positions will use columnX with inline lowerColOffset
 
   const numCols = Math.max(upperCols.length, lowerCols.length + lowerColOffset);
   const svgWidth = padding * 2 + numCols * (columnWidth + columnGap);
-  const svgHeightUpper = padding * 2 + Math.max(1, numUpperRows) * (matchHeight + matchGap);
-  const svgHeightLower = padding * 2 + Math.max(1, numLowerRows) * (matchHeight + matchGap);
+  const svgHeightUpper =
+    padding * 2 + Math.max(1, numUpperRows) * (matchHeight + matchGap);
+  const svgHeightLower =
+    padding * 2 + Math.max(1, numLowerRows) * (matchHeight + matchGap);
   const svgHeightTotal = svgHeightUpper + bracketGap + svgHeightLower;
 
   // For connectors: map successor_game within same bracket. We only draw winner flow connectors.
@@ -104,7 +120,8 @@
   ) {
     const x = (col: number) => columnX(col + colOffset);
     const x1 = x(fromCol) + columnWidth;
-    const y1 = (yPos[fromCol]?.[fromRow] ?? baseMatchY(fromRow)) + matchHeight / 2;
+    const y1 =
+      (yPos[fromCol]?.[fromRow] ?? baseMatchY(fromRow)) + matchHeight / 2;
     const x2 = x(toCol);
     const y2 = (yPos[toCol]?.[toRow] ?? baseMatchY(toRow)) + matchHeight / 2;
     const mx = (x1 + x2) / 2;
@@ -117,7 +134,10 @@
     cols.forEach((col, cIdx) => {
       col.forEach((m, rIdx) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        index.set(String(m.table_number ?? m.successor_game ?? `${cIdx}-${rIdx}`), { col: cIdx, row: rIdx });
+        index.set(
+          String(m.table_number ?? m.successor_game ?? `${cIdx}-${rIdx}`),
+          { col: cIdx, row: rIdx },
+        );
       });
     });
     return index;
@@ -136,12 +156,21 @@
   ): string | null {
     const target = index.get(String(successorGame));
     if (!target) return null;
-    return connectorPath(fromCol, fromRow, target.col, target.row, yPos, colOffset);
+    return connectorPath(
+      fromCol,
+      fromRow,
+      target.col,
+      target.row,
+      yPos,
+      colOffset,
+    );
   }
 
   // Compute Y positions per column so that each game is centered between its predecessors
   function computeYPositions(cols: BracketMatch[][]): number[][] {
-    const positions: number[][] = cols.map((col) => new Array<number>(col.length).fill(0));
+    const positions: number[][] = cols.map((col) =>
+      new Array<number>(col.length).fill(0),
+    );
     if (cols.length === 0) return positions;
 
     // First column: base spacing
@@ -196,7 +225,17 @@
           {#each col as m, rIdx (keyFor(cIdx, rIdx, m))}
             {#if m.successor_game != null}
               {#if upperIndex.has(String(m.successor_game))}
-                <path d={connectorPathTo(upperIndex, cIdx, rIdx, m.successor_game, upperY)} stroke="#999" fill="none" />
+                <path
+                  d={connectorPathTo(
+                    upperIndex,
+                    cIdx,
+                    rIdx,
+                    m.successor_game,
+                    upperY,
+                  )}
+                  stroke="#999"
+                  fill="none"
+                />
               {/if}
             {/if}
           {/each}
@@ -205,7 +244,13 @@
         <!-- Matches -->
         {#each upperCols as col, cIdx (cIdx)}
           {#each col as match, rIdx (keyFor(cIdx, rIdx, match))}
-            <BracketMatchNode match={match} x={columnX(cIdx)} y={upperY[cIdx]?.[rIdx] ?? baseMatchY(rIdx)} width={columnWidth} height={matchHeight} />
+            <BracketMatchNode
+              {match}
+              x={columnX(cIdx)}
+              y={upperY[cIdx]?.[rIdx] ?? baseMatchY(rIdx)}
+              width={columnWidth}
+              height={matchHeight}
+            />
           {/each}
         {/each}
       </g>
@@ -219,7 +264,18 @@
           {#each col as match, rIdx (keyFor(cIdx, rIdx, match))}
             {#if match.successor_game != null}
               {#if lowerIndex.has(String(match.successor_game))}
-                <path d={connectorPathTo(lowerIndex, cIdx, rIdx, match.successor_game, lowerY, lowerColOffset)} stroke="#999" fill="none" />
+                <path
+                  d={connectorPathTo(
+                    lowerIndex,
+                    cIdx,
+                    rIdx,
+                    match.successor_game,
+                    lowerY,
+                    lowerColOffset,
+                  )}
+                  stroke="#999"
+                  fill="none"
+                />
               {/if}
             {/if}
           {/each}
@@ -228,7 +284,13 @@
         <!-- Matches -->
         {#each lowerCols as col, cIdx (cIdx)}
           {#each col as match, rIdx (keyFor(cIdx, rIdx, match))}
-            <BracketMatchNode match={match} x={columnX(cIdx + lowerColOffset)} y={lowerY[cIdx]?.[rIdx] ?? baseMatchY(rIdx)} width={columnWidth} height={matchHeight} />
+            <BracketMatchNode
+              {match}
+              x={columnX(cIdx + lowerColOffset)}
+              y={lowerY[cIdx]?.[rIdx] ?? baseMatchY(rIdx)}
+              width={columnWidth}
+              height={matchHeight}
+            />
           {/each}
         {/each}
       </g>
@@ -241,4 +303,3 @@
     background-color: #fafafa;
   }
 </style>
-

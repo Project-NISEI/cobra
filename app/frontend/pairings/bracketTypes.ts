@@ -13,5 +13,3 @@ export interface BracketMatch {
   player2?: BracketPlayer | null;
   bracket_type?: string | null;
 }
-
-

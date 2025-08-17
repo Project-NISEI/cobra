@@ -16,7 +16,10 @@
     <div class="col-sm-11 d-flex align-items-baseline gap-2">
       <h4>{stage.name}</h4>
       {#if isElim}
-        <button class="btn btn-link" on:click={() => (showBracket = !showBracket)}>
+        <button
+          class="btn btn-link"
+          on:click={() => (showBracket = !showBracket)}
+        >
           {showBracket ? "Hide" : "Show"} Bracket
         </button>
       {/if}
