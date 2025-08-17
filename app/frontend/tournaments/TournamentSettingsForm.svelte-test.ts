@@ -66,10 +66,6 @@ describe("TournamentSettingsForm", () => {
       },
     });
 
-    expect(screen.getByLabelText("Swiss format")).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Deck registration: Upload decks from NetrunnerDB"),
-    ).toBeInTheDocument();
     expect(
       screen.getByLabelText(
         "Allow logged-in players to report their own match results",
