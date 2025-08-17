@@ -1,5 +1,4 @@
 <script lang="ts">
-  // Minimal types required by this node component
   import type { BracketMatch } from "./bracketTypes";
 
   export let match: BracketMatch;

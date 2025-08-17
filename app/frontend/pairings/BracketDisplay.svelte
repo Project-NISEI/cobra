@@ -6,12 +6,7 @@
 
   export let stage: Stage;
 
-  // Types imported from bracketTypes
-
-  // Check if this is a double elimination format
   const isDoubleElim = stage.format === "double_elim";
-
-  // Find the maximum round number to identify the last round
   const maxRoundNumber = Math.max(...stage.rounds.map((r) => r.number));
 
   // Filter function to exclude empty bracket reset games
@@ -51,7 +46,7 @@
   const matchHeight = 48;
   const matchGap = 16;
   const padding = 16;
-  const bracketGap = 32; // vertical gap between upper and lower areas
+  const bracketGap = 32; // vertical gap between upper and lower bracket
 
   function columnX(index: number): number {
     return padding + index * (columnWidth + columnGap);
@@ -94,12 +89,9 @@
   );
 
   // Align lower bracket's first column with the upper bracket's second column (by round number alignment)
-  // Assumption: upper bracket rounds always start at round 1
   const minLowerRound =
     lowerRounds.length > 0 ? Math.min(...lowerRounds.map((r) => r.number)) : 1;
   const lowerColOffset = Math.max(0, minLowerRound - 1);
-
-  // Lower positions will use columnX with inline lowerColOffset
 
   const numCols = Math.max(upperCols.length, lowerCols.length + lowerColOffset);
   const svgWidth = padding * 2 + numCols * (columnWidth + columnGap);
@@ -109,7 +101,7 @@
     padding * 2 + Math.max(1, numLowerRows) * (matchHeight + matchGap);
   const svgHeightTotal = svgHeightUpper + bracketGap + svgHeightLower;
 
-  // For connectors: map successor_game within same bracket. We only draw winner flow connectors.
+  // For connectors: map successor_game within same bracket
   function connectorPath(
     fromCol: number,
     fromRow: number,
