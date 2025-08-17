@@ -12,7 +12,7 @@
     scoreLabel: string | null | undefined,
   ): "corp" | "runner" | null {
     if (!scoreLabel) return null;
-    const res = scoreLabel.match(/\((C|R)\)/);
+    const res = /\((C|R)\)/.exec(scoreLabel);
     if (!res) return null;
     return res[1] === "C" ? "corp" : "runner";
   }
@@ -46,6 +46,7 @@
   }
 </script>
 
+<!-- eslint-disable-next-line @typescript-eslint/restrict-template-expressions -->
 <g transform={`translate(${x}, ${y})`}>
   <rect {width} {height} rx="6" ry="6" fill="#fff" stroke="#ccc" />
   <text x="8" y={height / 2} class="game-label" dominant-baseline="middle"

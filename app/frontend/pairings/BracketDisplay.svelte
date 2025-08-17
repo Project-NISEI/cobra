@@ -2,6 +2,7 @@
   import type { Stage, Pairing } from "./PairingsData.ts";
   import BracketMatchNode from "./BracketMatchNode.svelte";
   import type { BracketMatch } from "./bracketTypes";
+  import { SvelteMap } from 'svelte/reactivity';
 
   export let stage: Stage;
 
@@ -18,7 +19,7 @@
     // If this is the last round in double elim and the pairing has no players, exclude it
     if (isDoubleElim && roundNumber === maxRoundNumber) {
       // Check if the pairing has actual player data
-      const hasPlayers = !!(pairing.player1?.name_with_pronouns || pairing.player2?.name_with_pronouns);
+      const hasPlayers = !!(pairing.player1.name_with_pronouns || pairing.player2.name_with_pronouns);
       return hasPlayers;
     }
     return true;
@@ -63,6 +64,7 @@
   }
 
   function keyFor(cIdx: number, rIdx: number, m: BracketMatch): string {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     return String(m.id ?? m.table_number ?? m.successor_game ?? `${cIdx}-${rIdx}`);
   }
 
@@ -106,13 +108,15 @@
     const x2 = x(toCol);
     const y2 = (yPos[toCol]?.[toRow] ?? baseMatchY(toRow)) + matchHeight / 2;
     const mx = (x1 + x2) / 2;
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     return `M ${x1} ${y1} L ${mx} ${y1} L ${mx} ${y2} L ${x2} ${y2}`;
   }
 
   function getIndex(cols: BracketMatch[][]) {
-    const index = new Map<string, { col: number; row: number }>();
+    const index = new SvelteMap<string, { col: number; row: number }>();
     cols.forEach((col, cIdx) => {
       col.forEach((m, rIdx) => {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         index.set(String(m.table_number ?? m.successor_game ?? `${cIdx}-${rIdx}`), { col: cIdx, row: rIdx });
       });
     });
@@ -123,7 +127,7 @@
   const lowerIndex = getIndex(lowerCols);
 
   function connectorPathTo(
-    index: Map<string, { col: number; row: number }>,
+    index: SvelteMap<string, { col: number; row: number }>,
     fromCol: number,
     fromRow: number,
     successorGame: number,
@@ -137,7 +141,7 @@
 
   // Compute Y positions per column so that each game is centered between its predecessors
   function computeYPositions(cols: BracketMatch[][]): number[][] {
-    const positions: number[][] = cols.map((col) => new Array(col.length).fill(0));
+    const positions: number[][] = cols.map((col) => new Array<number>(col.length).fill(0));
     if (cols.length === 0) return positions;
 
     // First column: base spacing
@@ -155,7 +159,7 @@
           for (let pc = 0; pc < c; pc += 1) {
             for (let pr = 0; pr < cols[pc].length; pr += 1) {
               const prevMatch = cols[pc][pr];
-              if (prevMatch && prevMatch.successor_game != null) {
+              if (prevMatch.successor_game != null) {
                 if (prevMatch.successor_game === match.table_number) {
                   predecessorYs.push(positions[pc][pr] + matchHeight / 2);
                 }
@@ -188,7 +192,7 @@
     {#if upperRounds.length > 0}
       <g>
         <!-- Connectors -->
-        {#each upperCols as col, cIdx}
+        {#each upperCols as col, cIdx (cIdx)}
           {#each col as m, rIdx (keyFor(cIdx, rIdx, m))}
             {#if m.successor_game != null}
               {#if upperIndex.has(String(m.successor_game))}
@@ -199,7 +203,7 @@
         {/each}
 
         <!-- Matches -->
-        {#each upperCols as col, cIdx}
+        {#each upperCols as col, cIdx (cIdx)}
           {#each col as match, rIdx (keyFor(cIdx, rIdx, match))}
             <BracketMatchNode match={match} x={columnX(cIdx)} y={upperY[cIdx]?.[rIdx] ?? baseMatchY(rIdx)} width={columnWidth} height={matchHeight} />
           {/each}
@@ -208,9 +212,10 @@
     {/if}
 
     {#if lowerRounds.length > 0}
+      <!-- eslint-disable-next-line @typescript-eslint/restrict-template-expressions -->
       <g transform={`translate(0, ${svgHeightUpper + bracketGap})`}>
         <!-- Connectors -->
-        {#each lowerCols as col, cIdx}
+        {#each lowerCols as col, cIdx (cIdx)}
           {#each col as match, rIdx (keyFor(cIdx, rIdx, match))}
             {#if match.successor_game != null}
               {#if lowerIndex.has(String(match.successor_game))}
@@ -221,7 +226,7 @@
         {/each}
 
         <!-- Matches -->
-        {#each lowerCols as col, cIdx}
+        {#each lowerCols as col, cIdx (cIdx)}
           {#each col as match, rIdx (keyFor(cIdx, rIdx, match))}
             <BracketMatchNode match={match} x={columnX(cIdx + lowerColOffset)} y={lowerY[cIdx]?.[rIdx] ?? baseMatchY(rIdx)} width={columnWidth} height={matchHeight} />
           {/each}
