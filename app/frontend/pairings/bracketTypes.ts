@@ -1,6 +1,10 @@
+import type { Identity } from "../identities/Identity";
+
 export interface BracketPlayer {
   name_with_pronouns: string;
   side: string | null | undefined;
+  corp_id?: Identity | null;
+  runner_id?: Identity | null;
 }
 
 export interface BracketMatch {

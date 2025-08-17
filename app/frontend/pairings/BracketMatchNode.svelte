@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { BracketMatch } from "./bracketTypes";
+  import Identity from "../identities/Identity.svelte";
+  import { showIdentities } from "./ShowIdentities";
 
   export let match: BracketMatch;
   export let x: number;
@@ -62,6 +64,22 @@
               </span>
             {/if}
             <span class="truncate">{match.player1.name_with_pronouns}</span>
+            {#if $showIdentities}
+              <div class="ids">
+                {#if match.player1.side === "corp" && match.player1.corp_id}
+                  <Identity identity={match.player1.corp_id} />
+                {:else if match.player1.side === "runner" && match.player1.runner_id}
+                  <Identity identity={match.player1.runner_id} />
+                {:else}
+                  {#if match.player1.corp_id}
+                    <Identity identity={match.player1.corp_id} />
+                  {/if}
+                  {#if match.player1.runner_id}
+                    <Identity identity={match.player1.runner_id} />
+                  {/if}
+                {/if}
+              </div>
+            {/if}
           {:else}
             <em class="text-muted">TBD</em>
           {/if}
@@ -76,6 +94,22 @@
               </span>
             {/if}
             <span class="truncate">{match.player2.name_with_pronouns}</span>
+            {#if $showIdentities}
+              <div class="ids">
+                {#if match.player2.side === "corp" && match.player2.corp_id}
+                  <Identity identity={match.player2.corp_id} />
+                {:else if match.player2.side === "runner" && match.player2.runner_id}
+                  <Identity identity={match.player2.runner_id} />
+                {:else}
+                  {#if match.player2.corp_id}
+                    <Identity identity={match.player2.corp_id} />
+                  {/if}
+                  {#if match.player2.runner_id}
+                    <Identity identity={match.player2.runner_id} />
+                  {/if}
+                {/if}
+              </div>
+            {/if}
           {:else}
             <em class="text-muted">TBD</em>
           {/if}
@@ -105,7 +139,7 @@
   }
   .player-line {
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
   }
   .truncate {
     display: inline-block;
@@ -118,5 +152,13 @@
     font-size: 0.75rem;
     fill: #6c757d;
     font-weight: 500;
+  }
+  .ids {
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: visible;
+    line-height: 1.2;
+    margin-top: 2px;
   }
 </style>

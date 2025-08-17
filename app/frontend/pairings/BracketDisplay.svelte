@@ -3,6 +3,7 @@
   import BracketMatchNode from "./BracketMatchNode.svelte";
   import type { BracketMatch } from "./bracketTypes";
   import { SvelteMap } from "svelte/reactivity";
+  import { showIdentities } from "./ShowIdentities";
 
   export let stage: Stage;
 
@@ -47,7 +48,7 @@
   $: scaleFactor = remSize / 16;
   $: columnWidth = 200 * scaleFactor;
   $: columnGap = 32 * scaleFactor;
-  $: matchHeight = 48 * scaleFactor;
+  $: matchHeight = ($showIdentities ? 72 : 48) * scaleFactor;
   $: matchGap = 16 * scaleFactor;
   $: padding = 16 * scaleFactor;
   $: bracketGap = 32 * scaleFactor; // vertical gap between upper and lower bracket
