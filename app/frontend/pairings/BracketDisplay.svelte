@@ -62,8 +62,8 @@
   }
 
   function keyFor(cIdx: number, rIdx: number, m: BracketMatch): string {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     return String(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       m.id ?? m.table_number ?? m.successor_game ?? `${cIdx}-${rIdx}`,
     );
   }
@@ -125,8 +125,8 @@
     const index = new SvelteMap<string, { col: number; row: number }>();
     cols.forEach((col, cIdx) => {
       col.forEach((m, rIdx) => {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         index.set(
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           String(m.table_number ?? m.successor_game ?? `${cIdx}-${rIdx}`),
           { col: cIdx, row: rIdx },
         );
