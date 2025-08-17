@@ -1,8 +1,6 @@
 <script lang="ts">
-  import type { Stage } from "./PairingsData.ts";
   import Round from "./Round.svelte";
-  import BracketDialog from "./BracketDialog.svelte";
-  let dialog: HTMLDialogElement;
+  import type { Stage } from "./PairingsData";
 
   export let stage: Stage;
   export let tournamentId: number;
@@ -12,13 +10,7 @@
 <div class="accordion mb-3" role="tablist">
   <div class="row mb-1">
     <div class="col-sm-11">
-      <h4 class="d-inline">{stage.name}</h4>
-      svelte
-      {#if ["double_elim", "single_elim"].includes(stage.format)}
-        <button class="btn btn-link" on:click={() => dialog.showModal()}
-          >View Bracket</button
-        >
-      {/if}
+      <h4>{stage.name}</h4>
     </div>
   </div>
   {#each stage.rounds.filter((r) => r.id) as round, index (round.id)}
@@ -30,5 +22,3 @@
     />
   {/each}
 </div>
-
-<BracketDialog bind:dialog {stage}></BracketDialog>
