@@ -1,6 +1,6 @@
 <script lang="ts">
   // Minimal types required by this node component
-  import type { BracketMatch } from './bracketTypes';
+  import type { BracketMatch } from "./bracketTypes";
 
   export let match: BracketMatch;
   export let x: number;
@@ -8,11 +8,13 @@
   export let width: number;
   export let height: number;
 
-  function parseWinnerSide(scoreLabel: string | null | undefined): 'corp' | 'runner' | null {
+  function parseWinnerSide(
+    scoreLabel: string | null | undefined,
+  ): "corp" | "runner" | null {
     if (!scoreLabel) return null;
     const res = scoreLabel.match(/\((C|R)\)/);
     if (!res) return null;
-    return res[1] === 'C' ? 'corp' : 'runner';
+    return res[1] === "C" ? "corp" : "runner";
   }
 
   function winnerIndex(match: BracketMatch): 1 | 2 | null {
@@ -26,34 +28,40 @@
 
   function getStyles(match: BracketMatch, playerIndex: 1 | 2): string {
     const wIdx = winnerIndex(match);
-    const base = 'flex-fill pr-2';
+    const base = "flex-fill pr-2";
     if (wIdx === null) return base;
-    return `${base} ${wIdx === playerIndex ? 'winner' : 'loser'}`;
+    return `${base} ${wIdx === playerIndex ? "winner" : "loser"}`;
   }
 
   function sideAbbrev(side: string | null | undefined): string | null {
-    if (side === 'corp') return '(C)';
-    if (side === 'runner') return '(R)';
+    if (side === "corp") return "C";
+    if (side === "runner") return "R";
     return null;
   }
 
   function labelFor(match: BracketMatch): string {
-    return match.table_number != null ? String(match.table_number) : match.table_label ?? '';
+    return match.table_number != null
+      ? String(match.table_number)
+      : (match.table_label ?? "");
   }
 </script>
 
 <g transform={`translate(${x}, ${y})`}>
   <rect {width} {height} rx="6" ry="6" fill="#fff" stroke="#ccc" />
-  <text x="8" y={height / 2} class="game-label" dominant-baseline="middle">{labelFor(match)}</text>
+  <text x="8" y={height / 2} class="game-label" dominant-baseline="middle"
+    >{labelFor(match)}</text
+  >
   <foreignObject x="28" y="2" width={width - 48} height={height - 4}>
     <div xmlns="http://www.w3.org/1999/xhtml" class="small content">
       <div class="player-line d-flex">
         <div class={getStyles(match, 1)}>
           {#if match.player1}
-            <span class="truncate">{match.player1.name_with_pronouns}</span>
             {#if sideAbbrev(match.player1.side)}
-              <span class="text-muted ml-1">{sideAbbrev(match.player1.side)}</span>
+              <span class="text-muted">
+                {sideAbbrev(match.player1.side)}
+              </span>
             {/if}
+            <span class="truncate">{match.player1.name_with_pronouns}</span>
           {:else}
             <em class="text-muted">TBD</em>
           {/if}
@@ -62,10 +70,12 @@
       <div class="player-line d-flex">
         <div class={getStyles(match, 2)}>
           {#if match.player2}
-            <span class="truncate">{match.player2.name_with_pronouns}</span>
             {#if sideAbbrev(match.player2.side)}
-              <span class="text-muted ml-1">{sideAbbrev(match.player2.side)}</span>
+              <span class="text-muted">
+                {sideAbbrev(match.player2.side)}
+              </span>
             {/if}
+            <span class="truncate">{match.player2.name_with_pronouns}</span>
           {:else}
             <em class="text-muted">TBD</em>
           {/if}
@@ -110,5 +120,3 @@
     font-weight: 500;
   }
 </style>
-
-
