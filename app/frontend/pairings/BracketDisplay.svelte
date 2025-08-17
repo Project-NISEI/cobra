@@ -18,7 +18,7 @@
     if (isDoubleElim && roundNumber === maxRoundNumber) {
       // Check if the pairing has actual player data
       const hasPlayers = !!(
-        pairing.player1.name_with_pronouns || pairing.player2.name_with_pronouns
+        pairing.player1 || pairing.player2
       );
       return hasPlayers;
     }
