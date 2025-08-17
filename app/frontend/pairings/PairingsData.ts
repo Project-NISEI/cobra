@@ -18,8 +18,10 @@ export async function loadPairings(
       method: "GET",
     },
   );
+
   return (await response.json()) as PairingsData;
 }
+
 export interface PairingsData {
   policy: TournamentPolicies;
   is_player_meeting: boolean;
@@ -54,8 +56,8 @@ export interface Pairing {
   intentional_draw: boolean;
   two_for_one: boolean;
   self_report: SelfReport | null;
-  bracket_type: string | null;
   successor_game: number | null;
+  bracket_type: string | null;
 }
 
 export interface SelfReport {

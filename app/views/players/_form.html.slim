@@ -38,7 +38,7 @@
               readonly: @tournament.nrdb_deck_registration?,
               placeholder: (@tournament.nrdb_deck_registration? ? '' : 'Search for runner ID'),
               class: 'form-control runner_identities'
-  - if defined?(new_registration) and not defined?(organiser_view) and Flipper.enabled? :nrdb_deck_registration
+  - if defined?(new_registration) and not defined?(organiser_view)
     .form-group
       label.d-block for="player_consent_data_sharing" #{Tournament.registration_consent_notice}
       = f.input :consent_data_sharing, as: :boolean, inline_label: 'I agree to these terms',
