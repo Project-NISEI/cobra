@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Stage } from "./PairingsData.ts";
+  import type { Stage, Pairing } from "./PairingsData.ts";
   import BracketMatchNode from "./BracketMatchNode.svelte";
   import type { BracketMatch } from "./bracketTypes";
 
@@ -7,12 +7,36 @@
 
   // Types imported from bracketTypes
 
+  // Check if this is a double elimination format
+  const isDoubleElim = stage.format === "double_elim";
+  
+  // Find the maximum round number to identify the last round
+  const maxRoundNumber = Math.max(...stage.rounds.map(r => r.number));
+  
+  // Filter function to exclude empty bracket reset games
+  function shouldIncludePairing(pairing: Pairing, roundNumber: number): boolean {
+    // If this is the last round in double elim and the pairing has no players, exclude it
+    if (isDoubleElim && roundNumber === maxRoundNumber) {
+      // Check if the pairing has actual player data
+      const hasPlayers = !!(pairing.player1?.name_with_pronouns || pairing.player2?.name_with_pronouns);
+      return hasPlayers;
+    }
+    return true;
+  }
+  
   const upperRounds = stage.rounds.map((r) => ({
     number: r.number,
-    pairings: r.pairings.filter((p) => p.bracket_type === "upper"),
+    pairings: r.pairings
+      .filter((p) => p.bracket_type === "upper")
+      .filter((p) => shouldIncludePairing(p, r.number)),
   }));
   const lowerRounds = stage.rounds
-    .map((r) => ({ number: r.number, pairings: r.pairings.filter((p) => p.bracket_type === "lower") }))
+    .map((r) => ({ 
+      number: r.number, 
+      pairings: r.pairings
+        .filter((p) => p.bracket_type === "lower")
+        .filter((p) => shouldIncludePairing(p, r.number))
+    }))
     .filter((r) => r.pairings.length > 0);
 
   // Layout constants
