@@ -93,6 +93,10 @@ html
             li.nav-item= link_to standings_tournament_players_path(@tournament), class: "nav-link #{'active' if controller_name == 'players' && action_name == 'standings'}" do
               => fa_icon 'list-ol'
               | Standings
+          - if policy(@tournament).show? && @tournament.stages.any?(&:elimination?)
+            li.nav-item= link_to bracket_tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name == 'bracket'}" do
+              => fa_icon 'sitemap'
+              | Bracket
           - if policy(@tournament).show?
             li.nav-item= link_to stats_tournament_path(@tournament), class: "nav-link #{'active' if controller_name == 'tournaments' && action_name == 'stats'}" do
               => fa_icon 'pie-chart'

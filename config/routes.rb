@@ -39,6 +39,7 @@ Rails.application.routes.draw do
       get :view_pairings, on: :collection
       get :pairings_data, on: :collection
     end
+    get :bracket, on: :member
     resources :stages, only: %i[create destroy]
     get :info, on: :member
     post :upload_to_abr, on: :member
