@@ -47,7 +47,6 @@
       : (match.table_label ?? "");
   }
 
-
   function getIdentity(player: BracketPlayer): Identity | undefined | null {
     if (player.side === "corp") {
       return player.corp_id;

@@ -5,7 +5,6 @@
   export let stage: Stage;
   export let tournamentId: number;
   export let start_expanded: boolean;
-
 </script>
 
 <div class="accordion mb-3" role="tablist">

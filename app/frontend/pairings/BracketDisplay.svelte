@@ -5,10 +5,12 @@
   import { SvelteMap } from "svelte/reactivity";
   import { showIdentities } from "./ShowIdentities";
 
-  export let stage: Stage;
+  let { stage }: { stage: Stage } = $props();
 
-  const isDoubleElim = stage.format === "double_elim";
-  const maxRoundNumber = Math.max(...stage.rounds.map((r) => r.number));
+  const isDoubleElim = $derived(stage.format === "double_elim");
+  const maxRoundNumber = $derived(
+    Math.max(...stage.rounds.map((r) => r.number)),
+  );
 
   const remSize =
     typeof window !== "undefined"
@@ -28,27 +30,31 @@
     return true;
   }
 
-  const upperRounds = stage.rounds.map((r) => ({
-    number: r.number,
-    pairings: r.pairings
-      .filter((p) => p.bracket_type === "upper")
-      .filter((p) => shouldIncludePairing(p, r.number)),
-  }));
-  const lowerRounds = stage.rounds
-    .map((r) => ({
+  const upperRounds = $derived(
+    stage.rounds.map((r) => ({
       number: r.number,
       pairings: r.pairings
-        .filter((p) => p.bracket_type === "lower")
+        .filter((p) => p.bracket_type === "upper")
         .filter((p) => shouldIncludePairing(p, r.number)),
-    }))
-    .filter((r) => r.pairings.length > 0);
+    })),
+  );
+  const lowerRounds = $derived(
+    stage.rounds
+      .map((r) => ({
+        number: r.number,
+        pairings: r.pairings
+          .filter((p) => p.bracket_type === "lower")
+          .filter((p) => shouldIncludePairing(p, r.number)),
+      }))
+      .filter((r) => r.pairings.length > 0),
+  );
 
   // Layout constants scaled by rem size
   // Base sizes are designed for 16px (1rem = 16px)
   const scaleFactor = remSize / 16;
   const columnWidth = 250 * scaleFactor;
   const columnGap = 32 * scaleFactor;
-  $: matchHeight = ($showIdentities ? 80 : 48) * scaleFactor;
+  const matchHeight = $derived(($showIdentities ? 80 : 48) * scaleFactor);
   const matchGap = 16 * scaleFactor;
   const padding = 16 * scaleFactor;
   const bracketGap = 32 * scaleFactor; // vertical gap between upper and lower bracket
@@ -56,8 +62,9 @@
   const columnX = (index: number): number =>
     padding + index * (columnWidth + columnGap);
 
-  $: baseMatchY = (index: number): number =>
-    padding + index * (matchHeight + matchGap);
+  const baseMatchY = $derived(
+    (index: number): number => padding + index * (matchHeight + matchGap),
+  );
 
   // Extract a flattened list of matches per column to compute connectors
   function roundsToColumns(rounds: typeof upperRounds): BracketMatch[][] {
@@ -72,57 +79,68 @@
   }
 
   // Compute SVG size heuristically
-  const upperCols = roundsToColumns(upperRounds);
-  const lowerCols = roundsToColumns(lowerRounds);
-  const numUpperRows = stage.rounds.reduce(
-    (max, r) =>
-      Math.max(
-        max,
-        r.pairings.filter((p) => p.bracket_type === "upper").length,
-      ),
-    0,
+  const upperCols = $derived(roundsToColumns(upperRounds));
+  const lowerCols = $derived(roundsToColumns(lowerRounds));
+  const numUpperRows = $derived(
+    stage.rounds.reduce(
+      (max, r) =>
+        Math.max(
+          max,
+          r.pairings.filter((p) => p.bracket_type === "upper").length,
+        ),
+      0,
+    ),
   );
-  const numLowerRows = stage.rounds.reduce(
-    (max, r) =>
-      Math.max(
-        max,
-        r.pairings.filter((p) => p.bracket_type === "lower").length,
-      ),
-    0,
+  const numLowerRows = $derived(
+    stage.rounds.reduce(
+      (max, r) =>
+        Math.max(
+          max,
+          r.pairings.filter((p) => p.bracket_type === "lower").length,
+        ),
+      0,
+    ),
   );
 
   // Align lower bracket's first column with the upper bracket's second column (by round number alignment)
-  const minLowerRound =
-    lowerRounds.length > 0 ? Math.min(...lowerRounds.map((r) => r.number)) : 1;
-  const lowerColOffset = Math.max(0, minLowerRound - 1);
+  const minLowerRound = $derived(
+    lowerRounds.length > 0 ? Math.min(...lowerRounds.map((r) => r.number)) : 1,
+  );
+  const lowerColOffset = $derived(Math.max(0, minLowerRound - 1));
 
-  const numCols = Math.max(upperCols.length, lowerCols.length + lowerColOffset);
-  const svgWidth = padding * 2 + numCols * (columnWidth + columnGap);
-  $: svgHeightUpper =
-    padding * 2 + Math.max(1, numUpperRows) * (matchHeight + matchGap);
-  $: svgHeightLower =
-    padding * 2 + Math.max(1, numLowerRows) * (matchHeight + matchGap);
-  $: svgHeightTotal = svgHeightUpper + bracketGap + svgHeightLower;
+  const numCols = $derived(
+    Math.max(upperCols.length, lowerCols.length + lowerColOffset),
+  );
+  const svgWidth = $derived(padding * 2 + numCols * (columnWidth + columnGap));
+  const svgHeightUpper = $derived(
+    padding * 2 + Math.max(1, numUpperRows) * (matchHeight + matchGap),
+  );
+  const svgHeightLower = $derived(
+    padding * 2 + Math.max(1, numLowerRows) * (matchHeight + matchGap),
+  );
+  const svgHeightTotal = $derived(svgHeightUpper + bracketGap + svgHeightLower);
 
   // For connectors: map successor_game within same bracket
-  $: connectorPath = (
-    fromCol: number,
-    fromRow: number,
-    toCol: number,
-    toRow: number,
-    yPos: number[][],
-    colOffset = 0,
-  ) => {
-    const x = (col: number) => columnX(col + colOffset);
-    const x1 = x(fromCol) + columnWidth;
-    const y1 =
-      (yPos[fromCol]?.[fromRow] ?? baseMatchY(fromRow)) + matchHeight / 2;
-    const x2 = x(toCol);
-    const y2 = (yPos[toCol]?.[toRow] ?? baseMatchY(toRow)) + matchHeight / 2;
-    const mx = (x1 + x2) / 2;
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    return `M ${x1} ${y1} L ${mx} ${y1} L ${mx} ${y2} L ${x2} ${y2}`;
-  };
+  const connectorPath = $derived(
+    (
+      fromCol: number,
+      fromRow: number,
+      toCol: number,
+      toRow: number,
+      yPos: number[][],
+      colOffset = 0,
+    ) => {
+      const x = (col: number) => columnX(col + colOffset);
+      const x1 = x(fromCol) + columnWidth;
+      const y1 =
+        (yPos[fromCol]?.[fromRow] ?? baseMatchY(fromRow)) + matchHeight / 2;
+      const x2 = x(toCol);
+      const y2 = (yPos[toCol]?.[toRow] ?? baseMatchY(toRow)) + matchHeight / 2;
+      const mx = (x1 + x2) / 2;
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      return `M ${x1} ${y1} L ${mx} ${y1} L ${mx} ${y2} L ${x2} ${y2}`;
+    },
+  );
 
   function getIndex(cols: BracketMatch[][]) {
     const index = new SvelteMap<string, { col: number; row: number }>();
@@ -138,31 +156,33 @@
     return index;
   }
 
-  const upperIndex = getIndex(upperCols);
-  const lowerIndex = getIndex(lowerCols);
+  const upperIndex = $derived(getIndex(upperCols));
+  const lowerIndex = $derived(getIndex(lowerCols));
 
-  $: connectorPathTo = (
-    index: SvelteMap<string, { col: number; row: number }>,
-    fromCol: number,
-    fromRow: number,
-    successorGame: number,
-    yPos: number[][],
-    colOffset = 0,
-  ): string | null => {
-    const target = index.get(String(successorGame));
-    if (!target) return null;
-    return connectorPath(
-      fromCol,
-      fromRow,
-      target.col,
-      target.row,
-      yPos,
-      colOffset,
-    );
-  };
+  const connectorPathTo = $derived(
+    (
+      index: SvelteMap<string, { col: number; row: number }>,
+      fromCol: number,
+      fromRow: number,
+      successorGame: number,
+      yPos: number[][],
+      colOffset = 0,
+    ): string | null => {
+      const target = index.get(String(successorGame));
+      if (!target) return null;
+      return connectorPath(
+        fromCol,
+        fromRow,
+        target.col,
+        target.row,
+        yPos,
+        colOffset,
+      );
+    },
+  );
 
   // Compute Y positions per column so that each game is centered between its predecessors
-  $: computeYPositions = (cols: BracketMatch[][]): number[][] => {
+  const computeYPositions = $derived((cols: BracketMatch[][]): number[][] => {
     const positions: number[][] = cols.map((col) =>
       new Array<number>(col.length).fill(0),
     );
@@ -205,10 +225,10 @@
     }
 
     return positions;
-  };
+  });
 
-  $: upperY = computeYPositions(upperCols);
-  $: lowerY = computeYPositions(lowerCols);
+  const upperY = $derived(computeYPositions(upperCols));
+  const lowerY = $derived(computeYPositions(lowerCols));
 </script>
 
 <div class="bracket-embedded overflow-auto border rounded p-2">

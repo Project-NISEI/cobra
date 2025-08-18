@@ -41,5 +41,3 @@
     <div class="spinner-border m-auto"></div>
   </div>
 {/if}
-
-
