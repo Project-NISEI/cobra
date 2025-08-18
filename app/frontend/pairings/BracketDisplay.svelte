@@ -22,7 +22,7 @@
   ): boolean {
     // If this is the last round in double elim and the pairing has no players, exclude it
     if (isDoubleElim && roundNumber === maxRoundNumber) {
-      // Check if the pairing has actual player data
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       return !!(pairing.player1 || pairing.player2);
     }
     return true;
@@ -45,15 +45,15 @@
 
   // Layout constants scaled by rem size
   // Base sizes are designed for 16px (1rem = 16px)
-  $: scaleFactor = remSize / 16;
-  $: columnWidth = 250 * scaleFactor;
-  $: columnGap = 32 * scaleFactor;
+  const scaleFactor = remSize / 16;
+  const columnWidth = 250 * scaleFactor;
+  const columnGap = 32 * scaleFactor;
   $: matchHeight = ($showIdentities ? 80 : 48) * scaleFactor;
-  $: matchGap = 16 * scaleFactor;
-  $: padding = 16 * scaleFactor;
-  $: bracketGap = 32 * scaleFactor; // vertical gap between upper and lower bracket
+  const matchGap = 16 * scaleFactor;
+  const padding = 16 * scaleFactor;
+  const bracketGap = 32 * scaleFactor; // vertical gap between upper and lower bracket
 
-  $: columnX = (index: number): number =>
+  const columnX = (index: number): number =>
     padding + index * (columnWidth + columnGap);
 
   $: baseMatchY = (index: number): number =>
@@ -97,7 +97,7 @@
   const lowerColOffset = Math.max(0, minLowerRound - 1);
 
   const numCols = Math.max(upperCols.length, lowerCols.length + lowerColOffset);
-  $: svgWidth = padding * 2 + numCols * (columnWidth + columnGap);
+  const svgWidth = padding * 2 + numCols * (columnWidth + columnGap);
   $: svgHeightUpper =
     padding * 2 + Math.max(1, numUpperRows) * (matchHeight + matchGap);
   $: svgHeightLower =
