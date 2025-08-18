@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { BracketMatch } from "./bracketTypes";
-  import Identity from "../identities/Identity.svelte";
+  import type { BracketMatch, BracketPlayer } from "./bracketTypes";
+  import type { Identity } from "../identities/Identity";
+  import IdentityComponent from "../identities/Identity.svelte";
   import { showIdentities } from "./ShowIdentities";
 
   export let match: BracketMatch;
@@ -45,6 +46,16 @@
       ? String(match.table_number)
       : (match.table_label ?? "");
   }
+
+
+  function getIdentity(player: BracketPlayer): Identity | undefined | null {
+    if (player.side === "corp") {
+      return player.corp_id;
+    } else if (player.side === "runner") {
+      return player.runner_id;
+    }
+    return null;
+  }
 </script>
 
 <!-- eslint-disable-next-line @typescript-eslint/restrict-template-expressions -->
@@ -53,9 +64,9 @@
   <text x="8" y={height / 2} class="game-label" dominant-baseline="middle"
     >{labelFor(match)}</text
   >
-  <foreignObject x="28" y="2" width={width - 48} height={height - 4}>
+  <foreignObject x="28" y="2" width={width - 40} height={height - 4}>
     <div xmlns="http://www.w3.org/1999/xhtml" class="small content">
-      <div class="player-line d-flex">
+      <div class="player-line d-flex" class:mb-1={$showIdentities}>
         <div class={getStyles(match, 1)}>
           {#if match.player1}
             {#if sideAbbrev(match.player1.side)}
@@ -65,20 +76,12 @@
             {/if}
             <span class="truncate">{match.player1.name_with_pronouns}</span>
             {#if $showIdentities}
-              <div class="ids">
-                {#if match.player1.side === "corp" && match.player1.corp_id}
-                  <Identity identity={match.player1.corp_id} />
-                {:else if match.player1.side === "runner" && match.player1.runner_id}
-                  <Identity identity={match.player1.runner_id} />
-                {:else}
-                  {#if match.player1.corp_id}
-                    <Identity identity={match.player1.corp_id} />
-                  {/if}
-                  {#if match.player1.runner_id}
-                    <Identity identity={match.player1.runner_id} />
-                  {/if}
-                {/if}
-              </div>
+              {@const identity = getIdentity(match.player1)}
+              {#if identity}
+                <div class="ids">
+                  <IdentityComponent {identity} />
+                </div>
+              {/if}
             {/if}
           {:else}
             <em class="text-muted">TBD</em>
@@ -95,20 +98,12 @@
             {/if}
             <span class="truncate">{match.player2.name_with_pronouns}</span>
             {#if $showIdentities}
-              <div class="ids">
-                {#if match.player2.side === "corp" && match.player2.corp_id}
-                  <Identity identity={match.player2.corp_id} />
-                {:else if match.player2.side === "runner" && match.player2.runner_id}
-                  <Identity identity={match.player2.runner_id} />
-                {:else}
-                  {#if match.player2.corp_id}
-                    <Identity identity={match.player2.corp_id} />
-                  {/if}
-                  {#if match.player2.runner_id}
-                    <Identity identity={match.player2.runner_id} />
-                  {/if}
-                {/if}
-              </div>
+              {@const identity = getIdentity(match.player2)}
+              {#if identity}
+                <div class="ids">
+                  <IdentityComponent {identity} />
+                </div>
+              {/if}
             {/if}
           {:else}
             <em class="text-muted">TBD</em>

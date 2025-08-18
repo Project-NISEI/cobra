@@ -46,9 +46,9 @@
   // Layout constants scaled by rem size
   // Base sizes are designed for 16px (1rem = 16px)
   $: scaleFactor = remSize / 16;
-  $: columnWidth = 200 * scaleFactor;
+  $: columnWidth = 250 * scaleFactor;
   $: columnGap = 32 * scaleFactor;
-  $: matchHeight = ($showIdentities ? 72 : 48) * scaleFactor;
+  $: matchHeight = ($showIdentities ? 80 : 48) * scaleFactor;
   $: matchGap = 16 * scaleFactor;
   $: padding = 16 * scaleFactor;
   $: bracketGap = 32 * scaleFactor; // vertical gap between upper and lower bracket
