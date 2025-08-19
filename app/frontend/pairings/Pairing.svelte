@@ -22,7 +22,7 @@
 </script>
 
 <div
-  class="row m-1 round_pairing align-items-center table_{pairing.table_number}"
+  class="row m-1 round_pairing align-items-center table_{pairing.table_number} {pairing.ui_metadata.row_highlighted ? 'current_user_row' : ''}"
 >
   <div
     class="col-sm-2 {pairing.ui_metadata.row_highlighted
@@ -30,7 +30,6 @@
       : ''}"
   >
     {pairing.table_label}
-    {pairing.ui_metadata.row_highlighted ? "(you)" : ""}
   </div>
   {#if pairing.policy.view_decks}
     <a href="{round.id}/pairings/{pairing.id}/view_decks">
