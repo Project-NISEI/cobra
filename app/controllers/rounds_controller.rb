@@ -214,6 +214,15 @@ class RoundsController < ApplicationController
                                                          players[player2_id]&.dig('user_id')) &&
                        score1.nil? && score2.nil?
         },
+        # TODO: in future pass current user to svelte frontend
+        ui_metadata: {
+          row_highlighted: if current_user.nil?
+                             false
+                           else
+                             current_user.id == players[player1_id]&.dig('user_id') ||
+                             current_user.id == players[player2_id]&.dig('user_id')
+                           end
+        },
         player1: pairings_data_player(players[player1_id], player1_side(side)),
         player2: pairings_data_player(players[player2_id], player2_side(side)),
         score_label: score_label(@tournament.swiss_format, player1_side(side),
