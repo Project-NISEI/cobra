@@ -65,7 +65,6 @@ export interface UiMetadata {
   row_highlighted: boolean;
 }
 
-
 export interface SelfReport {
   report_player_id: number;
   score1: number;
