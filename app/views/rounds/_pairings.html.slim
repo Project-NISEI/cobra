@@ -58,7 +58,7 @@
         .preset_score
           - presets(pairing).each do |data|
             => preset_score_button pairing, data
-          => link_to '...', '#', class: 'btn btn-primary toggle_custom_score'
+          => link_to '...', '#', class: 'btn btn-primary mb-1 toggle_custom_score'
         .custom_score
           = simple_form_for pairing, url: report_tournament_round_pairing_path(round.tournament, round, pairing), method: :post, html: { class: 'form-inline' } do |f|
             .mx-auto
@@ -151,3 +151,4 @@
                     => fa_icon 'undo'
                     | Reset
                     javascript: $('.reset-self-reports').tooltip()
+  hr.my-3
