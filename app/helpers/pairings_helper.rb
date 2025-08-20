@@ -45,7 +45,7 @@ module PairingsHelper
     value = side_value(player, side, pairing)
     active = (pairing.side.try(:to_sym) == value)
 
-    link_to "#{'<i class="fa fa-check"></i>' if active} #{side.capitalize}".html_safe,
+    link_to "#{'<i class="fa fa-check"></i>' if active} #{side.capitalize}".html_safe, # rubocop:disable Rails/OutputSafety
             report_tournament_round_pairing_path(
               pairing.tournament,
               pairing.round_id,

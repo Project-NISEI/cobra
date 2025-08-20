@@ -65,7 +65,7 @@ RSpec.describe 'list pairings for a round' do
     end
 
     it 'displays side selection buttons' do
-      expect(page).to have_content('CorpRunner')
+      expect(page).to have_content('Corp Runner')
     end
 
     it 'does not display preset score options before side selection' do
