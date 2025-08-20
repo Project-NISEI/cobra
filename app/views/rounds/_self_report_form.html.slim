@@ -1,0 +1,11 @@
+ = simple_form_for pairing, url: report_tournament_round_pairing_path(round.tournament, round, pairing), method: :post, html: { class: 'form-inline' } do |f|
+    .mx-auto
+        = f.hidden_field :score1_runner, value: 0
+        = f.hidden_field :score1_corp, value: 0
+        = f.hidden_field :score2_runner, value: 0
+        = f.hidden_field :score2_corp, value: 0
+        = f.hidden_field :score1, value: report.score1
+        = f.hidden_field :score2, value: report.score2
+        = button_tag type: :submit, class: "btn btn-primary mx-2", disabled: pairing.reported? do                
+            => fa_icon 'check'
+            | Accept #{player.name}
