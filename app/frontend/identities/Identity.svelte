@@ -5,9 +5,9 @@
   export let name_if_missing: string | null = null;
   export let points: number | null = null;
 
-  export let include_icon: boolean = true;
-  export let include_name: boolean = true;
-  export let gray_out: boolean = false;
+  export let include_icon = true;
+  export let include_name = true;
+  export let gray_out = false;
 </script>
 
 {#if identity && (identity.name || name_if_missing)}
