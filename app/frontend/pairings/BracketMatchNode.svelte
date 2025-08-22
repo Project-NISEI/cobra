@@ -20,7 +20,9 @@
   }
 
   function hasWinner(match: BracketMatch): boolean {
-    return !!match.score_label?.includes("R") || !!match.score_label?.includes("C");
+    return (
+      !!match.score_label?.includes("R") || !!match.score_label?.includes("C")
+    );
   }
 
   function isWinner(player: BracketPlayer | undefined | null): boolean {
@@ -52,7 +54,6 @@
     return null;
   }
 
-
   $: topPlayer = match.player1?.side === "corp" ? match.player1 : match.player2;
   $: bottomPlayer =
     match.player1?.side === "corp" ? match.player2 : match.player1;
@@ -69,14 +70,22 @@
       <div class="player-line d-flex" class:mb-1={$showIdentities}>
         <div
           class="flex-fill pr-2 {match.score_label
-            ? !hasWinner(match) ? '' : isWinner(topPlayer) ? 'winner' : 'loser'
+            ? !hasWinner(match)
+              ? ''
+              : isWinner(topPlayer)
+                ? 'winner'
+                : 'loser'
             : ''}"
         >
-      {#if topPlayer}
+          {#if topPlayer}
             {@const identity = getIdentity(topPlayer)}
             <div class="player-info">
               {#if identity}
-                <IdentityComponent {identity} include_name={false} gray_out={isLoser(topPlayer)} />
+                <IdentityComponent
+                  {identity}
+                  include_name={false}
+                  gray_out={isLoser(topPlayer)}
+                />
               {/if}
               <span class="truncate">
                 {topPlayer.name_with_pronouns}
@@ -85,7 +94,11 @@
             {#if $showIdentities}
               {#if identity}
                 <div class="ids">
-                  <IdentityComponent {identity} include_icon={false} gray_out={isLoser(topPlayer)} />
+                  <IdentityComponent
+                    {identity}
+                    include_icon={false}
+                    gray_out={isLoser(topPlayer)}
+                  />
                 </div>
               {/if}
             {/if}
@@ -97,14 +110,22 @@
       <div class="player-line d-flex">
         <div
           class="flex-fill pr-2 {match.score_label
-            ? !hasWinner(match) ? '' : isWinner(bottomPlayer) ? 'winner' : 'loser'
+            ? !hasWinner(match)
+              ? ''
+              : isWinner(bottomPlayer)
+                ? 'winner'
+                : 'loser'
             : ''}"
         >
           {#if bottomPlayer}
             {@const identity = getIdentity(bottomPlayer)}
             <div class="player-info">
               {#if identity}
-                <IdentityComponent {identity} include_name={false} gray_out={isLoser(bottomPlayer)} />
+                <IdentityComponent
+                  {identity}
+                  include_name={false}
+                  gray_out={isLoser(bottomPlayer)}
+                />
               {/if}
               <span class="truncate">
                 {bottomPlayer.name_with_pronouns}
@@ -113,7 +134,11 @@
             {#if $showIdentities}
               {#if identity}
                 <div class="ids">
-                  <IdentityComponent {identity} include_icon={false} gray_out={isLoser(bottomPlayer)} />
+                  <IdentityComponent
+                    {identity}
+                    include_icon={false}
+                    gray_out={isLoser(bottomPlayer)}
+                  />
                 </div>
               {/if}
             {/if}
