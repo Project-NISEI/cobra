@@ -19,26 +19,24 @@
     return res[1] === "C" ? "corp" : "runner";
   }
 
-  function winnerIndex(match: BracketMatch): 1 | 2 | null {
-    const side = parseWinnerSide(match.score_label);
-    if (side) {
-      if (match.player1?.side === side) return 1;
-      if (match.player2?.side === side) return 2;
-    }
-    return null;
+  function hasWinner(match: BracketMatch): boolean {
+    return (
+      !!match.score_label?.includes("R") || !!match.score_label?.includes("C")
+    );
   }
 
-  function getStyles(match: BracketMatch, playerIndex: 1 | 2): string {
-    const wIdx = winnerIndex(match);
-    const base = "flex-fill pr-2";
-    if (wIdx === null) return base;
-    return `${base} ${wIdx === playerIndex ? "winner" : "loser"}`;
+  function isWinner(player: BracketPlayer | undefined | null): boolean {
+    if (!player) return false;
+    if (!hasWinner(match)) return false;
+    const winnerSide = parseWinnerSide(match.score_label);
+    return winnerSide === player.side;
   }
 
-  function sideAbbrev(side: string | null | undefined): string | null {
-    if (side === "corp") return "C";
-    if (side === "runner") return "R";
-    return null;
+  function isLoser(player: BracketPlayer | undefined | null): boolean {
+    if (!player) return false;
+    if (!hasWinner(match)) return false;
+    const winnerSide = parseWinnerSide(match.score_label);
+    return winnerSide !== player.side;
   }
 
   function labelFor(match: BracketMatch): string {
@@ -55,6 +53,10 @@
     }
     return null;
   }
+
+  $: topPlayer = match.player1?.side === "corp" ? match.player1 : match.player2;
+  $: bottomPlayer =
+    match.player1?.side === "corp" ? match.player2 : match.player1;
 </script>
 
 <!-- eslint-disable-next-line @typescript-eslint/restrict-template-expressions -->
@@ -66,19 +68,37 @@
   <foreignObject x="28" y="2" width={width - 40} height={height - 4}>
     <div xmlns="http://www.w3.org/1999/xhtml" class="small content">
       <div class="player-line d-flex" class:mb-1={$showIdentities}>
-        <div class={getStyles(match, 1)}>
-          {#if match.player1}
-            {#if sideAbbrev(match.player1.side)}
-              <span class="text-muted">
-                {sideAbbrev(match.player1.side)}
+        <div
+          class="flex-fill pr-2 {match.score_label
+            ? !hasWinner(match)
+              ? ''
+              : isWinner(topPlayer)
+                ? 'winner'
+                : 'loser'
+            : ''}"
+        >
+          {#if topPlayer}
+            {@const identity = getIdentity(topPlayer)}
+            <div class="player-info">
+              {#if identity}
+                <IdentityComponent
+                  {identity}
+                  include_name={false}
+                  gray_out={isLoser(topPlayer)}
+                />
+              {/if}
+              <span class="truncate">
+                {topPlayer.name_with_pronouns}
               </span>
-            {/if}
-            <span class="truncate">{match.player1.name_with_pronouns}</span>
+            </div>
             {#if $showIdentities}
-              {@const identity = getIdentity(match.player1)}
               {#if identity}
                 <div class="ids">
-                  <IdentityComponent {identity} />
+                  <IdentityComponent
+                    {identity}
+                    include_icon={false}
+                    gray_out={isLoser(topPlayer)}
+                  />
                 </div>
               {/if}
             {/if}
@@ -88,19 +108,37 @@
         </div>
       </div>
       <div class="player-line d-flex">
-        <div class={getStyles(match, 2)}>
-          {#if match.player2}
-            {#if sideAbbrev(match.player2.side)}
-              <span class="text-muted">
-                {sideAbbrev(match.player2.side)}
+        <div
+          class="flex-fill pr-2 {match.score_label
+            ? !hasWinner(match)
+              ? ''
+              : isWinner(bottomPlayer)
+                ? 'winner'
+                : 'loser'
+            : ''}"
+        >
+          {#if bottomPlayer}
+            {@const identity = getIdentity(bottomPlayer)}
+            <div class="player-info">
+              {#if identity}
+                <IdentityComponent
+                  {identity}
+                  include_name={false}
+                  gray_out={isLoser(bottomPlayer)}
+                />
+              {/if}
+              <span class="truncate">
+                {bottomPlayer.name_with_pronouns}
               </span>
-            {/if}
-            <span class="truncate">{match.player2.name_with_pronouns}</span>
+            </div>
             {#if $showIdentities}
-              {@const identity = getIdentity(match.player2)}
               {#if identity}
                 <div class="ids">
-                  <IdentityComponent {identity} />
+                  <IdentityComponent
+                    {identity}
+                    include_icon={false}
+                    gray_out={isLoser(bottomPlayer)}
+                  />
                 </div>
               {/if}
             {/if}
@@ -134,6 +172,11 @@
   .player-line {
     white-space: nowrap;
     overflow: visible;
+  }
+  .player-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
   .truncate {
     display: inline-block;
