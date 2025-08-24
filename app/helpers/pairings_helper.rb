@@ -28,7 +28,7 @@ module PairingsHelper
               pairing: data
             ),
             method: :post,
-            class: 'btn btn-primary'
+            class: 'btn btn-primary mb-1'
   end
 
   def side_value(player, side, pairing)
@@ -45,7 +45,7 @@ module PairingsHelper
     value = side_value(player, side, pairing)
     active = (pairing.side.try(:to_sym) == value)
 
-    link_to side.capitalize,
+    link_to "#{'<i class="fa fa-check"></i>' if active} #{side.capitalize}".html_safe, # rubocop:disable Rails/OutputSafety
             report_tournament_round_pairing_path(
               pairing.tournament,
               pairing.round_id,

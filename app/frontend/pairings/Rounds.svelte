@@ -22,6 +22,7 @@
   <FontAwesomeIcon icon="eye-slash" />
   Show/hide identities
 </button>
+
 <p></p>
 
 {#if data}
