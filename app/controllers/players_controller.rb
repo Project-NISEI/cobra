@@ -96,7 +96,6 @@ class PlayersController < ApplicationController
       return
     end
     details = request['details']
-    return if details['user_id'] && details['user_id'] != current_user.id
 
     details.keep_if { |key| Deck.column_names.include? key }
     details['side_id'] = side
