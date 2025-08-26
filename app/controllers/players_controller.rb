@@ -298,7 +298,8 @@ class PlayersController < ApplicationController
   def player_params
     params.require(:player)
           .permit(:name, :pronouns, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-                  :first_round_bye, :manual_seed, :include_in_stream, :fixed_table_number)
+                  :first_round_bye, :manual_seed, :include_in_stream, :fixed_table_number,
+                  :organiser_view, :registration_view)
   end
 
   def organiser_view?
