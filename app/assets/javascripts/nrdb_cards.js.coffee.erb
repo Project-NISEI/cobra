@@ -18,7 +18,6 @@ $(document).on 'turbolinks:load', ->
       getPrintings({
         data: {
           'filter[search]': query,
-          'filter[distinct_cards]': '',
           'page[size]': 10000
         },
         success: (response) =>
