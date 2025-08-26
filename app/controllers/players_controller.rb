@@ -127,11 +127,6 @@ class PlayersController < ApplicationController
   def standings_data
     authorize @tournament, :show?
 
-    sql = ActiveRecord::Base.sanitize_sql([
-                                            'SELECT * FROM standings_data_view WHERE tournament_id = ?', @tournament.id
-                                          ])
-    rows = ActiveRecord::Base.connection.exec_query(sql).to_a
-
     stages = @tournament.stages.includes(
       rounds: [pairings: %i[player1 player2]],
       registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]],
@@ -151,6 +146,53 @@ class PlayersController < ApplicationController
           standings: render_standings_for_stage(stage)
         }
       end
+    }
+  end
+
+  def new_standings_data
+    authorize @tournament, :show?
+
+    sql = ActiveRecord::Base.sanitize_sql([
+                                            'SELECT * FROM standings_data_view WHERE tournament_id = ?', @tournament.id
+                                          ])
+    rows = ActiveRecord::Base.connection.exec_query(sql).to_a
+
+    is_player_meeting = false
+    manual_seed = false
+
+    stages_map = {}
+    stages = []
+    rows.each do |r|
+      is_player_meeting = true if r['is_player_meeting']
+      manual_seed = true if r['manual_seed']
+
+      stages_map[r['stage_number']] = {} unless stages_map.key?(r['stage_number'])
+    end
+
+    stages = stages_map.keys.map { |stage_number| { number: stage_number, data: stages_map[stage_number] } }
+
+    # stages = @tournament.stages.includes(
+    #   rounds: [pairings: %i[player1 player2]],
+    #   registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]],
+    #   standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]]
+    # )
+    # elimination = stages.select(&:double_elim?).first
+    # elimination = stages.select(&:single_elim?).first if elimination.nil?
+    render json: {
+      is_player_meeting:,
+      manual_seed:,
+      stages:,
+      # is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
+      # manual_seed: @tournament.manual_seed?,
+      # stages: stages.reverse.map do |stage|
+      #   {
+      #     format: stage.format,
+      #     rounds_complete: stage.rounds.select(&:completed?).count,
+      #     any_decks_viewable: stage.decks_visible_to(current_user) ||
+      #       (elimination&.decks_visible_to(current_user) ? true : false),
+      #     standings: render_standings_for_stage(stage)
+      #   }
+      # end
     }
   end
 
