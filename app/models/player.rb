@@ -18,6 +18,8 @@ class Player < ApplicationRecord
   scope :dropped, -> { where(active: false) }
   scope :with_first_round_bye, -> { where(first_round_bye: true) }
 
+  attr_accessor :organiser_view, :registration_view
+
   def pairings
     Pairing.for_player(self)
   end
