@@ -23,58 +23,58 @@
       p
       .reported_hidden_message.alert.alert-info Reported scores are currently hidden on this page. This will not affect other users viewing this page.
       p
+      - if policy(@tournament).update?
+        p
+          - if @tournament.registration_open?
+            => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
+              => fa_icon 'lock'
+              | Close registration
+          - elsif @tournament.self_registration? and @tournament.rounds.empty?
+            => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-secondary' do
+              => fa_icon 'folder-open'
+              | Open registration
+            - if @tournament.locked_players.count > 0
+              => link_to unlock_player_registrations_tournament_path(@tournament), method: :patch, class: 'btn btn-secondary' do
+                => fa_icon 'unlock'
+                | Unlock all players
+            - if @tournament.unlocked_players.count > 0
+              => link_to lock_player_registrations_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
+                => fa_icon 'lock'
+                | Lock all players
+          - if @tournament.rounds.all?(&:completed?)
+            => link_to tournament_rounds_path(@tournament), method: :post, class: 'btn btn-success',
+                    data: { confirm: @tournament.registration_unlocked? ? 'Registration is still open or some players are unlocked, pair new round anyway?' : nil } do
+              => fa_icon 'plus'
+              | Pair new round!
+          - else
+            a.btn.btn-secondary.mr-3.disabled
+              => fa_icon 'plus'
+              | Pair new round!
+            | All rounds must be flagged complete before you can add a new round
 
     = render @stages
 
-    - if policy(@tournament).update?
+    - unless @stages.last.elimination?
       p
-        - if @tournament.registration_open?
-          => link_to close_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
-            => fa_icon 'lock'
-            | Close registration
-        - elsif @tournament.self_registration? and @tournament.rounds.empty?
-          => link_to open_registration_tournament_path(@tournament), method: :patch, class: 'btn btn-secondary' do
-            => fa_icon 'folder-open'
-            | Open registration
-          - if @tournament.locked_players.count > 0
-            => link_to unlock_player_registrations_tournament_path(@tournament), method: :patch, class: 'btn btn-secondary' do
-              => fa_icon 'unlock'
-              | Unlock all players
-          - if @tournament.unlocked_players.count > 0
-            => link_to lock_player_registrations_tournament_path(@tournament), method: :patch, class: 'btn btn-info' do
-              => fa_icon 'lock'
-              | Lock all players
-        - if @tournament.rounds.all?(&:completed?)
-          => link_to tournament_rounds_path(@tournament), method: :post, class: 'btn btn-success',
-                  data: { confirm: @tournament.registration_unlocked? ? 'Registration is still open or some players are unlocked, pair new round anyway?' : nil } do
-            => fa_icon 'plus'
-            | Pair new round!
-        - else
-          a.btn.btn-secondary.mr-3.disabled
-            => fa_icon 'plus'
-            | Pair new round!
-          | All rounds must be flagged complete before you can add a new round
-      - unless @stages.last.elimination?
-        p
-          => link_to cut_tournament_path(@tournament, number: 3, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
-            => fa_icon 'scissors'
-            | Single-Elimination Top 3
-          => link_to cut_tournament_path(@tournament, number: 4, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
-            => fa_icon 'scissors'
-            | Single-Elimination Top 4
-          => link_to cut_tournament_path(@tournament, number: 8, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
-            => fa_icon 'scissors'
-            | Single-Elimination Top 8
-          => link_to cut_tournament_path(@tournament, number: 16, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
-            => fa_icon 'scissors'
-            | Single-Elimination Top 16
-        p
-          => link_to cut_tournament_path(@tournament, number: 4), method: :post, class: 'btn btn-success' do
-            => fa_icon 'scissors'
-            | Double-Elimination Top 4
-          => link_to cut_tournament_path(@tournament, number: 8), method: :post, class: 'btn btn-success' do
-            => fa_icon 'scissors'
-            | Double-Elimination Top 8
-          => link_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do
-            => fa_icon 'scissors'
-            | Double-Elimination Top 16
+        => link_to cut_tournament_path(@tournament, number: 3, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+          => fa_icon 'scissors'
+          | Single-Elimination Top 3
+        => link_to cut_tournament_path(@tournament, number: 4, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+          => fa_icon 'scissors'
+          | Single-Elimination Top 4
+        => link_to cut_tournament_path(@tournament, number: 8, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+          => fa_icon 'scissors'
+          | Single-Elimination Top 8
+        => link_to cut_tournament_path(@tournament, number: 16, elimination_type: 'single'), method: :post, class: 'btn btn-success' do
+          => fa_icon 'scissors'
+          | Single-Elimination Top 16
+      p
+        => link_to cut_tournament_path(@tournament, number: 4), method: :post, class: 'btn btn-success' do
+          => fa_icon 'scissors'
+          | Double-Elimination Top 4
+        => link_to cut_tournament_path(@tournament, number: 8), method: :post, class: 'btn btn-success' do
+          => fa_icon 'scissors'
+          | Double-Elimination Top 8
+        => link_to cut_tournament_path(@tournament, number: 16), method: :post, class: 'btn btn-success' do
+          => fa_icon 'scissors'
+          | Double-Elimination Top 16
