@@ -87,7 +87,7 @@ class PlayersController < ApplicationController
   end
 
   def save_deck(params, param, side)
-    return unless params.key?(param)
+    return if !params.key?(param) || (params['user_id'] && params['user_id'] != current_user.id)
 
     begin
       request = JSON.parse(params[param])

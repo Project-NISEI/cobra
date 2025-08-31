@@ -337,6 +337,59 @@ RSpec.describe PlayersController do
       expect(tournament.reload.all_players_unlocked?).to be(true)
       expect(tournament.any_player_unlocked?).to be(true)
     end
+
+    it 'allows user to update their own decks' do
+      sign_in user1
+      put tournament_player_path(tournament, @player1), params: { player: {
+        corp_identity: 'Haas-Bioroid: Precision Design',
+        corp_deck: JSON.generate({ details: { name: 'Test Corp Deck', user_id: user1.id }, cards: [] }),
+        runner_identity: 'Zahya Sadeghi: Versatile Smuggler',
+        runner_deck: JSON.generate({ details: { name: 'Test Runner Deck', user_id: user1.id }, cards: [] })
+      } }
+
+      @player1.reload
+      expect(@player1.corp_identity).to eq('Haas-Bioroid: Precision Design')
+      expect(@player1.corp_deck).not_to be_nil
+      expect(@player1.corp_deck.name).to eq('Test Corp Deck')
+      expect(@player1.runner_identity).to eq('Zahya Sadeghi: Versatile Smuggler')
+      expect(@player1.runner_deck).not_to be_nil
+      expect(@player1.runner_deck.name).to eq('Test Runner Deck')
+    end
+
+    it 'prevents user from updating another users\'s decks' do
+      sign_in user2
+      put tournament_player_path(tournament, @player1), params: { player: {
+        corp_identity: 'Haas-Bioroid: Precision Design',
+        corp_deck: JSON.generate({ details: { name: 'Test Corp Deck', user_id: user1.id }, cards: [] }),
+        runner_identity: 'Zahya Sadeghi: Versatile Smuggler',
+        runner_deck: JSON.generate({ details: { name: 'Test Runner Deck', user_id: user1.id }, cards: [] })
+      } }
+
+      @player1.reload
+      expect(@player1.corp_identity).to be_nil
+      expect(@player1.corp_deck).to be_nil
+      expect(@player1.runner_identity).to be_nil
+      expect(@player1.runner_deck).to be_nil
+      expect_unauthorized
+    end
+
+    it 'allows TO to update another user\'s deck' do
+      sign_in tournament.user
+      put tournament_player_path(tournament, @player1), params: { player: {
+        corp_identity: 'Haas-Bioroid: Precision Design',
+        corp_deck: JSON.generate({ details: { name: 'Test Corp Deck', user_id: user1.id }, cards: [] }),
+        runner_identity: 'Zahya Sadeghi: Versatile Smuggler',
+        runner_deck: JSON.generate({ details: { name: 'Test Runner Deck', user_id: user1.id }, cards: [] })
+      } }
+
+      @player1.reload
+      expect(@player1.corp_identity).to eq('Haas-Bioroid: Precision Design')
+      expect(@player1.corp_deck).not_to be_nil
+      expect(@player1.corp_deck.name).to eq('Test Corp Deck')
+      expect(@player1.runner_identity).to eq('Zahya Sadeghi: Versatile Smuggler')
+      expect(@player1.runner_deck).not_to be_nil
+      expect(@player1.runner_deck.name).to eq('Test Runner Deck')
+    end
   end
 
   describe 'standings data' do
