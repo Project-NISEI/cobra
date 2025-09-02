@@ -110,13 +110,13 @@
     - if policy(round.tournament).update?
       .row-sm1.mr-3
         // TODO: TrueSvenpai -> check for solution with shared modals instead of multiple.
-        button.btn.btn-primary.mr-2 data-toggle="modal" data-target="#selfReportModal_#{round.id}_#{pairing.table_number}" type="button"
+        button.btn.btn-primary.mr-2 data-toggle="modal" data-target="#selfReportModal_#{round.id}_#{pairing.id}" type="button"
           | Reports
           - if !pairing.reported? && (players_have_self_reported && !self_reports_match)
             =< fa_icon 'exclamation-triangle'
         = link_to tournament_round_pairing_path(round.tournament, round, pairing), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed.' } do
           => fa_icon 'trash'
-        .modal.fade id="selfReportModal_#{round.id}_#{pairing.table_number}" tabindex="-1" role="dialog" aria-hidden="true"
+        .modal.fade id="selfReportModal_#{round.id}_#{pairing.id}" tabindex="-1" role="dialog" aria-hidden="true"
           .modal-dialog.modal-dialog-centered role="document"
             .modal-content
               .modal-header
