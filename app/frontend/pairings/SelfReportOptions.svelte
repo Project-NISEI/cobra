@@ -142,7 +142,7 @@
                   return onSelfReportPresetClicked(preset);
                 }}
               >
-                {preset.label}
+                {preset.extra_self_report_label ?? preset.label}
               </button>
             {/each}
           {:else}
