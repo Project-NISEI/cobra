@@ -124,21 +124,21 @@
                 button.close type="button" data-dismiss="modal" aria-label="Close"
                   span aria-hidden="true" &times;
               .modal-body
-                p 
+                p
                   = "#{left_player.name} reported:"
                   - if left_player_report
                     =< "#{readable_self_report_score(pairing, left_player_report)}"
                     - if (players_have_self_reported && !self_reports_match)
                       =< fa_icon 'times'
-                  - else 
+                  - else
                    = fa_icon 'hourglass', class: 'missing-report-tooltip m-1'
-                p 
+                p
                   = "#{right_player.name} reported: "
                   - if right_player_report
                     =< "#{readable_self_report_score(pairing, right_player_report)}"
                     - if (players_have_self_reported && !self_reports_match)
                       =< fa_icon 'times'
-                  - else 
+                  - else
                    = fa_icon 'hourglass', class: 'missing-report-tooltip m-1'
               .modal-footer
                 - if left_player_report
@@ -152,4 +152,4 @@
                     => fa_icon 'undo'
                     | Reset
                     javascript: $('.reset-self-reports').tooltip()
-  hr.my-3
+  hr.my-3 class="#{'reported' if pairing.reported? && current_user == @tournament.user}"
