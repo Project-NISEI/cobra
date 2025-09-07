@@ -33,12 +33,12 @@
   </div>
   {#if pairing.policy.view_decks}
     {#if stage.is_single_sided}
-      <a href="{round.id}/pairings/{pairing.id}/view_decks">
+      <a href="{round.id}/pairings/{pairing.id}/view_decks?back_to=pairings">
         <FontAwesomeIcon icon="eye" />
         View decks
       </a>
     {:else}
-      <a href="../players/{pairing.player1.id}/view_decks">
+      <a href="../players/{pairing.player1.id}/view_decks?back_to=pairings">
         <FontAwesomeIcon icon="eye" />
         View decks
       </a>
@@ -56,7 +56,7 @@
   </div>
   <PlayerName player={right_player} left_or_right="right" />
   {#if pairing.policy.view_decks && !stage.is_single_sided}
-    <a href="../players/{pairing.player2.id}/view_decks">
+    <a href="../players/{pairing.player2.id}/view_decks?back_to=pairings">
       <FontAwesomeIcon icon="eye" />
       View decks
     </a>

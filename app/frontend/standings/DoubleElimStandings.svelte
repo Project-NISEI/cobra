@@ -26,7 +26,7 @@
           <td>{standing.player.name_with_pronouns}</td>
           {#if standing.policy.view_decks}
             <td>
-              <a href="{standing.player.id}/view_decks">
+              <a href="{standing.player.id}/view_decks?back_to=standings">
                 <FontAwesomeIcon icon="eye" />
                 View decks
               </a>
