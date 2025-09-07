@@ -177,38 +177,4 @@ RSpec.describe Stage do
       expect(stage.standing_rows.map(&:runner_points)).to eq([3, 0])
     end
   end
-
-  describe '#cut?' do
-    context 'single_elim' do
-      let(:stage) { create(:stage, format: :single_elim) }
-
-      it 'is cut' do
-        expect(stage.cut?).to be(true)
-      end
-    end
-
-    context 'double_elim' do
-      let(:stage) { create(:stage, format: :double_elim) }
-
-      it 'is cut' do
-        expect(stage.cut?).to be(true)
-      end
-    end
-
-    context 'single_sided_swiss' do
-      let(:stage) { create(:stage, format: :single_sided_swiss) }
-
-      it 'is not cut' do
-        expect(stage.cut?).to be(false)
-      end
-    end
-
-    context 'swiss' do
-      let(:stage) { create(:stage, format: :swiss) }
-
-      it 'is not cut' do
-        expect(stage.cut?).to be(false)
-      end
-    end
-  end
 end

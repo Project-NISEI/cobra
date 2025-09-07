@@ -50,10 +50,6 @@ class Stage < ApplicationRecord
     single_elim? || double_elim?
   end
 
-  def cut?
-    double_elim? || single_elim?
-  end
-
   def default_round_minutes
     if single_sided?
       40
