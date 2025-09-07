@@ -249,6 +249,7 @@ class RoundsController < ApplicationController
 
   def pairings_data_player(player, side)
     {
+      id: (player['id'] if player),
       name_with_pronouns: name_with_pronouns(player),
       side:,
       user_id: (player['user_id'] if player),

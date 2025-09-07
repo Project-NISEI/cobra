@@ -32,10 +32,17 @@
     {pairing.table_label}
   </div>
   {#if pairing.policy.view_decks}
-    <a href="{round.id}/pairings/{pairing.id}/view_decks">
-      <FontAwesomeIcon icon="eye" />
-      View decks
-    </a>
+    {#if stage.is_single_sided}
+      <a href="{round.id}/pairings/{pairing.id}/view_decks">
+        <FontAwesomeIcon icon="eye" />
+        View decks
+      </a>
+    {:else}
+      <a href="../players/{pairing.player1.id}/view_decks">
+        <FontAwesomeIcon icon="eye" />
+        View decks
+      </a>
+    {/if}
   {/if}
   <PlayerName player={left_player} left_or_right="left" />
   <div class="col-sm-2 centre_score">
@@ -48,6 +55,12 @@
     {/if}
   </div>
   <PlayerName player={right_player} left_or_right="right" />
+  {#if pairing.policy.view_decks && !stage.is_single_sided}
+    <a href="../players/{pairing.player2.id}/view_decks">
+      <FontAwesomeIcon icon="eye" />
+      View decks
+    </a>
+  {/if}
   <div class="col-sm-2">
     {#if pairing.policy.self_report}
       <SelfReportOptions {tournamentId} {stage} {round} {pairing} />

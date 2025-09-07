@@ -301,6 +301,8 @@ RSpec.describe RoundsController do
         round.delete 'id'
         round['pairings'].each do |pairing|
           pairing.delete 'id'
+          pairing['player1']&.delete 'id'
+          pairing['player2']&.delete 'id'
         end
       end
     end

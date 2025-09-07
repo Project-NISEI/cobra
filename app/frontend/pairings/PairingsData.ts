@@ -81,6 +81,7 @@ export interface PairingPolicies {
 }
 
 export interface Player {
+  id: number;
   name_with_pronouns: string;
   side: string | null;
   user_id: string | null;
