@@ -30,11 +30,7 @@
 
   left_player = pairing.player1;
   right_player = pairing.player2;
-  if (
-    stage.format === "single_sided_swiss" ||
-    stage.format === "double_elim" ||
-    stage.format === "single_elim"
-  ) {
+  if (stage.is_single_sided) {
     if (pairing.player1.side === "runner") {
       left_player_number = 2;
       left_player = pairing.player2;

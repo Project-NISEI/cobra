@@ -35,6 +35,8 @@ export interface TournamentPolicies {
 export interface Stage {
   name: string;
   format: string;
+  is_single_sided: boolean;
+  is_elimination: boolean;
   rounds: Round[];
 }
 
@@ -79,6 +81,7 @@ export interface PairingPolicies {
 }
 
 export interface Player {
+  id: number;
   name_with_pronouns: string;
   side: string | null;
   user_id: string | null;

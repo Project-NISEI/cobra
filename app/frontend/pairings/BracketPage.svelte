@@ -9,9 +9,6 @@
   export let tournamentId: number;
   let data: PairingsData;
 
-  const isElim = (format: string): boolean =>
-    ["double_elim", "single_elim"].includes(format);
-
   onMount(async () => {
     data = await loadPairings(tournamentId);
   });
@@ -29,11 +26,11 @@
 </div>
 
 {#if data}
-  {#each data.stages.filter((s) => isElim(s.format)) as stage (stage.format)}
+  {#each data.stages.filter((s) => s.is_elimination) as stage (stage.format)}
     <h4 class="mt-3 mb-2">{stage.name}</h4>
     <BracketDisplay {stage} />
   {/each}
-  {#if data.stages.filter((s) => isElim(s.format)).length === 0}
+  {#if data.stages.filter((s) => s.is_elimination).length === 0}
     <div class="alert alert-info">No elimination bracket available.</div>
   {/if}
 {:else}
