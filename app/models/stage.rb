@@ -38,6 +38,10 @@ class Stage < ApplicationRecord
     registrations.find_by(seed: number).try(:player)
   end
 
+  def any_swiss?
+    swiss? || single_sided_swiss?
+  end
+
   def single_sided?
     single_sided_swiss? || elimination?
   end

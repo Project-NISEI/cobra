@@ -86,20 +86,68 @@ RSpec.describe Stage do
     end
   end
 
-  describe '#single_sided?' do
-    context 'swiss' do
+  describe 'stage types' do
+    context 'double sided swiss' do
       let(:stage) { create(:stage, format: :swiss) }
 
       it 'is not single sided' do
         expect(stage.single_sided?).to be(false)
+      end
+
+      it 'is swiss' do
+        expect(stage.any_swiss?).to be(true)
+      end
+
+      it 'is not elimination' do
+        expect(stage.elimination?).to be(false)
+      end
+    end
+
+    context 'single sided swiss' do
+      let(:stage) { create(:stage, format: :single_sided_swiss) }
+
+      it 'is single sided' do
+        expect(stage.single_sided?).to be(true)
+      end
+
+      it 'is swiss' do
+        expect(stage.any_swiss?).to be(true)
+      end
+
+      it 'is not elimination' do
+        expect(stage.elimination?).to be(false)
       end
     end
 
     context 'double elim' do
       let(:stage) { create(:stage, format: :double_elim) }
 
-      it 'is not single sided' do
+      it 'is single sided' do
         expect(stage.single_sided?).to be(true)
+      end
+
+      it 'is not swiss' do
+        expect(stage.any_swiss?).to be(false)
+      end
+
+      it 'is elimination' do
+        expect(stage.elimination?).to be(true)
+      end
+    end
+
+    context 'single elim' do
+      let(:stage) { create(:stage, format: :single_elim) }
+
+      it 'is single sided' do
+        expect(stage.single_sided?).to be(true)
+      end
+
+      it 'is not swiss' do
+        expect(stage.any_swiss?).to be(false)
+      end
+
+      it 'is elimination' do
+        expect(stage.elimination?).to be(true)
       end
     end
   end
