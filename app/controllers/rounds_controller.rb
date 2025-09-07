@@ -117,6 +117,8 @@ class RoundsController < ApplicationController
       {
         name: stage.format.titleize,
         format: stage.format,
+        is_single_sided: stage.single_sided?,
+        is_elimination: stage.elimination?,
         rounds: pairings_data_rounds(stage, players)
       }
     end
@@ -182,7 +184,7 @@ class RoundsController < ApplicationController
       self_report = SelfReport.where(pairing_id: id, report_player_id: current_user.id).first if current_user
       if self_report
         self_report_result = { report_player_id: self_report.report_player_id }
-        if (stage.single_sided_swiss? || stage.single_elim? || stage.double_elim?) && side == 'player1_is_corp'
+        if stage.single_sided? && side == 'player1_is_corp'
           self_report_result[:label] = score_label(@tournament.swiss_format, player1_side(side),
                                                    self_report.score1, self_report.score1_corp,
                                                    self_report.score1_runner,
@@ -247,6 +249,7 @@ class RoundsController < ApplicationController
 
   def pairings_data_player(player, side)
     {
+      id: (player['id'] if player),
       name_with_pronouns: name_with_pronouns(player),
       side:,
       user_id: (player['user_id'] if player),

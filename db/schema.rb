@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_07_054120) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -168,27 +168,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
     t.index ["player1_id"], name: "index_pairings_on_player1_id"
     t.index ["player2_id"], name: "index_pairings_on_player2_id"
     t.index ["round_id"], name: "index_pairings_on_round_id"
-  end
-
-  create_table "player_match_reports", id: false, force: :cascade do |t|
-    t.integer "tournament_id", null: false
-    t.integer "round_id", null: false
-    t.integer "pairing_id", null: false
-    t.integer "player_id", null: false
-    t.integer "player1_id", null: false
-    t.integer "player2_id", null: false
-    t.integer "score1"
-    t.integer "score2"
-    t.integer "side"
-    t.integer "score1_runner"
-    t.integer "score1_corp"
-    t.integer "score2_corp"
-    t.integer "score2_runner"
-    t.boolean "intentional_draw", default: false, null: false
-    t.boolean "two_for_one", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["tournament_id", "round_id", "pairing_id", "player_id"], name: "idx_unq_id_player_match_reports", unique: true
   end
 
   create_table "players", id: :serial, force: :cascade do |t|
@@ -535,7 +514,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
              FROM ((pairings p
                JOIN rounds r ON ((p.round_id = r.id)))
                JOIN stages s ON ((r.stage_id = s.id)))
-            WHERE (s.format = 2)
+            WHERE ((s.format = 2) AND r.completed)
           ), flattened AS (
            SELECT two_player_biases.stage_id,
               two_player_biases.player1_id AS player_id,
@@ -579,16 +558,58 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
              FROM (stages s
                LEFT JOIN rounds r ON ((s.id = r.stage_id)))
             GROUP BY s.id, s.number
-          ), stages_with_players AS (
+          ), cut_positions AS (
+           SELECT r.stage_id,
+              r.seed
+             FROM (registrations r
+               JOIN stages s ON ((r.stage_id = s.id)))
+            WHERE (s.format = ANY (ARRAY[1, 3]))
+          ), cut_players AS (
+           SELECT cp.stage_id,
+              cp.seed AS "position",
+              sr.player_id,
+              r.seed,
+              r.id AS registration_id
+             FROM ((cut_positions cp
+               LEFT JOIN standing_rows sr ON (((cp.stage_id = sr.stage_id) AND (cp.seed = sr."position"))))
+               LEFT JOIN registrations r ON (((sr.stage_id = r.stage_id) AND (sr.player_id = r.player_id))))
+          ), cut_stages_with_players AS (
+           SELECT s.tournament_id,
+              s.id AS stage_id,
+              s.number AS stage_number,
+              s.format AS stage_format,
+              cp.registration_id,
+              cp."position",
+              r.seed,
+              p.id AS player_id,
+              p.name AS player_name,
+              p.pronouns AS player_pronouns,
+              p.active AS player_active,
+              p.user_id AS player_user_id,
+              p.manual_seed AS player_manual_seed,
+              corp_id.name AS corp_id_name,
+              corp_id.faction AS corp_id_faction,
+              runner_id.name AS runner_id_name,
+              runner_id.faction AS runner_id_faction
+             FROM (((((cut_players cp
+               JOIN stages s ON ((cp.stage_id = s.id)))
+               LEFT JOIN registrations r ON ((cp.registration_id = r.id)))
+               LEFT JOIN players p ON ((r.player_id = p.id)))
+               LEFT JOIN identities corp_id ON ((p.corp_identity_ref_id = corp_id.id)))
+               LEFT JOIN identities runner_id ON ((p.runner_identity_ref_id = runner_id.id)))
+          ), swiss_stages_with_players AS (
            SELECT s.tournament_id,
               s.id AS stage_id,
               s.number AS stage_number,
               s.format AS stage_format,
               r.id AS registration_id,
+              r.seed,
               p.id AS player_id,
               p.name AS player_name,
               p.pronouns AS player_pronouns,
               p.active AS player_active,
+              p.user_id AS player_user_id,
+              p.manual_seed AS player_manual_seed,
               corp_id.name AS corp_id_name,
               corp_id.faction AS corp_id_faction,
               runner_id.name AS runner_id_name,
@@ -598,35 +619,142 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
                JOIN players p ON ((r.player_id = p.id)))
                LEFT JOIN identities corp_id ON ((p.corp_identity_ref_id = corp_id.id)))
                LEFT JOIN identities runner_id ON ((p.runner_identity_ref_id = runner_id.id)))
+            WHERE (s.format = ANY (ARRAY[0, 2]))
+          ), expanded_swiss AS (
+           SELECT t.id AS tournament_id,
+              t.swiss_deck_visibility,
+              t.cut_deck_visibility,
+              t.user_id AS tournament_user_id,
+              COALESCE(t.manual_seed, false) AS tournament_manual_seed,
+              rfs.num_rounds,
+              ((rfs.stage_number = 1) AND (rfs.num_rounds = 0)) AS is_player_meeting,
+              rfs.num_rounds_completed,
+              swp.stage_id,
+              swp.stage_format,
+              swp.stage_number,
+              swp.player_id,
+              swp.player_user_id,
+              swp.player_name,
+              swp.player_pronouns,
+              swp.player_manual_seed,
+              swp.seed,
+              swp.corp_id_name,
+              swp.corp_id_faction,
+              swp.runner_id_name,
+              swp.runner_id_faction,
+              swp.player_active,
+              sft."position",
+              sft.points,
+              sft.corp_points,
+              sft.runner_points,
+              sft.bye_points,
+              sft.sos,
+              sft.extended_sos,
+              sb.side_bias
+             FROM ((((tournaments t
+               JOIN swiss_stages_with_players swp ON ((swp.tournament_id = t.id)))
+               JOIN rounds_for_stages rfs ON ((rfs.stage_id = swp.stage_id)))
+               LEFT JOIN standings_for_tournament sft ON (((sft.tournament_id = swp.tournament_id) AND (sft.stage_id = swp.stage_id) AND (sft.player_id = swp.player_id))))
+               LEFT JOIN side_bias sb ON (((sb.stage_id = sft.stage_id) AND (sft.player_id = sb.player_id))))
+          ), expanded_elim AS (
+           SELECT t.id AS tournament_id,
+              t.swiss_deck_visibility,
+              t.cut_deck_visibility,
+              t.user_id AS tournament_user_id,
+              COALESCE(t.manual_seed, false) AS tournament_manual_seed,
+              rfs.num_rounds,
+              ((rfs.stage_number = 1) AND (rfs.num_rounds = 0)) AS is_player_meeting,
+              rfs.num_rounds_completed,
+              cwp.stage_id,
+              cwp.stage_format,
+              cwp.stage_number,
+              cwp.player_id,
+              cwp.player_user_id,
+              cwp.player_name,
+              cwp.player_pronouns,
+              cwp.player_manual_seed,
+              cwp.seed,
+              cwp.corp_id_name,
+              cwp.corp_id_faction,
+              cwp.runner_id_name,
+              cwp.runner_id_faction,
+              cwp.player_active,
+              cwp."position",
+              sft.points,
+              sft.corp_points,
+              sft.runner_points,
+              sft.bye_points,
+              sft.sos,
+              sft.extended_sos,
+              sb.side_bias
+             FROM ((((tournaments t
+               JOIN cut_stages_with_players cwp ON ((cwp.tournament_id = t.id)))
+               JOIN rounds_for_stages rfs ON ((rfs.stage_id = cwp.stage_id)))
+               LEFT JOIN standings_for_tournament sft ON (((sft.tournament_id = cwp.tournament_id) AND (sft.stage_id = cwp.stage_id) AND (sft.player_id = cwp.player_id))))
+               LEFT JOIN side_bias sb ON (((sb.stage_id = sft.stage_id) AND (sft.player_id = sb.player_id))))
           )
-   SELECT t.id AS tournament_id,
-      t.manual_seed,
-      rfs.num_rounds,
-      ((rfs.stage_number = 1) AND (rfs.num_rounds = 0)) AS is_player_meeting,
-      rfs.num_rounds_completed,
-      swp.stage_id,
-      swp.stage_format,
-      swp.stage_number,
-      swp.player_id,
-      swp.player_name,
-      swp.player_pronouns,
-      swp.corp_id_name,
-      swp.corp_id_faction,
-      swp.runner_id_name,
-      swp.runner_id_faction,
-      swp.player_active,
-      sft."position",
-      sft.points,
-      sft.corp_points,
-      sft.runner_points,
-      sft.bye_points,
-      sft.sos,
-      sft.extended_sos,
-      sb.side_bias
-     FROM ((((tournaments t
-       JOIN stages_with_players swp ON ((swp.tournament_id = t.id)))
-       JOIN rounds_for_stages rfs ON ((rfs.stage_id = swp.stage_id)))
-       LEFT JOIN standings_for_tournament sft ON (((sft.tournament_id = swp.tournament_id) AND (sft.stage_id = swp.stage_id) AND (sft.player_id = swp.player_id))))
-       LEFT JOIN side_bias sb ON (((sb.stage_id = sft.stage_id) AND (sft.player_id = sb.player_id))));
+   SELECT expanded_swiss.tournament_id,
+      expanded_swiss.swiss_deck_visibility,
+      expanded_swiss.cut_deck_visibility,
+      expanded_swiss.tournament_user_id,
+      expanded_swiss.tournament_manual_seed,
+      expanded_swiss.num_rounds,
+      expanded_swiss.is_player_meeting,
+      expanded_swiss.num_rounds_completed,
+      expanded_swiss.stage_id,
+      expanded_swiss.stage_format,
+      expanded_swiss.stage_number,
+      expanded_swiss.player_id,
+      expanded_swiss.player_user_id,
+      expanded_swiss.player_name,
+      expanded_swiss.player_pronouns,
+      expanded_swiss.player_manual_seed,
+      expanded_swiss.seed,
+      expanded_swiss.corp_id_name,
+      expanded_swiss.corp_id_faction,
+      expanded_swiss.runner_id_name,
+      expanded_swiss.runner_id_faction,
+      expanded_swiss.player_active,
+      expanded_swiss."position",
+      expanded_swiss.points,
+      expanded_swiss.corp_points,
+      expanded_swiss.runner_points,
+      expanded_swiss.bye_points,
+      expanded_swiss.sos,
+      expanded_swiss.extended_sos,
+      expanded_swiss.side_bias
+     FROM expanded_swiss
+  UNION ALL
+   SELECT expanded_elim.tournament_id,
+      expanded_elim.swiss_deck_visibility,
+      expanded_elim.cut_deck_visibility,
+      expanded_elim.tournament_user_id,
+      expanded_elim.tournament_manual_seed,
+      expanded_elim.num_rounds,
+      expanded_elim.is_player_meeting,
+      expanded_elim.num_rounds_completed,
+      expanded_elim.stage_id,
+      expanded_elim.stage_format,
+      expanded_elim.stage_number,
+      expanded_elim.player_id,
+      expanded_elim.player_user_id,
+      expanded_elim.player_name,
+      expanded_elim.player_pronouns,
+      expanded_elim.player_manual_seed,
+      expanded_elim.seed,
+      expanded_elim.corp_id_name,
+      expanded_elim.corp_id_faction,
+      expanded_elim.runner_id_name,
+      expanded_elim.runner_id_faction,
+      expanded_elim.player_active,
+      expanded_elim."position",
+      expanded_elim.points,
+      expanded_elim.corp_points,
+      expanded_elim.runner_points,
+      expanded_elim.bye_points,
+      expanded_elim.sos,
+      expanded_elim.extended_sos,
+      expanded_elim.side_bias
+     FROM expanded_elim;
   SQL
 end

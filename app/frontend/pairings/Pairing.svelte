@@ -11,10 +11,7 @@
   let left_player = pairing.player1;
   let right_player = pairing.player2;
   console.log(`Format: ${stage.format}`);
-  if (
-    pairing.player2.side == "corp" &&
-    ["single_sided_swiss", "double_elim", "single_elim"].includes(stage.format)
-  ) {
+  if (pairing.player2.side == "corp" && stage.is_single_sided) {
     console.log(`Swapping players for round ${round.id.toString()}...`);
     left_player = pairing.player2;
     right_player = pairing.player1;
@@ -35,10 +32,17 @@
     {pairing.table_label}
   </div>
   {#if pairing.policy.view_decks}
-    <a href="{round.id}/pairings/{pairing.id}/view_decks">
-      <FontAwesomeIcon icon="eye" />
-      View decks
-    </a>
+    {#if pairing.player1.side}
+      <a href="{round.id}/pairings/{pairing.id}/view_decks?back_to=pairings">
+        <FontAwesomeIcon icon="eye" />
+        View decks
+      </a>
+    {:else}
+      <a href="../players/{pairing.player1.id}/view_decks?back_to=pairings">
+        <FontAwesomeIcon icon="eye" />
+        View decks
+      </a>
+    {/if}
   {/if}
   <PlayerName player={left_player} left_or_right="left" />
   <div class="col-sm-2 centre_score">
@@ -51,6 +55,12 @@
     {/if}
   </div>
   <PlayerName player={right_player} left_or_right="right" />
+  {#if pairing.policy.view_decks && !pairing.player1.side}
+    <a href="../players/{pairing.player2.id}/view_decks?back_to=pairings">
+      <FontAwesomeIcon icon="eye" />
+      View decks
+    </a>
+  {/if}
   <div class="col-sm-2">
     {#if pairing.policy.self_report}
       <SelfReportOptions {tournamentId} {stage} {round} {pairing} />

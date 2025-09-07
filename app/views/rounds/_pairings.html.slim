@@ -109,13 +109,14 @@
             = render right_player.runner_identity_object
     - if policy(round.tournament).update?
       .row-sm1.mr-3
-        button.btn.btn-primary.mr-2 data-toggle="modal" data-target="#selfReportModal" type="button"
+        // TODO: TrueSvenpai -> check for solution with shared modals instead of multiple.
+        button.btn.btn-primary.mr-2 data-toggle="modal" data-target="#selfReportModal_#{round.id}_#{pairing.id}" type="button"
           | Reports
           - if !pairing.reported? && (players_have_self_reported && !self_reports_match)
             =< fa_icon 'exclamation-triangle'
         = link_to tournament_round_pairing_path(round.tournament, round, pairing), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure? This cannot be reversed.' } do
           => fa_icon 'trash'
-        .modal.fade#selfReportModal tabindex="-1" role="dialog" aria-hidden="true"
+        .modal.fade id="selfReportModal_#{round.id}_#{pairing.id}" tabindex="-1" role="dialog" aria-hidden="true"
           .modal-dialog.modal-dialog-centered role="document"
             .modal-content
               .modal-header
@@ -123,21 +124,21 @@
                 button.close type="button" data-dismiss="modal" aria-label="Close"
                   span aria-hidden="true" &times;
               .modal-body
-                p 
+                p
                   = "#{left_player.name} reported:"
                   - if left_player_report
                     =< "#{readable_self_report_score(pairing, left_player_report)}"
                     - if (players_have_self_reported && !self_reports_match)
                       =< fa_icon 'times'
-                  - else 
+                  - else
                    = fa_icon 'hourglass', class: 'missing-report-tooltip m-1'
-                p 
+                p
                   = "#{right_player.name} reported: "
                   - if right_player_report
                     =< "#{readable_self_report_score(pairing, right_player_report)}"
                     - if (players_have_self_reported && !self_reports_match)
                       =< fa_icon 'times'
-                  - else 
+                  - else
                    = fa_icon 'hourglass', class: 'missing-report-tooltip m-1'
               .modal-footer
                 - if left_player_report
@@ -151,4 +152,4 @@
                     => fa_icon 'undo'
                     | Reset
                     javascript: $('.reset-self-reports').tooltip()
-  hr.my-3
+  hr.my-3 class="#{'reported' if pairing.reported? && current_user == @tournament.user}"

@@ -80,7 +80,7 @@ class Tournament < ApplicationRecord
   def stage_decks_open?(stage)
     if stage.elimination?
       cut_decks_open?
-    elsif stage.swiss?
+    elsif stage.any_swiss?
       swiss_decks_open?
     else
       false
@@ -90,7 +90,7 @@ class Tournament < ApplicationRecord
   def stage_decks_public?(stage)
     if stage.elimination?
       cut_decks_public?
-    elsif stage.swiss?
+    elsif stage.any_swiss?
       swiss_decks_public?
     else
       false

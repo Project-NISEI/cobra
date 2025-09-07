@@ -114,6 +114,11 @@ RSpec.describe 'deck visibility' do
       it 'does not show decks of a player in swiss to an unauthenticated user' do
         expect(jack.decks_visible_to(nil)).to be(false)
       end
+
+      it 'shows decks of a player in single sided swiss to another player in swiss' do
+        swiss.update(format: :single_sided_swiss)
+        expect(jack.decks_visible_to(alice.user)).to be(true)
+      end
     end
 
     describe 'public list swiss' do
@@ -125,6 +130,11 @@ RSpec.describe 'deck visibility' do
 
       it 'shows decks of a player in swiss to an unauthenticated user' do
         expect(jack.decks_visible_to(nil)).to be(true)
+      end
+
+      it 'shows decks of a player in single sided swiss to another player in swiss' do
+        swiss.update(format: :single_sided_swiss)
+        expect(jack.decks_visible_to(alice.user)).to be(true)
       end
     end
   end
