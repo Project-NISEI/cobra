@@ -138,6 +138,7 @@ class PlayersController < ApplicationController
       is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
       manual_seed: @tournament.manual_seed?,
       stages: stages.reverse.map do |stage|
+        Rails.logger.info "Stage decks_visible_to is #{stage.decks_visible_to(current_user)}"
         {
           format: stage.format,
           rounds_complete: stage.rounds.select(&:completed?).count,
@@ -153,23 +154,136 @@ class PlayersController < ApplicationController
     authorize @tournament, :show?
 
     sql = ActiveRecord::Base.sanitize_sql([
-                                            'SELECT * FROM standings_data_view WHERE tournament_id = ?', @tournament.id
+                                            'SELECT * FROM standings_data_view WHERE tournament_id = ? ORDER BY stage_number DESC, position', @tournament.id
                                           ])
     rows = ActiveRecord::Base.connection.exec_query(sql).to_a
 
     is_player_meeting = false
-    manual_seed = false
+    tournament_manual_seed = false
+    any_decks_viewable = false
 
     stages_map = {}
-    stages = []
+    elimination_position = 0
     rows.each do |r|
       is_player_meeting = true if r['is_player_meeting']
-      manual_seed = true if r['manual_seed']
+      tournament_manual_seed = r['tournament_manual_seed']
 
       stages_map[r['stage_number']] = {} unless stages_map.key?(r['stage_number'])
+      stage = stages_map[r['stage_number']]
+      stage[:format] = Stage.formats.invert[r['stage_format']]
+      stage[:num_rounds_completed] = r['num_rounds_completed']
+
+      stage[:elimination] = [Stage.formats['single_elim'], Stage.formats['double_elim']].include?(r['stage_format'])
+
+      stage_decks_open =
+        if stage[:elimination]
+          Tournament.cut_deck_visibilities[:cut_decks_open] == r['cut_deck_visibility']
+        else
+          Tournament.swiss_deck_visibilities[:swiss_deck_open] == r['swiss_deck_visibility']
+        end
+      stage_decks_public =
+        if stage[:elimination]
+          Tournament.cut_deck_visibilities[:cut_decks_public] == r['cut_deck_visibility']
+        else
+          Tournament.swiss_deck_visibilities[:swiss_decks_public] == r['swiss_deck_visibility']
+        end
+
+      stage[:stage_decks_open] = stage_decks_open
+      stage[:stage_decks_public] = stage_decks_public
+
+      stage[:num_rounds_completed] = r['num_rounds_completed']
+
+      # this will be set to true if any user in the stage has visible decks, checked in the loop below.
+      stage[:any_decks_viewable] = false
+
+      stage[:standings] = [] unless stage.key?(:standings)
+
+      view_player_decks =
+        if stage[:stage_decks_open] && current_user
+          [r['tournament_user_id'], r['player_user_id']].include?(current_user&.id)
+        else
+          stage[:stage_decks_public]
+        end
+      any_decks_viewable = true if view_player_decks
+
+      player = {}
+      # Swiss rounds have more detailed player records than elimination rounds
+      if stage[:elimination]
+        elimination_position += 1
+        player = {
+          player: nil,
+          policy: {
+            view_decks: false
+          },
+          position: elimination_position,
+          seed: (r['seed'] if r['position']),
+        }
+        if r['player_name'].present?
+          player[:position] = r['position']
+          player[:player] = {
+            id: r['player_id'],
+            active: r['player_active'],
+            name_with_pronouns: "#{r['player_name']}#{r['player_pronouns'].present? ? " (#{r['player_pronouns']})" : ''}",
+            corp_id: {
+              name: r['corp_id_name'],
+              faction: r['corp_id_faction']
+            },
+            runner_id: {
+              name: r['runner_id_name'],
+              faction: r['runner_id_faction']
+            },
+          }
+        end
+      else
+        player = {
+          player: {
+            id: r['player_id'],
+            active: r['player_active'],
+            name_with_pronouns: "#{r['player_name']}#{r['player_pronouns'].present? ? " (#{r['player_pronouns']})" : ''}",
+            corp_id: nil,
+            runner_id: nil,
+          },
+          policy: {
+            view_decks: view_player_decks
+          },
+          position: r['position'],
+          points: r['points'],
+          sos: r['sos'],
+          extended_sos: r['extended_sos'],
+          corp_points: r['corp_points'],
+          runner_points: r['runner_points'],
+          bye_points: r['bye_points'],
+          manual_seed: r['player_manual_seed'],
+          side_bias: r['side_bias']
+        }
+        player[:player][:corp_id] = {
+          name: r['corp_id_name'],
+          faction: r['corp_id_faction']
+        }
+        player[:player][:runner_id] = {
+          name: r['runner_id_name'],
+          faction: r['runner_id_faction']
+        }
+      end
+      stage[:standings] << player
     end
 
-    stages = stages_map.keys.map { |stage_number| { number: stage_number, data: stages_map[stage_number] } }
+    # stages = @tournament.stages
+    # elimination = stages.select(&:double_elim?).first
+    # elimination = stages.select(&:single_elim?).first if elimination.nil?
+
+    stages_array = stages_map.keys.map { |stage_number|
+      # stage = @tournament.stages.find_by(number: stage_number)
+
+      {
+        format: stages_map[stage_number][:format],
+        rounds_complete: stages_map[stage_number][:num_rounds_completed],
+
+        any_decks_viewable:,
+
+        standings: stages_map[stage_number][:standings]
+      }
+    }
 
     # stages = @tournament.stages.includes(
     #   rounds: [pairings: %i[player1 player2]],
@@ -180,8 +294,8 @@ class PlayersController < ApplicationController
     # elimination = stages.select(&:single_elim?).first if elimination.nil?
     render json: {
       is_player_meeting:,
-      manual_seed:,
-      stages:,
+      manual_seed: tournament_manual_seed,
+      stages: stages_array,
       # is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
       # manual_seed: @tournament.manual_seed?,
       # stages: stages.reverse.map do |stage|
