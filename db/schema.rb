@@ -170,27 +170,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_10_173128) do
     t.index ["round_id"], name: "index_pairings_on_round_id"
   end
 
-  create_table "player_match_reports", id: false, force: :cascade do |t|
-    t.integer "tournament_id", null: false
-    t.integer "round_id", null: false
-    t.integer "pairing_id", null: false
-    t.integer "player_id", null: false
-    t.integer "player1_id", null: false
-    t.integer "player2_id", null: false
-    t.integer "score1"
-    t.integer "score2"
-    t.integer "side"
-    t.integer "score1_runner"
-    t.integer "score1_corp"
-    t.integer "score2_corp"
-    t.integer "score2_runner"
-    t.boolean "intentional_draw", default: false, null: false
-    t.boolean "two_for_one", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["tournament_id", "round_id", "pairing_id", "player_id"], name: "idx_unq_id_player_match_reports", unique: true
-  end
-
   create_table "players", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "tournament_id"
