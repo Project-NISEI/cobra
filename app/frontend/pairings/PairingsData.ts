@@ -36,6 +36,7 @@ export interface Stage {
   name: string;
   format: string;
   is_single_sided: boolean;
+  is_elimination: boolean;
   rounds: Round[];
 }
 

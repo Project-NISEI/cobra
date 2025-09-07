@@ -328,6 +328,7 @@ RSpec.describe RoundsController do
       'name' => 'Swiss',
       'format' => 'swiss',
       'is_single_sided' => false,
+      'is_elimination' => false,
       'rounds' => rounds
     }
   end
@@ -337,6 +338,7 @@ RSpec.describe RoundsController do
       'name' => 'Double Elim',
       'format' => 'double_elim',
       'is_single_sided' => true,
+      'is_elimination' => true,
       'rounds' => rounds
     }
   end
