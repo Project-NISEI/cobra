@@ -17,11 +17,7 @@ RSpec.describe RoundsController do
           .to eq(
             'is_player_meeting' => true,
             'policy' => { 'update' => false },
-            'stages' => [{
-              'name' => 'Swiss',
-              'format' => 'swiss',
-              'rounds' => []
-            }]
+            'stages' => [swiss_stage_with_rounds([])]
           )
       end
 
@@ -33,11 +29,7 @@ RSpec.describe RoundsController do
           .to eq(
             'is_player_meeting' => true,
             'policy' => { 'update' => false },
-            'stages' => [{
-              'name' => 'Swiss',
-              'format' => 'swiss',
-              'rounds' => []
-            }]
+            'stages' => [swiss_stage_with_rounds([])]
           )
       end
 
@@ -49,11 +41,7 @@ RSpec.describe RoundsController do
           .to eq(
             'is_player_meeting' => true,
             'policy' => { 'update' => true },
-            'stages' => [{
-              'name' => 'Swiss',
-              'format' => 'swiss',
-              'rounds' => []
-            }]
+            'stages' => [swiss_stage_with_rounds([])]
           )
       end
     end
@@ -70,10 +58,8 @@ RSpec.describe RoundsController do
           .to eq({
                    'is_player_meeting' => false,
                    'policy' => { 'update' => false },
-                   'stages' => [{
-                     'name' => 'Swiss',
-                     'format' => 'swiss',
-                     'rounds' => [
+                   'stages' => [swiss_stage_with_rounds(
+                     [
                        {
                          'number' => 1,
                          'pairings' => [
@@ -96,7 +82,7 @@ RSpec.describe RoundsController do
                          ], 'pairings_reported' => 1
                        }
                      ]
-                   }]
+                   )]
                  })
       end
 
@@ -107,10 +93,8 @@ RSpec.describe RoundsController do
           .to eq({
                    'is_player_meeting' => false,
                    'policy' => { 'update' => true },
-                   'stages' => [{
-                     'name' => 'Swiss',
-                     'format' => 'swiss',
-                     'rounds' => [
+                   'stages' => [swiss_stage_with_rounds(
+                     [
                        {
                          'number' => 1,
                          'pairings' => [
@@ -139,7 +123,7 @@ RSpec.describe RoundsController do
                          ], 'pairings_reported' => 1
                        }
                      ]
-                   }]
+                   )]
                  })
       end
     end
@@ -159,10 +143,8 @@ RSpec.describe RoundsController do
                    'is_player_meeting' => false,
                    'policy' => { 'update' => false },
                    'stages' => [
-                     {
-                       'name' => 'Swiss',
-                       'format' => 'swiss',
-                       'rounds' => [
+                     swiss_stage_with_rounds(
+                       [
                          {
                            'number' => 1,
                            'pairings' => [
@@ -185,11 +167,9 @@ RSpec.describe RoundsController do
                            ], 'pairings_reported' => 1
                          }
                        ]
-                     },
-                     {
-                       'name' => 'Double Elim',
-                       'format' => 'double_elim',
-                       'rounds' => [
+                     ),
+                     cut_stage_with_rounds(
+                       [
                          {
                            'number' => 1,
                            'pairings' => [
@@ -207,11 +187,12 @@ RSpec.describe RoundsController do
                          {
                            'number' => 2,
                            'pairings' => [
-                             { 'table_number' => 2, 'round' => 2, 'successor_game' => nil, 'bracket_type' => 'upper' }
+                             { 'table_number' => 2, 'round' => 2, 'successor_game' => nil,
+                               'bracket_type' => 'upper' }
                            ]
                          }
                        ]
-                     }
+                     )
                    ]
                  })
       end
@@ -234,10 +215,8 @@ RSpec.describe RoundsController do
           .to eq({
                    'is_player_meeting' => false,
                    'policy' => { 'update' => false },
-                   'stages' => [{
-                     'name' => 'Swiss',
-                     'format' => 'swiss',
-                     'rounds' => [
+                   'stages' => [swiss_stage_with_rounds(
+                     [
                        {
                          'number' => 1,
                          'pairings' => [
@@ -260,7 +239,7 @@ RSpec.describe RoundsController do
                          ], 'pairings_reported' => 2
                        }
                      ]
-                   }]
+                   )]
                  })
       end
     end
@@ -282,10 +261,8 @@ RSpec.describe RoundsController do
           .to eq({
                    'is_player_meeting' => false,
                    'policy' => { 'update' => false },
-                   'stages' => [{
-                     'name' => 'Swiss',
-                     'format' => 'swiss',
-                     'rounds' => [
+                   'stages' => [swiss_stage_with_rounds(
+                     [
                        {
                          'number' => 1,
                          'pairings' => [
@@ -310,7 +287,7 @@ RSpec.describe RoundsController do
                          ], 'pairings_reported' => 2
                        }
                      ]
-                   }]
+                   )]
                  })
       end
     end
@@ -344,5 +321,23 @@ RSpec.describe RoundsController do
   def bye_player
     { 'corp_id' => nil, 'name_with_pronouns' => '(Bye)', 'runner_id' => nil, 'side' => nil, 'side_label' => nil,
       'user_id' => nil }
+  end
+
+  def swiss_stage_with_rounds(rounds)
+    {
+      'name' => 'Swiss',
+      'format' => 'swiss',
+      'is_single_sided' => false,
+      'rounds' => rounds
+    }
+  end
+
+  def cut_stage_with_rounds(rounds)
+    {
+      'name' => 'Double Elim',
+      'format' => 'double_elim',
+      'is_single_sided' => true,
+      'rounds' => rounds
+    }
   end
 end

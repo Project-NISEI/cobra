@@ -117,6 +117,7 @@ class RoundsController < ApplicationController
       {
         name: stage.format.titleize,
         format: stage.format,
+        is_single_sided: stage.single_sided?,
         rounds: pairings_data_rounds(stage, players)
       }
     end

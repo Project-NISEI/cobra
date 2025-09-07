@@ -35,6 +35,7 @@ export interface TournamentPolicies {
 export interface Stage {
   name: string;
   format: string;
+  is_single_sided: boolean;
   rounds: Round[];
 }
 
