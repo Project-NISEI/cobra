@@ -42,7 +42,7 @@
     - if @tournament.official_prize_kit_id?
       h3 Prizes
       div
-        p Official Prize Kit: #{@tournament.official_prize_kit.name
+        p Official Prize Kit: #{@tournament.official_prize_kit.name}
     -if @tournament.additional_prizes_description?
       h3 Additional Prizes
       div #{markdown(@tournament.additional_prizes_description)}
