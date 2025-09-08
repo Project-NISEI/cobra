@@ -124,38 +124,15 @@ class PlayersController < ApplicationController
     authorize @tournament, :show?
   end
 
-  def standings_data
+  def standings_data # rubocop:disable Metrics/MethodLength
     authorize @tournament, :show?
 
-    stages = @tournament.stages.includes(
-      rounds: [pairings: %i[player1 player2]],
-      registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]],
-      standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]]
+    sql = ActiveRecord::Base.sanitize_sql(
+      [
+        'SELECT * FROM standings_data_view WHERE tournament_id = ? ORDER BY stage_number DESC, position, player_id',
+        @tournament.id
+      ]
     )
-    elimination = stages.select(&:double_elim?).first
-    elimination = stages.select(&:single_elim?).first if elimination.nil?
-    render json: {
-      is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
-      manual_seed: @tournament.manual_seed?,
-      stages: stages.reverse.map do |stage|
-        Rails.logger.info "Stage decks_visible_to is #{stage.decks_visible_to(current_user)}"
-        {
-          format: stage.format,
-          rounds_complete: stage.rounds.select(&:completed?).count,
-          any_decks_viewable: stage.decks_visible_to(current_user) ||
-            (elimination&.decks_visible_to(current_user) ? true : false),
-          standings: render_standings_for_stage(stage)
-        }
-      end
-    }
-  end
-
-  def new_standings_data
-    authorize @tournament, :show?
-
-    sql = ActiveRecord::Base.sanitize_sql([
-                                            'SELECT * FROM standings_data_view WHERE tournament_id = ? ORDER BY stage_number DESC, position', @tournament.id
-                                          ])
     rows = ActiveRecord::Base.connection.exec_query(sql).to_a
 
     is_player_meeting = false
@@ -163,6 +140,9 @@ class PlayersController < ApplicationController
     any_decks_viewable = false
 
     stages_map = {}
+    # Used when players are registered, but before rounds.
+    swiss_position = 0
+    # Used when a cut is created, but no standings are finalized yet.
     elimination_position = 0
     rows.each do |r|
       is_player_meeting = true if r['is_player_meeting']
@@ -216,14 +196,15 @@ class PlayersController < ApplicationController
             view_decks: false
           },
           position: elimination_position,
-          seed: (r['seed'] if r['position']),
+          seed: (r['seed'] if r['position'])
         }
         if r['player_name'].present?
           player[:position] = r['position']
           player[:player] = {
             id: r['player_id'],
             active: r['player_active'],
-            name_with_pronouns: "#{r['player_name']}#{r['player_pronouns'].present? ? " (#{r['player_pronouns']})" : ''}",
+            name_with_pronouns:
+              "#{r['player_name']}#{r['player_pronouns'].present? ? " (#{r['player_pronouns']})" : ''}",
             corp_id: {
               name: r['corp_id_name'],
               faction: r['corp_id_faction']
@@ -231,28 +212,30 @@ class PlayersController < ApplicationController
             runner_id: {
               name: r['runner_id_name'],
               faction: r['runner_id_faction']
-            },
+            }
           }
         end
       else
+        swiss_position += 1
         player = {
           player: {
             id: r['player_id'],
             active: r['player_active'],
-            name_with_pronouns: "#{r['player_name']}#{r['player_pronouns'].present? ? " (#{r['player_pronouns']})" : ''}",
+            name_with_pronouns:
+              "#{r['player_name']}#{r['player_pronouns'].present? ? " (#{r['player_pronouns']})" : ''}",
             corp_id: nil,
-            runner_id: nil,
+            runner_id: nil
           },
           policy: {
             view_decks: view_player_decks
           },
-          position: r['position'],
-          points: r['points'],
-          sos: r['sos'],
-          extended_sos: r['extended_sos'],
-          corp_points: r['corp_points'],
-          runner_points: r['runner_points'],
-          bye_points: r['bye_points'],
+          position: r['position'] || swiss_position,
+          points: r['points'] || 0,
+          sos: r['sos'] || 0,
+          extended_sos: r['extended_sos'] || 0,
+          corp_points: r['corp_points'] || 0,
+          runner_points: r['runner_points'] || 0,
+          bye_points: r['bye_points'] || 0,
           manual_seed: r['player_manual_seed'],
           side_bias: r['side_bias']
         }
@@ -272,7 +255,7 @@ class PlayersController < ApplicationController
     # elimination = stages.select(&:double_elim?).first
     # elimination = stages.select(&:single_elim?).first if elimination.nil?
 
-    stages_array = stages_map.keys.map { |stage_number|
+    stages_array = stages_map.keys.map do |stage_number|
       # stage = @tournament.stages.find_by(number: stage_number)
 
       {
@@ -283,30 +266,12 @@ class PlayersController < ApplicationController
 
         standings: stages_map[stage_number][:standings]
       }
-    }
+    end
 
-    # stages = @tournament.stages.includes(
-    #   rounds: [pairings: %i[player1 player2]],
-    #   registrations: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]],
-    #   standing_rows: [player: [:user, :corp_identity_ref, :runner_identity_ref, { registrations: [:stage] }]]
-    # )
-    # elimination = stages.select(&:double_elim?).first
-    # elimination = stages.select(&:single_elim?).first if elimination.nil?
     render json: {
       is_player_meeting:,
       manual_seed: tournament_manual_seed,
-      stages: stages_array,
-      # is_player_meeting: stages.all? { |stage| stage.rounds.empty? },
-      # manual_seed: @tournament.manual_seed?,
-      # stages: stages.reverse.map do |stage|
-      #   {
-      #     format: stage.format,
-      #     rounds_complete: stage.rounds.select(&:completed?).count,
-      #     any_decks_viewable: stage.decks_visible_to(current_user) ||
-      #       (elimination&.decks_visible_to(current_user) ? true : false),
-      #     standings: render_standings_for_stage(stage)
-      #   }
-      # end
+      stages: stages_array
     }
   end
 
