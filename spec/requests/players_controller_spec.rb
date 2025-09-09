@@ -561,8 +561,9 @@ RSpec.describe PlayersController do
       'points' => 0,
       'sos' => 0,
       'extended_sos' => 0,
-      'runner_points' => 0,
+      'bye_points' => 0,
       'corp_points' => 0,
+      'runner_points' => 0,
       'manual_seed' => nil,
       'side_bias' => nil
     }
@@ -596,8 +597,8 @@ RSpec.describe PlayersController do
   def player_with_hidden_ids(name_with_pronouns)
     {
       'name_with_pronouns' => name_with_pronouns,
-      'corp_id' => nil,
-      'runner_id' => nil,
+      'corp_id' => { 'faction' => nil, 'name' => nil },
+      'runner_id' => { 'faction' => nil, 'name' => nil },
       'active' => true
     }
   end
