@@ -62,7 +62,7 @@ export interface SelfReportPresets {
   score2_runner: number;
   intentional_draw: boolean;
   label: string;
-  extra_self_report_label: string;
+  extra_self_report_label?: string;
 }
 
 export interface SelfReport {
