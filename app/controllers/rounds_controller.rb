@@ -214,7 +214,7 @@ class RoundsController < ApplicationController
                                                          self_report,
                                                          players[player1_id]&.dig('user_id'),
                                                          players[player2_id]&.dig('user_id')) &&
-                       score1.nil? && score2.nil?
+                       score1.nil? && score2.nil? && @tournament.allow_self_reporting
         },
         # TODO: in future pass current user to svelte frontend
         ui_metadata: {
