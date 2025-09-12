@@ -87,7 +87,7 @@ class PlayersController < ApplicationController
   end
 
   def save_deck(params, param, side)
-    return unless params.key?(param)
+    return if !params.key?(param) || (params['user_id'] && params['user_id'] != current_user.id)
 
     begin
       request = JSON.parse(params[param])
@@ -96,7 +96,6 @@ class PlayersController < ApplicationController
       return
     end
     details = request['details']
-    return if details['user_id'] && details['user_id'] != current_user.id
 
     details.keep_if { |key| Deck.column_names.include? key }
     details['side_id'] = side
@@ -431,7 +430,8 @@ class PlayersController < ApplicationController
   def player_params
     params.require(:player)
           .permit(:name, :pronouns, :corp_identity, :runner_identity, :corp_deck, :runner_deck,
-                  :first_round_bye, :manual_seed, :include_in_stream, :fixed_table_number)
+                  :first_round_bye, :manual_seed, :include_in_stream, :fixed_table_number,
+                  :organiser_view, :registration_view)
   end
 
   def organiser_view?
