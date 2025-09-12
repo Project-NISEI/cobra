@@ -94,8 +94,9 @@ RSpec.describe PairingsHelper do
           expect(helper.presets(pairing)).to eq(
             [
               { score1: 3, score1_corp: 3, score1_runner: 0, score2: 0, score2_corp: 0, score2_runner: 0,
-                label: '3-0' },
-              { score1: 0, score1_corp: 0, score1_runner: 0, score2: 3, score2_corp: 0, score2_runner: 3, label: '0-3' }
+                label: '3-0', extra_self_report_label: "#{pairing.player1.name} wins" },
+              { score1: 0, score1_corp: 0, score1_runner: 0, score2: 3, score2_corp: 0, score2_runner: 3, label: '0-3',
+                extra_self_report_label: "#{pairing.player2.name} wins" }
             ]
           )
         end
@@ -108,9 +109,9 @@ RSpec.describe PairingsHelper do
           expect(helper.presets(pairing)).to eq(
             [
               { score1: 0, score1_corp: 0, score1_runner: 0, score2: 3, score2_corp: 3, score2_runner: 0,
-                label: '3-0' },
+                label: '3-0', extra_self_report_label: "#{pairing.player2.name} wins" },
               { score1: 3, score1_corp: 0, score1_runner: 3, score2: 0, score2_corp: 0, score2_runner: 0,
-                label: '0-3' }
+                label: '0-3', extra_self_report_label: "#{pairing.player1.name} wins" }
             ]
           )
         end
