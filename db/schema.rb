@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_07_054120) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_13_143425) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -354,75 +354,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_07_054120) do
   add_foreign_key "tournaments", "tournament_types"
   add_foreign_key "tournaments", "users"
 
-  create_view "side_win_percentages", sql_definition: <<-SQL
-      WITH base AS (
-           SELECT s.tournament_id,
-              s.number AS stage_number,
-                  CASE
-                      WHEN (s.format = 0) THEN 2
-                      ELSE 1
-                  END AS num_expected_games,
-                  CASE
-                      WHEN ((s.format = 0) AND ((((p.score1_corp + p.score1_runner) + p.score2_corp) + p.score2_runner) > 0)) THEN 2
-                      WHEN ((s.format > 0) AND (p.side > 0) AND ((p.score1 + p.score2) > 0)) THEN 1
-                      ELSE 0
-                  END AS num_valid_games,
-                  CASE
-                      WHEN ((s.format = 0) AND (((p.score1_corp = 3) AND (p.score2_corp = 0)) OR ((p.score1_corp = 0) AND (p.score2_corp = 3)))) THEN 1
-                      WHEN ((s.format = 0) AND (p.score1_corp = 3) AND (p.score2_corp = 3)) THEN 2
-                      WHEN (((s.format > 0) AND (p.score1_corp = 3)) OR (p.score2_corp = 3)) THEN 1
-                      ELSE 0
-                  END AS num_corp_wins,
-                  CASE
-                      WHEN ((s.format = 0) AND (((p.score1_runner = 3) AND (p.score2_runner = 0)) OR ((p.score1_runner = 0) AND (p.score2_runner = 3)))) THEN 1
-                      WHEN ((s.format = 0) AND (p.score1_runner = 3) AND (p.score2_runner = 3)) THEN 2
-                      WHEN (((s.format > 0) AND (p.score1_runner = 3)) OR (p.score2_runner = 3)) THEN 1
-                      ELSE 0
-                  END AS num_runner_wins
-             FROM ((stages s
-               JOIN rounds r ON ((s.id = r.stage_id)))
-               JOIN pairings p ON ((p.round_id = r.id)))
-            WHERE r.completed
-          ), calculated AS (
-           SELECT base.tournament_id,
-              base.stage_number,
-              base.num_expected_games,
-              base.num_valid_games,
-                  CASE
-                      WHEN (base.num_valid_games = 0) THEN 0
-                      ELSE base.num_corp_wins
-                  END AS num_corp_wins,
-                  CASE
-                      WHEN (base.num_valid_games = 0) THEN 0
-                      ELSE base.num_runner_wins
-                  END AS num_runner_wins
-             FROM base
-          )
-   SELECT calculated.tournament_id,
-      calculated.stage_number,
-      sum(calculated.num_expected_games) AS num_games,
-      sum(calculated.num_valid_games) AS num_valid_games,
-      (
-          CASE
-              WHEN (sum(calculated.num_expected_games) > 0) THEN ((sum(calculated.num_valid_games))::double precision / (sum(calculated.num_expected_games))::double precision)
-              ELSE (0.0)::double precision
-          END * (100)::double precision) AS valid_game_percentage,
-      sum(calculated.num_corp_wins) AS num_corp_wins,
-      (
-          CASE
-              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_corp_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
-              ELSE (0.0)::double precision
-          END * (100)::double precision) AS corp_win_percentage,
-      sum(calculated.num_runner_wins) AS num_runner_wins,
-      (
-          CASE
-              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_runner_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
-              ELSE (0.0)::double precision
-          END * (100)::double precision) AS runner_win_percentage
-     FROM calculated
-    GROUP BY calculated.tournament_id, calculated.stage_number
-    ORDER BY calculated.tournament_id, calculated.stage_number;
-  SQL
   create_view "cut_conversion_rates", sql_definition: <<-SQL
       WITH corps AS (
            SELECT s_1.tournament_id,
@@ -496,8 +427,77 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_07_054120) do
        LEFT JOIN cut c USING (tournament_id, side, identity, faction))
     GROUP BY s.tournament_id, s.faction, s.side, s.identity;
   SQL
-  create_view "standings_data_view", sql_definition: <<-SQL
-      WITH two_player_biases AS (
+  create_view "side_win_percentages", sql_definition: <<-SQL
+      WITH base AS (
+           SELECT s.tournament_id,
+              s.number AS stage_number,
+                  CASE
+                      WHEN (s.format = 0) THEN 2
+                      ELSE 1
+                  END AS num_expected_games,
+                  CASE
+                      WHEN ((s.format = 0) AND ((((p.score1_corp + p.score1_runner) + p.score2_corp) + p.score2_runner) > 0)) THEN 2
+                      WHEN ((s.format > 0) AND (p.side > 0) AND ((p.score1 + p.score2) > 0)) THEN 1
+                      ELSE 0
+                  END AS num_valid_games,
+                  CASE
+                      WHEN ((s.format = 0) AND (((p.score1_corp = 3) AND (p.score2_corp = 0)) OR ((p.score1_corp = 0) AND (p.score2_corp = 3)))) THEN 1
+                      WHEN ((s.format = 0) AND (p.score1_corp = 3) AND (p.score2_corp = 3)) THEN 2
+                      WHEN (((s.format > 0) AND (p.score1_corp = 3)) OR (p.score2_corp = 3)) THEN 1
+                      ELSE 0
+                  END AS num_corp_wins,
+                  CASE
+                      WHEN ((s.format = 0) AND (((p.score1_runner = 3) AND (p.score2_runner = 0)) OR ((p.score1_runner = 0) AND (p.score2_runner = 3)))) THEN 1
+                      WHEN ((s.format = 0) AND (p.score1_runner = 3) AND (p.score2_runner = 3)) THEN 2
+                      WHEN (((s.format > 0) AND (p.score1_runner = 3)) OR (p.score2_runner = 3)) THEN 1
+                      ELSE 0
+                  END AS num_runner_wins
+             FROM ((stages s
+               JOIN rounds r ON ((s.id = r.stage_id)))
+               JOIN pairings p ON ((p.round_id = r.id)))
+            WHERE r.completed
+          ), calculated AS (
+           SELECT base.tournament_id,
+              base.stage_number,
+              base.num_expected_games,
+              base.num_valid_games,
+                  CASE
+                      WHEN (base.num_valid_games = 0) THEN 0
+                      ELSE base.num_corp_wins
+                  END AS num_corp_wins,
+                  CASE
+                      WHEN (base.num_valid_games = 0) THEN 0
+                      ELSE base.num_runner_wins
+                  END AS num_runner_wins
+             FROM base
+          )
+   SELECT calculated.tournament_id,
+      calculated.stage_number,
+      sum(calculated.num_expected_games) AS num_games,
+      sum(calculated.num_valid_games) AS num_valid_games,
+      (
+          CASE
+              WHEN (sum(calculated.num_expected_games) > 0) THEN ((sum(calculated.num_valid_games))::double precision / (sum(calculated.num_expected_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS valid_game_percentage,
+      sum(calculated.num_corp_wins) AS num_corp_wins,
+      (
+          CASE
+              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_corp_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS corp_win_percentage,
+      sum(calculated.num_runner_wins) AS num_runner_wins,
+      (
+          CASE
+              WHEN (sum(calculated.num_valid_games) > 0) THEN ((sum(calculated.num_runner_wins))::double precision / (sum(calculated.num_valid_games))::double precision)
+              ELSE (0.0)::double precision
+          END * (100)::double precision) AS runner_win_percentage
+     FROM calculated
+    GROUP BY calculated.tournament_id, calculated.stage_number
+    ORDER BY calculated.tournament_id, calculated.stage_number;
+  SQL
+  create_view "summarized_standings", sql_definition: <<-SQL
+      WITH two_player_side_bias_by_pairing AS (
            SELECT r.stage_id,
               p.player1_id,
                   CASE
@@ -515,23 +515,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_07_054120) do
                JOIN rounds r ON ((p.round_id = r.id)))
                JOIN stages s ON ((r.stage_id = s.id)))
             WHERE ((s.format = 2) AND r.completed)
-          ), flattened AS (
-           SELECT two_player_biases.stage_id,
-              two_player_biases.player1_id AS player_id,
-              two_player_biases.player1_side_bias AS side_bias
-             FROM two_player_biases
+          ), single_player_side_bias_by_stage AS (
+           SELECT two_player_side_bias_by_pairing.stage_id,
+              two_player_side_bias_by_pairing.player1_id AS player_id,
+              two_player_side_bias_by_pairing.player1_side_bias AS side_bias
+             FROM two_player_side_bias_by_pairing
           UNION ALL
-           SELECT two_player_biases.stage_id,
-              two_player_biases.player2_id AS player_id,
-              two_player_biases.player2_side_bias AS side_bias
-             FROM two_player_biases
+           SELECT two_player_side_bias_by_pairing.stage_id,
+              two_player_side_bias_by_pairing.player2_id AS player_id,
+              two_player_side_bias_by_pairing.player2_side_bias AS side_bias
+             FROM two_player_side_bias_by_pairing
           ), side_bias AS (
-           SELECT flattened.stage_id,
-              flattened.player_id,
-              sum(flattened.side_bias) AS side_bias
-             FROM flattened
-            WHERE (flattened.player_id IS NOT NULL)
-            GROUP BY flattened.stage_id, flattened.player_id
+           SELECT single_player_side_bias_by_stage.stage_id,
+              single_player_side_bias_by_stage.player_id,
+              sum(single_player_side_bias_by_stage.side_bias) AS side_bias
+             FROM single_player_side_bias_by_stage
+            WHERE (single_player_side_bias_by_stage.player_id IS NOT NULL)
+            GROUP BY single_player_side_bias_by_stage.stage_id, single_player_side_bias_by_stage.player_id
           ), standings_for_tournament AS (
            SELECT s.tournament_id,
               s.id AS stage_id,
@@ -620,7 +620,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_07_054120) do
                LEFT JOIN identities corp_id ON ((p.corp_identity_ref_id = corp_id.id)))
                LEFT JOIN identities runner_id ON ((p.runner_identity_ref_id = runner_id.id)))
             WHERE (s.format = ANY (ARRAY[0, 2]))
-          ), expanded_swiss AS (
+          ), expanded_swiss_standings AS (
            SELECT t.id AS tournament_id,
               t.swiss_deck_visibility,
               t.cut_deck_visibility,
@@ -656,7 +656,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_07_054120) do
                JOIN rounds_for_stages rfs ON ((rfs.stage_id = swp.stage_id)))
                LEFT JOIN standings_for_tournament sft ON (((sft.tournament_id = swp.tournament_id) AND (sft.stage_id = swp.stage_id) AND (sft.player_id = swp.player_id))))
                LEFT JOIN side_bias sb ON (((sb.stage_id = sft.stage_id) AND (sft.player_id = sb.player_id))))
-          ), expanded_elim AS (
+          ), expanded_cut_standings AS (
            SELECT t.id AS tournament_id,
               t.swiss_deck_visibility,
               t.cut_deck_visibility,
@@ -693,68 +693,68 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_07_054120) do
                LEFT JOIN standings_for_tournament sft ON (((sft.tournament_id = cwp.tournament_id) AND (sft.stage_id = cwp.stage_id) AND (sft.player_id = cwp.player_id))))
                LEFT JOIN side_bias sb ON (((sb.stage_id = sft.stage_id) AND (sft.player_id = sb.player_id))))
           )
-   SELECT expanded_swiss.tournament_id,
-      expanded_swiss.swiss_deck_visibility,
-      expanded_swiss.cut_deck_visibility,
-      expanded_swiss.tournament_user_id,
-      expanded_swiss.tournament_manual_seed,
-      expanded_swiss.num_rounds,
-      expanded_swiss.is_player_meeting,
-      expanded_swiss.num_rounds_completed,
-      expanded_swiss.stage_id,
-      expanded_swiss.stage_format,
-      expanded_swiss.stage_number,
-      expanded_swiss.player_id,
-      expanded_swiss.player_user_id,
-      expanded_swiss.player_name,
-      expanded_swiss.player_pronouns,
-      expanded_swiss.player_manual_seed,
-      expanded_swiss.seed,
-      expanded_swiss.corp_id_name,
-      expanded_swiss.corp_id_faction,
-      expanded_swiss.runner_id_name,
-      expanded_swiss.runner_id_faction,
-      expanded_swiss.player_active,
-      expanded_swiss."position",
-      expanded_swiss.points,
-      expanded_swiss.corp_points,
-      expanded_swiss.runner_points,
-      expanded_swiss.bye_points,
-      expanded_swiss.sos,
-      expanded_swiss.extended_sos,
-      expanded_swiss.side_bias
-     FROM expanded_swiss
+   SELECT expanded_swiss_standings.tournament_id,
+      expanded_swiss_standings.swiss_deck_visibility,
+      expanded_swiss_standings.cut_deck_visibility,
+      expanded_swiss_standings.tournament_user_id,
+      expanded_swiss_standings.tournament_manual_seed,
+      expanded_swiss_standings.num_rounds,
+      expanded_swiss_standings.is_player_meeting,
+      expanded_swiss_standings.num_rounds_completed,
+      expanded_swiss_standings.stage_id,
+      expanded_swiss_standings.stage_format,
+      expanded_swiss_standings.stage_number,
+      expanded_swiss_standings.player_id,
+      expanded_swiss_standings.player_user_id,
+      expanded_swiss_standings.player_name,
+      expanded_swiss_standings.player_pronouns,
+      expanded_swiss_standings.player_manual_seed,
+      expanded_swiss_standings.seed,
+      expanded_swiss_standings.corp_id_name,
+      expanded_swiss_standings.corp_id_faction,
+      expanded_swiss_standings.runner_id_name,
+      expanded_swiss_standings.runner_id_faction,
+      expanded_swiss_standings.player_active,
+      expanded_swiss_standings."position",
+      expanded_swiss_standings.points,
+      expanded_swiss_standings.corp_points,
+      expanded_swiss_standings.runner_points,
+      expanded_swiss_standings.bye_points,
+      expanded_swiss_standings.sos,
+      expanded_swiss_standings.extended_sos,
+      expanded_swiss_standings.side_bias
+     FROM expanded_swiss_standings
   UNION ALL
-   SELECT expanded_elim.tournament_id,
-      expanded_elim.swiss_deck_visibility,
-      expanded_elim.cut_deck_visibility,
-      expanded_elim.tournament_user_id,
-      expanded_elim.tournament_manual_seed,
-      expanded_elim.num_rounds,
-      expanded_elim.is_player_meeting,
-      expanded_elim.num_rounds_completed,
-      expanded_elim.stage_id,
-      expanded_elim.stage_format,
-      expanded_elim.stage_number,
-      expanded_elim.player_id,
-      expanded_elim.player_user_id,
-      expanded_elim.player_name,
-      expanded_elim.player_pronouns,
-      expanded_elim.player_manual_seed,
-      expanded_elim.seed,
-      expanded_elim.corp_id_name,
-      expanded_elim.corp_id_faction,
-      expanded_elim.runner_id_name,
-      expanded_elim.runner_id_faction,
-      expanded_elim.player_active,
-      expanded_elim."position",
-      expanded_elim.points,
-      expanded_elim.corp_points,
-      expanded_elim.runner_points,
-      expanded_elim.bye_points,
-      expanded_elim.sos,
-      expanded_elim.extended_sos,
-      expanded_elim.side_bias
-     FROM expanded_elim;
+   SELECT expanded_cut_standings.tournament_id,
+      expanded_cut_standings.swiss_deck_visibility,
+      expanded_cut_standings.cut_deck_visibility,
+      expanded_cut_standings.tournament_user_id,
+      expanded_cut_standings.tournament_manual_seed,
+      expanded_cut_standings.num_rounds,
+      expanded_cut_standings.is_player_meeting,
+      expanded_cut_standings.num_rounds_completed,
+      expanded_cut_standings.stage_id,
+      expanded_cut_standings.stage_format,
+      expanded_cut_standings.stage_number,
+      expanded_cut_standings.player_id,
+      expanded_cut_standings.player_user_id,
+      expanded_cut_standings.player_name,
+      expanded_cut_standings.player_pronouns,
+      expanded_cut_standings.player_manual_seed,
+      expanded_cut_standings.seed,
+      expanded_cut_standings.corp_id_name,
+      expanded_cut_standings.corp_id_faction,
+      expanded_cut_standings.runner_id_name,
+      expanded_cut_standings.runner_id_faction,
+      expanded_cut_standings.player_active,
+      expanded_cut_standings."position",
+      expanded_cut_standings.points,
+      expanded_cut_standings.corp_points,
+      expanded_cut_standings.runner_points,
+      expanded_cut_standings.bye_points,
+      expanded_cut_standings.sos,
+      expanded_cut_standings.extended_sos,
+      expanded_cut_standings.side_bias
+     FROM expanded_cut_standings;
   SQL
 end
