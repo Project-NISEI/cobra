@@ -129,7 +129,7 @@ class PlayersController < ApplicationController
 
     sql = ActiveRecord::Base.sanitize_sql(
       [
-        'SELECT * FROM standings_data_view WHERE tournament_id = ? ORDER BY stage_number DESC, position, player_id',
+        'SELECT * FROM summarized_standings WHERE tournament_id = ? ORDER BY stage_number DESC, position, player_id',
         @tournament.id
       ]
     )
